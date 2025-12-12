@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<!--
+  밤송이 서바이벌 (Chestnut Survival)
+  Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
+-->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌰 밤송이 서바이벌</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --sidebar-width: 280px;
+      --sidebar-bg: #2a2d3a;
+      --sidebar-dark: #1e2029;
+      --accent: #8b5a2b;
+      --accent-light: #d4a574;
+      --sky-top: #87ceeb;
+      --sky-bottom: #b0e2ff;
+      --grass: #7cb342;
+      --grass-dark: #558b2f;
+      --tree-trunk: #6d4c41;
+      --tree-leaves: #4caf50;
+      --tree-leaves-dark: #388e3c;
+      --chestnut: #8b4513;
+      --chestnut-spikes: #5d3a1a;
+      --danger: #ff6b6b;
+      --success: #4caf50;
+      --text-light: #e0e0e0;
+      --text-muted: #9e9e9e;
+    }
+    
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--sidebar-dark);
+      overflow: hidden;
+      height: 100vh;
+    }
+    
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    
+    .sidebar h1 {
+      color: var(--accent-light);
+      font-size: 1.5rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .sidebar label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      display: block;
+    }
+    
+    .sidebar textarea {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: var(--sidebar-dark);
+      color: var(--text-light);
+      font-family: inherit;
+      font-size: 0.9rem;
+      resize: none;
+      height: 80px;
+    }
+    
+    .sidebar textarea::placeholder {
+      color: var(--text-muted);
+    }
+    
+    /* Settings */
+    .settings-group {
+      background: var(--sidebar-dark);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .slider-container input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      background: #3a3d4a;
+      height: 6px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    
+    .slider-container input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--accent-light);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    
+    .slider-value {
+      background: var(--sidebar-bg);
+      color: var(--text-light);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-weight: 700;
+      min-width: 40px;
+      text-align: center;
+    }
+    
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(139, 90, 43, 0.4);
+    }
+    
+    .btn-primary:disabled {
+      background: #4a4d5a;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .btn-reset {
+      flex: 0 0 50px;
+      background: var(--sidebar-dark);
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+    
+    .btn-reset:hover {
+      color: var(--text-light);
+    }
+    
+    /* Rankings */
+    .rankings {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .rankings h3 {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+    
+    .rankings-list {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--sidebar-dark);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      transition: all 0.3s;
+    }
+    
+    .ranking-item.alive {
+      background: rgba(76, 175, 80, 0.1);
+    }
+    
+    .ranking-item.dead {
+      background: rgba(255, 107, 107, 0.1);
+      opacity: 0.6;
+    }
+    
+    .ranking-item.winner {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 193, 7, 0.1));
+      animation: winner-glow 1s ease-in-out infinite alternate;
+    }
+    
+    @keyframes winner-glow {
+      from { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+      to { box-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
+    }
+    
+    .status-icon {
+      font-size: 1rem;
+    }
+    
+    .ranking-name {
+      flex: 1;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+    
+    /* Sidebar Footer */
+    .sidebar-footer {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+      background: var(--sidebar-dark);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      position: relative;
+      text-decoration: none;
+    }
+    
+    .icon-btn:hover {
+      color: var(--text-light);
+      transform: translateY(-2px);
+    }
+    
+    .icon-btn[data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--sidebar-dark);
+      color: var(--text-light);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      margin-bottom: 8px;
+    }
+    
+    /* Game Area */
+    .game-area {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    #gameCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    
+    /* Game Over Overlay */
+    .game-over-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 50;
+    }
+    
+    .game-over-overlay.show {
+      display: flex;
+    }
+    
+    .game-over-content {
+      text-align: center;
+      color: white;
+    }
+    
+    .game-over-content h2 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: #ffd700;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+    
+    .winners-list {
+      font-size: 1.5rem;
+      margin-bottom: 30px;
+    }
+    
+    .winner-name {
+      display: inline-block;
+      background: linear-gradient(135deg, #ffd700, #ffb347);
+      color: #333;
+      padding: 8px 20px;
+      border-radius: 20px;
+      margin: 5px;
+      font-weight: 700;
+    }
+    
+    .btn-confirm {
+      background: linear-gradient(135deg, #ffd700, #ffb347);
+      color: #333;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    
+    .btn-confirm:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+    }
+    
+    /* Confetti */
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      pointer-events: none;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        height: auto;
+        max-height: 40vh;
+        border-radius: 20px 20px 0 0;
+      }
+      
+      .game-area {
+        height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <h1>🌰 밤송이 서바이벌</h1>
+      
+      <div>
+        <label>참여자 (콤마로 구분)</label>
+        <textarea id="participants" placeholder="철수, 영희, 민수, 지영, 현우, 서연, 도윤, 하은, 시우, 지아, 준서, 수빈"></textarea>
+      </div>
+      
+      <div class="settings-group">
+        <label>최종 생존자 수</label>
+        <div class="slider-container">
+          <input type="range" id="survivorCount" min="1" max="10" value="1">
+          <span class="slider-value" id="survivorValue">1</span>
+        </div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-primary" id="startBtn">🎮 시작</button>
+        <button class="btn btn-reset" id="resetBtn">↺</button>
+      </div>
+      
+      <div class="rankings">
+        <h3>실시간 현황</h3>
+        <div class="rankings-list" id="rankingsList"></div>
+      </div>
+      
+      <div class="sidebar-footer">
+        <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </button>
+        <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+        </a>
+        <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
+        </a>
+      </div>
+    </aside>
+    
+    <main class="game-area">
+      <canvas id="gameCanvas"></canvas>
+      <div class="game-over-overlay" id="gameOverOverlay">
+        <div class="game-over-content">
+          <h2>🎉 생존자 발표!</h2>
+          <div class="winners-list" id="winnersList"></div>
+          <button class="btn-confirm" id="confirmBtn">확인</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
+    
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Game state
+    let gameRunning = false;
+    let participants = [];
+    let players = [];
+    let chestnuts = [];
+    let trees = [];
+    let targetSurvivors = 1;
+    let animationId = null;
+    
+    // Happy emojis for alive players
+    const happyEmojis = ['😊', '😄', '😁', '🙂', '😀', '😃', '🤗', '😋', '🤩', '🥳'];
+    // Hurt emojis for dead players
+    const hurtEmojis = ['😵', '😵‍💫', '🥴', '😢', '😭', '🤕', '😫', '💀'];
+    
+    // Resize canvas
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+      if (!gameRunning) {
+        generateTrees();
+        draw();
+      }
+    }
+    
+    // Generate trees
+    function generateTrees() {
+      trees = [];
+      const treeCount = Math.floor(canvas.width / 120) + 3; // 더 촘촘하게
+      for (let i = 0; i < treeCount; i++) {
+        trees.push({
+          x: (i + 0.5) * (canvas.width / treeCount) + (Math.random() - 0.5) * 40,
+          width: 100 + Math.random() * 60, // 더 넓은 나무
+          height: 150 + Math.random() * 100,
+          trunkWidth: 30 + Math.random() * 20,
+          trunkHeight: 80 + Math.random() * 40,
+          leafLayers: 2 + Math.floor(Math.random() * 2)
+        });
+      }
+    }
+    
+    // Create chestnut - 나무 위치에서 떨어지게
+    function createChestnut() {
+      // 랜덤한 나무 선택
+      const tree = trees[Math.floor(Math.random() * trees.length)];
+      const x = tree.x + (Math.random() - 0.5) * tree.width * 0.8;
+      const baseY = canvas.height * 0.65;
+      const startY = baseY - tree.trunkHeight - tree.height * 0.3; // 나무 잎사귀 아래에서 시작
+      
+      return {
+        x: x,
+        y: startY,
+        vy: 0,
+        radius: 12 + Math.random() * 8,
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.1 // 속도 절반
+      };
+    }
+    
+    // Initialize players
+    function initPlayers() {
+      const groundYBase = canvas.height - 80;
+      const groundYRange = 60; // Y 범위
+      players = participants.map((name, i) => ({
+        name: name,
+        x: 100 + Math.random() * (canvas.width - 200),
+        y: groundYBase + Math.random() * groundYRange, // 랜덤 Y 값
+        vx: (Math.random() - 0.5) * 1.5, // 속도 절반
+        alive: true,
+        emoji: happyEmojis[Math.floor(Math.random() * happyEmojis.length)],
+        size: 40,
+        direction: 1,
+        changeTimer: Math.random() * 100
+      }));
+    }
+    
+    // Draw sky
+    function drawSky() {
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.7);
+      gradient.addColorStop(0, '#87CEEB');
+      gradient.addColorStop(1, '#B0E2FF');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height * 0.7);
+    }
+    
+    // Draw grass
+    function drawGrass() {
+      const grassTop = canvas.height * 0.6;
+      const gradient = ctx.createLinearGradient(0, grassTop, 0, canvas.height);
+      gradient.addColorStop(0, '#7CB342');
+      gradient.addColorStop(0.3, '#8BC34A');
+      gradient.addColorStop(1, '#558B2F');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.moveTo(0, grassTop);
+      // Wavy grass top
+      for (let x = 0; x <= canvas.width; x += 20) {
+        ctx.lineTo(x, grassTop + Math.sin(x * 0.03) * 10);
+      }
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.lineTo(0, canvas.height);
+      ctx.closePath();
+      ctx.fill();
+    }
+    
+    // Draw tree
+    function drawTree(tree) {
+      const baseY = canvas.height * 0.65;
+      
+      // Trunk
+      ctx.fillStyle = '#6D4C41';
+      ctx.fillRect(
+        tree.x - tree.trunkWidth / 2,
+        baseY - tree.trunkHeight,
+        tree.trunkWidth,
+        tree.trunkHeight + 20
+      );
+      
+      // Trunk details
+      ctx.strokeStyle = '#5D4037';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 3; i++) {
+        const lineY = baseY - tree.trunkHeight + 20 + i * 25;
+        ctx.beginPath();
+        ctx.moveTo(tree.x - tree.trunkWidth / 2 + 5, lineY);
+        ctx.lineTo(tree.x + tree.trunkWidth / 2 - 5, lineY + 10);
+        ctx.stroke();
+      }
+      
+      // Leaves (multiple layers for depth)
+      for (let layer = 0; layer < tree.leafLayers; layer++) {
+        const layerOffset = layer * 30;
+        const layerScale = 1 - layer * 0.15;
+        
+        // Back leaves (darker)
+        ctx.fillStyle = layer === 0 ? '#388E3C' : '#43A047';
+        ctx.beginPath();
+        ctx.ellipse(
+          tree.x,
+          baseY - tree.trunkHeight - tree.height * 0.4 - layerOffset,
+          tree.width * 0.6 * layerScale,
+          tree.height * 0.5 * layerScale,
+          0, 0, Math.PI * 2
+        );
+        ctx.fill();
+        
+        // Front leaves (lighter)
+        ctx.fillStyle = layer === 0 ? '#4CAF50' : '#66BB6A';
+        ctx.beginPath();
+        ctx.ellipse(
+          tree.x + 10,
+          baseY - tree.trunkHeight - tree.height * 0.35 - layerOffset,
+          tree.width * 0.5 * layerScale,
+          tree.height * 0.4 * layerScale,
+          0, 0, Math.PI * 2
+        );
+        ctx.fill();
+      }
+    }
+    
+    // Draw chestnut (밤송이)
+    function drawChestnut(chestnut) {
+      ctx.save();
+      ctx.translate(chestnut.x, chestnut.y);
+      ctx.rotate(chestnut.rotation);
+      
+      const r = chestnut.radius;
+      
+      // Main body
+      ctx.fillStyle = '#8B4513';
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Spikes - 더 촘촘하고 얇게
+      ctx.strokeStyle = '#5D3A1A';
+      ctx.lineWidth = 1.4; // 30% 감소 (2 -> 1.4)
+      const spikeCount = 20; // 12 -> 20 더 촘촘
+      for (let i = 0; i < spikeCount; i++) {
+        const angle = (i / spikeCount) * Math.PI * 2;
+        const innerR = r * 0.85;
+        const outerR = r * 1.35;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(angle) * innerR, Math.sin(angle) * innerR);
+        ctx.lineTo(Math.cos(angle) * outerR, Math.sin(angle) * outerR);
+        ctx.stroke();
+      }
+      
+      // Highlight
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.beginPath();
+      ctx.ellipse(-r * 0.3, -r * 0.3, r * 0.3, r * 0.2, -0.5, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.restore();
+    }
+    
+    // Draw player
+    function drawPlayer(player) {
+      const size = player.size;
+      const alpha = player.alive ? 1 : 0.4; // 죽으면 투명하게
+      
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      
+      // Name tag
+      ctx.font = '12px "Noto Sans KR"';
+      const textWidth = ctx.measureText(player.name).width + 16;
+      
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.beginPath();
+      ctx.roundRect(player.x - textWidth / 2, player.y - size - 35, textWidth, 22, 6);
+      ctx.fill();
+      
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(player.name, player.x, player.y - size - 24); // 중앙 정렬
+      
+      // Emoji face
+      ctx.font = `${size}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(player.emoji, player.x, player.y - size / 2);
+      
+      ctx.restore();
+    }
+    
+    // Update game
+    function update() {
+      const gravity = 0.15; // 속도 절반 (0.3 -> 0.15)
+      const alivePlayers = players.filter(p => p.alive);
+      
+      // Check if game should end
+      if (alivePlayers.length <= targetSurvivors) {
+        endGame();
+        return;
+      }
+      
+      // Spawn new chestnuts - 속도 절반
+      if (Math.random() < 0.04) { // 0.08 -> 0.04
+        chestnuts.push(createChestnut());
+      }
+      
+      // Update chestnuts
+      chestnuts.forEach(c => {
+        c.vy += gravity;
+        c.y += c.vy;
+        c.rotation += c.rotationSpeed;
+      });
+      
+      // Remove off-screen chestnuts
+      chestnuts = chestnuts.filter(c => c.y < canvas.height + 50);
+      
+      // Update players
+      players.forEach(player => {
+        if (!player.alive) return;
+        
+        // Random movement
+        player.changeTimer--;
+        if (player.changeTimer <= 0) {
+          player.vx = (Math.random() - 0.5) * 2; // 속도 절반 (4 -> 2)
+          player.changeTimer = 50 + Math.random() * 100;
+          player.emoji = happyEmojis[Math.floor(Math.random() * happyEmojis.length)];
+        }
+        
+        player.x += player.vx;
+        
+        // Bounce off edges
+        if (player.x < 50) {
+          player.x = 50;
+          player.vx = Math.abs(player.vx);
+        }
+        if (player.x > canvas.width - 50) {
+          player.x = canvas.width - 50;
+          player.vx = -Math.abs(player.vx);
+        }
+        
+        // Check collision with chestnuts
+        chestnuts.forEach(c => {
+          const dx = player.x - c.x;
+          const dy = (player.y - player.size / 2) - c.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          if (dist < player.size / 2 + c.radius) {
+            player.alive = false;
+            player.emoji = hurtEmojis[Math.floor(Math.random() * hurtEmojis.length)];
+            updateRankings();
+          }
+        });
+      });
+    }
+    
+    // Draw everything
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      drawSky();
+      drawGrass();
+      
+      // Draw trees
+      trees.forEach(drawTree);
+      
+      // Draw chestnuts
+      chestnuts.forEach(drawChestnut);
+      
+      // Draw players
+      players.forEach(drawPlayer);
+    }
+    
+    // Game loop
+    function gameLoop() {
+      if (!gameRunning) return;
+      
+      update();
+      draw();
+      animationId = requestAnimationFrame(gameLoop);
+    }
+    
+    // Update rankings display
+    function updateRankings() {
+      const list = document.getElementById('rankingsList');
+      list.innerHTML = '';
+      
+      // Sort: alive first, then by name
+      const sorted = [...players].sort((a, b) => {
+        if (a.alive !== b.alive) return b.alive - a.alive;
+        return a.name.localeCompare(b.name);
+      });
+      
+      sorted.forEach(player => {
+        const item = document.createElement('div');
+        item.className = `ranking-item ${player.alive ? 'alive' : 'dead'}`;
+        item.innerHTML = `
+          <span class="status-icon">${player.alive ? '✓' : '✗'}</span>
+          <span class="ranking-name">${player.name}</span>
+        `;
+        list.appendChild(item);
+      });
+    }
+    
+    // End game
+    function endGame() {
+      gameRunning = false;
+      cancelAnimationFrame(animationId);
+      
+      const winners = players.filter(p => p.alive);
+      
+      // Update rankings with winner highlights
+      const list = document.getElementById('rankingsList');
+      list.querySelectorAll('.ranking-item.alive').forEach(item => {
+        item.classList.add('winner');
+      });
+      
+      // Show game over overlay
+      const overlay = document.getElementById('gameOverOverlay');
+      const winnersList = document.getElementById('winnersList');
+      winnersList.innerHTML = winners.map(w => 
+        `<span class="winner-name">${w.emoji} ${w.name}</span>`
+      ).join('');
+      overlay.classList.add('show');
+      
+      // Confetti
+      createConfetti();
+      
+      document.getElementById('startBtn').disabled = false;
+    }
+    
+    // Create confetti
+    function createConfetti() {
+      const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#aa96da'];
+      const gameArea = document.querySelector('.game-area');
+      
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * 100 + '%';
+          confetti.style.top = '-10px';
+          confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+          confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+          gameArea.appendChild(confetti);
+          
+          // Animate
+          const duration = 2000 + Math.random() * 2000;
+          const startX = parseFloat(confetti.style.left);
+          const drift = (Math.random() - 0.5) * 20;
+          
+          confetti.animate([
+            { top: '-10px', left: startX + '%', opacity: 1 },
+            { top: '100%', left: (startX + drift) + '%', opacity: 0 }
+          ], {
+            duration: duration,
+            easing: 'ease-out'
+          }).onfinish = () => confetti.remove();
+        }, i * 30);
+      }
+    }
+    
+    // Start game
+    function startGame() {
+      const input = document.getElementById('participants').value;
+      participants = input.split(',').map(p => p.trim()).filter(p => p);
+      
+      if (participants.length < 2) {
+        alert('최소 2명의 참여자가 필요합니다.');
+        return;
+      }
+      
+      targetSurvivors = parseInt(document.getElementById('survivorCount').value);
+      if (targetSurvivors >= participants.length) {
+        alert('생존자 수는 참여자 수보다 적어야 합니다.');
+        return;
+      }
+      
+      // Reset
+      document.getElementById('gameOverOverlay').classList.remove('show');
+      chestnuts = [];
+      initPlayers();
+      updateRankings();
+      
+      gameRunning = true;
+      document.getElementById('startBtn').disabled = true;
+      gameLoop();
+    }
+    
+    // Reset game
+    function resetGame() {
+      gameRunning = false;
+      cancelAnimationFrame(animationId);
+      
+      chestnuts = [];
+      players = [];
+      document.getElementById('rankingsList').innerHTML = '';
+      document.getElementById('gameOverOverlay').classList.remove('show');
+      document.getElementById('startBtn').disabled = false;
+      
+      draw();
+    }
+    
+    // Copy results
+    function copyResults() {
+      const winners = players.filter(p => p.alive);
+      const losers = players.filter(p => !p.alive);
+      
+      let result = '🌰 밤송이 서바이벌 결과\n\n';
+      result += '🏆 생존자:\n';
+      winners.forEach(w => result += `  ${w.name}\n`);
+      result += '\n💀 탈락자:\n';
+      losers.forEach(l => result += `  ${l.name}\n`);
+      
+      navigator.clipboard.writeText(result).then(() => {
+        const btn = document.getElementById('copyResultBtn');
+        btn.dataset.tooltip = '복사됨!';
+        setTimeout(() => btn.dataset.tooltip = '결과 복사', 2000);
+      });
+    }
+    
+    // Event listeners
+    document.getElementById('startBtn').addEventListener('click', startGame);
+    document.getElementById('resetBtn').addEventListener('click', resetGame);
+    document.getElementById('copyResultBtn').addEventListener('click', copyResults);
+    document.getElementById('confirmBtn').addEventListener('click', () => {
+      document.getElementById('gameOverOverlay').classList.remove('show');
+    });
+    
+    document.getElementById('survivorCount').addEventListener('input', (e) => {
+      document.getElementById('survivorValue').textContent = e.target.value;
+    });
+    
+    // Initialize
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    
+    // Set default participants
+    document.getElementById('participants').value = '철수, 영희, 민수, 지영, 현우, 서연, 도윤, 하은, 시우, 지아, 준서, 수빈';
+  </script>
+</body>
+</html>
