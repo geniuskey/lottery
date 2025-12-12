@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>추첨 게임 포털</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #38bdf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: linear-gradient(180deg, #020617, var(--bg));
+      color: var(--text);
+    }
+    header {
+      padding: 32px 20px 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+    }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: linear-gradient(180deg, #020617, var(--card));
+      border: 1px solid #1f2933;
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      border-color: #334155;
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+    .card p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.4;
+      flex-grow: 1;
+    }
+    .card a {
+      display: inline-block;
+      text-decoration: none;
+      text-align: center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #020617;
+      font-weight: 600;
+      transition: background 0.15s ease, transform 0.05s ease;
+    }
+    .card a:hover {
+      background: #7dd3fc;
+    }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 24px 12px 40px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎲 추첨 게임 포털</h1>
+    <p>다양한 싱글 페이지 추첨 게임을 한 곳에서 즐기세요.</p>
+  </header>
+
+  <main>
+    <section class="grid">
+      <div class="card">
+        <h2>🏅구슬 올림픽</h2>
+        <p>구슬들이 경쟁하는 올림픽 스타일의 랜덤 추첨 게임.</p>
+        <a href="./marble-olympics/">게임 시작</a>
+      </div>
+
+      <div class="card">
+        <h2>🧟 좀비 아레나</h2>
+        <p>좀비들이 아레나에서 생존을 겨루는 배틀 기반 추첨 게임.</p>
+        <a href="./zombie-arena/">게임 시작</a>
+      </div>
+
+      <div class="card">
+        <h2>✊ 단체 가위바위보</h2>
+        <p>가위바위보 룰을 확장한 빠르고 직관적인 추첨 게임.</p>
+        <a href="./rock-paper-scissors/">게임 시작</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2025 Random Game Collection. All games run fully in your browser.
+  </footer>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏅구슬 올림픽</title>
+	<!-- 개발자/라이선스 정보 (렌더링되지 않음) -->
+	<meta name="author" content="geniuskey" />
+	<meta name="reply-to" content="geniuskey@gmail.com" />
+	<meta name="copyright" content="© 2025 geniuskey. All rights reserved." />
+	<meta name="license" content="Personal use only. Redistribution prohibited without permission." />
+
+	<!--
+		Marble Olympics (구슬 올림픽)
+		Original Copyright Notice
+
+		Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
+
+		This web application is an original creation by the developer known as "geniuskey".
+		Any third-party registration of this work, including copyright filings made without
+		the author's consent, does not invalidate the author's original rights under 
+		Korean Copyright Law and international copyright principles.
+
+		Note:
+		- Copyright is automatically granted upon creation (“무조건 자동 발생”).
+		- Copyright registration by unrelated parties does NOT transfer ownership.
+		- MIT License permits reuse but does NOT abandon authorship or ownership.
+		- Unauthorized registration by third parties shall be considered invalid.
+
+		Original Creator: Euiyun Kim (geniuskey@gmail.com)
+        service web page: https://geniuskey.github.io/marble-olympics/
+	-->
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Toast 알림 -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✅</span>
+        <span class="toast-message">클립보드에 복사되었습니다!</span>
+    </div>
+    
+    <div class="bg-effects"></div>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <div class="logo-row">
+                    <div class="logo">
+                        🏅 구슬 올림픽
+                    </div>
+                    <button class="help-btn" id="helpBtn" title="도움말">?</button>
+                </div>
+
+                <div class="input-group">
+                    <div class="section-title">참여자 입력</div>
+                    <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)
+예: 철수, 영희*3, 민수"></textarea>
+                    <div class="hint">💡 이름*숫자 형식으로 복수 참여 가능</div>
+                </div>
+
+                <div class="input-group">
+                    <div class="section-title">맵 선택</div>
+                    <select id="mapSelect" class="map-select">
+                        <option value="chaos">🌀 카오스</option>
+                        <option value="pinball">🎰 핀볼</option>
+                        <option value="funnel">🔻 깔때기</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="firstWinsToggle" checked>
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label" id="firstWinsLabel">먼저 들어온 순서가 1등</span>
+                    </label>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary btn-sm" id="shuffleBtn">🔀 섞기</button>
+                    <button class="btn btn-primary" id="startBtn">▶️ 시작!</button>
+                    <button class="btn btn-reset btn-sm" id="resetBtn">↺ 초기화</button>
+                </div>
+            </div>
+
+            <div class="sidebar-bottom">
+                <div class="rankings" id="rankings">
+                    <div class="rankings-header">
+                        <div class="section-title">📊 실시간 순위</div>
+                        <div class="rankings-live" id="liveIndicator" style="display: none;">
+                            <div class="live-dot"></div>
+                            LIVE
+                        </div>
+                    </div>
+                    <div id="rankingList">
+                        <div class="ranking-placeholder">게임을 시작하면 순위가 표시됩니다</div>
+                    </div>
+                </div>
+                
+                <div class="bottom-btn-group">
+                    <button class="bottom-btn" id="copyResultBtn2" disabled title="결과 복사">📋</button>
+                    <a href="https://github.com/geniuskey/marble-olympics" target="_blank" class="bottom-btn" title="GitHub 저장소">
+                        <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                        </svg>
+                    </a>
+                    <a href="https://buymeacoffee.com/euiyun" target="_blank" class="bottom-btn coffee" title="개발자에게 커피 사주기">☕</a>
+                </div>
+            </div>
+        </aside>
+
+        <main class="game-area">
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas"></canvas>
+            </div>
+        </main>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏅 구슬 올림픽 도움말</h2>
+                <button class="modal-close" id="closeHelpBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3>🎮 게임 방법</h3>
+                <p>참여자 이름을 입력하고 시작 버튼을 누르면 구슬들이 떨어지며 순위가 결정됩니다.</p>
+                
+                <h3>📝 참여자 입력</h3>
+                <p>• 줄바꿈 또는 쉼표로 구분<br>• <strong>이름*숫자</strong> 형식으로 복수 참여 (예: 철수*3)</p>
+                
+                <h3>🗺️ 맵 요소</h3>
+                <div class="help-legend">
+                    <div class="help-item"><span class="help-icon" style="background: rgba(255,255,255,0.5);"></span> <strong>핀</strong> - 구슬이 튕기는 기본 장애물</div>
+                    <div class="help-item"><span class="help-icon" style="background: #ff6b6b;"></span> <strong>범퍼</strong> - 강하게 튕겨내는 장애물</div>
+                    <div class="help-item"><span class="help-icon" style="background: #ffd700;"></span> <strong>회전체</strong> - 계속 회전하는 막대</div>
+                    <div class="help-item"><span class="help-icon" style="background: #00d4ff;"></span> <strong>포탈</strong> - 순간이동 장치</div>
+                    <div class="help-item"><span class="help-icon" style="background: #10ac84;"></span> <strong>부스터</strong> - 특정 방향으로 가속</div>
+                </div>
+                
+                <h3>🗺️ 맵 종류</h3>
+                <p>• <strong>카오스</strong> - 다양한 장애물이 빽빽하게 배치<br>
+                • <strong>핀볼</strong> - 핀볼 머신 스타일<br>
+                • <strong>깔때기</strong> - 여러 단계의 깔때기 구조</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="winner-overlay" id="winnerOverlay">
+        <div class="confetti-container" id="confettiContainer"></div>
+        <div class="result-header">
+            <div class="winner-label" id="winnerLabel">🏆 1등!</div>
+            <div class="winner-name" id="winnerName">-</div>
+        </div>
+        <div class="final-rankings">
+            <div class="final-rankings-title">🏁 최종 순위</div>
+            <div id="finalRankingList"></div>
+        </div>
+        <div class="result-buttons">
+            <button class="btn btn-secondary" id="copyResultBtn">📋 결과 복사</button>
+            <button class="btn btn-primary" id="closeWinnerBtn">확인</button>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

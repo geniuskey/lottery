@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<!--
+  단체 가위바위보 추첨 게임 (Group Rock-Paper-Scissors Lottery)
+  Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
+  All rights reserved.
+-->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>단체 가위바위보 추첨</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      height: 100vh;
+      display: flex;
+      padding: 20px;
+      gap: 20px;
+    }
+    .sidebar {
+      width: 300px; min-width: 280px; max-width: 300px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      padding: 24px;
+      display: flex; flex-direction: column; gap: 16px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+    .sidebar h2 { color: #fff; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .sidebar label { font-weight: 600; color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .sidebar textarea {
+      width: 100%; height: 80px; padding: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px; resize: none; font-size: 0.95rem;
+      background: rgba(255, 255, 255, 0.05); color: #fff;
+      transition: all 0.3s ease; flex-shrink: 0;
+    }
+    .sidebar textarea::placeholder { color: rgba(255, 255, 255, 0.3); }
+    .sidebar textarea:focus { border-color: #4facfe; outline: none; background: rgba(255, 255, 255, 0.1); }
+    .settings-group { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+    .slider-container { display: flex; align-items: center; gap: 12px; }
+    .slider-container input[type="range"] {
+      flex: 1; height: 6px; -webkit-appearance: none; appearance: none;
+      background: rgba(255, 255, 255, 0.1); border-radius: 3px; outline: none;
+    }
+    .slider-container input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none; width: 20px; height: 20px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(79, 172, 254, 0.4);
+    }
+    .slider-container input[type="range"]::-moz-range-thumb {
+      width: 20px; height: 20px; border: none;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border-radius: 50%; cursor: pointer;
+    }
+    .slider-value {
+      min-width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+      background: rgba(255, 255, 255, 0.1); border-radius: 10px;
+      color: #4facfe; font-weight: 700; font-size: 1.1rem;
+    }
+    .btn-group { display: flex; gap: 10px; flex-shrink: 0; }
+    .btn { flex: 1; padding: 14px 20px; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+    .btn-start { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #1a1a2e; }
+    .btn-start:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4); }
+    .btn-start:disabled { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.3); cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-reset { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); flex: 0 0 54px; }
+    .btn-reset:hover { background: rgba(255, 255, 255, 0.2); }
+    .ranking-board { flex: 1; background: rgba(0, 0, 0, 0.2); border-radius: 16px; padding: 12px; overflow-y: auto; min-height: 0; }
+    .ranking-board h3 { font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .ranking-list { display: flex; flex-direction: column; gap: 4px; }
+    .ranking-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; font-size: 0.85rem; color: #fff; }
+    .ranking-item.winner { background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 179, 71, 0.3) 100%); border: 1px solid rgba(255, 215, 0, 0.5); }
+    .ranking-item.eliminated { background: rgba(255, 107, 107, 0.1); color: rgba(255, 255, 255, 0.4); text-decoration: line-through; }
+    .ranking-item.alive { background: rgba(78, 205, 196, 0.15); border-left: 3px solid #4ecdc4; }
+    .rank-badge { width: 22px; height: 22px; border-radius: 6px; background: rgba(255, 255, 255, 0.1); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; }
+    .ranking-item.winner .rank-badge { background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%); color: #1a1a2e; }
+    .ranking-item.eliminated .rank-badge { background: rgba(255, 107, 107, 0.3); }
+    .sidebar-footer { display: flex; justify-content: center; gap: 12px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; }
+    .icon-btn { width: 44px; height: 44px; border: none; border-radius: 12px; background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.6); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; text-decoration: none; position: relative; }
+    .icon-btn:hover { background: rgba(79, 172, 254, 0.3); color: #4facfe; transform: translateY(-2px); }
+    .icon-btn[data-tooltip]:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; white-space: nowrap; margin-bottom: 8px; }
+    .game-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+    .classroom { flex: 1; border-radius: 24px; position: relative; overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); }
+    .sky { position: absolute; top: 0; left: 0; right: 0; height: 30%; background: linear-gradient(180deg, #87CEEB 0%, #a8d8ea 100%); }
+    .platform { position: absolute; top: 30%; left: 0; right: 0; height: 12%; background: linear-gradient(180deg, #98D8C8 0%, #7fc8b8 100%); }
+    .floor { position: absolute; top: 42%; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, #C4A484 0%, #B8956E 100%); }
+    
+    .blackboard { position: absolute; top: 2%; left: 50%; transform: translateX(-50%); width: min(500px, 70%); height: 22%; background: linear-gradient(180deg, #2d5016 0%, #1e3a0f 100%); border: clamp(8px, 1.5vw, 12px) solid #8B4513; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.3); z-index: 10; padding: 10px; }
+    .blackboard::before { content: ''; position: absolute; bottom: -12%; left: 50%; transform: translateX(-50%); width: 25%; height: 8%; background: #8B4513; border-radius: 3px; }
+    .blackboard-text { color: #fff; font-size: clamp(1.5rem, 4vw, 3.5rem); font-weight: 900; text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5); text-align: center; line-height: 1.2; }
+    .blackboard-text.small { font-size: clamp(1rem, 2.5vw, 1.8rem); }
+    .blackboard-text.shout { color: #ffeb3b; animation: shout-pulse 0.4s ease; }
+    @keyframes shout-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    
+    .teacher-area { position: absolute; top: 26%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 5; transition: opacity 0.5s ease; }
+    .teacher-area.hidden { opacity: 0; pointer-events: none; }
+    .teacher { width: clamp(50px, 8vw, 70px); height: clamp(65px, 10vw, 90px); position: relative; display: flex; flex-direction: column; align-items: center; }
+    .teacher-head { font-size: clamp(28px, 5vw, 40px); z-index: 2; line-height: 1; }
+    .teacher-body { width: 70%; height: 50%; background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%); border-radius: 10px 10px 15px 15px; position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; }
+    .teacher-rps { font-size: clamp(24px, 4vw, 40px); filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); animation: bounce 0.3s ease; }
+    @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+    
+    .students-area { position: absolute; top: 44%; left: 2%; right: 2%; bottom: 2%; display: grid; justify-items: center; align-items: start; overflow: hidden; }
+    .student { display: flex; flex-direction: column; align-items: center; transition: all 0.5s ease; }
+    .student.eliminated { opacity: 0.4; filter: grayscale(100%); }
+    .student-desk { position: relative; display: flex; flex-direction: column; align-items: center; }
+    .student-name { font-size: var(--name-size, 0.7rem); color: #fff; background: rgba(0, 0, 0, 0.6); padding: 2px 6px; border-radius: 4px; white-space: nowrap; max-width: var(--name-width, 70px); overflow: hidden; text-overflow: ellipsis; font-weight: 600; z-index: 200; margin-bottom: 2px; }
+    .student-head { font-size: var(--head-size, 24px); line-height: 1; z-index: 1; position: relative; }
+    .student-body { position: relative; z-index: 10; }
+    .student-torso { width: var(--torso-width, 30px); height: var(--torso-height, 22px); background: var(--student-color, #4a90d9); border-radius: 6px 6px 0 0; display: flex; align-items: center; justify-content: center; }
+    .student-rps { font-size: var(--rps-size, 20px); filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.4)); animation: bounce 0.3s ease; position: relative; z-index: 100; }
+    .desk { width: var(--desk-width, 50px); height: var(--desk-height, 25px); background: linear-gradient(180deg, #DEB887 0%, #C4954B 100%); border-radius: 4px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); }
+    .round-indicator { position: absolute; top: 2%; right: 2%; background: rgba(0, 0, 0, 0.6); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; z-index: 50; backdrop-filter: blur(10px); }
+    .winner-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 200; animation: fade-in 0.3s ease; }
+    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+    .winner-display { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 40px 60px; border-radius: 24px; text-align: center; box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); animation: winner-pop 0.5s ease; max-width: 90%; }
+    .winner-display h2 { font-size: 1.8rem; color: #fff; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .winner-display h2 .trophy { font-size: 2.5rem; }
+    .winner-list { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 30px; }
+    .winner-name { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 12px 28px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; color: #1a1a2e; box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3); }
+    .winner-confirm-btn { background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); padding: 14px 50px; border-radius: 14px; font-size: 1rem; font-weight: 700; color: #fff; cursor: pointer; transition: all 0.3s ease; }
+    .winner-confirm-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: rgba(255, 255, 255, 0.4); transform: translateY(-2px); }
+    @keyframes winner-pop { 0% { transform: scale(0.8); opacity: 0; } 70% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+    .confetti { position: absolute; width: 10px; height: 10px; pointer-events: none; z-index: 300; }
+    @media (max-width: 900px) { 
+      body { flex-direction: column; padding: 10px; gap: 10px; } 
+      .sidebar { width: 100%; min-width: 100%; max-width: 100%; max-height: 40vh; padding: 16px; } 
+      .sidebar textarea { height: 50px; } 
+      .ranking-board { min-height: 60px; } 
+      .game-area { flex: 1; min-height: 50vh; }
+    }
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); color: white; padding: 14px 28px; border-radius: 12px; z-index: 1000; animation: toast-in 0.3s ease; backdrop-filter: blur(10px); }
+    @keyframes toast-in { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    .empty-state { color: rgba(255, 255, 255, 0.4); font-size: 0.85rem; text-align: center; padding: 20px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>✊ 단체 가위바위보</h2>
+    <div class="settings-group">
+      <label for="participants">참여자 (콤마로 구분)</label>
+      <textarea id="participants" placeholder="예: 철수, 영희, 민수, 지영, 현우">철수, 영희, 민수, 지영, 현우, 서연, 도윤, 하은, 시우, 지아, 준서, 수빈</textarea>
+    </div>
+    <div class="settings-group">
+      <label>🏆 최종 생존자 수</label>
+      <div class="slider-container">
+        <input type="range" id="winnerCount" min="1" max="10" value="1">
+        <div class="slider-value" id="winnerValue">1</div>
+      </div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-start" id="startBtn">🎮 시작</button>
+      <button class="btn btn-reset" id="resetBtn">↺</button>
+    </div>
+    <div class="ranking-board">
+      <h3>📊 실시간 현황</h3>
+      <div class="ranking-list" id="rankingList">
+        <div class="empty-state">참여자를 입력하고<br>게임을 시작하세요!</div>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      </button>
+      <a href="https://github.com/geniuskey/rps-lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+      </a>
+      <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
+      </a>
+    </div>
+  </aside>
+  <main class="game-area">
+    <div class="classroom" id="classroom">
+      <div class="sky"></div>
+      <div class="platform"></div>
+      <div class="floor"></div>
+      
+      <div class="blackboard">
+        <div class="blackboard-text" id="blackboardText">가위바위보!</div>
+      </div>
+      <div class="teacher-area" id="teacherArea">
+        <div class="teacher">
+          <div class="teacher-head" id="teacherHead">🤓</div>
+          <div class="teacher-body" id="teacherBody"></div>
+        </div>
+      </div>
+      <div class="students-area" id="studentsArea"></div>
+      <div class="round-indicator" id="roundIndicator" style="display: none;">라운드 <span id="roundNumber">1</span></div>
+    </div>
+  </main>
+  <script>
+    // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
+    const RPS = ['✊', '✌️', '🖐️'];
+    const HAPPY_EMOJIS = ['😊', '😄', '😁', '🙂', '😎', '🤗', '😋', '🥳', '😃', '🤩'];
+    const SAD_EMOJIS = ['😢', '😭', '😿', '🥺', '😞', '😔'];
+    const COLORS = ['#4facfe', '#f093fb', '#4ecdc4', '#ffeaa7', '#fd79a8', '#74b9ff', '#a29bfe', '#55efc4', '#fab1a0', '#81ecec', '#ff7675', '#fdcb6e', '#e17055', '#00b894', '#6c5ce7'];
+    
+    let participants = [], alivePlayers = [], eliminatedPlayers = [], winners = [], gameRunning = false, gameStopped = false, currentRound = 0, pvpMode = false;
+    let renderTimeout = null;
+    const speeds = { shout: 500, show: 1000, result: 1200 };
+    const $ = id => document.getElementById(id);
+    const participantsInput = $('participants'), winnerCountInput = $('winnerCount'), winnerValue = $('winnerValue');
+    const startBtn = $('startBtn'), resetBtn = $('resetBtn'), rankingList = $('rankingList');
+    const studentsArea = $('studentsArea'), teacherArea = $('teacherArea'), blackboardText = $('blackboardText');
+    const roundIndicator = $('roundIndicator'), roundNumber = $('roundNumber'), classroom = $('classroom'), copyResultBtn = $('copyResultBtn');
+    const teacherHead = $('teacherHead'), teacherBody = $('teacherBody');
+
+    winnerCountInput.addEventListener('input', () => { winnerValue.textContent = winnerCountInput.value; });
+
+    function init() { renderStudents(); updateRanking(); }
+    function parseParticipants() { 
+      const t = participantsInput.value.trim(); 
+      if (!t) return [];
+      return t.split(',').map(n => n.trim()).filter(n => n.length > 0);
+    }
+    function randomHappyEmoji() { return HAPPY_EMOJIS[Math.floor(Math.random() * HAPPY_EMOJIS.length)]; }
+    function randomSadEmoji() { return SAD_EMOJIS[Math.floor(Math.random() * SAD_EMOJIS.length)]; }
+
+    function calculateOptimalGrid(count, areaWidth, areaHeight) {
+      let bestCols = 1, bestRows = count, bestCellSize = 0;
+      
+      for (let cols = 1; cols <= count; cols++) {
+        const rows = Math.ceil(count / cols);
+        const cellWidth = areaWidth / cols;
+        const cellHeight = areaHeight / rows;
+        const maxSizeByWidth = cellWidth * 0.8;
+        const maxSizeByHeight = cellHeight / 2.0;
+        const cellSize = Math.min(maxSizeByWidth, maxSizeByHeight);
+        
+        if (cellSize > bestCellSize) {
+          bestCellSize = cellSize;
+          bestCols = cols;
+          bestRows = rows;
+        }
+      }
+      
+      return { cols: bestCols, rows: bestRows, cellSize: Math.min(55, Math.max(18, bestCellSize)) };
+    }
+
+    function renderStudents() {
+      if (renderTimeout) {
+        clearTimeout(renderTimeout);
+        renderTimeout = null;
+      }
+      
+      studentsArea.innerHTML = '';
+      
+      participants = parseParticipants();
+      alivePlayers = [...participants];
+      eliminatedPlayers = []; 
+      winners = []; 
+      currentRound = 0; 
+      pvpMode = false;
+      teacherArea.classList.remove('hidden');
+      teacherHead.textContent = '🤓';
+      teacherBody.innerHTML = '';
+      
+      if (participants.length === 0) {
+        updateRanking();
+        return;
+      }
+      
+      renderTimeout = setTimeout(() => {
+        const area = studentsArea.getBoundingClientRect();
+        const areaWidth = area.width - 20;
+        const areaHeight = area.height - 20;
+        
+        if (areaWidth <= 0 || areaHeight <= 0) return;
+        
+        const grid = calculateOptimalGrid(participants.length, areaWidth, areaHeight);
+        const baseSize = grid.cellSize;
+        
+        studentsArea.style.gridTemplateColumns = `repeat(${grid.cols}, 1fr)`;
+        studentsArea.style.gridTemplateRows = `repeat(${grid.rows}, 1fr)`;
+        studentsArea.style.padding = '10px';
+        studentsArea.style.alignItems = 'center';
+        
+        const s = {
+          deskWidth: baseSize,
+          deskHeight: baseSize * 0.4,
+          torsoWidth: baseSize * 0.6,
+          torsoHeight: baseSize * 0.45,
+          headSize: baseSize * 0.6,
+          rpsSize: baseSize * 0.9,
+          nameSize: '0.85rem',
+          nameWidth: baseSize + 15
+        };
+
+        const fragment = document.createDocumentFragment();
+        
+        participants.forEach((name, i) => {
+          const el = document.createElement('div');
+          el.className = 'student';
+          el.id = `student-${i}`;
+          el.style.setProperty('--desk-width', s.deskWidth + 'px');
+          el.style.setProperty('--desk-height', s.deskHeight + 'px');
+          el.style.setProperty('--torso-width', s.torsoWidth + 'px');
+          el.style.setProperty('--torso-height', s.torsoHeight + 'px');
+          el.style.setProperty('--head-size', s.headSize + 'px');
+          el.style.setProperty('--rps-size', s.rpsSize + 'px');
+          el.style.setProperty('--name-size', s.nameSize);
+          el.style.setProperty('--name-width', s.nameWidth + 'px');
+          el.style.setProperty('--student-color', COLORS[i % COLORS.length]);
+          
+          const emoji = randomHappyEmoji();
+          el.innerHTML = `<div class="student-desk">
+            <div class="student-name">${name}</div>
+            <div class="student-head">${emoji}</div>
+            <div class="student-body"><div class="student-torso"></div></div>
+            <div class="desk"></div>
+          </div>`;
+          fragment.appendChild(el);
+        });
+        
+        studentsArea.appendChild(fragment);
+        updateRanking();
+      }, 50);
+    }
+
+    function updateRanking() {
+      if (participants.length === 0) { 
+        rankingList.innerHTML = '<div class="empty-state">참여자를 입력하고<br>게임을 시작하세요!</div>'; 
+        return; 
+      }
+      let h = '';
+      winners.forEach(n => { h += `<div class="ranking-item winner"><span class="rank-badge">🏆</span><span>${n}</span></div>`; });
+      alivePlayers.forEach(n => { if (!winners.includes(n)) h += `<div class="ranking-item alive"><span class="rank-badge">✓</span><span>${n}</span></div>`; });
+      [...eliminatedPlayers].reverse().forEach(n => { h += `<div class="ranking-item eliminated"><span class="rank-badge">✗</span><span>${n}</span></div>`; });
+      rankingList.innerHTML = h;
+    }
+
+    function setBlackboardText(text, small = false) {
+      blackboardText.textContent = text;
+      blackboardText.classList.toggle('small', small);
+    }
+
+    function showShout(t) { setBlackboardText(t); blackboardText.classList.add('shout'); setTimeout(() => blackboardText.classList.remove('shout'), 400); }
+    
+    function showTeacherRPS(i) {
+      teacherBody.innerHTML = `<div class="teacher-rps">${RPS[i]}</div>`;
+    }
+    
+    function clearTeacherRPS() {
+      teacherBody.innerHTML = '';
+    }
+    
+    function showStudentRPS(si, ri) {
+      const s = $(`student-${si}`); if (!s) return;
+      const torso = s.querySelector('.student-torso');
+      if (torso) {
+        torso.innerHTML = `<div class="student-rps">${RPS[ri]}</div>`;
+      }
+    }
+    
+    function clearAllRPS() { 
+      clearTeacherRPS();
+      document.querySelectorAll('.student-torso').forEach(t => t.innerHTML = '');
+    }
+    
+    function setStudentSad(i) {
+      const s = $(`student-${i}`); if (!s) return;
+      s.classList.add('eliminated');
+      const head = s.querySelector('.student-head');
+      if (head) head.textContent = randomSadEmoji();
+    }
+
+    function checkRPS(p, t) {
+      if (p === t) return 'draw';
+      if ((p === 0 && t === 1) || (p === 1 && t === 2) || (p === 2 && t === 0)) return 'win';
+      return 'lose';
+    }
+
+    function sleep(ms) { 
+      return new Promise(r => {
+        const check = () => {
+          if (gameStopped) {
+            r();
+          } else {
+            setTimeout(r, ms);
+          }
+        };
+        check();
+      });
+    }
+
+    async function playTeacherRound() {
+      if (gameStopped) return 'stopped';
+      
+      const wc = parseInt(winnerCountInput.value);
+      currentRound++; roundNumber.textContent = currentRound;
+      
+      for (const t of ['가위!', '바위!', '보!']) { 
+        if (gameStopped) return 'stopped';
+        showShout(t); 
+        await sleep(speeds.shout); 
+      }
+      
+      if (gameStopped) return 'stopped';
+      
+      const tc = Math.floor(Math.random() * 3);
+      showTeacherRPS(tc);
+      setBlackboardText(RPS[tc]);
+      
+      const pc = {}, ai = participants.map((n, i) => alivePlayers.includes(n) ? i : -1).filter(i => i !== -1);
+      ai.forEach(i => { const c = Math.floor(Math.random() * 3); pc[i] = c; showStudentRPS(i, c); });
+      
+      await sleep(speeds.show);
+      if (gameStopped) return 'stopped';
+      
+      const losers = [];
+      ai.forEach(i => { if (checkRPS(pc[i], tc) === 'lose') losers.push(i); });
+      
+      const rem = alivePlayers.length - losers.length;
+      if (rem < wc && losers.length > 0) {
+        setBlackboardText('무효! 다시!');
+        await sleep(speeds.result);
+        clearAllRPS();
+        return 'continue';
+      }
+      
+      losers.forEach(i => {
+        const n = participants[i];
+        alivePlayers = alivePlayers.filter(x => x !== n);
+        eliminatedPlayers.push(n);
+        setStudentSad(i);
+      });
+      updateRanking();
+      
+      if (losers.length === 0) setBlackboardText('무승부!');
+      else if (losers.length === 1) setBlackboardText(`${participants[losers[0]]} 탈락!`);
+      else setBlackboardText(`${losers.length}명 탈락!`);
+      
+      await sleep(speeds.result);
+      if (gameStopped) return 'stopped';
+      clearAllRPS();
+      
+      if (alivePlayers.length <= wc) { winners = [...alivePlayers]; return 'end'; }
+      if (alivePlayers.length <= wc + 2) return 'pvp';
+      return 'continue';
+    }
+
+    async function playPvPRound() {
+      if (gameStopped) return 'stopped';
+      
+      const wc = parseInt(winnerCountInput.value);
+      currentRound++; roundNumber.textContent = currentRound;
+      
+      for (const t of ['가위!', '바위!', '보!']) { 
+        if (gameStopped) return 'stopped';
+        showShout(t); 
+        await sleep(speeds.shout); 
+      }
+      
+      if (gameStopped) return 'stopped';
+      
+      const ai = participants.map((n, i) => alivePlayers.includes(n) ? i : -1).filter(i => i !== -1);
+      const pc = {};
+      ai.forEach(i => { const c = Math.floor(Math.random() * 3); pc[i] = c; showStudentRPS(i, c); });
+      
+      await sleep(speeds.show);
+      if (gameStopped) return 'stopped';
+      
+      const counts = [0, 0, 0];
+      ai.forEach(i => counts[pc[i]]++);
+      
+      let winningChoice = -1;
+      const hasRock = counts[0] > 0, hasScissors = counts[1] > 0, hasPaper = counts[2] > 0;
+      
+      if ((hasRock && hasScissors && hasPaper) || 
+          (hasRock && !hasScissors && !hasPaper) ||
+          (!hasRock && hasScissors && !hasPaper) ||
+          (!hasRock && !hasScissors && hasPaper)) {
+        setBlackboardText('무승부!');
+        await sleep(speeds.result);
+        clearAllRPS();
+        return 'continue';
+      }
+      
+      if (hasRock && hasScissors) winningChoice = 0;
+      else if (hasScissors && hasPaper) winningChoice = 1;
+      else if (hasPaper && hasRock) winningChoice = 2;
+      
+      const roundWinners = ai.filter(i => pc[i] === winningChoice);
+      const roundLosers = ai.filter(i => pc[i] !== winningChoice);
+      
+      const spotsLeft = wc - winners.length;
+      
+      if (roundWinners.length <= spotsLeft) {
+        roundWinners.forEach(i => {
+          const n = participants[i];
+          if (!winners.includes(n)) {
+            winners.push(n);
+            alivePlayers = alivePlayers.filter(x => x !== n);
+          }
+        });
+        roundLosers.forEach(i => {
+          const n = participants[i];
+          alivePlayers = alivePlayers.filter(x => x !== n);
+          if (!eliminatedPlayers.includes(n) && !winners.includes(n)) {
+            eliminatedPlayers.push(n);
+            setStudentSad(i);
+          }
+        });
+        updateRanking();
+        
+        if (roundWinners.length === 1) setBlackboardText(`${participants[roundWinners[0]]} 생존 확정!`);
+        else setBlackboardText(`${roundWinners.length}명 생존 확정!`);
+        
+        await sleep(speeds.result);
+        if (gameStopped) return 'stopped';
+        clearAllRPS();
+        
+        if (winners.length >= wc || alivePlayers.length === 0) return 'end';
+        return 'continue';
+      } else {
+        roundLosers.forEach(i => {
+          const n = participants[i];
+          alivePlayers = alivePlayers.filter(x => x !== n);
+          eliminatedPlayers.push(n);
+          setStudentSad(i);
+        });
+        updateRanking();
+        
+        if (roundLosers.length === 1) setBlackboardText(`${participants[roundLosers[0]]} 탈락!`);
+        else if (roundLosers.length > 1) setBlackboardText(`${roundLosers.length}명 탈락!`);
+        
+        await sleep(speeds.result);
+        if (gameStopped) return 'stopped';
+        clearAllRPS();
+        
+        if (alivePlayers.length <= wc - winners.length) {
+          alivePlayers.forEach(n => { if (!winners.includes(n)) winners.push(n); });
+          alivePlayers = [];
+          updateRanking();
+          return 'end';
+        }
+        return 'continue';
+      }
+    }
+
+    function showWinnerDisplay() {
+      const o = document.createElement('div'); o.className = 'winner-overlay'; o.id = 'winnerOverlay';
+      o.innerHTML = `<div class="winner-display"><h2><span class="trophy">🏆</span> 최종 생존자 <span class="trophy">🏆</span></h2><div class="winner-list">${winners.map(n => `<div class="winner-name">${n}</div>`).join('')}</div><button class="winner-confirm-btn" id="winnerConfirmBtn">확인</button></div>`;
+      classroom.appendChild(o); createConfetti(); setBlackboardText('축하합니다!');
+      $('winnerConfirmBtn').addEventListener('click', closeWinnerDisplay);
+    }
+
+    function closeWinnerDisplay() { const o = $('winnerOverlay'); if (o) o.remove(); }
+
+    function createConfetti() {
+      const colors = ['#4facfe', '#00f2fe', '#f093fb', '#ffeaa7', '#fd79a8', '#55efc4'], cr = classroom.getBoundingClientRect();
+      for (let i = 0; i < 80; i++) {
+        setTimeout(() => {
+          if (gameStopped) return;
+          const c = document.createElement('div'); c.className = 'confetti';
+          c.style.left = Math.random() * 100 + '%'; c.style.top = '0';
+          c.style.background = colors[Math.floor(Math.random() * colors.length)];
+          c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+          c.style.width = (Math.random() * 8 + 4) + 'px'; c.style.height = (Math.random() * 8 + 4) + 'px';
+          classroom.appendChild(c);
+          const dur = Math.random() * 2000 + 2000, endX = (Math.random() - 0.5) * 150;
+          c.animate([{ transform: 'translateY(0) rotate(0deg)', opacity: 1 }, { transform: `translateY(${cr.height}px) translateX(${endX}px) rotate(720deg)`, opacity: 0 }], { duration: dur, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }).onfinish = () => c.remove();
+        }, i * 25);
+      }
+    }
+
+    async function startGame() {
+      if (gameRunning) return;
+      closeWinnerDisplay();
+      document.querySelectorAll('.confetti').forEach(e => e.remove());
+      
+      participants = parseParticipants();
+      const wc = parseInt(winnerCountInput.value);
+      
+      if (participants.length < 2) { showToast('최소 2명의 참여자가 필요합니다!'); return; }
+      if (wc >= participants.length) { showToast('생존자 수는 참여자 수보다 적어야 합니다!'); return; }
+      
+      gameRunning = true;
+      gameStopped = false;
+      startBtn.disabled = true;
+      roundIndicator.style.display = 'block';
+      pvpMode = false;
+      
+      renderStudents();
+      await sleep(150);
+      
+      let result = 'continue';
+      
+      while (result === 'continue' && !gameStopped) {
+        result = await playTeacherRound();
+      }
+      
+      if (result === 'pvp' && !gameStopped) {
+        teacherArea.classList.add('hidden');
+        setBlackboardText('이제부터 참여자끼리 대결!', true);
+        await sleep(2000);
+        
+        result = 'continue';
+        while (result === 'continue' && !gameStopped) {
+          result = await playPvPRound();
+        }
+      }
+      
+      if (result === 'end' && !gameStopped) showWinnerDisplay();
+      
+      gameRunning = false;
+      startBtn.disabled = false;
+    }
+
+    function resetGame() {
+      // Immediately stop the game
+      gameStopped = true;
+      gameRunning = false;
+      currentRound = 0; 
+      winners = []; 
+      eliminatedPlayers = []; 
+      pvpMode = false;
+      
+      closeWinnerDisplay();
+      document.querySelectorAll('.confetti').forEach(e => e.remove());
+      roundIndicator.style.display = 'none';
+      setBlackboardText('가위바위보!');
+      teacherArea.classList.remove('hidden');
+      teacherHead.textContent = '🤓';
+      clearAllRPS();
+      renderStudents();
+      startBtn.disabled = false;
+    }
+
+    function copyResults() {
+      if (winners.length === 0 && eliminatedPlayers.length === 0) { showToast('아직 게임 결과가 없습니다!'); return; }
+      let r = '✊ 단체 가위바위보 결과\n━━━━━━━━━━━━━━━\n';
+      if (winners.length > 0) r += `🏆 최종 생존자: ${winners.join(', ')}\n`;
+      r += `📊 총 ${currentRound}라운드 진행\n👥 참여자: ${participants.length}명\n`;
+      if (eliminatedPlayers.length > 0) r += `❌ 탈락: ${eliminatedPlayers.join(', ')}\n`;
+      navigator.clipboard.writeText(r).then(() => showToast('결과가 복사되었습니다!')).catch(() => showToast('복사에 실패했습니다.'));
+    }
+
+    function showToast(m) { const e = document.querySelector('.toast'); if (e) e.remove(); const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 2500); }
+
+    let inputTimeout = null;
+    participantsInput.addEventListener('input', () => {
+      if (gameRunning) return;
+      if (inputTimeout) clearTimeout(inputTimeout);
+      inputTimeout = setTimeout(() => {
+        renderStudents();
+      }, 300);
+    });
+
+    startBtn.addEventListener('click', startGame);
+    resetBtn.addEventListener('click', resetGame);
+    copyResultBtn.addEventListener('click', copyResults);
+    window.addEventListener('resize', () => { if (!gameRunning) renderStudents(); });
+    init();
+  </script>
+</body>
+</html>
