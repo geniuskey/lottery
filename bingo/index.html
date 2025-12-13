@@ -526,6 +526,7 @@
       align-content: flex-start;
       overflow-y: auto;
       padding: 10px;
+      position: relative;
     }
 
     .boards-container::-webkit-scrollbar {
@@ -546,7 +547,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: all 0.3s ease;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                  border-color 0.3s ease, 
+                  box-shadow 0.3s ease;
+      will-change: transform;
     }
 
     .bingo-board.winner {
@@ -943,6 +947,7 @@
         this.maxWinners = 3;
         this.callInterval = null;
         this.lastCalledNumber = null;
+        this.previousRankings = {};
 
         this.initElements();
         this.bindEvents();
@@ -1171,7 +1176,22 @@
 
       renderGame() {
         const cellSize = this.calculateBoardSize(this.participants.length);
+        const rankings = this.getSortedRankings();
         
+        // FLIP Animation: First - 기존 위치 저장
+        const boardsContainer = this.gameArea.querySelector('.boards-container');
+        const oldPositions = {};
+        
+        if (boardsContainer) {
+          const existingBoards = boardsContainer.querySelectorAll('.bingo-board');
+          existingBoards.forEach(board => {
+            const name = board.dataset.name;
+            const rect = board.getBoundingClientRect();
+            oldPositions[name] = { x: rect.left, y: rect.top };
+          });
+        }
+
+        // Render new HTML
         let html = `
           <div class="number-display">
             <div class="current-number" id="currentNumber">
@@ -1184,7 +1204,8 @@
           <div class="boards-container">
         `;
 
-        this.participants.forEach(name => {
+        rankings.forEach((p, index) => {
+          const name = p.name;
           const board = this.boards[name];
           const isWinner = this.winners.includes(name);
           const winnerRank = this.winners.indexOf(name) + 1;
@@ -1206,7 +1227,7 @@
           }
 
           html += `
-            <div class="bingo-board ${isWinner ? 'winner' : ''}" style="--cell-size: ${cellSize}px">
+            <div class="bingo-board ${isWinner ? 'winner' : ''}" data-name="${name}" style="--cell-size: ${cellSize}px">
               <div class="board-header">
                 <div class="player-name">${name}</div>
                 <div class="player-status ${statusClass}">${statusText}</div>
@@ -1232,9 +1253,46 @@
 
         html += '</div>';
         this.gameArea.innerHTML = html;
+
+        // FLIP Animation: Last, Invert, Play
+        if (Object.keys(oldPositions).length > 0) {
+          const newBoardsContainer = this.gameArea.querySelector('.boards-container');
+          const newBoards = newBoardsContainer.querySelectorAll('.bingo-board');
+          
+          newBoards.forEach(board => {
+            const name = board.dataset.name;
+            const oldPos = oldPositions[name];
+            
+            if (oldPos) {
+              const newRect = board.getBoundingClientRect();
+              const deltaX = oldPos.x - newRect.left;
+              const deltaY = oldPos.y - newRect.top;
+              
+              // Only animate if position actually changed
+              if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) {
+                // Invert: 새 위치에서 이전 위치로 이동
+                board.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                board.style.transition = 'none';
+                
+                // Play: 원래 위치로 애니메이션
+                requestAnimationFrame(() => {
+                  requestAnimationFrame(() => {
+                    board.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                    board.style.transform = 'translate(0, 0)';
+                  });
+                });
+              }
+            }
+          });
+        }
+        
+        // Update previous rankings for next comparison
+        rankings.forEach((p, index) => {
+          this.previousRankings[p.name] = index;
+        });
       }
 
-      updateRankings() {
+      getSortedRankings() {
         const rankings = this.participants.map(name => ({
           name,
           lines: this.boards[name].lines,
@@ -1251,6 +1309,12 @@
           if (b.lines !== a.lines) return b.lines - a.lines;
           return b.checkedCount - a.checkedCount;
         });
+
+        return rankings;
+      }
+
+      updateRankings() {
+        const rankings = this.getSortedRankings();
 
         let html = '';
         rankings.forEach((p, index) => {
@@ -1323,6 +1387,7 @@
         this.winners = [];
         this.calledNumbers = [];
         this.boards = {};
+        this.previousRankings = {};
         this.startBtn.disabled = false;
         
         this.gameArea.innerHTML = `
