@@ -228,20 +228,38 @@
       color: var(--text-secondary);
     }
 
-    .settings-group {
+    .settings-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--border-glow);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .settings-card .section-title {
+      margin-bottom: 12px;
+    }
+
+    .settings-card-content {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
     }
 
     .setting-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: var(--glass-bg);
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .setting-item:first-child {
+      padding-top: 0;
     }
 
     .setting-item label {
@@ -262,6 +280,55 @@
     .setting-item select:focus {
       outline: none;
       border-color: var(--accent-primary);
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+      cursor: pointer;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--glass-bg);
+      border: 1px solid var(--border-glow);
+      border-radius: 26px;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: var(--text-secondary);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: linear-gradient(135deg, var(--accent-primary), #00c4a7);
+      border-color: var(--accent-primary);
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(22px);
+      background: var(--bg-dark);
     }
 
     .btn-group {
@@ -820,26 +887,35 @@
       <textarea class="participants-input" id="participantsInput" placeholder="콤마로 구분하여 입력&#10;예: 철수, 영희, 민수, 지연, 현우">철수, 영희, 민수, 지연, 현우, 서연, 준호, 은지</textarea>
     </section>
 
-    <section class="settings-group">
+    <section class="settings-card">
       <div class="section-title">⚙️ 게임 설정</div>
-      <div class="setting-item">
-        <label>🏆 우승자 수</label>
-        <select id="winnerCount">
-          <option value="1" selected>1명</option>
-          <option value="2">2명</option>
-          <option value="3">3명</option>
-          <option value="4">4명</option>
-          <option value="5">5명</option>
-        </select>
-      </div>
-      <div class="setting-item">
-        <label>📏 빙고 줄수</label>
-        <select id="bingoLines">
-          <option value="1">1줄</option>
-          <option value="2">2줄</option>
-          <option value="3" selected>3줄</option>
-          <option value="4">4줄</option>
-        </select>
+      <div class="settings-card-content">
+        <div class="setting-item">
+          <label>🏆 우승자 수</label>
+          <select id="winnerCount">
+            <option value="1" selected>1명</option>
+            <option value="2">2명</option>
+            <option value="3">3명</option>
+            <option value="4">4명</option>
+            <option value="5">5명</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>📏 빙고 줄수</label>
+          <select id="bingoLines">
+            <option value="1">1줄</option>
+            <option value="2">2줄</option>
+            <option value="3" selected>3줄</option>
+            <option value="4">4줄</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>🔀 카드 순위정렬</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="dynamicSortToggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
     </section>
 
@@ -858,6 +934,9 @@
     </section>
 
     <div class="sidebar-footer">
+      <a href="https://geniuskey.github.io/lottery/" class="icon-btn" data-tooltip="추첨 포탈 홈">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
       <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
       </button>
@@ -948,6 +1027,8 @@
         this.callInterval = null;
         this.lastCalledNumber = null;
         this.previousRankings = {};
+        this.dynamicSort = true;
+        this.initialOrder = [];
 
         this.initElements();
         this.bindEvents();
@@ -958,6 +1039,7 @@
         this.participantsInput = document.getElementById('participantsInput');
         this.winnerCountSelect = document.getElementById('winnerCount');
         this.bingoLinesSelect = document.getElementById('bingoLines');
+        this.dynamicSortToggle = document.getElementById('dynamicSortToggle');
         this.startBtn = document.getElementById('startBtn');
         this.resetBtn = document.getElementById('resetBtn');
         this.rankingsList = document.getElementById('rankingsList');
@@ -986,18 +1068,30 @@
         
         this.winnerCountSelect.addEventListener('change', () => this.saveSettings());
         this.bingoLinesSelect.addEventListener('change', () => this.saveSettings());
+        this.dynamicSortToggle.addEventListener('change', () => {
+          this.dynamicSort = this.dynamicSortToggle.checked;
+          this.saveSettings();
+          if (this.isRunning) {
+            this.renderGame();
+          }
+        });
       }
 
       loadSettings() {
         const settings = JSON.parse(localStorage.getItem('bingoSettings') || '{}');
         if (settings.winnerCount) this.winnerCountSelect.value = settings.winnerCount;
         if (settings.bingoLines) this.bingoLinesSelect.value = settings.bingoLines;
+        if (settings.dynamicSort !== undefined) {
+          this.dynamicSort = settings.dynamicSort;
+          this.dynamicSortToggle.checked = settings.dynamicSort;
+        }
       }
 
       saveSettings() {
         const settings = {
           winnerCount: this.winnerCountSelect.value,
-          bingoLines: this.bingoLinesSelect.value
+          bingoLines: this.bingoLinesSelect.value,
+          dynamicSort: this.dynamicSortToggle.checked
         };
         localStorage.setItem('bingoSettings', JSON.stringify(settings));
       }
@@ -1064,11 +1158,14 @@
 
         this.maxWinners = parseInt(this.winnerCountSelect.value);
         this.requiredLines = parseInt(this.bingoLinesSelect.value);
+        this.dynamicSort = this.dynamicSortToggle.checked;
         
         this.isRunning = true;
         this.winners = [];
         this.calledNumbers = [];
         this.boards = {};
+        this.previousRankings = {};
+        this.initialOrder = [...this.participants];
         
         // Generate available numbers
         this.availableNumbers = [];
@@ -1176,13 +1273,23 @@
 
       renderGame() {
         const cellSize = this.calculateBoardSize(this.participants.length);
-        const rankings = this.getSortedRankings();
+        
+        // dynamicSort가 켜져있으면 랭킹순, 아니면 초기 순서 유지
+        const displayOrder = this.dynamicSort 
+          ? this.getSortedRankings() 
+          : this.initialOrder.map(name => ({
+              name,
+              lines: this.boards[name]?.lines || 0,
+              checkedCount: this.boards[name]?.checkedCount || 0,
+              isWinner: this.winners.includes(name),
+              winnerRank: this.winners.indexOf(name) + 1
+            }));
         
         // FLIP Animation: First - 기존 위치 저장
         const boardsContainer = this.gameArea.querySelector('.boards-container');
         const oldPositions = {};
         
-        if (boardsContainer) {
+        if (boardsContainer && this.dynamicSort) {
           const existingBoards = boardsContainer.querySelectorAll('.bingo-board');
           existingBoards.forEach(board => {
             const name = board.dataset.name;
@@ -1204,7 +1311,7 @@
           <div class="boards-container">
         `;
 
-        rankings.forEach((p, index) => {
+        displayOrder.forEach((p, index) => {
           const name = p.name;
           const board = this.boards[name];
           const isWinner = this.winners.includes(name);
@@ -1254,8 +1361,8 @@
         html += '</div>';
         this.gameArea.innerHTML = html;
 
-        // FLIP Animation: Last, Invert, Play
-        if (Object.keys(oldPositions).length > 0) {
+        // FLIP Animation: Last, Invert, Play (only when dynamicSort is on)
+        if (this.dynamicSort && Object.keys(oldPositions).length > 0) {
           const newBoardsContainer = this.gameArea.querySelector('.boards-container');
           const newBoards = newBoardsContainer.querySelectorAll('.bingo-board');
           
@@ -1287,9 +1394,12 @@
         }
         
         // Update previous rankings for next comparison
-        rankings.forEach((p, index) => {
-          this.previousRankings[p.name] = index;
-        });
+        if (this.dynamicSort) {
+          const rankings = this.getSortedRankings();
+          rankings.forEach((p, index) => {
+            this.previousRankings[p.name] = index;
+          });
+        }
       }
 
       getSortedRankings() {

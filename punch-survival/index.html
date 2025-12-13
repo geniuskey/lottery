@@ -446,6 +446,65 @@
       z-index: 5;
     }
 
+    /* KO Log */
+    .ko-log {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 20;
+      max-height: 300px;
+      overflow: hidden;
+    }
+
+    .ko-log-item {
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid var(--knockout-red);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      color: white;
+      animation: koLogIn 0.3s ease, koLogOut 0.5s ease 3s forwards;
+      white-space: nowrap;
+    }
+
+    .ko-log-item .attacker {
+      color: var(--survivor-green);
+      font-weight: bold;
+    }
+
+    .ko-log-item .victim {
+      color: var(--knockout-red);
+      font-weight: bold;
+    }
+
+    .ko-log-item .ko-text {
+      color: var(--gold);
+      font-family: 'Black Han Sans', sans-serif;
+    }
+
+    @keyframes koLogIn {
+      from { 
+        opacity: 0; 
+        transform: translateX(50px);
+      }
+      to { 
+        opacity: 1; 
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes koLogOut {
+      from { 
+        opacity: 1;
+      }
+      to { 
+        opacity: 0;
+      }
+    }
+
     /* Status Display */
     .game-status {
       position: absolute;
@@ -721,6 +780,8 @@
     <main class="game-area">
       <div class="game-status" id="gameStatus">🥊 링에 오를 준비를 하세요!</div>
       
+      <div class="ko-log" id="koLog"></div>
+      
       <div class="ring-container">
         <div class="boxing-ring">
           <div class="ring-mat"></div>
@@ -766,6 +827,7 @@
     const rankingList = document.getElementById('rankingList');
     const gameStatus = document.getElementById('gameStatus');
     const aliveCount = document.getElementById('aliveCount');
+    const koLog = document.getElementById('koLog');
     const winnerOverlay = document.getElementById('winnerOverlay');
     const winnerList = document.getElementById('winnerList');
     const closeOverlay = document.getElementById('closeOverlay');
@@ -1135,6 +1197,7 @@
         
         if (isKO) {
           createKOEffect(target.x, target.y);
+          addKOLog(attacker, target);
           eliminationOrder.push(target);
           updateAliveCount();
           
@@ -1178,6 +1241,31 @@
       
       document.body.appendChild(effect);
       setTimeout(() => effect.remove(), 1000);
+    }
+
+    // KO 로그 추가
+    function addKOLog(attacker, victim) {
+      const logItem = document.createElement('div');
+      logItem.className = 'ko-log-item';
+      logItem.innerHTML = `
+        <span class="attacker">${attacker.avatar} ${attacker.name}</span>
+        <span class="ko-text"> K.O. </span>
+        <span class="victim">${victim.avatar} ${victim.name}</span>
+      `;
+      
+      koLog.insertBefore(logItem, koLog.firstChild);
+      
+      // 3.5초 후 제거
+      setTimeout(() => {
+        if (logItem.parentNode) {
+          logItem.remove();
+        }
+      }, 3500);
+      
+      // 최대 5개까지만 표시
+      while (koLog.children.length > 5) {
+        koLog.removeChild(koLog.lastChild);
+      }
     }
 
     // Update functions
@@ -1319,6 +1407,7 @@
       eliminationOrder = [];
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      koLog.innerHTML = '';
       
       rankingList.innerHTML = `
         <div style="text-align: center; color: var(--text-secondary); padding: 20px;">
