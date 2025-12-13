@@ -530,6 +530,17 @@
       flex-direction: column;
       padding: 20px;
       overflow: hidden;
+      position: relative;
+    }
+
+    .copyright {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      user-select: none;
     }
 
     /* Number Display */
@@ -954,6 +965,7 @@
       <div class="icon">🎯</div>
       <p>참여자를 입력하고 게임을 시작하세요!</p>
     </div>
+    <div class="copyright">© 2025 Euiyun Edwin Kim</div>
   </main>
 
   <div class="game-over-overlay" id="gameOverOverlay">
