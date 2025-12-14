@@ -50,15 +50,50 @@
         .sidebar-header {
             padding: 24px 20px;
             border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .sidebar-header h1 {
             font-family: 'Black Han Sans', sans-serif;
             font-size: 1.6rem;
+        }
+
+        .sidebar-header h1 .emoji {
+            -webkit-text-fill-color: initial;
+            background: none;
+            -webkit-background-clip: initial;
+            background-clip: initial;
+        }
+
+        .sidebar-header h1 .title-text {
             background: linear-gradient(135deg, #ff4757, #ff6b81);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+
+        .help-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .help-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
+            transform: scale(1.1);
         }
 
         .sidebar-content {
@@ -393,6 +428,16 @@
             overflow: hidden;
         }
 
+        .copyright {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.25);
+            pointer-events: none;
+            user-select: none;
+        }
+
         .arena-container {
             position: relative;
             width: 100%;
@@ -474,11 +519,21 @@
         .winner-title {
             font-family: 'Black Han Sans', sans-serif;
             font-size: 3rem;
+            margin: 20px 0;
+        }
+
+        .winner-title .title-emoji {
+            background: none;
+            -webkit-background-clip: initial;
+            -webkit-text-fill-color: initial;
+            background-clip: initial;
+        }
+
+        .winner-title .title-text {
             background: linear-gradient(135deg, #ffd700, var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin: 20px 0;
         }
 
         .winner-name {
@@ -510,6 +565,80 @@
             z-index: 999;
         }
 
+        /* Help Modal */
+        .help-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            backdrop-filter: blur(5px);
+        }
+
+        .help-modal.show {
+            display: flex;
+        }
+
+        .help-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 450px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalPop 0.3s ease;
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .help-content h2 {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .help-content h3 {
+            font-size: 1rem;
+            margin: 16px 0 8px;
+            color: var(--text-primary);
+        }
+
+        .help-content p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .help-content .close-help-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, var(--accent), #ff9f6b);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .help-content .close-help-btn:hover {
+            transform: translateY(-2px);
+        }
+
         /* Responsive */
         @media (max-width: 900px) {
             body {
@@ -537,7 +666,8 @@
 <body>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h1>🥊 원판 밀치기</h1>
+            <h1><span class="emoji">🥊</span> <span class="title-text">원판 밀치기</span></h1>
+            <button class="help-btn" id="helpBtn" data-tooltip="도움말">?</button>
         </div>
 
         <div class="sidebar-content">
@@ -551,9 +681,9 @@
                 <div class="setting-row">
                     <span>🏆 우승자 수</span>
                     <select id="winnerCount">
-                        <option value="1">1명</option>
+                        <option value="1" selected>1명</option>
                         <option value="2">2명</option>
-                        <option value="3" selected>3명</option>
+                        <option value="3">3명</option>
                     </select>
                 </div>
                 <div class="setting-row">
@@ -562,14 +692,6 @@
                         <option value="3">3초</option>
                         <option value="5" selected>5초</option>
                         <option value="7">7초</option>
-                    </select>
-                </div>
-                <div class="setting-row">
-                    <span>⚡ 게임 속도</span>
-                    <select id="gameSpeed">
-                        <option value="0.7">느림</option>
-                        <option value="1" selected>보통</option>
-                        <option value="1.3">빠름</option>
                     </select>
                 </div>
             </div>
@@ -593,6 +715,9 @@
         </div>
 
         <div class="sidebar-footer">
+            <a href="https://geniuskey.github.io/lottery/" class="icon-btn" data-tooltip="추첨 포탈 홈">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </a>
             <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
             </button>
@@ -615,14 +740,39 @@
         <div class="arena-container">
             <canvas id="gameCanvas"></canvas>
         </div>
+
+        <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
     </main>
 
     <div class="winner-overlay" id="winnerOverlay">
         <div class="winner-content">
             <div class="winner-emoji" id="winnerEmoji">🏆</div>
-            <div class="winner-title">🎉 게임 종료!</div>
+            <div class="winner-title"><span class="title-emoji">🎉</span> <span class="title-text">게임 종료!</span></div>
             <div class="winner-name" id="winnerNames">우승자</div>
             <button class="close-overlay-btn" id="closeOverlay">확인</button>
+        </div>
+    </div>
+
+    <div class="help-modal" id="helpModal">
+        <div class="help-content">
+            <h2>🥊 원판 밀치기 도움말</h2>
+            
+            <h3>🎯 게임 목표</h3>
+            <p>원판 위에서 다른 참여자들을 밀어내고 끝까지 살아남으세요! 원판 밖으로 떨어지면 탈락입니다.</p>
+            
+            <h3>⚙️ 게임 규칙</h3>
+            <p>• 참여자들은 공처럼 서로 부딪히며 밀어냅니다<br>
+            • 모든 참여자는 중앙으로 끌리는 힘을 받습니다<br>
+            • 주기적으로 부스터가 발동되어 강하게 돌진합니다<br>
+            • 시간이 지날수록 원판이 점점 작아집니다</p>
+            
+            <h3>💨 부스터</h3>
+            <p>설정된 주기마다 각 참여자가 랜덤 시점에 부스터를 사용합니다. 부스터 사용 시 황금색으로 빛나며 강력한 밀어내기가 가능합니다.</p>
+            
+            <h3>🏆 승리 조건</h3>
+            <p>설정된 우승자 수만큼 남을 때까지 게임이 진행됩니다.</p>
+            
+            <button class="close-help-btn" id="closeHelpBtn">확인</button>
         </div>
     </div>
 
@@ -646,7 +796,7 @@
                 // 원판 축소 관련
                 this.initialArenaRadius = 0;
                 this.minArenaRadius = 80; // 최소 크기
-                this.shrinkRate = 0.015; // 초당 축소율
+                this.shrinkRate = 0.03; // 초당 축소율 (2배 증가)
                 this.speedMultiplier = 1;
             }
 
@@ -979,12 +1129,6 @@
                     this.ctx.setLineDash([]);
                 }
                 
-                // 중앙 마커
-                this.ctx.beginPath();
-                this.ctx.arc(this.centerX, this.centerY, 6, 0, Math.PI * 2);
-                this.ctx.fillStyle = `rgba(255, ${107 - warningIntensity * 50}, 53, 0.6)`;
-                this.ctx.fill();
-                
                 // 축소 경고 펄스 효과 (50% 이상 축소시)
                 if (shrinkProgress > 0.5) {
                     const pulseIntensity = (Math.sin(Date.now() * 0.005) + 1) / 2 * (shrinkProgress - 0.5) * 2;
@@ -1085,9 +1229,9 @@
                 
                 // Name tag - 떨어지는 중 아닐 때만
                 if (!player.falling) {
-                    this.ctx.font = 'bold 11px "Noto Sans KR"';
+                    this.ctx.font = 'bold 16px "Noto Sans KR"';
                     this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-                    this.ctx.fillText(player.name, player.x, player.y + currentRadius + 15);
+                    this.ctx.fillText(player.name, player.x, player.y + currentRadius + 18);
                 }
             }
 
@@ -1125,6 +1269,19 @@
                 document.getElementById('closeOverlay').addEventListener('click', () => this.closeWinnerOverlay());
                 document.getElementById('copyResultBtn').addEventListener('click', () => this.copyResults());
                 
+                // 도움말 모달
+                document.getElementById('helpBtn').addEventListener('click', () => {
+                    document.getElementById('helpModal').classList.add('show');
+                });
+                document.getElementById('closeHelpBtn').addEventListener('click', () => {
+                    document.getElementById('helpModal').classList.remove('show');
+                });
+                document.getElementById('helpModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'helpModal') {
+                        document.getElementById('helpModal').classList.remove('show');
+                    }
+                });
+                
                 this.physics.render();
             }
 
@@ -1145,7 +1302,7 @@
                 
                 this.reset();
                 this.physics.resize();
-                this.physics.speedMultiplier = parseFloat(document.getElementById('gameSpeed').value);
+                this.physics.speedMultiplier = 1;
                 
                 const shuffledEmojis = [...EMOJIS].sort(() => Math.random() - 0.5);
                 

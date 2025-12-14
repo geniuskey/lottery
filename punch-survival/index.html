@@ -72,8 +72,37 @@
     }
 
     .logo {
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       padding: 10px 0;
+    }
+
+    .help-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 215, 0, 0.5);
+      color: var(--gold);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .help-btn:hover {
+      background: var(--gold);
+      color: var(--bg-dark);
+      transform: scale(1.1);
+    }
+
+    .logo-title {
+      text-align: left;
+      flex: 1;
     }
 
     .logo h1 {
@@ -88,6 +117,85 @@
       font-size: 0.85rem;
       color: var(--text-secondary);
       margin-top: 4px;
+    }
+
+    /* Help Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 2px solid var(--rope-red);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 42, 42, 0.3);
+    }
+
+    .modal-header h2 {
+      font-family: 'Black Han Sans', sans-serif;
+      color: var(--gold);
+      font-size: 1.3rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .modal-close:hover {
+      color: white;
+    }
+
+    .modal-body {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .modal-body h3 {
+      color: var(--rope-red);
+      font-size: 1rem;
+      margin: 16px 0 8px 0;
+    }
+
+    .modal-body h3:first-child {
+      margin-top: 0;
+    }
+
+    .modal-body ul {
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+
+    .modal-body li {
+      margin: 4px 0;
     }
 
     .section-title {
@@ -737,8 +845,11 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="logo">
-        <h1>🥊 펀치 서바이벌</h1>
-        <p>링 위의 생존자를 가려라!</p>
+        <div class="logo-title">
+          <h1>🥊 펀치 서바이벌</h1>
+          <p>링 위의 생존자를 가려라!</p>
+        </div>
+        <button class="help-btn" id="helpBtn">?</button>
       </div>
 
       <div class="input-group">
@@ -826,6 +937,38 @@
     <button class="close-overlay" id="closeOverlay">확인</button>
   </div>
 
+  <!-- Help Modal -->
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🥊 게임 도움말</h2>
+        <button class="modal-close" id="helpModalClose">×</button>
+      </div>
+      <div class="modal-body">
+        <h3>🎮 게임 방법</h3>
+        <ul>
+          <li>참여자 명단을 콤마(,)로 구분하여 입력</li>
+          <li>당첨 인원 수를 선택</li>
+          <li>시작 버튼을 눌러 게임 시작</li>
+        </ul>
+        
+        <h3>⚔️ 게임 규칙</h3>
+        <ul>
+          <li>참여자들이 링 안에서 자유롭게 이동</li>
+          <li>가까이 있는 상대를 펀치로 공격</li>
+          <li>HP가 0이 되면 K.O.로 탈락</li>
+          <li>설정한 인원만 남으면 게임 종료</li>
+        </ul>
+        
+        <h3>💡 팁</h3>
+        <ul>
+          <li>참여자와 설정은 자동 저장됩니다</li>
+          <li>결과 복사 버튼으로 결과를 공유하세요</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
@@ -849,6 +992,9 @@
     const closeOverlay = document.getElementById('closeOverlay');
     const copyResultBtn = document.getElementById('copyResultBtn');
     const toast = document.getElementById('toast');
+    const helpBtn = document.getElementById('helpBtn');
+    const helpModal = document.getElementById('helpModal');
+    const helpModalClose = document.getElementById('helpModalClose');
 
     // Game State
     let fighters = [];
@@ -1442,6 +1588,21 @@
     });
 
     copyResultBtn.addEventListener('click', copyResults);
+
+    // 도움말 모달
+    helpBtn.addEventListener('click', () => {
+      helpModal.classList.add('show');
+    });
+
+    helpModalClose.addEventListener('click', () => {
+      helpModal.classList.remove('show');
+    });
+
+    helpModal.addEventListener('click', (e) => {
+      if (e.target === helpModal) {
+        helpModal.classList.remove('show');
+      }
+    });
 
     window.addEventListener('resize', () => {
       if (fighters.length > 0) {

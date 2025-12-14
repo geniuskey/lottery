@@ -71,6 +71,111 @@
       gap: 8px;
     }
     
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .help-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 50%;
+      background: var(--sidebar-dark);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .help-btn:hover {
+      background: var(--accent);
+      color: white;
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+    
+    .modal-overlay.show {
+      display: flex;
+    }
+    
+    .modal {
+      background: var(--sidebar-bg);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    
+    .modal h2 {
+      color: var(--accent-light);
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 50%;
+      background: var(--sidebar-dark);
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-close:hover {
+      color: var(--text-light);
+    }
+    
+    .help-section {
+      margin-bottom: 16px;
+    }
+    
+    .help-section h3 {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .help-section p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+    
     .sidebar label {
       color: var(--text-muted);
       font-size: 0.85rem;
@@ -403,7 +508,10 @@
 <body>
   <div class="container">
     <aside class="sidebar">
-      <h1>🌰 밤송이 서바이벌</h1>
+      <div class="header-row">
+        <h1>🌰 밤송이 서바이벌</h1>
+        <button class="help-btn" id="helpBtn">?</button>
+      </div>
       
       <div>
         <label>참여자 (콤마로 구분)</label>
@@ -457,6 +565,39 @@
     </main>
   </div>
 
+  <!-- Help Modal -->
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal">
+      <button class="modal-close" id="modalClose">×</button>
+      <h2>🌰 게임 방법</h2>
+      
+      <div class="help-section">
+        <h3>🎯 게임 목표</h3>
+        <p>나무에서 떨어지는 밤송이를 피해 끝까지 살아남으세요! 설정한 생존자 수만큼 남으면 게임이 종료됩니다.</p>
+      </div>
+      
+      <div class="help-section">
+        <h3>👥 참여자 설정</h3>
+        <p>콤마(,)로 구분하여 참여자 이름을 입력하세요. 최소 2명 이상 필요합니다.</p>
+      </div>
+      
+      <div class="help-section">
+        <h3>🏆 최종 생존자 수</h3>
+        <p>슬라이더로 최종 생존자 수를 설정합니다. 해당 인원만 남으면 게임이 종료됩니다.</p>
+      </div>
+      
+      <div class="help-section">
+        <h3>🎮 게임 진행</h3>
+        <p>참여자들은 자동으로 좌우로 움직이며, 밤송이에 맞으면 탈락합니다. 운에 맡기세요!</p>
+      </div>
+      
+      <div class="help-section">
+        <h3>📋 결과 복사</h3>
+        <p>게임 종료 후 하단의 복사 버튼으로 결과를 클립보드에 복사할 수 있습니다.</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
     
@@ -469,6 +610,8 @@
     let players = [];
     let chestnuts = [];
     let trees = [];
+    let clouds = [];
+    let birds = [];
     let targetSurvivors = 1;
     let animationId = null;
     
@@ -483,6 +626,8 @@
       canvas.height = canvas.parentElement.clientHeight;
       if (!gameRunning) {
         generateTrees();
+        generateClouds();
+        generateBirds();
         draw();
       }
     }
@@ -490,15 +635,52 @@
     // Generate trees
     function generateTrees() {
       trees = [];
-      const treeCount = Math.floor(canvas.width / 120) + 3; // 더 촘촘하게
+      // 일정한 밀도로 나무 배치 (120px 간격 기준)
+      const treeSpacing = 120;
+      const treeCount = Math.max(3, Math.floor(canvas.width / treeSpacing) + 1);
       for (let i = 0; i < treeCount; i++) {
         trees.push({
           x: (i + 0.5) * (canvas.width / treeCount) + (Math.random() - 0.5) * 40,
-          width: 100 + Math.random() * 60, // 더 넓은 나무
+          width: 100 + Math.random() * 60,
           height: 150 + Math.random() * 100,
           trunkWidth: 30 + Math.random() * 20,
           trunkHeight: 80 + Math.random() * 40,
           leafLayers: 2 + Math.floor(Math.random() * 2)
+        });
+      }
+      
+      // 캔버스 크기 기반 스폰율 계산 (기준: 1000px 너비)
+      baseSpawnRate = 0.04 * (canvas.width / 1000);
+    }
+    
+    let baseSpawnRate = 0.04;
+    
+    // Generate clouds
+    function generateClouds() {
+      clouds = [];
+      const cloudCount = Math.floor(canvas.width / 250) + 2;
+      for (let i = 0; i < cloudCount; i++) {
+        clouds.push({
+          x: Math.random() * canvas.width,
+          y: 30 + Math.random() * (canvas.height * 0.25),
+          width: 80 + Math.random() * 60,
+          speed: 0.2 + Math.random() * 0.3,
+          opacity: 0.6 + Math.random() * 0.3
+        });
+      }
+    }
+    
+    // Generate birds
+    function generateBirds() {
+      birds = [];
+      const birdCount = 3 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < birdCount; i++) {
+        birds.push({
+          x: Math.random() * canvas.width,
+          y: 50 + Math.random() * (canvas.height * 0.2),
+          speed: 1 + Math.random() * 1.5,
+          wingPhase: Math.random() * Math.PI * 2,
+          size: 8 + Math.random() * 6
         });
       }
     }
@@ -545,6 +727,104 @@
       gradient.addColorStop(1, '#B0E2FF');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height * 0.7);
+      
+      // Draw sun
+      const sunX = canvas.width - 80;
+      const sunY = 70;
+      const sunRadius = 40;
+      
+      // Sun glow
+      const sunGlow = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, sunRadius * 2);
+      sunGlow.addColorStop(0, 'rgba(255, 236, 179, 0.8)');
+      sunGlow.addColorStop(0.5, 'rgba(255, 236, 179, 0.2)');
+      sunGlow.addColorStop(1, 'rgba(255, 236, 179, 0)');
+      ctx.fillStyle = sunGlow;
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, sunRadius * 2, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Sun body
+      ctx.fillStyle = '#FFE082';
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Sun rays
+      ctx.strokeStyle = 'rgba(255, 224, 130, 0.5)';
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 12; i++) {
+        const angle = (i / 12) * Math.PI * 2 + Date.now() * 0.0003;
+        const innerR = sunRadius + 5;
+        const outerR = sunRadius + 20;
+        ctx.beginPath();
+        ctx.moveTo(sunX + Math.cos(angle) * innerR, sunY + Math.sin(angle) * innerR);
+        ctx.lineTo(sunX + Math.cos(angle) * outerR, sunY + Math.sin(angle) * outerR);
+        ctx.stroke();
+      }
+    }
+    
+    // Draw clouds
+    function drawClouds() {
+      clouds.forEach(cloud => {
+        ctx.fillStyle = `rgba(255, 255, 255, ${cloud.opacity})`;
+        
+        // Cloud shape with multiple circles
+        const w = cloud.width;
+        ctx.beginPath();
+        ctx.arc(cloud.x, cloud.y, w * 0.3, 0, Math.PI * 2);
+        ctx.arc(cloud.x + w * 0.25, cloud.y - w * 0.1, w * 0.25, 0, Math.PI * 2);
+        ctx.arc(cloud.x + w * 0.5, cloud.y, w * 0.3, 0, Math.PI * 2);
+        ctx.arc(cloud.x + w * 0.25, cloud.y + w * 0.08, w * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Move cloud
+        cloud.x += cloud.speed;
+        if (cloud.x > canvas.width + cloud.width) {
+          cloud.x = -cloud.width;
+          cloud.y = 30 + Math.random() * (canvas.height * 0.25);
+        }
+      });
+    }
+    
+    // Draw birds
+    function drawBirds() {
+      birds.forEach(bird => {
+        const wingAngle = Math.sin(bird.wingPhase) * 0.5;
+        bird.wingPhase += 0.15;
+        
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        
+        // Left wing
+        ctx.beginPath();
+        ctx.moveTo(bird.x, bird.y);
+        ctx.quadraticCurveTo(
+          bird.x - bird.size * 0.5, 
+          bird.y - bird.size * wingAngle,
+          bird.x - bird.size, 
+          bird.y + bird.size * 0.3 * wingAngle
+        );
+        ctx.stroke();
+        
+        // Right wing
+        ctx.beginPath();
+        ctx.moveTo(bird.x, bird.y);
+        ctx.quadraticCurveTo(
+          bird.x + bird.size * 0.5, 
+          bird.y - bird.size * wingAngle,
+          bird.x + bird.size, 
+          bird.y + bird.size * 0.3 * wingAngle
+        );
+        ctx.stroke();
+        
+        // Move bird
+        bird.x += bird.speed;
+        if (bird.x > canvas.width + bird.size * 2) {
+          bird.x = -bird.size * 2;
+          bird.y = 50 + Math.random() * (canvas.height * 0.2);
+        }
+      });
     }
     
     // Draw grass
@@ -701,8 +981,8 @@
         return;
       }
       
-      // Spawn new chestnuts - 속도 절반
-      if (Math.random() < 0.04) { // 0.08 -> 0.04
+      // Spawn new chestnuts - 캔버스 크기에 비례한 스폰율
+      if (Math.random() < baseSpawnRate) {
         chestnuts.push(createChestnut());
       }
       
@@ -760,6 +1040,8 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       drawSky();
+      drawClouds();
+      drawBirds();
       drawGrass();
       
       // Draw trees
@@ -768,8 +1050,8 @@
       // Draw chestnuts
       chestnuts.forEach(drawChestnut);
       
-      // Draw players
-      players.forEach(drawPlayer);
+      // Draw players (sorted by y for depth)
+      [...players].sort((a, b) => a.y - b.y).forEach(drawPlayer);
     }
     
     // Game loop
@@ -927,6 +1209,19 @@
     document.getElementById('copyResultBtn').addEventListener('click', copyResults);
     document.getElementById('confirmBtn').addEventListener('click', () => {
       document.getElementById('gameOverOverlay').classList.remove('show');
+    });
+    
+    // Help modal
+    document.getElementById('helpBtn').addEventListener('click', () => {
+      document.getElementById('helpModal').classList.add('show');
+    });
+    document.getElementById('modalClose').addEventListener('click', () => {
+      document.getElementById('helpModal').classList.remove('show');
+    });
+    document.getElementById('helpModal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        document.getElementById('helpModal').classList.remove('show');
+      }
     });
     
     document.getElementById('survivorCount').addEventListener('input', (e) => {
