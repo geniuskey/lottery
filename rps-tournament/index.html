@@ -1,0 +1,1401 @@
+<!--
+@game-meta
+{
+  "id": "rps-tournament",
+  "title": "토너먼트 ✌️✊🖐️",
+  "emoji": "✌️",
+  "category": "토너먼트",
+  "description": "토너먼트 방식의 가위바위보 대결! 참여자들이 1:1로 대결하여 최종 우승자를 가립니다.",
+  "features": ["🏆 토너먼트 대진표", "⚡ 실시간 랭킹"],
+  "color": "rps",
+  "badge": "NEW",
+  "version": "1.0.0",
+  "updated": "2025-06-14",
+  "author": {
+    "name": "Euiyun Edwin Kim",
+    "email": "geniuskey@gmail.com",
+    "github": "geniuskey"
+  },
+  "urls": {
+    "service": "https://geniuskey.github.io/lottery/rps-tournament/",
+    "repository": "https://github.com/geniuskey/lottery"
+  },
+  "license": "MIT",
+  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+}
+@end-game-meta
+-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>토너먼트 ✌️✊🖐️</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #0a0a0f;
+      --bg-card: #12121a;
+      --bg-sidebar: #0d0d14;
+      --accent-rock: #e74c3c;
+      --accent-paper: #3498db;
+      --accent-scissors: #f1c40f;
+      --accent-winner: #2ecc71;
+      --text-primary: #ffffff;
+      --text-secondary: #8892a0;
+      --border-color: rgba(255,255,255,0.08);
+      --glow-rock: 0 0 30px rgba(231,76,60,0.4);
+      --glow-paper: 0 0 30px rgba(52,152,219,0.4);
+      --glow-scissors: 0 0 30px rgba(241,196,15,0.4);
+      --glow-winner: 0 0 40px rgba(46,204,113,0.5);
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 320px;
+      min-width: 320px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: relative;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-header h1 {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title-text {
+      color: #ff4757;
+      text-shadow: 
+        2px 2px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        0 0 20px rgba(255, 71, 87, 0.5);
+    }
+
+    .title-emoji {
+      font-size: 1.3rem;
+    }
+
+    .help-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .help-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--text-primary);
+    }
+
+    .sidebar-content {
+      flex: 1;
+      overflow: hidden;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-section {
+      margin-bottom: 24px;
+    }
+
+    .input-section label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .input-section textarea {
+      width: 100%;
+      height: 100px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.95rem;
+      resize: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-section textarea:focus {
+      outline: none;
+      border-color: var(--accent-paper);
+      box-shadow: 0 0 0 3px rgba(52,152,219,0.15);
+    }
+
+    .input-section textarea::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.6;
+    }
+
+    .settings-section {
+      margin-bottom: 24px;
+    }
+
+    .settings-section h3 {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .setting-row label {
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .setting-row select {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .setting-row select:focus {
+      outline: none;
+      border-color: var(--accent-paper);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+      background: linear-gradient(135deg, #ff6b81 0%, #ff4757 100%);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      flex: 0;
+      padding: 14px 18px;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* Ranking Board */
+    .ranking-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .ranking-section h3 {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ranking-list {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg-dark);
+      border-radius: 12px;
+      padding: 8px;
+      min-height: 0;
+    }
+
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      transition: all 0.3s;
+    }
+
+    .ranking-item.winner {
+      background: rgba(46,204,113,0.15);
+      border: 1px solid rgba(46,204,113,0.3);
+    }
+
+    .ranking-item.eliminated {
+      opacity: 0.4;
+    }
+
+    .ranking-item.playing {
+      background: rgba(52,152,219,0.15);
+      animation: pulse-playing 1s infinite;
+    }
+
+    @keyframes pulse-playing {
+      0%, 100% { background: rgba(52,152,219,0.15); }
+      50% { background: rgba(52,152,219,0.25); }
+    }
+
+    .rank-number {
+      width: 28px;
+      height: 28px;
+      background: var(--bg-card);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-right: 12px;
+    }
+
+    .ranking-item.winner .rank-number {
+      background: var(--accent-winner);
+      color: white;
+    }
+
+    .rank-name {
+      flex: 1;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .rank-status {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      padding: 4px 8px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+    }
+
+    .ranking-item.winner .rank-status {
+      background: var(--accent-winner);
+      color: white;
+    }
+
+    .ranking-item.eliminated .rank-status {
+      background: rgba(231,76,60,0.2);
+      color: var(--accent-rock);
+    }
+
+    /* Sidebar Footer */
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      text-decoration: none;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255,255,255,0.05);
+      color: var(--text-primary);
+      transform: translateY(-2px);
+    }
+
+    .icon-btn[data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      margin-bottom: 8px;
+    }
+
+    /* Main Area */
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .copyright {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .tournament-header {
+      padding: 20px 30px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .round-info {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.4rem;
+    }
+
+    .round-info span {
+      color: var(--accent-paper);
+    }
+
+    .match-count {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .tournament-arena {
+      flex: 1;
+      overflow-y: auto;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Match Grid */
+    .matches-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1400px;
+    }
+
+    .match-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s;
+    }
+
+    .match-card.active {
+      border-color: var(--accent-paper);
+      box-shadow: 0 0 30px rgba(52,152,219,0.2);
+    }
+
+    .match-card.finished {
+      opacity: 0.7;
+    }
+
+    .match-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .match-number {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      background: var(--bg-dark);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .match-vs {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .match-players {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .player-box {
+      flex: 1;
+      text-align: center;
+      padding: 16px;
+      background: var(--bg-dark);
+      border-radius: 12px;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .player-box.winner {
+      border-color: var(--accent-winner);
+      box-shadow: var(--glow-winner);
+    }
+
+    .player-box.loser {
+      opacity: 0.4;
+    }
+
+    .player-name {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-choice {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      transition: all 0.3s;
+    }
+
+    .player-choice.rock { box-shadow: var(--glow-rock); }
+    .player-choice.paper { box-shadow: var(--glow-paper); }
+    .player-choice.scissors { box-shadow: var(--glow-scissors); }
+
+    .player-choice.thinking {
+      animation: thinking-bounce 0.5s infinite;
+    }
+
+    @keyframes thinking-bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .vs-divider {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.2rem;
+      color: var(--accent-rock);
+      text-shadow: 0 0 20px var(--accent-rock);
+    }
+
+    /* Winner Display */
+    .final-winner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+
+    .final-winner.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .winner-crown {
+      font-size: 5rem;
+      animation: crown-bounce 1s infinite;
+    }
+
+    @keyframes crown-bounce {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    .winner-name {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 4rem;
+      background: linear-gradient(135deg, #ffd700, #ffaa00, #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 20px 0;
+      text-shadow: 0 0 60px rgba(255,215,0,0.5);
+    }
+
+    .winner-title {
+      font-size: 1.5rem;
+      color: var(--text-secondary);
+      margin-bottom: 30px;
+    }
+
+    .close-winner-btn {
+      padding: 14px 40px;
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      border: none;
+      border-radius: 30px;
+      color: #000;
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .close-winner-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Waiting State */
+    .waiting-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-secondary);
+    }
+
+    .waiting-emoji {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .waiting-text {
+      font-size: 1.2rem;
+    }
+
+    /* Confetti */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      pointer-events: none;
+      z-index: 1001;
+      animation: confetti-fall 3s linear forwards;
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 2000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Help Modal */
+    .help-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .help-modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .help-content {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+    }
+
+    .help-content h2 {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: #ff4757;
+    }
+
+    .help-content h3 {
+      font-size: 1rem;
+      margin: 16px 0 8px;
+      color: var(--accent-paper);
+    }
+
+    .help-content p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .help-close-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: all 0.2s;
+    }
+
+    .help-close-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        min-width: 100%;
+        height: auto;
+        max-height: 50vh;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .sidebar-content {
+        padding: 16px;
+      }
+
+      .main-area {
+        height: 50vh;
+      }
+
+      .tournament-arena {
+        padding: 16px;
+      }
+
+      .matches-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .winner-name {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1><span class="title-text">토너먼트</span> <span class="title-emoji">✌️✊🖐️</span></h1>
+      <button class="help-btn" id="helpBtn">?</button>
+    </div>
+    
+    <div class="sidebar-content">
+      <div class="input-section">
+        <label>참여자 명단 (콤마로 구분)</label>
+        <textarea id="participantsInput" placeholder="예: 철수, 영희, 민수, 지현, 동욱, 수진, 준호, 미영">철수, 영희, 민수, 지현, 동욱, 수진, 준호, 미영, 태희, 성민, 유진, 현우, 소영, 재원, 은지, 기훈</textarea>
+      </div>
+
+      <div class="settings-section">
+        <h3>⚙️ 게임 설정</h3>
+        <div class="setting-row">
+          <label>경기 속도</label>
+          <select id="speedSelect">
+            <option value="fast">빠름</option>
+            <option value="normal" selected>보통</option>
+            <option value="slow">느림</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <label>승부 방식</label>
+          <select id="roundTypeSelect">
+            <option value="single" selected>단판승</option>
+            <option value="best3">3판 2선승</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" id="startBtn">🎮 시작</button>
+        <button class="btn btn-secondary" id="resetBtn">↺</button>
+      </div>
+
+      <div class="ranking-section">
+        <h3>🏆 실시간 랭킹</h3>
+        <div class="ranking-list" id="rankingList">
+          <div class="ranking-item" style="justify-content: center; color: var(--text-secondary); font-size: 0.85rem;">
+            게임을 시작하면 랭킹이 표시됩니다
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="https://geniuskey.github.io/lottery/" class="icon-btn" data-tooltip="추첨 포탈 홈">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+      <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      </button>
+      <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+      </a>
+      <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-area">
+    <div class="tournament-header">
+      <div class="round-info" id="roundInfo">🎯 대기 중</div>
+      <div class="match-count" id="matchCount">참여자를 입력하고 시작하세요</div>
+    </div>
+
+    <div class="tournament-arena" id="arena">
+      <div class="waiting-state">
+        <div class="waiting-emoji">✊✋✌️</div>
+        <div class="waiting-text">참여자를 입력하고 시작 버튼을 누르세요</div>
+      </div>
+    </div>
+
+    <div class="copyright">© 2025 Euiyun Edwin Kim</div>
+  </main>
+
+  <div class="final-winner" id="finalWinner">
+    <div class="winner-crown">👑</div>
+    <div class="winner-name" id="winnerName"></div>
+    <div class="winner-title">🏆 토너먼트 우승!</div>
+    <button class="close-winner-btn" onclick="closeFinalWinner()">확인</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="help-modal" id="helpModal">
+    <div class="help-content">
+      <h2>✌️✊🖐️ 게임 도움말</h2>
+      <h3>🎮 게임 방법</h3>
+      <p>참여자들이 토너먼트 방식으로 가위바위보 대결을 펼칩니다. 각 라운드에서 패배한 참여자는 탈락하고, 최종 1인이 남을 때까지 경기가 진행됩니다.</p>
+      <h3>⚙️ 설정 옵션</h3>
+      <p><strong>경기 속도:</strong> 가위바위보 진행 속도를 조절합니다.</p>
+      <p><strong>승부 방식:</strong> 단판승 또는 3판 2선승 중 선택할 수 있습니다.</p>
+      <h3>🏆 토너먼트 구조</h3>
+      <p>참여자 수에 따라 자동으로 대진표가 구성됩니다. 인원이 2의 제곱수가 아닌 경우, 일부 참여자는 부전승으로 다음 라운드에 진출합니다.</p>
+      <h3>📊 실시간 랭킹</h3>
+      <p>경기 진행 중 실시간으로 순위가 업데이트됩니다. 더 늦게 탈락할수록 높은 순위를 받습니다.</p>
+      <button class="help-close-btn" onclick="closeHelpModal()">확인</button>
+    </div>
+  </div>
+
+  <script>
+    // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
+    
+    const CHOICES = ['rock', 'paper', 'scissors'];
+    const CHOICE_EMOJI = { rock: '✊', paper: '✋', scissors: '✌️' };
+    const CHOICE_NAMES = { rock: '바위', paper: '보', scissors: '가위' };
+    
+    let participants = [];
+    let currentRound = 0;
+    let matches = [];
+    let rankings = [];
+    let isPlaying = false;
+    let gameSpeed = 'normal';
+    let roundType = 'single';
+
+    const speedDelays = {
+      fast: { think: 300, reveal: 200, result: 500 },
+      normal: { think: 500, reveal: 300, result: 800 },
+      slow: { think: 800, reveal: 500, result: 1200 }
+    };
+
+    // DOM Elements
+    const participantsInput = document.getElementById('participantsInput');
+    const speedSelect = document.getElementById('speedSelect');
+    const roundTypeSelect = document.getElementById('roundTypeSelect');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const helpBtn = document.getElementById('helpBtn');
+    const helpModal = document.getElementById('helpModal');
+    const arena = document.getElementById('arena');
+    const roundInfo = document.getElementById('roundInfo');
+    const matchCount = document.getElementById('matchCount');
+    const rankingList = document.getElementById('rankingList');
+    const finalWinner = document.getElementById('finalWinner');
+    const winnerName = document.getElementById('winnerName');
+    const copyResultBtn = document.getElementById('copyResultBtn');
+    const toast = document.getElementById('toast');
+
+    // Event Listeners
+    startBtn.addEventListener('click', startTournament);
+    resetBtn.addEventListener('click', resetGame);
+    speedSelect.addEventListener('change', (e) => gameSpeed = e.target.value);
+    roundTypeSelect.addEventListener('change', (e) => roundType = e.target.value);
+    copyResultBtn.addEventListener('click', copyResults);
+    helpBtn.addEventListener('click', () => helpModal.classList.add('show'));
+
+    function closeHelpModal() {
+      helpModal.classList.remove('show');
+    }
+
+    helpModal.addEventListener('click', (e) => {
+      if (e.target === helpModal) closeHelpModal();
+    });
+
+    function parseParticipants() {
+      const input = participantsInput.value.trim();
+      if (!input) return [];
+      return input.split(',').map(p => p.trim()).filter(p => p.length > 0);
+    }
+
+    function shuffleArray(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function getNextPowerOf2(n) {
+      return Math.pow(2, Math.ceil(Math.log2(n)));
+    }
+
+    function getRoundName(playersCount) {
+      if (playersCount === 2) return '🏆 결승전';
+      if (playersCount === 4) return '🎯 준결승';
+      if (playersCount === 8) return '⚔️ 8강';
+      if (playersCount === 16) return '🎮 16강';
+      if (playersCount === 32) return '🎲 32강';
+      return `🎯 ${playersCount}강`;
+    }
+
+    function determineWinner(choice1, choice2) {
+      if (choice1 === choice2) return 'draw';
+      if (
+        (choice1 === 'rock' && choice2 === 'scissors') ||
+        (choice1 === 'scissors' && choice2 === 'paper') ||
+        (choice1 === 'paper' && choice2 === 'rock')
+      ) {
+        return 'player1';
+      }
+      return 'player2';
+    }
+
+    async function startTournament() {
+      const parsed = parseParticipants();
+      if (parsed.length < 2) {
+        showToast('최소 2명 이상의 참여자가 필요합니다');
+        return;
+      }
+
+      isPlaying = true;
+      startBtn.disabled = true;
+      
+      // Shuffle and add byes if needed
+      participants = shuffleArray(parsed);
+      const targetSize = getNextPowerOf2(participants.length);
+      
+      // Add byes (부전승)
+      while (participants.length < targetSize) {
+        participants.push(null);
+      }
+      
+      // Shuffle again to distribute byes
+      participants = shuffleArray(participants);
+      
+      // Initialize rankings
+      rankings = parsed.map(name => ({
+        name,
+        status: 'playing',
+        eliminatedRound: null,
+        rank: null
+      }));
+      
+      currentRound = 0;
+      await runTournament();
+    }
+
+    async function runTournament() {
+      let currentPlayers = [...participants];
+      
+      while (currentPlayers.filter(p => p !== null).length > 1) {
+        currentRound++;
+        const roundName = getRoundName(currentPlayers.length);
+        roundInfo.textContent = roundName;
+        
+        matches = [];
+        for (let i = 0; i < currentPlayers.length; i += 2) {
+          matches.push({
+            player1: currentPlayers[i],
+            player2: currentPlayers[i + 1],
+            winner: null,
+            score1: 0,
+            score2: 0,
+            lastChoice1: null,
+            lastChoice2: null
+          });
+        }
+        
+        const realMatches = matches.filter(m => m.player1 !== null && m.player2 !== null);
+        matchCount.textContent = `${realMatches.length}개 경기 진행 중`;
+        
+        renderMatches();
+        updateRankingForRound(currentPlayers.filter(p => p !== null));
+        
+        // Play all matches in this round
+        const winners = [];
+        
+        for (let i = 0; i < matches.length; i++) {
+          const match = matches[i];
+          
+          // Bye (부전승)
+          if (match.player1 === null) {
+            match.winner = match.player2;
+            winners.push(match.player2);
+            continue;
+          }
+          if (match.player2 === null) {
+            match.winner = match.player1;
+            winners.push(match.player1);
+            continue;
+          }
+          
+          // Play the match
+          const winner = await playMatch(i);
+          match.winner = winner;
+          winners.push(winner);
+          
+          // Mark loser as eliminated
+          const loser = winner === match.player1 ? match.player2 : match.player1;
+          const loserRanking = rankings.find(r => r.name === loser);
+          if (loserRanking) {
+            loserRanking.status = 'eliminated';
+            loserRanking.eliminatedRound = currentRound;
+            loserRanking.rank = currentPlayers.filter(p => p !== null).length;
+          }
+          
+          updateRankingDisplay();
+          renderMatches();
+        }
+        
+        currentPlayers = winners;
+        
+        // Short pause between rounds
+        if (currentPlayers.length > 1) {
+          await delay(speedDelays[gameSpeed].result * 2);
+        }
+      }
+      
+      // Tournament complete
+      const champion = currentPlayers[0];
+      const championRanking = rankings.find(r => r.name === champion);
+      if (championRanking) {
+        championRanking.status = 'winner';
+        championRanking.rank = 1;
+      }
+      
+      updateRankingDisplay();
+      showFinalWinner(champion);
+      isPlaying = false;
+      startBtn.disabled = false;
+    }
+
+    async function playMatch(matchIndex) {
+      const match = matches[matchIndex];
+      const delays = speedDelays[gameSpeed];
+      const winsNeeded = roundType === 'best3' ? 2 : 1;
+      
+      let lastChoice1 = null;
+      let lastChoice2 = null;
+      
+      while (match.score1 < winsNeeded && match.score2 < winsNeeded) {
+        // Thinking animation
+        updateMatchDisplay(matchIndex, 'thinking', null, null);
+        await delay(delays.think);
+        
+        // Make choices
+        const choice1 = CHOICES[Math.floor(Math.random() * 3)];
+        const choice2 = CHOICES[Math.floor(Math.random() * 3)];
+        
+        lastChoice1 = choice1;
+        lastChoice2 = choice2;
+        
+        // Reveal choices
+        updateMatchDisplay(matchIndex, 'revealed', choice1, choice2);
+        await delay(delays.reveal);
+        
+        // Determine result
+        const result = determineWinner(choice1, choice2);
+        
+        if (result === 'player1') {
+          match.score1++;
+        } else if (result === 'player2') {
+          match.score2++;
+        }
+        // Draw: no score change, play again
+        
+        updateMatchDisplay(matchIndex, 'scored', choice1, choice2);
+        renderMatches();
+        
+        // Restore the choices after renderMatches
+        updateMatchDisplay(matchIndex, 'scored', choice1, choice2);
+        
+        await delay(delays.result);
+      }
+      
+      // Save final choices to match object
+      match.lastChoice1 = lastChoice1;
+      match.lastChoice2 = lastChoice2;
+      
+      return match.score1 >= winsNeeded ? match.player1 : match.player2;
+    }
+
+    function renderMatches() {
+      const realMatches = matches.filter(m => m.player1 !== null && m.player2 !== null);
+      
+      let html = '<div class="matches-grid">';
+      
+      realMatches.forEach((match, index) => {
+        const isActive = match.winner === null;
+        const isFinished = match.winner !== null;
+        
+        // 종료된 경기는 마지막 손 표시, 진행 중이면 ?
+        const display1 = isFinished && match.lastChoice1 ? CHOICE_EMOJI[match.lastChoice1] : '❓';
+        const display2 = isFinished && match.lastChoice2 ? CHOICE_EMOJI[match.lastChoice2] : '❓';
+        const choiceClass1 = isFinished && match.lastChoice1 ? match.lastChoice1 : '';
+        const choiceClass2 = isFinished && match.lastChoice2 ? match.lastChoice2 : '';
+        
+        html += `
+          <div class="match-card ${isActive ? 'active' : ''} ${isFinished ? 'finished' : ''}">
+            <div class="match-header">
+              <span class="match-number">경기 ${index + 1}</span>
+              <span class="match-vs">${match.score1} : ${match.score2}</span>
+            </div>
+            <div class="match-players">
+              <div class="player-box ${match.winner === match.player1 ? 'winner' : ''} ${match.winner === match.player2 ? 'loser' : ''}" data-match="${index}" data-player="1">
+                <div class="player-name">${match.player1}</div>
+                <div class="player-choice ${choiceClass1}" id="choice-${index}-1">${display1}</div>
+              </div>
+              <div class="vs-divider">VS</div>
+              <div class="player-box ${match.winner === match.player2 ? 'winner' : ''} ${match.winner === match.player1 ? 'loser' : ''}" data-match="${index}" data-player="2">
+                <div class="player-name">${match.player2}</div>
+                <div class="player-choice ${choiceClass2}" id="choice-${index}-2">${display2}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      arena.innerHTML = html;
+    }
+
+    function updateMatchDisplay(matchIndex, state, choice1, choice2) {
+      const realMatchIndex = matches.filter((m, i) => i < matchIndex && m.player1 !== null && m.player2 !== null).length + 
+        (matches[matchIndex].player1 !== null && matches[matchIndex].player2 !== null ? 0 : 0);
+      
+      // Find the actual displayed index
+      let displayIndex = 0;
+      for (let i = 0; i <= matchIndex; i++) {
+        if (matches[i].player1 !== null && matches[i].player2 !== null) {
+          if (i === matchIndex) break;
+          displayIndex++;
+        }
+      }
+      
+      const choiceEl1 = document.getElementById(`choice-${displayIndex}-1`);
+      const choiceEl2 = document.getElementById(`choice-${displayIndex}-2`);
+      
+      if (!choiceEl1 || !choiceEl2) return;
+      
+      if (state === 'thinking') {
+        choiceEl1.textContent = '🤔';
+        choiceEl2.textContent = '🤔';
+        choiceEl1.classList.add('thinking');
+        choiceEl2.classList.add('thinking');
+        choiceEl1.className = 'player-choice thinking';
+        choiceEl2.className = 'player-choice thinking';
+      } else if (state === 'revealed' || state === 'scored') {
+        choiceEl1.textContent = CHOICE_EMOJI[choice1];
+        choiceEl2.textContent = CHOICE_EMOJI[choice2];
+        choiceEl1.classList.remove('thinking');
+        choiceEl2.classList.remove('thinking');
+        choiceEl1.className = `player-choice ${choice1}`;
+        choiceEl2.className = `player-choice ${choice2}`;
+      }
+    }
+
+    function updateRankingForRound(currentPlayers) {
+      rankings.forEach(r => {
+        if (currentPlayers.includes(r.name) && r.status !== 'eliminated') {
+          r.status = 'playing';
+        }
+      });
+      updateRankingDisplay();
+    }
+
+    function updateRankingDisplay() {
+      // Sort: winners first, then playing, then eliminated (by round, later = higher rank)
+      const sorted = [...rankings].sort((a, b) => {
+        if (a.status === 'winner') return -1;
+        if (b.status === 'winner') return 1;
+        if (a.status === 'playing' && b.status !== 'playing') return -1;
+        if (b.status === 'playing' && a.status !== 'playing') return 1;
+        if (a.status === 'eliminated' && b.status === 'eliminated') {
+          return b.eliminatedRound - a.eliminatedRound; // Later elimination = better rank
+        }
+        return 0;
+      });
+
+      let html = '';
+      sorted.forEach((player, index) => {
+        const statusClass = player.status;
+        let statusText = '진행 중';
+        if (player.status === 'winner') statusText = '🏆 우승';
+        else if (player.status === 'eliminated') statusText = `${player.rank}위`;
+        
+        html += `
+          <div class="ranking-item ${statusClass}">
+            <div class="rank-number">${index + 1}</div>
+            <div class="rank-name">${player.name}</div>
+            <div class="rank-status">${statusText}</div>
+          </div>
+        `;
+      });
+      
+      rankingList.innerHTML = html;
+    }
+
+    function showFinalWinner(name) {
+      winnerName.textContent = name;
+      finalWinner.classList.add('show');
+      createConfetti();
+    }
+
+    function closeFinalWinner() {
+      finalWinner.classList.remove('show');
+    }
+
+    function createConfetti() {
+      const colors = ['#e74c3c', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6', '#ff6b6b'];
+      
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * 100 + 'vw';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+          document.body.appendChild(confetti);
+          
+          setTimeout(() => confetti.remove(), 4000);
+        }, i * 30);
+      }
+    }
+
+    function resetGame() {
+      isPlaying = false;
+      startBtn.disabled = false;
+      currentRound = 0;
+      matches = [];
+      rankings = [];
+      
+      roundInfo.textContent = '🎯 대기 중';
+      matchCount.textContent = '참여자를 입력하고 시작하세요';
+      
+      arena.innerHTML = `
+        <div class="waiting-state">
+          <div class="waiting-emoji">✊✋✌️</div>
+          <div class="waiting-text">참여자를 입력하고 시작 버튼을 누르세요</div>
+        </div>
+      `;
+      
+      rankingList.innerHTML = `
+        <div class="ranking-item" style="justify-content: center; color: var(--text-secondary); font-size: 0.85rem;">
+          게임을 시작하면 랭킹이 표시됩니다
+        </div>
+      `;
+      
+      finalWinner.classList.remove('show');
+    }
+
+    function copyResults() {
+      if (rankings.length === 0) {
+        showToast('아직 결과가 없습니다');
+        return;
+      }
+
+      const sorted = [...rankings].sort((a, b) => {
+        if (a.status === 'winner') return -1;
+        if (b.status === 'winner') return 1;
+        if (a.status === 'playing' && b.status !== 'playing') return -1;
+        if (b.status === 'playing' && a.status !== 'playing') return 1;
+        if (a.status === 'eliminated' && b.status === 'eliminated') {
+          return b.eliminatedRound - a.eliminatedRound;
+        }
+        return 0;
+      });
+
+      let text = '✌️✊🖐️ 토너먼트 결과\n';
+      text += '━'.repeat(20) + '\n';
+      
+      sorted.forEach((player, index) => {
+        let statusText = '진행 중';
+        if (player.status === 'winner') statusText = '🏆 우승';
+        else if (player.status === 'eliminated') statusText = `${player.rank}위`;
+        text += `${index + 1}. ${player.name} - ${statusText}\n`;
+      });
+
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('결과가 복사되었습니다!');
+      }).catch(() => {
+        showToast('복사에 실패했습니다');
+      });
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+  </script>
+</body>
+</html>

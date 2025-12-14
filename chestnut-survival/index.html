@@ -301,6 +301,16 @@
       display: block;
     }
     
+    .copyright {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      user-select: none;
+    }
+    
     /* Game Over Overlay */
     .game-over-overlay {
       position: absolute;
@@ -397,7 +407,7 @@
       
       <div>
         <label>참여자 (콤마로 구분)</label>
-        <textarea id="participants" placeholder="철수, 영희, 민수, 지영, 현우, 서연, 도윤, 하은, 시우, 지아, 준서, 수빈"></textarea>
+        <textarea id="participants" placeholder="철수, 영희, 민수, 지영, 현우, 서연, 도윤, 하은, 시우, 지아, 준서, 수빈">철수, 영희, 민수, 지영, 현우, 서연, 도윤, 하은, 시우, 지아, 준서, 수빈</textarea>
       </div>
       
       <div class="settings-group">
@@ -419,6 +429,9 @@
       </div>
       
       <div class="sidebar-footer">
+        <a href="https://geniuskey.github.io/lottery/" class="icon-btn" data-tooltip="추첨 포탈 홈">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </a>
         <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
         </button>
@@ -433,6 +446,7 @@
     
     <main class="game-area">
       <canvas id="gameCanvas"></canvas>
+      <div class="copyright">© 2025 Euiyun Edwin Kim</div>
       <div class="game-over-overlay" id="gameOverOverlay">
         <div class="game-over-content">
           <h2>🎉 생존자 발표!</h2>

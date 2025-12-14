@@ -743,7 +743,7 @@
 
       <div class="input-group">
         <div class="section-title">👥 참여자 명단</div>
-        <textarea id="participants" placeholder="예: 철수, 영희, 민수, 지훈, 수진...&#10;콤마(,)로 구분하여 입력하세요"></textarea>
+        <textarea id="participants" placeholder="예: 철수, 영희, 민수, 지훈, 수진...&#10;콤마(,)로 구분하여 입력하세요">영수, 영호, 영식, 영철, 광수, 상철</textarea>
       </div>
 
       <div class="settings-group">
@@ -1448,6 +1448,43 @@
         resizeCanvas();
       }
     });
+
+    // LocalStorage 키
+    const STORAGE_KEY = 'punchSurvival';
+
+    // 설정 저장
+    function saveSettings() {
+      const settings = {
+        participants: participantsInput.value,
+        winnerCount: winnerCountInput.value
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    }
+
+    // 설정 로드
+    function loadSettings() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const settings = JSON.parse(saved);
+          if (settings.participants) {
+            participantsInput.value = settings.participants;
+          }
+          if (settings.winnerCount) {
+            winnerCountInput.value = settings.winnerCount;
+          }
+        }
+      } catch (e) {
+        console.error('설정 로드 실패:', e);
+      }
+    }
+
+    // 입력값 변경 시 저장
+    participantsInput.addEventListener('input', saveSettings);
+    winnerCountInput.addEventListener('change', saveSettings);
+
+    // 페이지 로드 시 설정 불러오기
+    loadSettings();
 
     // Initialize canvas size
     resizeCanvas();

@@ -1,0 +1,11 @@
+# robots.txt for 추첨 게임 포털
+# https://geniuskey.github.io/lottery/
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://geniuskey.github.io/lottery/sitemap.xml
+
+# Crawl-delay (optional, be nice to the server)
+Crawl-delay: 1
