@@ -699,13 +699,8 @@
                                     x: (dx / dist) * speed,
                                     y: (dy / dist) * speed
                                 });
-                            } else if (!closestChair.occupied) {
-                                closestChair.occupied = true;
-                                closestChair.occupiedBy = this;
-                                this.groupJoined = true;
-                                Body.setVelocity(this.body, { x: 0, y: 0 });
-                                Body.setPosition(this.body, { x: closestChair.x, y: closestChair.y });
                             }
+                            // 의자 점유는 별도 로직에서 처리
                         }
                     } else {
                         Body.setVelocity(this.body, { x: 0, y: 0 });
@@ -958,6 +953,39 @@
                 p.draw();
             });
 
+            // 의자 게임 중 의자 배정 처리 (경쟁 조건 방지)
+            if (gameState === 'musical_chairs') {
+                // 각 의자별로 가장 가까운 참여자 찾기
+                chairs.forEach(chair => {
+                    if (chair.occupied) return;
+                    
+                    let closestParticipant = null;
+                    let minDist = 30; // 30 이내에 있어야 앉을 수 있음
+                    
+                    participants.forEach(p => {
+                        if (p.eliminated || p.groupJoined) return;
+                        
+                        const dx = chair.x - p.body.position.x;
+                        const dy = chair.y - p.body.position.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (dist < minDist) {
+                            minDist = dist;
+                            closestParticipant = p;
+                        }
+                    });
+                    
+                    // 가장 가까운 사람이 의자 차지
+                    if (closestParticipant) {
+                        chair.occupied = true;
+                        chair.occupiedBy = closestParticipant;
+                        closestParticipant.groupJoined = true;
+                        Body.setVelocity(closestParticipant.body, { x: 0, y: 0 });
+                        Body.setPosition(closestParticipant.body, { x: chair.x, y: chair.y });
+                    }
+                });
+            }
+
             if (gameState === 'musical_chairs') {
                 ctx.save();
                 ctx.font = 'bold 80px "Noto Sans KR"';
@@ -973,11 +1001,11 @@
 
             roundTimer++;
 
-            if (gameState === 'dancing' && roundTimer > 240) {
+            if (gameState === 'dancing' && roundTimer > 360) {
                 startChairWait();
             } else if (gameState === 'chair_wait' && roundTimer > 60) {
                 startMusicalChairs();
-            } else if (gameState === 'musical_chairs' && roundTimer > 180) {
+            } else if (gameState === 'musical_chairs' && roundTimer > 300) {
                 eliminateChairPlayers();
             }
 
