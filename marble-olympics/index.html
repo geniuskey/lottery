@@ -171,6 +171,12 @@
             background-clip: text;
         }
 
+        .logo-emoji {
+            -webkit-background-clip: unset;
+            -webkit-text-fill-color: initial;
+            background: none;
+        }
+
         .help-btn {
             width: 32px;
             height: 32px;
@@ -1072,7 +1078,7 @@
             <div class="sidebar-top">
                 <div class="logo-row">
                     <div class="logo">
-                        🏅 구슬 올림픽
+                        <span class="logo-emoji">🏅</span> 구슬 올림픽
                     </div>
                     <button class="help-btn" id="helpBtn" title="도움말">?</button>
                 </div>

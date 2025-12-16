@@ -1,0 +1,1791 @@
+<!--
+@game-meta
+{
+  "id": "bowling",
+  "title": "볼링 서바이벌",
+  "emoji": "🎳",
+  "category": "서바이벌",
+  "description": "3D 물리 엔진 기반 볼링 서바이벌! 참여자들이 볼링 핀이 되어 마지막까지 살아남는 사람이 승자!",
+  "features": ["🎳 3D 물리 엔진", "🏆 서바이벌 방식"],
+  "color": "orange",
+  "badge": "NEW",
+  "version": "1.0.0",
+  "updated": "2025-01-15",
+  "author": {
+    "name": "Euiyun Edwin Kim",
+    "email": "geniuskey@gmail.com",
+    "github": "geniuskey"
+  },
+  "urls": {
+    "service": "https://geniuskey.github.io/lottery/bowling/",
+    "repository": "https://github.com/geniuskey/lottery"
+  },
+  "license": "MIT",
+  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+}
+@end-game-meta
+-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎳 볼링 서바이벌</title>
+    
+    <!-- SEO 기본 -->
+    <meta name="description" content="3D 물리 엔진 기반 볼링 서바이벌! 참여자들이 볼링 핀이 되어 마지막까지 살아남는 사람이 승자!">
+    <meta name="author" content="Euiyun Edwin Kim">
+    <meta name="keywords" content="볼링 서바이벌, 추첨, 게임, lottery, 서바이벌, 3D, 물리엔진, bowling">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="추첨 게임 포탈">
+    <meta property="og:title" content="🎳 볼링 서바이벌">
+    <meta property="og:description" content="3D 물리 엔진 기반 볼링 서바이벌! 참여자들이 볼링 핀이 되어 마지막까지 살아남는 사람이 승자!">
+    <meta property="og:url" content="https://geniuskey.github.io/lottery/bowling/">
+    <meta property="og:locale" content="ko_KR">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="🎳 볼링 서바이벌">
+    <meta name="twitter:description" content="3D 물리 엔진 기반 볼링 서바이벌! 참여자들이 볼링 핀이 되어 마지막까지 살아남는 사람이 승자!">
+    
+    <!-- 추가 SEO -->
+    <link rel="canonical" href="https://geniuskey.github.io/lottery/bowling/">
+    <meta name="robots" content="index, follow">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #ff6b35;
+            --primary-dark: #e85a2a;
+            --secondary: #f7c59f;
+            --accent: #2ec4b6;
+            --bg-dark: #0d1117;
+            --bg-card: rgba(22, 27, 34, 0.95);
+            --text: #e6edf3;
+            --text-muted: rgba(230, 237, 243, 0.6);
+            --border: rgba(255, 107, 53, 0.2);
+            --glow: rgba(255, 107, 53, 0.4);
+            --lane-wood: #c4956a;
+            --lane-dark: #8b6914;
+            --pin-white: #f5f5f5;
+            --pin-red: #d32f2f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            min-width: 320px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(20px);
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), transparent);
+        }
+
+        .sidebar-header h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            color: var(--text);
+        }
+
+        .sidebar-header h1 .title-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .help-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 107, 53, 0.15);
+            border: 1px solid var(--border);
+            color: var(--primary);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .help-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--glow);
+        }
+
+        .input-group select,
+        .input-group input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .input-group select:focus,
+        .input-group input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--glow);
+        }
+
+        .input-group select option {
+            background: var(--bg-dark);
+            color: var(--text);
+        }
+
+        /* Compact settings section */
+        .settings-section {
+            margin-bottom: 20px;
+        }
+
+        .settings-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .settings-row label {
+            font-size: 0.9rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-row select {
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.85rem;
+            font-family: inherit;
+            cursor: pointer;
+            min-width: 80px;
+        }
+
+        .settings-row select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 20px var(--glow);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px var(--glow);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 107, 53, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 107, 53, 0.25);
+        }
+
+        /* Rankings */
+        .ranking-section {
+            margin-top: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .ranking-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .ranking-item.eliminated {
+            opacity: 0.4;
+            background: rgba(255, 0, 0, 0.1);
+            border-color: rgba(255, 0, 0, 0.2);
+        }
+
+        .ranking-item.winner {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 107, 53, 0.2));
+            border-color: gold;
+            animation: winnerGlow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes winnerGlow {
+            from { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+            to { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+        }
+
+        .ranking-position {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+
+        .ranking-item.eliminated .ranking-position {
+            background: #666;
+        }
+
+        .ranking-name {
+            flex: 1;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .ranking-status {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+            background: var(--accent);
+            color: white;
+        }
+
+        .ranking-item.eliminated .ranking-status {
+            background: #d32f2f;
+        }
+
+        /* Footer */
+        .sidebar-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .icon-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .icon-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .icon-btn[data-tooltip] {
+            position: relative;
+        }
+
+        .icon-btn[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px 10px;
+            background: var(--bg-dark);
+            color: var(--text);
+            font-size: 0.75rem;
+            white-space: nowrap;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+
+        /* Game Area */
+        .game-area {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(ellipse at center, #1a2332 0%, var(--bg-dark) 100%);
+            overflow: hidden;
+        }
+
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .copyright {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.25);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* Game Status Overlay */
+        .game-status {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 30px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .round-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* Winner Overlay */
+        .winner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .winner-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .winner-trophy {
+            font-size: 5rem;
+            animation: bounce 0.6s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .winner-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            letter-spacing: 4px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, gold, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .winner-names {
+            font-size: 1.5rem;
+            color: var(--text);
+            text-align: center;
+        }
+
+        /* Help Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal {
+            transform: scale(1);
+        }
+
+        .modal h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .modal p {
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .modal-close {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-width: unset;
+                height: auto;
+                max-height: 45vh;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .game-area {
+                flex: 1;
+                min-height: 55vh;
+            }
+
+            .game-status {
+                font-size: 0.9rem;
+                padding: 10px 20px;
+            }
+
+            .winner-trophy {
+                font-size: 4rem;
+            }
+
+            .winner-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>🎳 <span class="title-text">볼링 서바이벌</span></h1>
+                <button class="help-btn" id="helpBtn">?</button>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="input-group">
+                    <label>참여자 명단 (콤마로 구분)</label>
+                    <textarea id="participants" placeholder="영수, 영호, 영식, 영철, 광수, 상철">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+                </div>
+
+                <div class="settings-section">
+                    <div class="settings-title">⚙️ 게임 설정</div>
+                    <div class="settings-row">
+                        <label>🏆 우승자 수</label>
+                        <select id="winnerCount">
+                            <option value="1">1명</option>
+                            <option value="2">2명</option>
+                            <option value="3">3명</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="startBtn">🎮 시작</button>
+                    <button class="btn btn-secondary" id="resetBtn">↺</button>
+                </div>
+
+                <div class="ranking-section">
+                    <div class="ranking-title">📊 실시간 순위</div>
+                    <div class="ranking-list" id="rankingList">
+                        <div style="color: var(--text-muted); text-align: center; padding: 20px;">
+                            게임을 시작하세요
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <a href="https://geniuskey.github.io/lottery/" class="icon-btn" data-tooltip="추첨 포탈 홈">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </a>
+                <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+                <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+                </a>
+                <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
+                </a>
+            </div>
+        </aside>
+
+        <main class="game-area" id="gameArea">
+            <canvas id="gameCanvas"></canvas>
+            
+            <div class="game-status" id="gameStatus" style="display: none;">
+                <span class="round-badge" id="roundBadge">라운드 1</span>
+                <span id="statusText">준비 중...</span>
+            </div>
+
+            <div class="winner-overlay" id="winnerOverlay">
+                <div class="winner-trophy">🏆</div>
+                <div class="winner-title">WINNER!</div>
+                <div class="winner-names" id="winnerNames"></div>
+            </div>
+
+            <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
+        </main>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="helpModal">
+        <div class="modal">
+            <h2>🎳 볼링 서바이벌 도움말</h2>
+            <p><strong>게임 방법:</strong> 참여자들이 볼링 핀이 되어 서 있습니다. 매 라운드마다 볼링공이 랜덤한 방향에서 굴러와 핀을 쓰러뜨립니다.</p>
+            <p><strong>승리 조건:</strong> 마지막까지 쓰러지지 않고 서 있는 핀이 우승자입니다!</p>
+            <p><strong>설정:</strong></p>
+            <p>• <strong>우승자 수:</strong> 최종 생존자 수를 설정합니다.</p>
+            <p><strong>팁:</strong> 3D 물리 엔진으로 실제 볼링처럼 핀이 쓰러지며, 매번 다른 결과가 나옵니다!</p>
+            <button class="modal-close" id="closeModal">확인</button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameRunning = false;
+        let participants = [];
+        let eliminatedPlayers = [];
+        let winners = [];
+        let round = 0;
+        let winnerCount = 1;
+
+        // Three.js & Cannon.js
+        let scene, camera, renderer;
+        let world;
+        let pins = [];
+        let pinBodies = [];
+        let ball, ballBody;
+        let floor, floorBody;
+        let animationId;
+        let lastTime = 0;
+
+        // DOM Elements
+        const participantsInput = document.getElementById('participants');
+        const winnerCountSelect = document.getElementById('winnerCount');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const rankingList = document.getElementById('rankingList');
+        const gameStatus = document.getElementById('gameStatus');
+        const roundBadge = document.getElementById('roundBadge');
+        const statusText = document.getElementById('statusText');
+        const winnerOverlay = document.getElementById('winnerOverlay');
+        const winnerNames = document.getElementById('winnerNames');
+        const helpBtn = document.getElementById('helpBtn');
+        const helpModal = document.getElementById('helpModal');
+        const closeModal = document.getElementById('closeModal');
+        const copyResultBtn = document.getElementById('copyResultBtn');
+        const gameArea = document.getElementById('gameArea');
+        const canvas = document.getElementById('gameCanvas');
+
+        // Initialize
+        init();
+        loadSettings();
+
+        function init() {
+            initThree();
+            initCannon();
+            createEnvironment();
+            animate();
+        }
+
+        function initThree() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a2332);
+            scene.fog = new THREE.Fog(0x1a2332, 20, 80);
+
+            const aspect = gameArea.clientWidth / gameArea.clientHeight;
+            camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
+            camera.position.set(0, 15, 25);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+            renderer.setSize(gameArea.clientWidth, gameArea.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+
+            const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            mainLight.position.set(10, 20, 10);
+            mainLight.castShadow = true;
+            mainLight.shadow.mapSize.width = 2048;
+            mainLight.shadow.mapSize.height = 2048;
+            mainLight.shadow.camera.near = 0.5;
+            mainLight.shadow.camera.far = 50;
+            mainLight.shadow.camera.left = -20;
+            mainLight.shadow.camera.right = 20;
+            mainLight.shadow.camera.top = 20;
+            mainLight.shadow.camera.bottom = -20;
+            scene.add(mainLight);
+
+            const fillLight = new THREE.DirectionalLight(0xff6b35, 0.3);
+            fillLight.position.set(-10, 10, -10);
+            scene.add(fillLight);
+
+            const spotLight = new THREE.SpotLight(0xffffff, 0.5);
+            spotLight.position.set(0, 30, 0);
+            spotLight.angle = Math.PI / 4;
+            spotLight.penumbra = 0.3;
+            spotLight.castShadow = true;
+            scene.add(spotLight);
+
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function initCannon() {
+            world = new CANNON.World();
+            world.gravity.set(0, -30, 0);
+            world.broadphase = new CANNON.NaiveBroadphase();
+            world.solver.iterations = 10;
+
+            // Materials
+            world.defaultContactMaterial = new CANNON.ContactMaterial(
+                new CANNON.Material('default'),
+                new CANNON.Material('default'),
+                {
+                    friction: 0.3,
+                    restitution: 0.2
+                }
+            );
+        }
+
+        function createEnvironment() {
+            // Floor - Bowling Lane
+            const laneWidth = 10;
+            const laneLength = 40;
+            const gutterWidth = 1.5;
+            const gutterDepth = 0.4;
+            const wallHeight = 1.5;
+            
+            // Main lane surface
+            const laneGeometry = new THREE.BoxGeometry(laneWidth, 0.5, laneLength);
+            const laneTexture = createLaneTexture();
+            const laneMaterial = new THREE.MeshStandardMaterial({ 
+                map: laneTexture,
+                roughness: 0.4,
+                metalness: 0.1
+            });
+            floor = new THREE.Mesh(laneGeometry, laneMaterial);
+            floor.position.y = -0.25; // Top surface at y=0
+            floor.receiveShadow = true;
+            scene.add(floor);
+
+            // Floor physics - Thick solid floor at y=0 surface
+            const floorThickness = 2;
+            floorBody = new CANNON.Body({
+                mass: 0,
+                shape: new CANNON.Box(new CANNON.Vec3(laneWidth / 2 + gutterWidth + 1, floorThickness / 2, laneLength / 2 + 5))
+            });
+            floorBody.position.set(0, -floorThickness / 2, 0);
+            world.addBody(floorBody);
+
+            // Gutters (visual) - lower than lane
+            const gutterGeometry = new THREE.BoxGeometry(gutterWidth, 0.3, laneLength);
+            const gutterMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.8 });
+            
+            const leftGutter = new THREE.Mesh(gutterGeometry, gutterMaterial);
+            leftGutter.position.set(-laneWidth / 2 - gutterWidth / 2, -gutterDepth, 0);
+            leftGutter.receiveShadow = true;
+            scene.add(leftGutter);
+
+            const rightGutter = new THREE.Mesh(gutterGeometry, gutterMaterial);
+            rightGutter.position.set(laneWidth / 2 + gutterWidth / 2, -gutterDepth, 0);
+            rightGutter.receiveShadow = true;
+            scene.add(rightGutter);
+
+            // Lane edges (bumps to push ball into gutter)
+            const edgeShape = new CANNON.Box(new CANNON.Vec3(0.05, 0.15, laneLength / 2));
+            
+            const leftEdgeBody = new CANNON.Body({ mass: 0, shape: edgeShape });
+            leftEdgeBody.position.set(-laneWidth / 2, 0.15, 0);
+            world.addBody(leftEdgeBody);
+
+            const rightEdgeBody = new CANNON.Body({ mass: 0, shape: edgeShape });
+            rightEdgeBody.position.set(laneWidth / 2, 0.15, 0);
+            world.addBody(rightEdgeBody);
+
+            // Side walls (visual) - beside gutters
+            const sideWallGeometry = new THREE.BoxGeometry(0.3, wallHeight, laneLength);
+            const sideWallMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.6 });
+            
+            const leftWall = new THREE.Mesh(sideWallGeometry, sideWallMaterial);
+            leftWall.position.set(-laneWidth / 2 - gutterWidth - 0.15, wallHeight / 2, 0);
+            leftWall.receiveShadow = true;
+            leftWall.castShadow = true;
+            scene.add(leftWall);
+
+            const rightWall = new THREE.Mesh(sideWallGeometry, sideWallMaterial);
+            rightWall.position.set(laneWidth / 2 + gutterWidth + 0.15, wallHeight / 2, 0);
+            rightWall.receiveShadow = true;
+            rightWall.castShadow = true;
+            scene.add(rightWall);
+
+            // Side wall physics
+            const sideWallShape = new CANNON.Box(new CANNON.Vec3(0.15, wallHeight / 2, laneLength / 2));
+            
+            const leftWallBody = new CANNON.Body({ mass: 0, shape: sideWallShape });
+            leftWallBody.position.set(-laneWidth / 2 - gutterWidth - 0.15, wallHeight / 2, 0);
+            world.addBody(leftWallBody);
+
+            const rightWallBody = new CANNON.Body({ mass: 0, shape: sideWallShape });
+            rightWallBody.position.set(laneWidth / 2 + gutterWidth + 0.15, wallHeight / 2, 0);
+            world.addBody(rightWallBody);
+
+            // No back wall - ball can fall off the end
+        }
+
+        function createLaneTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+
+            // Wood base
+            const gradient = ctx.createLinearGradient(0, 0, 512, 0);
+            gradient.addColorStop(0, '#c4956a');
+            gradient.addColorStop(0.5, '#d4a574');
+            gradient.addColorStop(1, '#c4956a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 512, 1024);
+
+            // Wood grain lines (vertical)
+            ctx.strokeStyle = 'rgba(139, 105, 20, 0.25)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 30; i++) {
+                const x = (i * 17) + Math.random() * 5;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x + (Math.random() - 0.5) * 10, 1024);
+                ctx.stroke();
+            }
+
+            // Aim arrows - ▲ shape pointing up (toward pins, which is top of texture)
+            // Standard bowling has 7 arrows in a row
+            ctx.fillStyle = 'rgba(30, 30, 30, 0.6)';
+            
+            const arrowY = 600; // Position on lane
+            const arrowPositions = [73, 110, 183, 256, 329, 402, 439]; // 7 arrows
+            const arrowHeight = 35;
+            const arrowWidth = 18;
+            
+            arrowPositions.forEach((x, i) => {
+                // Draw filled triangle pointing UP (▲)
+                ctx.beginPath();
+                ctx.moveTo(x, arrowY); // Top point
+                ctx.lineTo(x - arrowWidth / 2, arrowY + arrowHeight); // Bottom left
+                ctx.lineTo(x + arrowWidth / 2, arrowY + arrowHeight); // Bottom right
+                ctx.closePath();
+                ctx.fill();
+            });
+
+            // Dots at approach area (standard bowling dots)
+            ctx.fillStyle = 'rgba(30, 30, 30, 0.4)';
+            const dotRows = [850, 920];
+            const dotPositions = [73, 146, 183, 256, 329, 366, 439];
+            
+            dotRows.forEach(dotY => {
+                dotPositions.forEach(x => {
+                    ctx.beginPath();
+                    ctx.arc(x, dotY, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            });
+
+            // Foul line
+            ctx.strokeStyle = 'rgba(60, 60, 60, 0.5)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, 780);
+            ctx.lineTo(512, 780);
+            ctx.stroke();
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            return texture;
+        }
+
+        function createPin(name, x, z, index, totalCount, row) {
+            const pinGroup = new THREE.Group();
+
+            // Real bowling pin proportions (scaled: 38.1cm height -> ~1.9 units)
+            // Base diameter: 5.02cm, Max belly: 11.9cm
+            const scale = 5; // Scale factor for visibility
+            const PIN_HEIGHT = 0.381 * scale; // 1.905 units
+            const BASE_RADIUS = 0.0251 * scale; // 0.1255
+            const BELLY_RADIUS = 0.0595 * scale; // 0.2975
+            const NECK_RADIUS = 0.025 * scale; // 0.125
+            const HEAD_RADIUS = 0.0285 * scale; // 0.1425
+
+            const bodyMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xf8f8f0, 
+                roughness: 0.25,
+                metalness: 0.05
+            });
+            const stripeMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xcc2222,
+                roughness: 0.3,
+                metalness: 0.1
+            });
+
+            // Create pin using lathe geometry for smooth realistic shape
+            const points = [];
+            const segments = 20;
+            
+            // Bottom flat base
+            points.push(new THREE.Vector2(BASE_RADIUS, 0));
+            
+            // Belly curve (widest part around 25-30% height)
+            for (let i = 0; i <= segments; i++) {
+                const t = i / segments;
+                const y = t * PIN_HEIGHT;
+                let r;
+                
+                if (t < 0.05) {
+                    // Flat bottom
+                    r = BASE_RADIUS;
+                } else if (t < 0.35) {
+                    // Expanding to belly
+                    const bellyT = (t - 0.05) / 0.30;
+                    r = BASE_RADIUS + (BELLY_RADIUS - BASE_RADIUS) * Math.sin(bellyT * Math.PI / 2);
+                } else if (t < 0.55) {
+                    // Belly to neck transition
+                    const neckT = (t - 0.35) / 0.20;
+                    r = BELLY_RADIUS - (BELLY_RADIUS - NECK_RADIUS) * Math.pow(neckT, 0.8);
+                } else if (t < 0.75) {
+                    // Neck
+                    r = NECK_RADIUS;
+                } else {
+                    // Head
+                    const headT = (t - 0.75) / 0.25;
+                    r = NECK_RADIUS + (HEAD_RADIUS - NECK_RADIUS) * Math.sin(headT * Math.PI);
+                    if (t > 0.95) {
+                        r = HEAD_RADIUS * Math.cos((t - 0.95) / 0.05 * Math.PI / 2);
+                    }
+                }
+                
+                points.push(new THREE.Vector2(Math.max(0.01, r), y));
+            }
+            points.push(new THREE.Vector2(0.01, PIN_HEIGHT));
+
+            const latheGeometry = new THREE.LatheGeometry(points, 24);
+            const pinMesh = new THREE.Mesh(latheGeometry, bodyMaterial);
+            pinMesh.castShadow = true;
+            pinMesh.receiveShadow = true;
+            pinGroup.add(pinMesh);
+
+            // Red stripes (two rings near the neck)
+            const stripeY1 = PIN_HEIGHT * 0.58;
+            const stripeY2 = PIN_HEIGHT * 0.65;
+            const stripeRadius = NECK_RADIUS * 1.15;
+            
+            const stripe1Geo = new THREE.TorusGeometry(stripeRadius, 0.02, 8, 24);
+            const stripe1 = new THREE.Mesh(stripe1Geo, stripeMaterial);
+            stripe1.rotation.x = Math.PI / 2;
+            stripe1.position.y = stripeY1;
+            pinGroup.add(stripe1);
+
+            const stripe2Geo = new THREE.TorusGeometry(stripeRadius * 0.95, 0.02, 8, 24);
+            const stripe2 = new THREE.Mesh(stripe2Geo, stripeMaterial);
+            stripe2.rotation.x = Math.PI / 2;
+            stripe2.position.y = stripeY2;
+            pinGroup.add(stripe2);
+
+            // Name label (sprite) - with varying height to avoid z-fighting
+            const labelCanvas = document.createElement('canvas');
+            labelCanvas.width = 256;
+            labelCanvas.height = 64;
+            const labelCtx = labelCanvas.getContext('2d');
+            labelCtx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+            labelCtx.beginPath();
+            labelCtx.roundRect(4, 4, 248, 56, 12);
+            labelCtx.fill();
+            labelCtx.font = 'bold 30px Noto Sans KR, sans-serif';
+            labelCtx.textAlign = 'center';
+            labelCtx.textBaseline = 'middle';
+            labelCtx.fillStyle = '#ffffff';
+            labelCtx.fillText(name, 128, 34);
+
+            const labelTexture = new THREE.CanvasTexture(labelCanvas);
+            const labelMaterial = new THREE.SpriteMaterial({ 
+                map: labelTexture,
+                depthTest: false,
+                depthWrite: false
+            });
+            const label = new THREE.Sprite(labelMaterial);
+            label.scale.set(3.6, 0.9, 1);
+            // Initial position - will be adjusted by adjustLabelPositions()
+            label.position.y = PIN_HEIGHT + 0.8;
+            label.renderOrder = 999 + index; // Stagger render order
+            pinGroup.add(label);
+
+            // Position pin so bottom sits exactly on floor (y=0)
+            pinGroup.position.set(x, 0, z);
+            pinGroup.userData = { name, eliminated: false, pinHeight: PIN_HEIGHT, originalX: x, originalZ: z, row: row };
+            scene.add(pinGroup);
+
+            // Physics body - Use Box shape for stability (Cannon.js 0.6.2 Cylinder has issues)
+            // Approximate pin with a box
+            const physicsHeight = PIN_HEIGHT;
+            const physicsWidth = BELLY_RADIUS * 1.0;
+            
+            const pinShape = new CANNON.Box(new CANNON.Vec3(physicsWidth / 2, physicsHeight / 2, physicsWidth / 2));
+            
+            const pinBody = new CANNON.Body({
+                mass: 1.2,
+                linearDamping: 0.5,
+                angularDamping: 0.6
+            });
+            
+            // Position body center at half height (box center)
+            pinBody.position.set(x, physicsHeight / 2, z);
+            pinBody.addShape(pinShape);
+            
+            world.addBody(pinBody);
+
+            return { mesh: pinGroup, body: pinBody, name, pinHeight: PIN_HEIGHT, physicsHeight: physicsHeight };
+        }
+
+        function createBall(x, z, direction) {
+            // Remove existing ball
+            if (ball) {
+                scene.remove(ball);
+                world.removeBody(ballBody);
+            }
+
+            // Bowling ball: larger and heavier for impact
+            const BALL_RADIUS = 0.6;
+            
+            const ballGeometry = new THREE.SphereGeometry(BALL_RADIUS, 32, 32);
+            const ballMaterial = new THREE.MeshStandardMaterial({
+                color: 0xff6b35,
+                roughness: 0.15,
+                metalness: 0.6
+            });
+            ball = new THREE.Mesh(ballGeometry, ballMaterial);
+            ball.castShadow = true;
+            ball.position.set(x, BALL_RADIUS, z); // Ball sits on floor
+            scene.add(ball);
+
+            const ballShape = new CANNON.Sphere(BALL_RADIUS);
+            ballBody = new CANNON.Body({
+                mass: 20,
+                shape: ballShape,
+                position: new CANNON.Vec3(x, BALL_RADIUS, z),
+                linearDamping: 0.01,
+                angularDamping: 0.01
+            });
+
+            // Fixed fast speed
+            const speed = 40;
+
+            ballBody.velocity.set(
+                direction.x * speed,
+                0,
+                direction.z * speed
+            );
+
+            world.addBody(ballBody);
+        }
+
+        function setupPins() {
+            // Clear existing pins
+            pins.forEach(pin => {
+                scene.remove(pin.mesh);
+                world.removeBody(pin.body);
+            });
+            pins = [];
+
+            const count = participants.length;
+            
+            // Triangle formation (bowling style) - 1, 2, 3, 4... pins per row
+            // Wide spacing to reduce chain reactions
+            const spacingX = 2.5;  // Much wider horizontal spacing
+            const spacingZ = 2.2;  // Much wider depth spacing
+            
+            // Calculate rows needed
+            let rows = 0;
+            let totalSpots = 0;
+            while (totalSpots < count) {
+                rows++;
+                totalSpots += rows;
+            }
+            
+            // Position pins at the back of the lane
+            const backPosition = -12;
+            
+            const positions = [];
+            let pinIndex = 0;
+            
+            // Build triangle from front (1 pin) to back (more pins)
+            for (let row = 0; row < rows && pinIndex < count; row++) {
+                const pinsInRow = row + 1;
+                const rowWidth = (pinsInRow - 1) * spacingX;
+                
+                for (let col = 0; col < pinsInRow && pinIndex < count; col++) {
+                    const x = (col * spacingX) - (rowWidth / 2);
+                    const z = backPosition - (row * spacingZ);
+                    
+                    positions.push({ x, z, row, col });
+                    pinIndex++;
+                }
+            }
+
+            // Shuffle participants for randomness
+            const shuffled = [...participants].sort(() => Math.random() - 0.5);
+
+            // Create pins at calculated positions
+            positions.forEach((pos, i) => {
+                if (i < shuffled.length) {
+                    const pin = createPin(shuffled[i], pos.x, pos.z, i, positions.length, pos.row);
+                    pins.push(pin);
+                }
+            });
+            
+            // After creating all pins, adjust label positions to avoid overlap
+            adjustLabelPositions();
+        }
+        
+        function adjustLabelPositions() {
+            if (pins.length === 0) return;
+            
+            const labels = pins.map((pin, i) => ({
+                pin: pin,
+                index: i,
+                x: pin.body.position.x,
+                z: pin.body.position.z,
+                labelX: pin.body.position.x,
+                labelY: pin.pinHeight + 0.8,
+                labelZ: pin.body.position.z,
+                width: 1.8,  // Approximate label width in world units
+                height: 0.5  // Approximate label height
+            }));
+            
+            // Iterative adjustment algorithm (similar to adjustText)
+            const iterations = 50;
+            const repelStrength = 0.15;
+            const returnStrength = 0.02;
+            
+            for (let iter = 0; iter < iterations; iter++) {
+                // Check each pair of labels for overlap
+                for (let i = 0; i < labels.length; i++) {
+                    for (let j = i + 1; j < labels.length; j++) {
+                        const a = labels[i];
+                        const b = labels[j];
+                        
+                        // Calculate overlap in X and Z
+                        const dx = b.labelX - a.labelX;
+                        const dz = b.labelZ - a.labelZ;
+                        const dy = b.labelY - a.labelY;
+                        
+                        // Check if labels overlap (using bounding box)
+                        const overlapX = Math.abs(dx) < (a.width + b.width) / 2;
+                        const overlapZ = Math.abs(dz) < 0.8; // Z threshold for same row
+                        const overlapY = Math.abs(dy) < (a.height + b.height) / 2;
+                        
+                        if (overlapX && overlapZ && overlapY) {
+                            // Repel labels from each other
+                            const dist = Math.sqrt(dx * dx + dz * dz + dy * dy) || 0.1;
+                            
+                            // Push apart primarily in Y (height)
+                            const pushY = repelStrength * (dy >= 0 ? 1 : -1);
+                            const pushX = repelStrength * 0.3 * (dx / dist);
+                            
+                            a.labelY -= pushY / 2;
+                            b.labelY += pushY / 2;
+                            a.labelX -= pushX;
+                            b.labelX += pushX;
+                        }
+                    }
+                    
+                    // Gentle return force toward original X position
+                    const label = labels[i];
+                    label.labelX += (label.x - label.labelX) * returnStrength;
+                    
+                    // Keep labels within reasonable height range
+                    label.labelY = Math.max(label.pin.pinHeight + 0.6, Math.min(label.labelY, label.pin.pinHeight + 2.5));
+                }
+            }
+            
+            // Apply adjusted positions to sprites
+            labels.forEach(label => {
+                const sprite = label.pin.mesh.children.find(child => child.isSprite);
+                if (sprite) {
+                    // Position is relative to pin group, so subtract pin position
+                    sprite.position.x = label.labelX - label.x;
+                    sprite.position.y = label.labelY;
+                    sprite.position.z = label.labelZ - label.z;
+                }
+            });
+        }
+
+        function updateRankings() {
+            const standings = pins
+                .filter(p => !p.mesh.userData.eliminated)
+                .map(p => p.name);
+            
+            rankingList.innerHTML = '';
+
+            // Winners first
+            winners.forEach((name, i) => {
+                const item = document.createElement('div');
+                item.className = 'ranking-item winner';
+                item.innerHTML = `
+                    <div class="ranking-position">${i + 1}</div>
+                    <div class="ranking-name">${name}</div>
+                    <div class="ranking-status">🏆 우승</div>
+                `;
+                rankingList.appendChild(item);
+            });
+
+            // Standing pins (exclude winners)
+            const standingsFiltered = standings.filter(name => !winners.includes(name));
+            standingsFiltered.forEach((name, i) => {
+                const item = document.createElement('div');
+                item.className = 'ranking-item';
+                item.innerHTML = `
+                    <div class="ranking-position">${winners.length + i + 1}</div>
+                    <div class="ranking-name">${name}</div>
+                    <div class="ranking-status">🎳 생존</div>
+                `;
+                rankingList.appendChild(item);
+            });
+
+            // Eliminated pins (in reverse order)
+            [...eliminatedPlayers].reverse().forEach((name, i) => {
+                const item = document.createElement('div');
+                item.className = 'ranking-item eliminated';
+                item.innerHTML = `
+                    <div class="ranking-position">-</div>
+                    <div class="ranking-name">${name}</div>
+                    <div class="ranking-status">탈락</div>
+                `;
+                rankingList.appendChild(item);
+            });
+        }
+
+        function checkPinStates() {
+            const fallenPins = [];
+
+            pins.forEach(pin => {
+                if (pin.mesh.userData.eliminated) return;
+
+                // Get the up vector of the pin after physics simulation
+                const pinUp = new CANNON.Vec3(0, 1, 0);
+                pin.body.quaternion.vmult(pinUp, pinUp);
+                
+                // Pin is fallen if:
+                // 1. Its up vector is tilted more than ~45 degrees (dot product < 0.7)
+                // 2. Or its center is too low (knocked over on ground)
+                const upDot = pinUp.y; // Dot product with world up (0,1,0)
+                const centerHeight = pin.body.position.y;
+                const expectedHeight = pin.physicsHeight / 2;
+                
+                // Fallen if tilted significantly OR center dropped below 40% of standing height
+                if (upDot < 0.7 || centerHeight < expectedHeight * 0.4) {
+                    pin.mesh.userData.eliminated = true;
+                    fallenPins.push(pin.name);
+                }
+            });
+
+            if (fallenPins.length > 0) {
+                eliminatedPlayers.push(...fallenPins);
+                updateRankings();
+            }
+        }
+
+        function getStandingPins() {
+            return pins.filter(p => !p.mesh.userData.eliminated);
+        }
+
+        function removeEliminatedPins() {
+            // Remove eliminated pins from scene and physics world
+            const eliminatedPins = pins.filter(p => p.mesh.userData.eliminated);
+            
+            eliminatedPins.forEach(pin => {
+                // Fade out animation
+                scene.remove(pin.mesh);
+                world.removeBody(pin.body);
+            });
+            
+            // Keep only standing pins in the array
+            pins = pins.filter(p => !p.mesh.userData.eliminated);
+        }
+
+        async function startRound() {
+            round++;
+            roundBadge.textContent = `라운드 ${round}`;
+            statusText.textContent = '공 굴리는 중...';
+
+            // Get standing pins and pick a random target
+            const standingPins = getStandingPins();
+            if (standingPins.length === 0) return;
+            
+            const targetPin = standingPins[Math.floor(Math.random() * standingPins.length)];
+            const targetX = targetPin.body.position.x;
+            const targetZ = targetPin.body.position.z;
+            
+            // Random X start position across the lane width
+            const laneWidth = 10;
+            const startZ = 18;
+            const startX = (Math.random() - 0.5) * (laneWidth - 2);
+            
+            // Calculate direction vector to aim directly at the target pin
+            const dx = targetX - startX;
+            const dz = targetZ - startZ;
+            const length = Math.sqrt(dx * dx + dz * dz);
+            
+            const direction = {
+                x: dx / length,
+                z: dz / length
+            };
+
+            createBall(startX, startZ, direction);
+
+            // Wait for ball to travel and hit pins
+            await new Promise(resolve => {
+                let checkCount = 0;
+                const maxChecks = 180; // 6 seconds max (180 * 33ms)
+                
+                const checkBall = setInterval(() => {
+                    checkCount++;
+                    
+                    // Ball has passed the pins (z < -22) or stopped moving or max time reached
+                    const ballStopped = ballBody && (
+                        ballBody.position.z < -22 || 
+                        ballBody.velocity.length() < 0.5 ||
+                        checkCount >= maxChecks
+                    );
+                    
+                    if (ballStopped || !ballBody) {
+                        clearInterval(checkBall);
+                        // Wait a bit more for pins to settle
+                        setTimeout(resolve, 1500);
+                    }
+                }, 33);
+            });
+
+            checkPinStates();
+
+            // Remove ball
+            if (ball) {
+                scene.remove(ball);
+                world.removeBody(ballBody);
+                ball = null;
+                ballBody = null;
+            }
+
+            // Check remaining pins
+            const standing = getStandingPins();
+            
+            if (standing.length <= winnerCount) {
+                // Game Over
+                winners = standing.map(p => p.name);
+                endGame();
+            } else {
+                // Reset for next round
+                statusText.textContent = `생존: ${standing.length}명`;
+                
+                // Remove eliminated pins from scene
+                await new Promise(resolve => setTimeout(resolve, 800));
+                removeEliminatedPins();
+                
+                // Reset standing pins to upright position
+                const stillStanding = getStandingPins(); // Get updated list after removal
+                stillStanding.forEach(pin => {
+                    const halfHeight = pin.physicsHeight / 2;
+                    const originalX = pin.mesh.userData.originalX;
+                    const originalZ = pin.mesh.userData.originalZ;
+                    
+                    // Reset physics body - center at half height above floor
+                    pin.body.position.set(originalX, halfHeight, originalZ);
+                    pin.body.velocity.set(0, 0, 0);
+                    pin.body.angularVelocity.set(0, 0, 0);
+                    pin.body.quaternion.set(0, 0, 0, 1);
+                    
+                    // Wake up the body
+                    pin.body.wakeUp();
+                });
+
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                if (gameRunning) {
+                    startRound();
+                }
+            }
+        }
+
+        function endGame() {
+            gameRunning = false;
+            startBtn.disabled = false;
+
+            winnerNames.textContent = winners.join(', ');
+            winnerOverlay.classList.add('show');
+            gameStatus.style.display = 'none';
+
+            createConfetti();
+            updateRankings();
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b35', '#f7c59f', '#2ec4b6', '#ffd700', '#ff69b4'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                gameArea.appendChild(confetti);
+
+                const animation = confetti.animate([
+                    { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translateY(${gameArea.clientHeight + 100}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                ], {
+                    duration: 2000 + Math.random() * 2000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                });
+
+                animation.onfinish = () => confetti.remove();
+            }
+        }
+
+        function startGame() {
+            const input = participantsInput.value.trim();
+            if (!input) return;
+
+            participants = input.split(',').map(p => p.trim()).filter(p => p);
+            if (participants.length < 2) {
+                alert('최소 2명의 참여자가 필요합니다.');
+                return;
+            }
+
+            winnerCount = parseInt(winnerCountSelect.value);
+
+            if (participants.length <= winnerCount) {
+                alert(`참여자 수(${participants.length})가 우승자 수(${winnerCount})보다 많아야 합니다.`);
+                return;
+            }
+
+            // Reset game state
+            gameRunning = true;
+            eliminatedPlayers = [];
+            winners = [];
+            round = 0;
+
+            startBtn.disabled = true;
+            winnerOverlay.classList.remove('show');
+            gameStatus.style.display = 'flex';
+            statusText.textContent = '준비 중...';
+
+            setupPins();
+            updateRankings();
+
+            setTimeout(() => {
+                startRound();
+            }, 1000);
+        }
+
+        function resetGame() {
+            gameRunning = false;
+            startBtn.disabled = false;
+            
+            // Clear pins and ball
+            pins.forEach(pin => {
+                scene.remove(pin.mesh);
+                world.removeBody(pin.body);
+            });
+            pins = [];
+
+            if (ball) {
+                scene.remove(ball);
+                world.removeBody(ballBody);
+                ball = null;
+                ballBody = null;
+            }
+
+            participants = [];
+            eliminatedPlayers = [];
+            winners = [];
+            round = 0;
+
+            winnerOverlay.classList.remove('show');
+            gameStatus.style.display = 'none';
+
+            rankingList.innerHTML = `
+                <div style="color: var(--text-muted); text-align: center; padding: 20px;">
+                    게임을 시작하세요
+                </div>
+            `;
+        }
+
+        function animate(time = 0) {
+            animationId = requestAnimationFrame(animate);
+
+            const deltaTime = Math.min((time - lastTime) / 1000, 0.1);
+            lastTime = time;
+
+            if (deltaTime > 0) {
+                world.step(1 / 60, deltaTime, 3);
+            }
+
+            // Update pin positions - sync mesh to physics body
+            pins.forEach(pin => {
+                const halfHeight = pin.physicsHeight / 2;
+                
+                // Mesh origin is at bottom (y=0), physics body center is at halfHeight
+                // So mesh.y = body.y - halfHeight
+                pin.mesh.position.x = pin.body.position.x;
+                pin.mesh.position.y = pin.body.position.y - halfHeight;
+                pin.mesh.position.z = pin.body.position.z;
+                pin.mesh.quaternion.set(
+                    pin.body.quaternion.x,
+                    pin.body.quaternion.y,
+                    pin.body.quaternion.z,
+                    pin.body.quaternion.w
+                );
+            });
+
+            // Update ball position
+            if (ball && ballBody) {
+                ball.position.copy(ballBody.position);
+                ball.quaternion.copy(ballBody.quaternion);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            const width = gameArea.clientWidth;
+            const height = gameArea.clientHeight;
+
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('bowling_settings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                participantsInput.value = settings.participants || participantsInput.value;
+                winnerCountSelect.value = settings.winnerCount || '1';
+            }
+        }
+
+        function saveSettings() {
+            const settings = {
+                participants: participantsInput.value,
+                winnerCount: winnerCountSelect.value
+            };
+            localStorage.setItem('bowling_settings', JSON.stringify(settings));
+        }
+
+        function copyResults() {
+            if (winners.length === 0 && eliminatedPlayers.length === 0) {
+                alert('게임 결과가 없습니다.');
+                return;
+            }
+
+            let result = '🎳 볼링 서바이벌 결과\n\n';
+            
+            if (winners.length > 0) {
+                result += '🏆 우승자\n';
+                winners.forEach((name, i) => {
+                    result += `${i + 1}위: ${name}\n`;
+                });
+            }
+
+            if (eliminatedPlayers.length > 0) {
+                result += '\n💔 탈락 순서\n';
+                eliminatedPlayers.forEach((name, i) => {
+                    result += `${i + 1}. ${name}\n`;
+                });
+            }
+
+            navigator.clipboard.writeText(result).then(() => {
+                const btn = copyResultBtn;
+                btn.style.background = 'var(--accent)';
+                setTimeout(() => {
+                    btn.style.background = '';
+                }, 1000);
+            });
+        }
+
+        // Event Listeners
+        startBtn.addEventListener('click', () => {
+            saveSettings();
+            startGame();
+        });
+
+        resetBtn.addEventListener('click', resetGame);
+        copyResultBtn.addEventListener('click', copyResults);
+
+        helpBtn.addEventListener('click', () => {
+            helpModal.classList.add('show');
+        });
+
+        closeModal.addEventListener('click', () => {
+            helpModal.classList.remove('show');
+        });
+
+        helpModal.addEventListener('click', (e) => {
+            if (e.target === helpModal) {
+                helpModal.classList.remove('show');
+            }
+        });
+
+        // Auto-save settings on change
+        participantsInput.addEventListener('change', saveSettings);
+        winnerCountSelect.addEventListener('change', saveSettings);
+    </script>
+</body>
+</html>

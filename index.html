@@ -460,6 +460,48 @@
       --card-bg: rgba(239, 68, 68, 0.15);
     }
 
+    .card.chaser {
+      --card-accent: #14b8a6;
+      --card-accent2: #0d9488;
+      --card-glow: rgba(20, 184, 166, 0.3);
+      --card-bg: rgba(20, 184, 166, 0.15);
+    }
+
+    .card.chair {
+      --card-accent: #8b5cf6;
+      --card-accent2: #7c3aed;
+      --card-glow: rgba(139, 92, 246, 0.3);
+      --card-bg: rgba(139, 92, 246, 0.15);
+    }
+
+    .card.bowling {
+      --card-accent: #06b6d4;
+      --card-accent2: #0891b2;
+      --card-glow: rgba(6, 182, 212, 0.3);
+      --card-bg: rgba(6, 182, 212, 0.15);
+    }
+
+    .card.chair {
+      --card-accent: #14b8a6;
+      --card-accent2: #0d9488;
+      --card-glow: rgba(20, 184, 166, 0.3);
+      --card-bg: rgba(20, 184, 166, 0.15);
+    }
+
+    .card.bowling {
+      --card-accent: #6366f1;
+      --card-accent2: #4f46e5;
+      --card-glow: rgba(99, 102, 241, 0.3);
+      --card-bg: rgba(99, 102, 241, 0.15);
+    }
+
+    .card.chaser {
+      --card-accent: #f43f5e;
+      --card-accent2: #e11d48;
+      --card-glow: rgba(244, 63, 94, 0.3);
+      --card-bg: rgba(244, 63, 94, 0.15);
+    }
+
     /* Coming Soon Card */
     .card.coming-soon {
       opacity: 0.6;
@@ -730,29 +772,6 @@
         </div>
       </article>
 
-      <article class="card chestnut" aria-label="밤송이 서바이벌 게임">
-        <div class="card-header">
-          <div class="card-icon">🌰</div>
-          <div class="card-title-wrap">
-            <h3>밤송이 서바이벌</h3>
-            <span class="card-tag">회피 게임</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <p>무서운 밤송이들을 피하며 생존하는 스릴 넘치는 추첨 게임. 끝까지 살아남아라!</p>
-          <div class="card-features">
-            <span class="feature-badge">🏃 회피 액션</span>
-            <span class="feature-badge">💥 충돌 물리</span>
-          </div>
-        </div>
-        <div class="card-footer">
-          <a href="./chestnut-survival/" class="play-btn">
-            <span class="play-icon">▶</span>
-            게임 시작
-          </a>
-        </div>
-      </article>
-
       <article class="card disk" aria-label="원판 밀치기 게임">
         <div class="card-header">
           <div class="card-icon">🥏</div>
@@ -770,6 +789,29 @@
         </div>
         <div class="card-footer">
           <a href="./disk-shove/" class="play-btn">
+            <span class="play-icon">▶</span>
+            게임 시작
+          </a>
+        </div>
+      </article>
+
+      <article class="card chaser" aria-label="술래로부터 살아남기 게임">
+        <div class="card-header">
+          <div class="card-icon">👊</div>
+          <div class="card-title-wrap">
+            <h3>술래로부터 살아남기</h3>
+            <span class="card-tag">서바이벌</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>무시무시한 술래로부터 도망쳐라! 끝까지 살아남는 자가 승리하는 스릴 넘치는 추첨 게임!</p>
+          <div class="card-features">
+            <span class="feature-badge">🏃 도망 액션</span>
+            <span class="feature-badge">👹 술래 시스템</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="./chaser-survival/" class="play-btn">
             <span class="play-icon">▶</span>
             게임 시작
           </a>
@@ -798,6 +840,75 @@
           </a>
         </div>
       </article>
+
+      <article class="card chair" aria-label="의자 앉기 게임">
+        <div class="card-header">
+          <div class="card-icon">🪑</div>
+          <div class="card-title-wrap">
+            <h3>의자 앉기</h3>
+            <span class="card-tag">서바이벌</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>음악이 멈추면 의자에 앉아라! 클래식 의자 뺏기 게임을 디지털로 즐기는 추첨 게임!</p>
+          <div class="card-features">
+            <span class="feature-badge">🎵 뮤지컬 체어</span>
+            <span class="feature-badge">🪑 의자 쟁탈</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="./chair/" class="play-btn">
+            <span class="play-icon">▶</span>
+            게임 시작
+          </a>
+        </div>
+      </article>
+
+      <article class="card chestnut" aria-label="밤송이 서바이벌 게임">
+        <div class="card-header">
+          <div class="card-icon">🌰</div>
+          <div class="card-title-wrap">
+            <h3>밤송이 서바이벌</h3>
+            <span class="card-tag">회피게임</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>무서운 밤송이들을 피하며 생존하는 스릴 넘치는 추첨 게임. 끝까지 살아남아라!</p>
+          <div class="card-features">
+            <span class="feature-badge">🏃 회피 액션</span>
+            <span class="feature-badge">💥 충돌 물리</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="./chestnut-survival/" class="play-btn">
+            <span class="play-icon">▶</span>
+            게임 시작
+          </a>
+        </div>
+      </article>
+
+      <article class="card bowling" aria-label="볼링 서바이벌 게임">
+        <div class="card-header">
+          <div class="card-icon">🎳</div>
+          <div class="card-title-wrap">
+            <h3>볼링 서바이벌</h3>
+            <span class="card-tag">서바이벌</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>볼링공을 피해 살아남아라! 핀이 되어 굴러오는 공을 피하는 스릴 넘치는 추첨 게임!</p>
+          <div class="card-features">
+            <span class="feature-badge">🎳 볼링 테마</span>
+            <span class="feature-badge">🔴 회피 액션</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="./bowling/" class="play-btn">
+            <span class="play-icon">▶</span>
+            게임 시작
+          </a>
+        </div>
+      </article>
     </section>
   </main>
 
@@ -817,7 +928,7 @@
 
   <script>
     // Floating Emojis Background
-    const emojis = ['🎲', '🎯', '🏆', '⭐', '🎮', '🎪', '🎨', '✨', '🌟', '💫', '🎉', '🎊', '🥏', '🥊'];
+    const emojis = ['🎲', '🎯', '🏆', '⭐', '🎮', '🎪', '🎨', '✨', '🌟', '💫', '🎉', '🎊', '🥏', '🥊', '🪑', '🎳', '👊'];
     const bgContainer = document.querySelector('.bg-container');
 
     function createFloatingEmoji() {
