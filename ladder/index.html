@@ -1,0 +1,1006 @@
+<!--
+@game-meta
+{
+  "id": "ladder-game",
+  "title": "사다리 추첨",
+  "emoji": "🪜",
+  "category": "추첨",
+  "description": "사다리를 타고 내려가 운명의 결과를 확인하세요! 공정하고 재미있는 사다리 타기 게임",
+  "features": ["🎲 랜덤 사다리", "✨ 애니메이션"],
+  "color": "blue",
+  "badge": "NEW",
+  "version": "1.0.0",
+  "updated": "2025-01-16",
+  "author": {
+    "name": "Euiyun Edwin Kim",
+    "email": "geniuskey@gmail.com",
+    "github": "geniuskey"
+  },
+  "urls": {
+    "service": "https://geniuskey.github.io/lottery/ladder/",
+    "repository": "https://github.com/geniuskey/lottery"
+  },
+  "license": "MIT",
+  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+}
+@end-game-meta
+-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🪜 사다리 추첨 게임</title>
+
+    <!-- SEO 기본 -->
+    <meta name="description" content="사다리를 타고 내려가 운명의 결과를 확인하세요! 공정하고 재미있는 사다리 타기 게임">
+    <meta name="author" content="Euiyun Edwin Kim">
+    <meta name="keywords" content="사다리 타기, 사다리 게임, 추첨, 게임, lottery, 랜덤 추첨">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="추첨 게임 포탈">
+    <meta property="og:title" content="🪜 사다리 추첨 게임">
+    <meta property="og:description" content="사다리를 타고 내려가 운명의 결과를 확인하세요! 공정하고 재미있는 사다리 타기 게임">
+    <meta property="og:url" content="https://geniuskey.github.io/lottery/ladder/">
+    <meta property="og:locale" content="ko_KR">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="🪜 사다리 추첨 게임">
+    <meta name="twitter:description" content="사다리를 타고 내려가 운명의 결과를 확인하세요! 공정하고 재미있는 사다리 타기 게임">
+
+    <!-- 추가 SEO -->
+    <link rel="canonical" href="https://geniuskey.github.io/lottery/ladder/">
+    <meta name="robots" content="index, follow">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .sidebar-header h1 .emoji {
+            /* 이모지는 기본 색상 유지 */
+        }
+
+        .sidebar-header h1 .title-text {
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .help-btn {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            min-height: 24px;
+            max-width: 24px;
+            max-height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            padding: 0 !important;
+            margin: 0;
+            line-height: 1;
+            flex-shrink: 0;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .help-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+            transform: scale(1.1);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 700;
+        }
+
+        textarea, input, select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        textarea {
+            min-height: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            color: white;
+        }
+
+        .start-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .reset-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            flex: 0.3;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .result-board {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .result-board h3 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: #3b82f6;
+            flex-shrink: 0;
+        }
+
+        .result-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .result-item.highlight {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(6, 182, 212, 0.3));
+            border: 1px solid rgba(59, 130, 246, 0.5);
+        }
+
+        .sidebar-footer {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .icon-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .icon-btn:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 5px;
+            padding: 5px 10px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        /* Game Area */
+        .game-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        canvas {
+            border-radius: 12px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            max-width: 100%;
+            max-height: 100%;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .copyright {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.25);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h2 {
+            color: #3b82f6;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .modal-content p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .modal-close {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 40vh;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .game-area {
+                flex: 1;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1><span class="emoji">🪜</span> <span class="title-text">사다리 추첨</span></h1>
+                <button class="help-btn" id="helpBtn">?</button>
+            </div>
+
+            <div class="input-group">
+                <label>참여자 (콤마로 구분)</label>
+                <textarea id="participantsInput" placeholder="영수, 영호, 영식, 영철">영수, 영호, 영식, 영철</textarea>
+            </div>
+
+            <div class="input-group">
+                <label>결과 항목 (콤마로 구분)</label>
+                <textarea id="resultsInput" placeholder="당첨, 꽝, 커피, 아이스크림">당첨, 꽝, 커피, 아이스크림</textarea>
+            </div>
+
+            <div class="input-group">
+                <label>가로선 개수</label>
+                <input type="number" id="bridgesInput" min="5" max="30" value="15">
+            </div>
+
+            <div class="button-group">
+                <button class="start-btn" id="startBtn">🎮 사다리 그리기</button>
+                <button class="reset-btn" id="resetBtn">↺</button>
+            </div>
+
+            <div class="result-board">
+                <h3>🎯 추첨 결과</h3>
+                <div class="result-list" id="resultList">
+                    <div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">
+                        사다리를 그려주세요!
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <a href="https://geniuskey.github.io/lottery/" class="icon-btn" data-tooltip="추첨 포탈 홈">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </a>
+                <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+                <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+                </a>
+                <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Game Area -->
+        <div class="game-area">
+            <canvas id="gameCanvas"></canvas>
+            <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <h2>🪜 게임 방법</h2>
+            <p><strong>🎯 게임 목표</strong><br>
+            사다리를 타고 내려가 각 참여자의 운명을 결정하세요!</p>
+
+            <p><strong>📖 게임 규칙</strong><br>
+            1. 참여자 이름을 입력합니다 (콤마로 구분)<br>
+            2. 결과 항목을 입력합니다 (콤마로 구분)<br>
+            3. 가로선 개수를 설정합니다 (5~30개)<br>
+            4. "사다리 그리기" 버튼을 클릭합니다<br>
+            5. 각 참여자를 클릭하면 경로가 애니메이션으로 표시됩니다<br>
+            6. 최종 도착지가 해당 참여자의 결과입니다</p>
+
+            <p><strong>⚙️ 설정</strong><br>
+            • 참여자: 쉼표로 구분하여 입력 (예: 영수, 영호, 영식)<br>
+            • 결과: 쉼표로 구분하여 입력 (예: 당첨, 꽝, 커피)<br>
+            • 가로선: 5~30개 사이로 설정 (많을수록 복잡해짐)<br>
+            • 참여자 수와 결과 수는 같아야 합니다</p>
+
+            <p><strong>💡 게임 특징</strong><br>
+            • 랜덤 사다리: 매번 다른 패턴으로 생성됩니다<br>
+            • 애니메이션: 참여자를 클릭하면 경로가 시각적으로 표시됩니다<br>
+            • 공정성: 완전한 무작위 알고리즘 사용<br>
+            • 결과 복사: 결과를 클립보드에 복사할 수 있습니다</p>
+
+            <button class="modal-close" id="closeModalBtn">확인</button>
+        </div>
+    </div>
+
+    <script>
+        // Canvas 설정
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 반응형 캔버스 크기
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const maxWidth = Math.min(container.clientWidth - 40, 1000);
+            const maxHeight = Math.min(container.clientHeight - 40, 800);
+            canvas.width = maxWidth;
+            canvas.height = maxHeight;
+
+            if (ladder) {
+                drawLadder();
+            }
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // 게임 상태
+        let ladder = null;
+        let participants = [];
+        let results = [];
+        let numBridges = 15;
+        let matchingResults = {};
+
+        // UI 요소
+        const participantsInput = document.getElementById('participantsInput');
+        const resultsInput = document.getElementById('resultsInput');
+        const bridgesInput = document.getElementById('bridgesInput');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const resultList = document.getElementById('resultList');
+        const helpBtn = document.getElementById('helpBtn');
+        const helpModal = document.getElementById('helpModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const copyResultBtn = document.getElementById('copyResultBtn');
+
+        // LocalStorage
+        function saveSettings() {
+            localStorage.setItem('ladderGame_participants', participantsInput.value);
+            localStorage.setItem('ladderGame_results', resultsInput.value);
+            localStorage.setItem('ladderGame_bridges', bridgesInput.value);
+        }
+
+        function loadSettings() {
+            const savedParticipants = localStorage.getItem('ladderGame_participants');
+            const savedResults = localStorage.getItem('ladderGame_results');
+            const savedBridges = localStorage.getItem('ladderGame_bridges');
+            if (savedParticipants) participantsInput.value = savedParticipants;
+            if (savedResults) resultsInput.value = savedResults;
+            if (savedBridges) bridgesInput.value = savedBridges;
+        }
+
+        loadSettings();
+        participantsInput.addEventListener('input', saveSettings);
+        resultsInput.addEventListener('input', saveSettings);
+        bridgesInput.addEventListener('input', saveSettings);
+
+        // 도움말 모달
+        helpBtn.addEventListener('click', () => {
+            helpModal.classList.add('active');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            helpModal.classList.remove('active');
+        });
+
+        helpModal.addEventListener('click', (e) => {
+            if (e.target === helpModal) {
+                helpModal.classList.remove('active');
+            }
+        });
+
+        // Ladder 클래스
+        class Ladder {
+            constructor(participants, results, numBridges) {
+                this.participants = participants;
+                this.results = results;
+                this.numBridges = numBridges;
+                this.numLines = participants.length;
+
+                // 레이아웃 계산
+                this.padding = 60;
+                this.topPadding = 80;
+                this.bottomPadding = 80;
+                this.lineSpacing = (canvas.width - this.padding * 2) / (this.numLines - 1);
+                this.height = canvas.height - this.topPadding - this.bottomPadding;
+                this.segmentHeight = this.height / (this.numBridges + 1);
+
+                // 가로선 생성
+                this.bridges = this.generateBridges();
+
+                // 경로 계산
+                this.paths = this.calculatePaths();
+            }
+
+            generateBridges() {
+                const bridges = [];
+
+                for (let row = 1; row <= this.numBridges; row++) {
+                    const y = this.topPadding + row * this.segmentHeight;
+
+                    // 각 행에서 랜덤하게 가로선 생성
+                    const possiblePositions = [];
+                    for (let i = 0; i < this.numLines - 1; i++) {
+                        possiblePositions.push(i);
+                    }
+
+                    // 랜덤하게 섞기
+                    for (let i = possiblePositions.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [possiblePositions[i], possiblePositions[j]] = [possiblePositions[j], possiblePositions[i]];
+                    }
+
+                    // 30-70% 정도의 가로선 생성
+                    const numBridgesInRow = Math.floor(Math.random() * (this.numLines / 2)) + 1;
+
+                    for (let i = 0; i < numBridgesInRow && i < possiblePositions.length; i++) {
+                        const lineIndex = possiblePositions[i];
+
+                        // 연속된 가로선이 겹치지 않도록 체크
+                        if (i > 0 && Math.abs(possiblePositions[i] - possiblePositions[i-1]) === 1) {
+                            continue;
+                        }
+
+                        bridges.push({
+                            y: y,
+                            fromLine: lineIndex,
+                            toLine: lineIndex + 1
+                        });
+                    }
+                }
+
+                return bridges;
+            }
+
+            calculatePaths() {
+                const paths = [];
+
+                for (let startLine = 0; startLine < this.numLines; startLine++) {
+                    const path = [];
+                    let currentLine = startLine;
+
+                    // 시작점
+                    path.push({
+                        x: this.padding + startLine * this.lineSpacing,
+                        y: this.topPadding
+                    });
+
+                    // 각 세그먼트를 따라 내려가기
+                    for (let row = 1; row <= this.numBridges + 1; row++) {
+                        const currentY = this.topPadding + row * this.segmentHeight;
+
+                        // 현재 위치에서 가로선 찾기
+                        const bridge = this.bridges.find(b =>
+                            Math.abs(b.y - (currentY - this.segmentHeight / 2)) < this.segmentHeight / 2 &&
+                            (b.fromLine === currentLine || b.toLine === currentLine)
+                        );
+
+                        if (bridge) {
+                            // 가로선 만나기 전까지 직진
+                            path.push({
+                                x: this.padding + currentLine * this.lineSpacing,
+                                y: bridge.y
+                            });
+
+                            // 가로선 타고 이동
+                            currentLine = bridge.fromLine === currentLine ? bridge.toLine : bridge.fromLine;
+                            path.push({
+                                x: this.padding + currentLine * this.lineSpacing,
+                                y: bridge.y
+                            });
+                        }
+
+                        // 세그먼트 끝까지 직진
+                        if (row <= this.numBridges + 1) {
+                            path.push({
+                                x: this.padding + currentLine * this.lineSpacing,
+                                y: currentY
+                            });
+                        }
+                    }
+
+                    paths.push({
+                        path: path,
+                        endLine: currentLine
+                    });
+                }
+
+                return paths;
+            }
+
+            draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // 배경 그라데이션
+                const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                gradient.addColorStop(0, '#1a1a2e');
+                gradient.addColorStop(1, '#0f0f1e');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 세로선 그리기
+                ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
+                ctx.lineWidth = 3;
+
+                for (let i = 0; i < this.numLines; i++) {
+                    const x = this.padding + i * this.lineSpacing;
+
+                    ctx.beginPath();
+                    ctx.moveTo(x, this.topPadding);
+                    ctx.lineTo(x, canvas.height - this.bottomPadding);
+                    ctx.stroke();
+                }
+
+                // 가로선 그리기
+                ctx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
+                ctx.lineWidth = 3;
+
+                this.bridges.forEach(bridge => {
+                    const x1 = this.padding + bridge.fromLine * this.lineSpacing;
+                    const x2 = this.padding + bridge.toLine * this.lineSpacing;
+
+                    ctx.beginPath();
+                    ctx.moveTo(x1, bridge.y);
+                    ctx.lineTo(x2, bridge.y);
+                    ctx.stroke();
+                });
+
+                // 참여자 이름 (위)
+                ctx.font = 'bold 16px "Noto Sans KR"';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+
+                this.participants.forEach((name, i) => {
+                    const x = this.padding + i * this.lineSpacing;
+
+                    // 배경
+                    ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+                    const textWidth = ctx.measureText(name).width;
+                    ctx.fillRect(x - textWidth / 2 - 8, this.topPadding - 40, textWidth + 16, 30);
+
+                    // 테두리
+                    ctx.strokeStyle = 'rgba(59, 130, 246, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x - textWidth / 2 - 8, this.topPadding - 40, textWidth + 16, 30);
+
+                    // 텍스트
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(name, x, this.topPadding - 15);
+                });
+
+                // 결과 항목 (아래)
+                ctx.textBaseline = 'top';
+
+                this.results.forEach((result, i) => {
+                    const x = this.padding + i * this.lineSpacing;
+                    const y = canvas.height - this.bottomPadding;
+
+                    // 배경
+                    ctx.fillStyle = 'rgba(6, 182, 212, 0.3)';
+                    const textWidth = ctx.measureText(result).width;
+                    ctx.fillRect(x - textWidth / 2 - 8, y + 10, textWidth + 16, 30);
+
+                    // 테두리
+                    ctx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x - textWidth / 2 - 8, y + 10, textWidth + 16, 30);
+
+                    // 텍스트
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(result, x, y + 25);
+                });
+            }
+
+            async animatePath(startIndex) {
+                const pathData = this.paths[startIndex];
+                const path = pathData.path;
+
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.9)';
+                ctx.lineWidth = 5;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // 경로 애니메이션
+                for (let i = 1; i < path.length; i++) {
+                    const start = path[i - 1];
+                    const end = path[i];
+
+                    const steps = 20;
+                    for (let step = 0; step <= steps; step++) {
+                        const t = step / steps;
+                        const x = start.x + (end.x - start.x) * t;
+                        const y = start.y + (end.y - start.y) * t;
+
+                        ctx.beginPath();
+                        if (i === 1 && step === 0) {
+                            ctx.moveTo(start.x, start.y);
+                        } else {
+                            const prevEnd = path[Math.max(0, i - 1)];
+                            ctx.moveTo(start.x, start.y);
+                        }
+                        ctx.lineTo(x, y);
+                        ctx.stroke();
+
+                        // 현재 위치에 점 그리기
+                        ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
+                        ctx.beginPath();
+                        ctx.arc(x, y, 6, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        await new Promise(resolve => setTimeout(resolve, 10));
+                    }
+                }
+
+                // 최종 결과 강조
+                const endLine = pathData.endLine;
+                const resultX = this.padding + endLine * this.lineSpacing;
+                const resultY = canvas.height - this.bottomPadding + 25;
+
+                ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+                const textWidth = ctx.measureText(this.results[endLine]).width;
+                ctx.fillRect(resultX - textWidth / 2 - 12, resultY - 15, textWidth + 24, 34);
+
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.9)';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(resultX - textWidth / 2 - 12, resultY - 15, textWidth + 24, 34);
+
+                return endLine;
+            }
+
+            getClickedParticipant(x, y) {
+                if (y < this.topPadding - 40 || y > this.topPadding - 10) {
+                    return -1;
+                }
+
+                for (let i = 0; i < this.participants.length; i++) {
+                    const px = this.padding + i * this.lineSpacing;
+                    const textWidth = ctx.measureText(this.participants[i]).width;
+
+                    if (x >= px - textWidth / 2 - 8 && x <= px + textWidth / 2 + 8) {
+                        return i;
+                    }
+                }
+
+                return -1;
+            }
+        }
+
+        // 사다리 그리기
+        function drawLadder() {
+            if (ladder) {
+                ladder.draw();
+            }
+        }
+
+        // 결과 업데이트
+        function updateResults() {
+            resultList.innerHTML = '';
+
+            if (Object.keys(matchingResults).length === 0) {
+                resultList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">참여자를 클릭해보세요!</div>';
+                return;
+            }
+
+            participants.forEach((name, i) => {
+                if (matchingResults[name] !== undefined) {
+                    const item = document.createElement('div');
+                    item.className = 'result-item highlight';
+                    item.innerHTML = `
+                        <span>${name}</span>
+                        <span>→ ${matchingResults[name]}</span>
+                    `;
+                    resultList.appendChild(item);
+                }
+            });
+        }
+
+        // 게임 시작
+        startBtn.addEventListener('click', () => {
+            participants = participantsInput.value.split(',').map(n => n.trim()).filter(n => n);
+            results = resultsInput.value.split(',').map(n => n.trim()).filter(n => n);
+            numBridges = parseInt(bridgesInput.value);
+
+            if (participants.length < 2) {
+                alert('참여자가 최소 2명 이상 필요합니다!');
+                return;
+            }
+
+            if (results.length < 2) {
+                alert('결과가 최소 2개 이상 필요합니다!');
+                return;
+            }
+
+            if (participants.length !== results.length) {
+                alert('참여자 수와 결과 수가 같아야 합니다!');
+                return;
+            }
+
+            if (numBridges < 5 || numBridges > 30) {
+                alert('가로선 개수는 5~30 사이여야 합니다!');
+                return;
+            }
+
+            matchingResults = {};
+            ladder = new Ladder(participants, results, numBridges);
+            drawLadder();
+            updateResults();
+        });
+
+        // 초기화
+        resetBtn.addEventListener('click', () => {
+            ladder = null;
+            matchingResults = {};
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#1a1a2e');
+            gradient.addColorStop(1, '#0f0f1e');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            resultList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">사다리를 그려주세요!</div>';
+        });
+
+        // 캔버스 클릭 이벤트
+        canvas.addEventListener('click', async (e) => {
+            if (!ladder) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const participantIndex = ladder.getClickedParticipant(x, y);
+
+            if (participantIndex >= 0) {
+                // 사다리 다시 그리기
+                drawLadder();
+
+                // 경로 애니메이션
+                const resultIndex = await ladder.animatePath(participantIndex);
+
+                // 결과 저장
+                matchingResults[participants[participantIndex]] = results[resultIndex];
+                updateResults();
+            }
+        });
+
+        // 결과 복사
+        copyResultBtn.addEventListener('click', () => {
+            if (Object.keys(matchingResults).length === 0) {
+                alert('먼저 사다리를 타보세요!');
+                return;
+            }
+
+            let result = '🪜 사다리 추첨 결과\n\n';
+
+            participants.forEach((name, i) => {
+                if (matchingResults[name] !== undefined) {
+                    result += `${name} → ${matchingResults[name]}\n`;
+                }
+            });
+
+            navigator.clipboard.writeText(result).then(() => {
+                const originalText = copyResultBtn.innerHTML;
+                copyResultBtn.innerHTML = '<span style="color: #3b82f6;">✓</span>';
+                setTimeout(() => {
+                    copyResultBtn.innerHTML = originalText;
+                }, 1000);
+            });
+        });
+
+        // 초기 화면
+        resetBtn.click();
+    </script>
+</body>
+</html>
