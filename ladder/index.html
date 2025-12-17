@@ -666,27 +666,24 @@
             calculatePaths() {
                 const paths = [];
 
+                // 가로선을 y 좌표 순으로 정렬
+                const sortedBridges = [...this.bridges].sort((a, b) => a.y - b.y);
+
                 for (let startLine = 0; startLine < this.numLines; startLine++) {
                     const path = [];
                     let currentLine = startLine;
+                    let currentY = this.topPadding;
 
                     // 시작점
                     path.push({
-                        x: this.padding + startLine * this.lineSpacing,
-                        y: this.topPadding
+                        x: this.padding + currentLine * this.lineSpacing,
+                        y: currentY
                     });
 
-                    // 각 세그먼트를 따라 내려가기
-                    for (let row = 1; row <= this.numBridges + 1; row++) {
-                        const currentY = this.topPadding + row * this.segmentHeight;
-
-                        // 현재 위치에서 가로선 찾기
-                        const bridge = this.bridges.find(b =>
-                            Math.abs(b.y - (currentY - this.segmentHeight / 2)) < this.segmentHeight / 2 &&
-                            (b.fromLine === currentLine || b.toLine === currentLine)
-                        );
-
-                        if (bridge) {
+                    // 각 가로선을 순서대로 체크
+                    for (const bridge of sortedBridges) {
+                        // 현재 라인이 이 가로선에 연결되어 있는지 확인
+                        if (bridge.fromLine === currentLine || bridge.toLine === currentLine) {
                             // 가로선 만나기 전까지 직진
                             path.push({
                                 x: this.padding + currentLine * this.lineSpacing,
@@ -699,16 +696,17 @@
                                 x: this.padding + currentLine * this.lineSpacing,
                                 y: bridge.y
                             });
-                        }
 
-                        // 세그먼트 끝까지 직진
-                        if (row <= this.numBridges + 1) {
-                            path.push({
-                                x: this.padding + currentLine * this.lineSpacing,
-                                y: currentY
-                            });
+                            currentY = bridge.y;
                         }
                     }
+
+                    // 마지막까지 직진
+                    const endY = canvas.height - this.bottomPadding;
+                    path.push({
+                        x: this.padding + currentLine * this.lineSpacing,
+                        y: endY
+                    });
 
                     paths.push({
                         path: path,
