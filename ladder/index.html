@@ -530,6 +530,13 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
+        // 게임 상태
+        let ladder = null;
+        let participants = [];
+        let results = [];
+        let numBridges = 15;
+        let matchingResults = {};
+
         // 반응형 캔버스 크기
         function resizeCanvas() {
             const container = canvas.parentElement;
@@ -544,13 +551,6 @@
         }
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
-
-        // 게임 상태
-        let ladder = null;
-        let participants = [];
-        let results = [];
-        let numBridges = 15;
-        let matchingResults = {};
 
         // UI 요소
         const participantsInput = document.getElementById('participantsInput');
