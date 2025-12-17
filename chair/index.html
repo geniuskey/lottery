@@ -547,12 +547,12 @@
         engine.gravity.y = 0;
 
         // 게임 상태
-        let gameState = 'idle';
+        let gameState = 'idle'; // idle, dancing, chair_wait, musical_chairs
         let participants = [];
         let eliminatedParticipants = [];
         let winnerCount = 1;
         let chairs = [];
-        let roundTimer = 0;
+        let stateStartTime = 0; // 상태 시작 시간
 
         // 이모지 풀
         const emojis = ['😀', '😎', '🥳', '😊', '🤗', '😆', '😄', '🙂', '😃', '😁', '🤩', '😇', '🥰', '😍', '🤠', '🥴'];
@@ -668,7 +668,7 @@
                         Body.setVelocity(this.body, { y: -Math.abs(vel.y), x: vel.x });
                     }
 
-                    this.musicNoteOffset += 0.1;
+                    this.musicNoteOffset += 0.07;
                     
                 } else if (gameState === 'musical_chairs') {
                     if (!this.groupJoined) {
@@ -713,8 +713,8 @@
                 
                 const x = this.body.position.x;
                 const y = this.body.position.y;
-                const opacity = this.eliminated ? 0.3 : 1;
 
+                // 음표 그리기 (춤추는 중일 때)
                 if ((gameState === 'dancing' || gameState === 'chair_wait') && !this.eliminated) {
                     const noteX = x + Math.cos(this.musicNoteOffset) * 30;
                     const noteY = y - 40 + Math.sin(this.musicNoteOffset) * 10;
@@ -724,6 +724,7 @@
                     ctx.fillText(this.musicNote, noteX, noteY);
                 }
 
+                // 의자에 앉은 표시
                 if (gameState === 'musical_chairs' && this.groupJoined && !this.eliminated) {
                     ctx.strokeStyle = 'rgba(168, 85, 247, 0.8)';
                     ctx.lineWidth = 3;
@@ -732,17 +733,18 @@
                     ctx.stroke();
                 }
 
-                ctx.globalAlpha = opacity;
+                // 이모지
+                ctx.globalAlpha = this.eliminated ? 0.3 : 1;
                 ctx.font = '40px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(this.emoji, x, y);
 
+                // 이름
                 ctx.font = 'bold 14px "Noto Sans KR"';
                 ctx.fillStyle = '#fff';
                 ctx.strokeStyle = '#000';
                 ctx.lineWidth = 3;
-                ctx.globalAlpha = opacity;
                 ctx.strokeText(this.name, x, y + 35);
                 ctx.fillText(this.name, x, y + 35);
 
@@ -831,7 +833,7 @@
         // 의자 대기
         function startChairWait() {
             gameState = 'chair_wait';
-            roundTimer = 0;
+            stateStartTime = Date.now();
             
             const aliveCount = participants.filter(p => !p.eliminated).length;
             let numChairs = Math.round(aliveCount * 0.7);
@@ -876,7 +878,7 @@
         // 의자 게임 시작
         function startMusicalChairs() {
             gameState = 'musical_chairs';
-            roundTimer = 0;
+            stateStartTime = Date.now();
 
             const alive = participants.filter(p => !p.eliminated);
             alive.forEach(p => {
@@ -887,6 +889,7 @@
         // 탈락 처리
         function eliminateChairPlayers() {
             const alive = participants.filter(p => !p.eliminated);
+            
             alive.forEach(p => {
                 if (!p.groupJoined) {
                     p.eliminated = true;
@@ -905,7 +908,7 @@
                 setTimeout(showWinners, 1000);
             } else {
                 gameState = 'dancing';
-                roundTimer = 0;
+                stateStartTime = Date.now();
             }
         }
 
@@ -994,19 +997,28 @@
                 ctx.lineWidth = 5;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.strokeText('의자 앉기!', canvas.width / 2, canvas.height / 2);
-                ctx.fillText('의자 앉기!', canvas.width / 2, canvas.height / 2);
+                ctx.strokeText('앉으세요!', canvas.width / 2, 80);
+                ctx.fillText('앉으세요!', canvas.width / 2, 80);
                 ctx.restore();
             }
 
-            roundTimer++;
+            // 실제 경과 시간 계산 (밀리초)
+            const elapsedTime = Date.now() - stateStartTime;
 
-            if (gameState === 'dancing' && roundTimer > 360) {
+            if (gameState === 'dancing' && elapsedTime > 3000) {
                 startChairWait();
-            } else if (gameState === 'chair_wait' && roundTimer > 60) {
+            } else if (gameState === 'chair_wait' && elapsedTime > 200) {
                 startMusicalChairs();
-            } else if (gameState === 'musical_chairs' && roundTimer > 300) {
-                eliminateChairPlayers();
+            } else if (gameState === 'musical_chairs') {
+                // 모두 앉았는지 확인
+                const alive = participants.filter(p => !p.eliminated);
+                const seated = alive.filter(p => p.groupJoined).length;
+                const allSeated = seated === chairs.length;
+                
+                // 모두 앉았으면 0.5초 대기 후, 3초 경과 시 즉시 탈락 처리
+                if ((allSeated && elapsedTime > 500) || elapsedTime > 3000) {
+                    eliminateChairPlayers();
+                }
             }
 
             if (gameState !== 'idle') {
@@ -1034,7 +1046,7 @@
             participants = names.map(name => new Participant(name));
             eliminatedParticipants = [];
             gameState = 'dancing';
-            roundTimer = 0;
+            stateStartTime = Date.now();
             startBtn.disabled = true;
             updateRanking();
             gameLoop();
