@@ -128,7 +128,7 @@ class ZombieSurvival {
         this.infectedOrder = []; this.notifications = [];
         this.isRunning = false; this.gameStarted = false;
         this.startTime = 0; this.endTime = 0;
-        this.zombieCount = 2; this.survivorCount = 1;
+        this.zombieCount = 3; this.survivorCount = 1;
         this.entityRadius = 10; this.maxZombies = 10;
         this.humanWalkSpeed = 0.6; this.humanRunSpeed = 2.5;
         this.zombieWalkSpeed = 0.5; this.zombieChaseSpeed = 2.0;
@@ -141,11 +141,16 @@ class ZombieSurvival {
         this.targetRadius = 0; this.targetCenterX = 0; this.targetCenterY = 0;
         this.shrinkPhase = 0; this.shrinkTimer = 0;
         this.shrinkInterval = 600; this.shrinkWarningTime = 180; this.isShrinking = false;
-        // Load zombie image
-        this.zombieImage = new Image();
-        this.zombieImage.src = 'zombie_01.png';
-        this.zombieImageLoaded = false;
-        this.zombieImage.onload = () => { this.zombieImageLoaded = true; this.draw(); };
+        // Load zombie images (3 types)
+        this.zombieImages = [];
+        this.zombieImagesLoaded = [false, false, false];
+        for (let i = 0; i < 3; i++) {
+            const img = new Image();
+            img.src = `zombie_0${i + 1}.png`;
+            const idx = i;
+            img.onload = () => { this.zombieImagesLoaded[idx] = true; this.draw(); };
+            this.zombieImages.push(img);
+        }
         this.setupCanvas(); this.bindEvents();
     }
     
@@ -205,7 +210,7 @@ class ZombieSurvival {
                 targetAngle: Math.random() * Math.PI * 2, wanderTimer: Math.random() * 120,
                 hasTarget: false, isInitialZombie: false, health: 100,
                 isTransforming: false, transformTimer: 0, eatingTimer: 0, zombieKills: 0,
-                zombifiedAt: 0, helpTimer: 0
+                zombifiedAt: 0, helpTimer: 0, spottedTimer: 0
             });
         }
         
@@ -219,7 +224,8 @@ class ZombieSurvival {
                     targetAngle: Math.random() * Math.PI * 2, wanderTimer: Math.random() * 120,
                     hasTarget: false, isInitialZombie: true, health: 100,
                     isTransforming: false, transformTimer: 0, eatingTimer: 0, zombieKills: 0,
-                    zombifiedAt: Date.now(), helpTimer: 0
+                    zombifiedAt: Date.now(), helpTimer: 0, spottedTimer: 0,
+                    zombieImageIndex: i % 3 // 순서대로 좀비 이미지 (0, 1, 2, 0, 1, 2, ...)
                 });
             }
         }
@@ -313,6 +319,7 @@ class ZombieSurvival {
         for (const entity of this.entities) {
             if (entity.isTransforming) continue;
             if (entity.helpTimer > 0) entity.helpTimer--;
+            if (entity.spottedTimer > 0) entity.spottedTimer--;
             if (entity.eatingTimer > 0) { entity.eatingTimer--; entity.vx = 0; entity.vy = 0; continue; }
             
             if (entity.isZombie) this.updateZombie(entity, humans);
@@ -376,11 +383,13 @@ class ZombieSurvival {
         if (entity.isTransforming || entity.isZombie) return;
         entity.isTransforming = true; entity.transformTimer = 60;
         entity.vx = 0; entity.vy = 0;
-        
+
         if (infector) {
+            // 공격자의 좀비 이미지 인덱스를 계승
+            entity.zombieImageIndex = infector.zombieImageIndex;
             infector.eatingTimer = 30; infector.vx = 0; infector.vy = 0; infector.zombieKills++;
             this.addNotification(t('infectMessage', { attacker: infector.name, victim: entity.name }));
-            
+
             if (infector.isInitialZombie && infector.zombieKills >= 1) {
                 const inf = infector;
                 setTimeout(() => {
@@ -389,6 +398,9 @@ class ZombieSurvival {
                     if (idx > -1) this.entities.splice(idx, 1);
                 }, 500);
             }
+        } else {
+            // 감염자가 없는 경우 (영역 이탈 등) 랜덤 이미지
+            entity.zombieImageIndex = Math.floor(Math.random() * 3);
         }
         this.infectedOrder.push({ name: entity.name, time: Date.now() - this.startTime, cause: cause });
         this.updateRanking();
@@ -454,6 +466,10 @@ class ZombieSurvival {
         }
         
         if (closestVisible) {
+            // 처음 발견했을 때 ❗❗ 이모지 표시
+            if (!zombie.hasTarget) {
+                zombie.spottedTimer = 60; // 1초 동안 표시
+            }
             zombie.hasTarget = true;
             const dx = closestVisible.x - zombie.x, dy = closestVisible.y - zombie.y;
             const targetAngle = Math.atan2(dy, dx);
@@ -465,6 +481,7 @@ class ZombieSurvival {
             zombie.vy = Math.sin(zombie.angle) * this.zombieChaseSpeed;
         } else {
             zombie.hasTarget = false; zombie.wanderTimer--;
+            zombie.spottedTimer = 0;
             if (zombie.wanderTimer <= 0) {
                 zombie.targetAngle = wallAngle !== null ? wallAngle : Math.random() * Math.PI * 2;
                 zombie.wanderTimer = 60 + Math.random() * 120;
@@ -493,6 +510,10 @@ class ZombieSurvival {
         }
         
         if (nearestVisibleZombie) {
+            // 처음 발견했을 때 ❕❕ 이모지 표시
+            if (!human.isRunning) {
+                human.spottedTimer = 60; // 1초 동안 표시
+            }
             human.angle = this.getEscapeAngle(human, nearestVisibleZombie);
             human.runTimer = this.runDuration; human.isRunning = true; human.helpTimer = 45;
         }
@@ -579,12 +600,13 @@ class ZombieSurvival {
     drawDeadZombie(dead) {
         const ctx = this.ctx, alpha = dead.fadeTimer / 60;
         const zombieImgSize = this.entityRadius * 3 * 1.5; // 좀비 크기 1.5배
+        const imgIndex = dead.zombieImageIndex || 0;
         ctx.save(); ctx.globalAlpha = alpha * 0.5;
         ctx.translate(dead.x, dead.y);
         // 쓰러진 좀비 이미지 (회전하고 반투명하게)
         ctx.rotate(Math.PI / 2); // 옆으로 쓰러진 모습
-        if (this.zombieImageLoaded) {
-            ctx.drawImage(this.zombieImage, -zombieImgSize/2, -zombieImgSize/2, zombieImgSize, zombieImgSize);
+        if (this.zombieImagesLoaded[imgIndex]) {
+            ctx.drawImage(this.zombieImages[imgIndex], -zombieImgSize/2, -zombieImgSize/2, zombieImgSize, zombieImgSize);
         } else {
             ctx.font = zombieImgSize + 'px serif';
             ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -626,8 +648,9 @@ class ZombieSurvival {
             ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
             ctx.fillText(entity.emoji || '😵', 0, 0);
             ctx.globalAlpha = progress;
-            if (this.zombieImageLoaded) {
-                ctx.drawImage(this.zombieImage, -baseImgSize/2, -baseImgSize/2, baseImgSize, baseImgSize);
+            const transformImgIndex = entity.zombieImageIndex || 0;
+            if (this.zombieImagesLoaded[transformImgIndex]) {
+                ctx.drawImage(this.zombieImages[transformImgIndex], -baseImgSize/2, -baseImgSize/2, baseImgSize, baseImgSize);
             }
             ctx.globalAlpha = 1;
             ctx.strokeStyle = 'rgba(255,' + Math.floor(255 - progress * 255) + ',0,' + (0.8 - progress * 0.5) + ')';
@@ -655,9 +678,10 @@ class ZombieSurvival {
                 ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, this.zombieDetectRange, -fovRad, fovRad); ctx.closePath(); ctx.fill();
                 ctx.rotate(-entity.angle);
             }
-            // 좀비 이미지 그리기 (1.5배 크기)
-            if (this.zombieImageLoaded) {
-                ctx.drawImage(this.zombieImage, -zombieImgSize/2, -zombieImgSize/2, zombieImgSize, zombieImgSize);
+            // 좀비 이미지 그리기 (1.5배 크기, 해당 이미지 인덱스 사용)
+            const imgIndex = entity.zombieImageIndex || 0;
+            if (this.zombieImagesLoaded[imgIndex]) {
+                ctx.drawImage(this.zombieImages[imgIndex], -zombieImgSize/2, -zombieImgSize/2, zombieImgSize, zombieImgSize);
             } else {
                 // 이미지 로딩 전 폴백
                 ctx.font = zombieImgSize + 'px serif';
@@ -696,6 +720,19 @@ class ZombieSurvival {
             ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)'; ctx.lineWidth = 3; ctx.strokeText('Help!!', helpX, helpY);
             ctx.fillStyle = '#ff4444'; ctx.fillText('Help!!', helpX, helpY);
             ctx.shadowBlur = 0;
+        }
+
+        // 발견 이모지 표시 (❗ 좀비가 사람 발견, ❕ 사람이 좀비 발견)
+        if (entity.spottedTimer > 0) {
+            const spottedAlpha = Math.min(1, entity.spottedTimer / 30); // 페이드 아웃
+            const bounce = Math.sin(entity.spottedTimer * 0.3) * 3;
+            ctx.globalAlpha = spottedAlpha;
+            ctx.font = '24px serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            const emoji = entity.isZombie ? '❗' : '❕';
+            ctx.fillText(emoji, x, y - currentSize/2 - 5 + bounce);
+            ctx.globalAlpha = 1;
         }
 
         ctx.font = 'bold ' + Math.max(12, r * 1.2) + 'px "Noto Sans KR"';

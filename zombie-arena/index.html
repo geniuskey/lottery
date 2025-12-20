@@ -106,10 +106,10 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;hei
 [data-tooltip]{position:relative}
 [data-tooltip]:hover::after{content:attr(data-tooltip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);padding:5px 10px;background:rgba(0,0,0,0.9);color:#fff;font-size:0.7rem;border-radius:4px;white-space:nowrap;margin-bottom:5px}
 .game-area{flex:1;display:flex;flex-direction:column;background:#0a0f0a;position:relative}
-.arena-header{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;padding:10px 15px;background:rgba(0,0,0,0.5);border-bottom:1px solid var(--glass-border);gap:15px}
-.shrink-warning{background:linear-gradient(90deg,transparent,rgba(255,0,0,0.3),transparent);color:var(--accent-red);font-weight:bold;font-size:0.8rem;animation:pulse 0.5s ease-in-out infinite;display:none}
+.arena-header{position:relative;display:flex;justify-content:flex-end;align-items:center;padding:10px 15px;background:rgba(0,0,0,0.5);border-bottom:1px solid var(--glass-border);gap:15px}
+.shrink-warning{position:absolute;left:15px;background:linear-gradient(90deg,transparent,rgba(255,0,0,0.3),transparent);color:var(--accent-red);font-weight:bold;font-size:0.8rem;animation:pulse 0.5s ease-in-out infinite;display:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
-.timer-display{font-family:'Black Han Sans',sans-serif;font-size:1.5rem;color:var(--accent-green);text-shadow:0 0 10px rgba(76,175,80,0.5);justify-self:center}
+.timer-display{position:absolute;left:50%;transform:translateX(-50%);font-family:'Black Han Sans',sans-serif;font-size:1.5rem;color:var(--accent-green);text-shadow:0 0 10px rgba(76,175,80,0.5)}
 .status-bar{display:flex;gap:15px;font-size:0.9rem;justify-self:end}
 .status-item{display:flex;align-items:center;gap:5px}
 .status-item.humans{color:var(--accent-green)}
@@ -157,8 +157,8 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;hei
                 </div>
                 <div class="section">
                     <div class="slider-group">
-                        <div class="slider-header"><span class="slider-label" data-i18n="initialZombies">🧟 초기 좀비 수</span><span class="slider-value" id="zombieValue">2</span></div>
-                        <input type="range" id="zombieCount" min="1" max="5" value="2">
+                        <div class="slider-header"><span class="slider-label" data-i18n="initialZombies">🧟 초기 좀비 수</span><span class="slider-value" id="zombieValue">3</span></div>
+                        <input type="range" id="zombieCount" min="1" max="5" value="3">
                     </div>
                     <div class="slider-group">
                         <div class="slider-header"><span class="slider-label" data-i18n="survivors">🏆 최종 생존자 수</span><span class="slider-value" id="survivorValue">1</span></div>

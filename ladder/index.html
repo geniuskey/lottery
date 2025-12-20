@@ -448,8 +448,8 @@
             </div>
 
             <div class="input-group">
-                <label>결과 항목 (콤마로 구분)</label>
-                <textarea id="resultsInput" placeholder="당첨, 꽝, 커피, 아이스크림">당첨, 꽝, 커피, 아이스크림</textarea>
+                <label>당첨 결과 (콤마로 구분, 나머지는 꽝)</label>
+                <textarea id="resultsInput" placeholder="당첨, 커피">당첨</textarea>
             </div>
 
             <div class="input-group">
@@ -458,7 +458,7 @@
             </div>
 
             <div class="button-group">
-                <button class="start-btn" id="startBtn">🎮 사다리 그리기</button>
+                <button class="start-btn" id="startBtn">🎮 시작</button>
                 <button class="reset-btn" id="resetBtn">↺</button>
             </div>
 
@@ -503,17 +503,17 @@
 
             <p><strong>📖 게임 규칙</strong><br>
             1. 참여자 이름을 입력합니다 (콤마로 구분)<br>
-            2. 결과 항목을 입력합니다 (콤마로 구분)<br>
+            2. 당첨 결과만 입력합니다 (나머지는 자동으로 꽝 처리)<br>
             3. 가로선 개수를 설정합니다 (5~30개)<br>
-            4. "사다리 그리기" 버튼을 클릭합니다<br>
-            5. 각 참여자를 클릭하면 경로가 애니메이션으로 표시됩니다<br>
-            6. 최종 도착지가 해당 참여자의 결과입니다</p>
+            4. ↺ 버튼으로 사다리를 생성/섞기<br>
+            5. "🎮 시작" 버튼을 클릭하면 가려진 부분이 공개되며 자동 진행<br>
+            6. 각 참여자의 경로가 순차적으로 표시됩니다</p>
 
             <p><strong>⚙️ 설정</strong><br>
             • 참여자: 쉼표로 구분하여 입력 (예: 영수, 영호, 영식)<br>
-            • 결과: 쉼표로 구분하여 입력 (예: 당첨, 꽝, 커피)<br>
+            • 당첨 결과: 의미있는 결과만 입력 (예: 당첨, 커피)<br>
             • 가로선: 5~30개 사이로 설정 (많을수록 복잡해짐)<br>
-            • 참여자 수와 결과 수는 같아야 합니다</p>
+            • 10명 참여해도 1-2개만 당첨 결과 설정 가능</p>
 
             <p><strong>💡 게임 특징</strong><br>
             • 랜덤 사다리: 매번 다른 패턴으로 생성됩니다<br>
@@ -530,12 +530,21 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
+        // 참여자별 색상 배열
+        const pathColors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+            '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+            '#F8B500', '#00CED1', '#FF69B4', '#32CD32', '#FF4500'
+        ];
+
         // 게임 상태
         let ladder = null;
         let participants = [];
         let results = [];
         let numBridges = 15;
         let matchingResults = {};
+        let gameState = 'setup'; // 'setup' (마스크됨), 'revealed' (공개됨), 'running' (애니메이션 중), 'finished' (완료)
+        let isAnimating = false;
 
         // 반응형 캔버스 크기
         function resizeCanvas() {
@@ -600,6 +609,20 @@
             }
         });
 
+        // 결과 배열 생성 (당첨 결과 + 나머지 꽝)
+        function generateResults(winningResults, count) {
+            const allResults = [...winningResults];
+            while (allResults.length < count) {
+                allResults.push('꽝');
+            }
+            // 결과 섞기
+            for (let i = allResults.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allResults[i], allResults[j]] = [allResults[j], allResults[i]];
+            }
+            return allResults;
+        }
+
         // Ladder 클래스
         class Ladder {
             constructor(participants, results, numBridges) {
@@ -621,6 +644,9 @@
 
                 // 경로 계산
                 this.paths = this.calculatePaths();
+
+                // 각 참여자별 색상
+                this.colors = participants.map((_, i) => pathColors[i % pathColors.length]);
             }
 
             generateBridges() {
@@ -717,7 +743,7 @@
                 return paths;
             }
 
-            draw() {
+            draw(masked = false) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 // 배경 그라데이션
@@ -741,17 +767,52 @@
                 }
 
                 // 가로선 그리기
-                ctx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
                 ctx.lineWidth = 3;
 
                 this.bridges.forEach(bridge => {
                     const x1 = this.padding + bridge.fromLine * this.lineSpacing;
                     const x2 = this.padding + bridge.toLine * this.lineSpacing;
 
-                    ctx.beginPath();
-                    ctx.moveTo(x1, bridge.y);
-                    ctx.lineTo(x2, bridge.y);
-                    ctx.stroke();
+                    if (masked) {
+                        // 마스크 모드: 양쪽 10%만 보이고 중앙 80%는 가림
+                        const bridgeWidth = x2 - x1;
+                        const visibleWidth = bridgeWidth * 0.1;
+
+                        // 왼쪽 10%
+                        ctx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
+                        ctx.beginPath();
+                        ctx.moveTo(x1, bridge.y);
+                        ctx.lineTo(x1 + visibleWidth, bridge.y);
+                        ctx.stroke();
+
+                        // 오른쪽 10%
+                        ctx.beginPath();
+                        ctx.moveTo(x2 - visibleWidth, bridge.y);
+                        ctx.lineTo(x2, bridge.y);
+                        ctx.stroke();
+
+                        // 중앙 80% 마스크 (물음표 패턴)
+                        ctx.fillStyle = 'rgba(30, 30, 50, 0.95)';
+                        ctx.fillRect(x1 + visibleWidth, bridge.y - 8, bridgeWidth * 0.8, 16);
+
+                        ctx.strokeStyle = 'rgba(100, 100, 150, 0.5)';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(x1 + visibleWidth, bridge.y - 8, bridgeWidth * 0.8, 16);
+
+                        ctx.fillStyle = 'rgba(100, 100, 150, 0.7)';
+                        ctx.font = 'bold 12px "Noto Sans KR"';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('?', (x1 + x2) / 2, bridge.y);
+                        ctx.lineWidth = 3;
+                    } else {
+                        // 일반 모드: 전체 가로선 표시
+                        ctx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
+                        ctx.beginPath();
+                        ctx.moveTo(x1, bridge.y);
+                        ctx.lineTo(x2, bridge.y);
+                        ctx.stroke();
+                    }
                 });
 
                 // 참여자 이름 (위)
@@ -761,14 +822,15 @@
 
                 this.participants.forEach((name, i) => {
                     const x = this.padding + i * this.lineSpacing;
+                    const color = this.colors[i];
 
-                    // 배경
-                    ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+                    // 배경 - 참여자별 색상
+                    ctx.fillStyle = this.hexToRgba(color, 0.3);
                     const textWidth = ctx.measureText(name).width;
                     ctx.fillRect(x - textWidth / 2 - 8, this.topPadding - 40, textWidth + 16, 30);
 
                     // 테두리
-                    ctx.strokeStyle = 'rgba(59, 130, 246, 0.6)';
+                    ctx.strokeStyle = this.hexToRgba(color, 0.8);
                     ctx.lineWidth = 2;
                     ctx.strokeRect(x - textWidth / 2 - 8, this.topPadding - 40, textWidth + 16, 30);
 
@@ -783,101 +845,183 @@
                 this.results.forEach((result, i) => {
                     const x = this.padding + i * this.lineSpacing;
                     const y = canvas.height - this.bottomPadding;
+                    const isWin = result !== '꽝';
 
                     // 배경
-                    ctx.fillStyle = 'rgba(6, 182, 212, 0.3)';
+                    ctx.fillStyle = isWin ? 'rgba(255, 215, 0, 0.3)' : 'rgba(100, 100, 100, 0.3)';
                     const textWidth = ctx.measureText(result).width;
                     ctx.fillRect(x - textWidth / 2 - 8, y + 10, textWidth + 16, 30);
 
                     // 테두리
-                    ctx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
+                    ctx.strokeStyle = isWin ? 'rgba(255, 215, 0, 0.8)' : 'rgba(100, 100, 100, 0.6)';
                     ctx.lineWidth = 2;
                     ctx.strokeRect(x - textWidth / 2 - 8, y + 10, textWidth + 16, 30);
 
                     // 텍스트
-                    ctx.fillStyle = '#fff';
+                    ctx.fillStyle = isWin ? '#FFD700' : 'rgba(255, 255, 255, 0.6)';
                     ctx.fillText(result, x, y + 25);
                 });
             }
 
-            async animatePath(startIndex) {
+            hexToRgba(hex, alpha) {
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            }
+
+            async animatePath(startIndex, drawnPaths = []) {
                 const pathData = this.paths[startIndex];
                 const path = pathData.path;
+                const color = this.colors[startIndex];
 
-                ctx.strokeStyle = 'rgba(255, 215, 0, 0.9)';
+                // 이전에 그려진 경로들 다시 그리기
+                this.draw(false);
+                for (const drawn of drawnPaths) {
+                    this.drawCompletePath(drawn.pathIndex, drawn.color);
+                }
+
+                ctx.strokeStyle = color;
                 ctx.lineWidth = 5;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
 
-                // 경로 애니메이션
-                for (let i = 1; i < path.length; i++) {
-                    const start = path[i - 1];
-                    const end = path[i];
+                // 전체 경로의 세그먼트들을 연속적으로 그리기
+                let fullPath = [];
+                for (let i = 0; i < path.length; i++) {
+                    fullPath.push(path[i]);
+                }
 
-                    const steps = 20;
-                    for (let step = 0; step <= steps; step++) {
-                        const t = step / steps;
-                        const x = start.x + (end.x - start.x) * t;
-                        const y = start.y + (end.y - start.y) * t;
+                // 총 거리 계산
+                let totalLength = 0;
+                for (let i = 1; i < fullPath.length; i++) {
+                    const dx = fullPath[i].x - fullPath[i-1].x;
+                    const dy = fullPath[i].y - fullPath[i-1].y;
+                    totalLength += Math.sqrt(dx * dx + dy * dy);
+                }
 
-                        ctx.beginPath();
-                        if (i === 1 && step === 0) {
-                            ctx.moveTo(start.x, start.y);
-                        } else {
-                            const prevEnd = path[Math.max(0, i - 1)];
-                            ctx.moveTo(start.x, start.y);
+                // 애니메이션 - 연속 선으로 그리기
+                const animationDuration = 800; // ms
+                const startTime = performance.now();
+
+                await new Promise(resolve => {
+                    const animate = (currentTime) => {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / animationDuration, 1);
+                        const targetLength = totalLength * progress;
+
+                        // 사다리 다시 그리기
+                        this.draw(false);
+
+                        // 이전 경로들 다시 그리기
+                        for (const drawn of drawnPaths) {
+                            this.drawCompletePath(drawn.pathIndex, drawn.color);
                         }
-                        ctx.lineTo(x, y);
+
+                        // 현재까지의 경로 그리기
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 5;
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                        ctx.beginPath();
+                        ctx.moveTo(fullPath[0].x, fullPath[0].y);
+
+                        let accumulatedLength = 0;
+                        let lastX = fullPath[0].x;
+                        let lastY = fullPath[0].y;
+
+                        for (let i = 1; i < fullPath.length; i++) {
+                            const dx = fullPath[i].x - fullPath[i-1].x;
+                            const dy = fullPath[i].y - fullPath[i-1].y;
+                            const segmentLength = Math.sqrt(dx * dx + dy * dy);
+
+                            if (accumulatedLength + segmentLength <= targetLength) {
+                                ctx.lineTo(fullPath[i].x, fullPath[i].y);
+                                lastX = fullPath[i].x;
+                                lastY = fullPath[i].y;
+                                accumulatedLength += segmentLength;
+                            } else {
+                                const remainingLength = targetLength - accumulatedLength;
+                                const t = remainingLength / segmentLength;
+                                lastX = fullPath[i-1].x + dx * t;
+                                lastY = fullPath[i-1].y + dy * t;
+                                ctx.lineTo(lastX, lastY);
+                                break;
+                            }
+                        }
                         ctx.stroke();
 
-                        // 현재 위치에 점 그리기
-                        ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
+                        // 현재 위치에 원 그리기
+                        ctx.fillStyle = color;
                         ctx.beginPath();
-                        ctx.arc(x, y, 6, 0, Math.PI * 2);
+                        ctx.arc(lastX, lastY, 8, 0, Math.PI * 2);
                         ctx.fill();
+                        ctx.strokeStyle = '#fff';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
 
-                        await new Promise(resolve => setTimeout(resolve, 10));
-                    }
-                }
+                        if (progress < 1) {
+                            requestAnimationFrame(animate);
+                        } else {
+                            resolve();
+                        }
+                    };
+                    requestAnimationFrame(animate);
+                });
 
                 // 최종 결과 강조
                 const endLine = pathData.endLine;
                 const resultX = this.padding + endLine * this.lineSpacing;
                 const resultY = canvas.height - this.bottomPadding + 25;
+                const resultText = this.results[endLine];
 
-                ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
-                const textWidth = ctx.measureText(this.results[endLine]).width;
+                ctx.fillStyle = this.hexToRgba(color, 0.4);
+                const textWidth = ctx.measureText(resultText).width;
                 ctx.fillRect(resultX - textWidth / 2 - 12, resultY - 15, textWidth + 24, 34);
 
-                ctx.strokeStyle = 'rgba(255, 215, 0, 0.9)';
+                ctx.strokeStyle = color;
                 ctx.lineWidth = 3;
                 ctx.strokeRect(resultX - textWidth / 2 - 12, resultY - 15, textWidth + 24, 34);
 
                 return endLine;
             }
 
-            getClickedParticipant(x, y) {
-                if (y < this.topPadding - 40 || y > this.topPadding - 10) {
-                    return -1;
+            drawCompletePath(pathIndex, color) {
+                const pathData = this.paths[pathIndex];
+                const path = pathData.path;
+
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 5;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.beginPath();
+                ctx.moveTo(path[0].x, path[0].y);
+
+                for (let i = 1; i < path.length; i++) {
+                    ctx.lineTo(path[i].x, path[i].y);
                 }
+                ctx.stroke();
 
-                for (let i = 0; i < this.participants.length; i++) {
-                    const px = this.padding + i * this.lineSpacing;
-                    const textWidth = ctx.measureText(this.participants[i]).width;
+                // 결과 강조
+                const endLine = pathData.endLine;
+                const resultX = this.padding + endLine * this.lineSpacing;
+                const resultY = canvas.height - this.bottomPadding + 25;
+                const resultText = this.results[endLine];
 
-                    if (x >= px - textWidth / 2 - 8 && x <= px + textWidth / 2 + 8) {
-                        return i;
-                    }
-                }
+                ctx.fillStyle = this.hexToRgba(color, 0.4);
+                const textWidth = ctx.measureText(resultText).width;
+                ctx.fillRect(resultX - textWidth / 2 - 12, resultY - 15, textWidth + 24, 34);
 
-                return -1;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 3;
+                ctx.strokeRect(resultX - textWidth / 2 - 12, resultY - 15, textWidth + 24, 34);
             }
         }
 
         // 사다리 그리기
         function drawLadder() {
             if (ladder) {
-                ladder.draw();
+                ladder.draw(gameState === 'setup');
             }
         }
 
@@ -886,97 +1030,112 @@
             resultList.innerHTML = '';
 
             if (Object.keys(matchingResults).length === 0) {
-                resultList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">참여자를 클릭해보세요!</div>';
+                resultList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">🎮 시작을 눌러주세요!</div>';
                 return;
             }
 
             participants.forEach((name, i) => {
                 if (matchingResults[name] !== undefined) {
+                    const result = matchingResults[name];
+                    const isWin = result !== '꽝';
                     const item = document.createElement('div');
-                    item.className = 'result-item highlight';
+                    item.className = 'result-item' + (isWin ? ' highlight' : '');
                     item.innerHTML = `
-                        <span>${name}</span>
-                        <span>→ ${matchingResults[name]}</span>
+                        <span style="color: ${ladder.colors[i]}">${name}</span>
+                        <span style="color: ${isWin ? '#FFD700' : 'rgba(255,255,255,0.6)'}">→ ${result}</span>
                     `;
                     resultList.appendChild(item);
                 }
             });
         }
 
-        // 게임 시작
-        startBtn.addEventListener('click', () => {
+        // 사다리 생성 (초기화/섞기)
+        function generateLadder() {
             participants = participantsInput.value.split(',').map(n => n.trim()).filter(n => n);
-            results = resultsInput.value.split(',').map(n => n.trim()).filter(n => n);
+            const winningResults = resultsInput.value.split(',').map(n => n.trim()).filter(n => n);
             numBridges = parseInt(bridgesInput.value);
 
             if (participants.length < 2) {
                 alert('참여자가 최소 2명 이상 필요합니다!');
-                return;
-            }
-
-            if (results.length < 2) {
-                alert('결과가 최소 2개 이상 필요합니다!');
-                return;
-            }
-
-            if (participants.length !== results.length) {
-                alert('참여자 수와 결과 수가 같아야 합니다!');
-                return;
+                return false;
             }
 
             if (numBridges < 5 || numBridges > 30) {
                 alert('가로선 개수는 5~30 사이여야 합니다!');
-                return;
+                return false;
             }
+
+            // 당첨 결과 + 나머지 꽝으로 채우기
+            results = generateResults(winningResults, participants.length);
 
             matchingResults = {};
             ladder = new Ladder(participants, results, numBridges);
+            gameState = 'setup';
             drawLadder();
-            updateResults();
-        });
 
-        // 초기화
-        resetBtn.addEventListener('click', () => {
-            ladder = null;
-            matchingResults = {};
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            resultList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">🎮 시작을 눌러주세요!</div>';
 
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#1a1a2e');
-            gradient.addColorStop(1, '#0f0f1e');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            return true;
+        }
 
-            resultList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">사다리를 그려주세요!</div>';
-        });
+        // 게임 시작 (가림 해제 + 자동 애니메이션)
+        async function startGame() {
+            if (!ladder || isAnimating) return;
 
-        // 캔버스 클릭 이벤트
-        canvas.addEventListener('click', async (e) => {
-            if (!ladder) return;
+            isAnimating = true;
+            gameState = 'revealed';
+            startBtn.disabled = true;
+            resetBtn.disabled = true;
 
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            // 가림 해제하며 그리기
+            ladder.draw(false);
 
-            const participantIndex = ladder.getClickedParticipant(x, y);
+            // 잠시 대기
+            await new Promise(resolve => setTimeout(resolve, 500));
 
-            if (participantIndex >= 0) {
-                // 사다리 다시 그리기
-                drawLadder();
-
-                // 경로 애니메이션
-                const resultIndex = await ladder.animatePath(participantIndex);
-
-                // 결과 저장
-                matchingResults[participants[participantIndex]] = results[resultIndex];
+            // 순차적으로 모든 참여자 경로 애니메이션
+            const drawnPaths = [];
+            for (let i = 0; i < participants.length; i++) {
+                const resultIndex = await ladder.animatePath(i, drawnPaths);
+                matchingResults[participants[i]] = results[resultIndex];
+                drawnPaths.push({ pathIndex: i, color: ladder.colors[i] });
                 updateResults();
+
+                // 다음 참여자 전 잠시 대기
+                if (i < participants.length - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
             }
+
+            gameState = 'finished';
+            isAnimating = false;
+            startBtn.disabled = false;
+            resetBtn.disabled = false;
+        }
+
+        // 게임 시작 버튼 - 가림 해제 + 자동 진행
+        startBtn.addEventListener('click', () => {
+            if (gameState === 'setup' && ladder) {
+                // 이미 사다리가 있으면 시작
+                startGame();
+            } else if (gameState === 'finished' || !ladder) {
+                // 새로 생성하고 시작
+                if (generateLadder()) {
+                    startGame();
+                }
+            }
+        });
+
+        // 초기화/섞기 버튼
+        resetBtn.addEventListener('click', () => {
+            if (isAnimating) return;
+            generateLadder();
         });
 
         // 결과 복사
         copyResultBtn.addEventListener('click', () => {
             if (Object.keys(matchingResults).length === 0) {
-                alert('먼저 사다리를 타보세요!');
+                alert('먼저 게임을 진행해주세요!');
                 return;
             }
 
@@ -997,8 +1156,8 @@
             });
         });
 
-        // 초기 화면
-        resetBtn.click();
+        // 초기 화면 - 사다리 생성
+        generateLadder();
     </script>
 </body>
 </html>
