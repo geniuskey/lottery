@@ -9,8 +9,8 @@
   "features": ["🎲 랜덤 사다리", "✨ 애니메이션"],
   "color": "blue",
   "badge": "NEW",
-  "version": "1.0.0",
-  "updated": "2025-01-16",
+  "version": "1.1.0",
+  "updated": "2025-12-20",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -458,7 +458,7 @@
             </div>
 
             <div class="button-group">
-                <button class="start-btn" id="startBtn">🎮 시작</button>
+                <button class="start-btn" id="revealAllBtn" disabled>👁️ 전체 결과</button>
                 <button class="reset-btn" id="resetBtn">↺</button>
             </div>
 
@@ -505,9 +505,10 @@
             1. 참여자 이름을 입력합니다 (콤마로 구분)<br>
             2. 당첨 결과만 입력합니다 (나머지는 자동으로 꽝 처리)<br>
             3. 가로선 개수를 설정합니다 (5~30개)<br>
-            4. ↺ 버튼으로 사다리를 생성/섞기<br>
-            5. "🎮 시작" 버튼을 클릭하면 가려진 부분이 공개되며 자동 진행<br>
-            6. 각 참여자의 경로가 순차적으로 표시됩니다</p>
+            4. ↺ 버튼으로 사다리와 참여자 위치를 섞기<br>
+            5. 사다리 중앙의 "🎮 시작" 영역을 클릭하면 가려진 부분이 공개됩니다<br>
+            6. 상단 참여자 이름을 클릭하면 개별 결과 확인<br>
+            7. "👁️ 전체 결과" 버튼으로 남은 모든 결과를 한번에 확인</p>
 
             <p><strong>⚙️ 설정</strong><br>
             • 참여자: 쉼표로 구분하여 입력 (예: 영수, 영호, 영식)<br>
@@ -543,6 +544,8 @@
         let results = [];
         let numBridges = 15;
         let matchingResults = {};
+        let revealedParticipants = []; // 결과가 공개된 참여자 인덱스
+        let drawnPaths = []; // 그려진 경로들
         let gameState = 'setup'; // 'setup' (마스크됨), 'revealed' (공개됨), 'running' (애니메이션 중), 'finished' (완료)
         let isAnimating = false;
 
@@ -565,7 +568,7 @@
         const participantsInput = document.getElementById('participantsInput');
         const resultsInput = document.getElementById('resultsInput');
         const bridgesInput = document.getElementById('bridgesInput');
-        const startBtn = document.getElementById('startBtn');
+        const revealAllBtn = document.getElementById('revealAllBtn');
         const resetBtn = document.getElementById('resetBtn');
         const resultList = document.getElementById('resultList');
         const helpBtn = document.getElementById('helpBtn');
@@ -592,7 +595,13 @@
         loadSettings();
         participantsInput.addEventListener('input', saveSettings);
         resultsInput.addEventListener('input', saveSettings);
-        bridgesInput.addEventListener('input', saveSettings);
+        bridgesInput.addEventListener('input', () => {
+            saveSettings();
+            // 게임 시작 후 가로선 개수 변경 시 초기화
+            if (gameState !== 'setup') {
+                generateLadder();
+            }
+        });
 
         // 도움말 모달
         helpBtn.addEventListener('click', () => {
@@ -667,14 +676,23 @@
                         [possiblePositions[i], possiblePositions[j]] = [possiblePositions[j], possiblePositions[i]];
                     }
 
+                    // 이 행에서 사용된 라인 인덱스 추적
+                    const usedLines = new Set();
+
                     // 30-70% 정도의 가로선 생성
                     const numBridgesInRow = Math.floor(Math.random() * (this.numLines / 2)) + 1;
+                    let addedCount = 0;
 
-                    for (let i = 0; i < numBridgesInRow && i < possiblePositions.length; i++) {
+                    for (let i = 0; i < possiblePositions.length && addedCount < numBridgesInRow; i++) {
                         const lineIndex = possiblePositions[i];
 
-                        // 연속된 가로선이 겹치지 않도록 체크
-                        if (i > 0 && Math.abs(possiblePositions[i] - possiblePositions[i-1]) === 1) {
+                        // 이 가로선이 사용할 두 라인 (lineIndex, lineIndex + 1)
+                        // 인접한 가로선과 겹치지 않도록 체크
+                        // lineIndex-1, lineIndex, lineIndex+1, lineIndex+2 중 하나라도 사용되었으면 스킵
+                        if (usedLines.has(lineIndex - 1) ||
+                            usedLines.has(lineIndex) ||
+                            usedLines.has(lineIndex + 1) ||
+                            usedLines.has(lineIndex + 2)) {
                             continue;
                         }
 
@@ -683,6 +701,11 @@
                             fromLine: lineIndex,
                             toLine: lineIndex + 1
                         });
+
+                        // 사용된 라인 기록
+                        usedLines.add(lineIndex);
+                        usedLines.add(lineIndex + 1);
+                        addedCount++;
                     }
                 }
 
@@ -753,6 +776,15 @@
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+                // 마스크 영역 계산 (게임 영역의 중앙 80% 가림)
+                const ladderTop = this.topPadding;
+                const ladderBottom = canvas.height - this.bottomPadding;
+                const ladderHeight = ladderBottom - ladderTop;
+                const visibleTopY = ladderTop + ladderHeight * 0.1;  // 상단 10% 보임
+                const visibleBottomY = ladderBottom - ladderHeight * 0.1;  // 하단 10% 보임
+                const maskTop = visibleTopY;
+                const maskBottom = visibleBottomY;
+
                 // 세로선 그리기
                 ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
                 ctx.lineWidth = 3;
@@ -760,54 +792,44 @@
                 for (let i = 0; i < this.numLines; i++) {
                     const x = this.padding + i * this.lineSpacing;
 
-                    ctx.beginPath();
-                    ctx.moveTo(x, this.topPadding);
-                    ctx.lineTo(x, canvas.height - this.bottomPadding);
-                    ctx.stroke();
+                    if (masked) {
+                        // 상단 10% 보이는 부분
+                        ctx.beginPath();
+                        ctx.moveTo(x, ladderTop);
+                        ctx.lineTo(x, visibleTopY);
+                        ctx.stroke();
+
+                        // 하단 10% 보이는 부분
+                        ctx.beginPath();
+                        ctx.moveTo(x, visibleBottomY);
+                        ctx.lineTo(x, ladderBottom);
+                        ctx.stroke();
+                    } else {
+                        ctx.beginPath();
+                        ctx.moveTo(x, this.topPadding);
+                        ctx.lineTo(x, canvas.height - this.bottomPadding);
+                        ctx.stroke();
+                    }
                 }
 
                 // 가로선 그리기
                 ctx.lineWidth = 3;
+                ctx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
 
                 this.bridges.forEach(bridge => {
                     const x1 = this.padding + bridge.fromLine * this.lineSpacing;
                     const x2 = this.padding + bridge.toLine * this.lineSpacing;
 
                     if (masked) {
-                        // 마스크 모드: 양쪽 10%만 보이고 중앙 80%는 가림
-                        const bridgeWidth = x2 - x1;
-                        const visibleWidth = bridgeWidth * 0.1;
-
-                        // 왼쪽 10%
-                        ctx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
-                        ctx.beginPath();
-                        ctx.moveTo(x1, bridge.y);
-                        ctx.lineTo(x1 + visibleWidth, bridge.y);
-                        ctx.stroke();
-
-                        // 오른쪽 10%
-                        ctx.beginPath();
-                        ctx.moveTo(x2 - visibleWidth, bridge.y);
-                        ctx.lineTo(x2, bridge.y);
-                        ctx.stroke();
-
-                        // 중앙 80% 마스크 (물음표 패턴)
-                        ctx.fillStyle = 'rgba(30, 30, 50, 0.95)';
-                        ctx.fillRect(x1 + visibleWidth, bridge.y - 8, bridgeWidth * 0.8, 16);
-
-                        ctx.strokeStyle = 'rgba(100, 100, 150, 0.5)';
-                        ctx.lineWidth = 1;
-                        ctx.strokeRect(x1 + visibleWidth, bridge.y - 8, bridgeWidth * 0.8, 16);
-
-                        ctx.fillStyle = 'rgba(100, 100, 150, 0.7)';
-                        ctx.font = 'bold 12px "Noto Sans KR"';
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
-                        ctx.fillText('?', (x1 + x2) / 2, bridge.y);
-                        ctx.lineWidth = 3;
+                        // 마스크 모드: 마스크 영역 밖의 가로선만 표시
+                        if (bridge.y < maskTop || bridge.y > maskBottom) {
+                            ctx.beginPath();
+                            ctx.moveTo(x1, bridge.y);
+                            ctx.lineTo(x2, bridge.y);
+                            ctx.stroke();
+                        }
                     } else {
                         // 일반 모드: 전체 가로선 표시
-                        ctx.strokeStyle = 'rgba(6, 182, 212, 0.6)';
                         ctx.beginPath();
                         ctx.moveTo(x1, bridge.y);
                         ctx.lineTo(x2, bridge.y);
@@ -815,51 +837,104 @@
                     }
                 });
 
-                // 참여자 이름 (위)
+                // 마스크 영역 그리기 (중앙 80%) - 클릭 가능한 시작 버튼
+                if (masked) {
+                    // 마스크 영역 저장 (클릭용)
+                    this.maskArea = {
+                        x: 10,
+                        y: maskTop,
+                        width: canvas.width - 20,
+                        height: maskBottom - maskTop
+                    };
+
+                    // 반투명 마스크 배경
+                    ctx.fillStyle = 'rgba(20, 20, 35, 0.95)';
+                    ctx.fillRect(0, maskTop, canvas.width, maskBottom - maskTop);
+
+                    // 버튼 스타일 테두리
+                    const gradient = ctx.createLinearGradient(0, maskTop, 0, maskBottom);
+                    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.6)');
+                    gradient.addColorStop(1, 'rgba(6, 182, 212, 0.6)');
+                    ctx.strokeStyle = gradient;
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(10, maskTop, canvas.width - 20, maskBottom - maskTop);
+
+                    // 시작 버튼 텍스트
+                    ctx.fillStyle = 'rgba(59, 130, 246, 0.8)';
+                    ctx.font = 'bold 48px "Noto Sans KR"';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('🎮 시작', canvas.width / 2, (maskTop + maskBottom) / 2);
+
+                    ctx.fillStyle = 'rgba(150, 150, 180, 0.6)';
+                    ctx.font = 'bold 14px "Noto Sans KR"';
+                    ctx.fillText('클릭하여 사다리 공개', canvas.width / 2, (maskTop + maskBottom) / 2 + 40);
+                } else {
+                    this.maskArea = null;
+                }
+
+                // 참여자 이름 (위) - 클릭 가능하도록 저장
                 ctx.font = 'bold 16px "Noto Sans KR"';
                 ctx.textAlign = 'center';
-                ctx.textBaseline = 'bottom';
+                ctx.textBaseline = 'middle';
+
+                this.participantBoxes = []; // 클릭 영역 저장
 
                 this.participants.forEach((name, i) => {
                     const x = this.padding + i * this.lineSpacing;
                     const color = this.colors[i];
+                    const textWidth = Math.max(ctx.measureText(name).width, 40);
+                    const boxWidth = textWidth + 16;
+                    const boxHeight = 30;
+                    const boxX = x - boxWidth / 2;
+                    const boxY = this.topPadding - 45;
+
+                    // 클릭 영역 저장
+                    this.participantBoxes.push({
+                        x: boxX,
+                        y: boxY,
+                        width: boxWidth,
+                        height: boxHeight,
+                        index: i
+                    });
 
                     // 배경 - 참여자별 색상
                     ctx.fillStyle = this.hexToRgba(color, 0.3);
-                    const textWidth = ctx.measureText(name).width;
-                    ctx.fillRect(x - textWidth / 2 - 8, this.topPadding - 40, textWidth + 16, 30);
+                    ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
 
                     // 테두리
                     ctx.strokeStyle = this.hexToRgba(color, 0.8);
                     ctx.lineWidth = 2;
-                    ctx.strokeRect(x - textWidth / 2 - 8, this.topPadding - 40, textWidth + 16, 30);
+                    ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
 
-                    // 텍스트
+                    // 텍스트 (세로 중앙)
                     ctx.fillStyle = '#fff';
-                    ctx.fillText(name, x, this.topPadding - 15);
+                    ctx.fillText(name, x, boxY + boxHeight / 2);
                 });
 
-                // 결과 항목 (아래)
-                ctx.textBaseline = 'top';
-
+                // 결과 항목 (아래) - 텍스트 세로 중앙 정렬
                 this.results.forEach((result, i) => {
                     const x = this.padding + i * this.lineSpacing;
                     const y = canvas.height - this.bottomPadding;
                     const isWin = result !== '꽝';
+                    const textWidth = Math.max(ctx.measureText(result).width, 40);
+                    const boxWidth = textWidth + 16;
+                    const boxHeight = 30;
+                    const boxX = x - boxWidth / 2;
+                    const boxY = y + 10;
 
                     // 배경
                     ctx.fillStyle = isWin ? 'rgba(255, 215, 0, 0.3)' : 'rgba(100, 100, 100, 0.3)';
-                    const textWidth = ctx.measureText(result).width;
-                    ctx.fillRect(x - textWidth / 2 - 8, y + 10, textWidth + 16, 30);
+                    ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
 
                     // 테두리
                     ctx.strokeStyle = isWin ? 'rgba(255, 215, 0, 0.8)' : 'rgba(100, 100, 100, 0.6)';
                     ctx.lineWidth = 2;
-                    ctx.strokeRect(x - textWidth / 2 - 8, y + 10, textWidth + 16, 30);
+                    ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
 
-                    // 텍스트
+                    // 텍스트 (세로 중앙)
                     ctx.fillStyle = isWin ? '#FFD700' : 'rgba(255, 255, 255, 0.6)';
-                    ctx.fillText(result, x, y + 25);
+                    ctx.fillText(result, x, boxY + boxHeight / 2);
                 });
             }
 
@@ -901,11 +976,17 @@
                 }
 
                 // 애니메이션 - 연속 선으로 그리기
-                const animationDuration = 800; // ms
+                const animationDuration = 960; // ms (20% 느리게)
                 const startTime = performance.now();
 
                 await new Promise(resolve => {
                     const animate = (currentTime) => {
+                        // 애니메이션 중단 체크
+                        if (!isAnimating) {
+                            resolve();
+                            return;
+                        }
+
                         const elapsed = currentTime - startTime;
                         const progress = Math.min(elapsed / animationDuration, 1);
                         const targetLength = totalLength * progress;
@@ -969,19 +1050,32 @@
                     requestAnimationFrame(animate);
                 });
 
-                // 최종 결과 강조
+                // 최종 결과 강조 (기존 결과 박스와 동일 사이즈로 덮기)
                 const endLine = pathData.endLine;
                 const resultX = this.padding + endLine * this.lineSpacing;
-                const resultY = canvas.height - this.bottomPadding + 25;
+                const resultY = canvas.height - this.bottomPadding + 10;
                 const resultText = this.results[endLine];
 
-                ctx.fillStyle = this.hexToRgba(color, 0.4);
-                const textWidth = ctx.measureText(resultText).width;
-                ctx.fillRect(resultX - textWidth / 2 - 12, resultY - 15, textWidth + 24, 34);
+                ctx.font = 'bold 16px "Noto Sans KR"';
+                const textWidth = Math.max(ctx.measureText(resultText).width, 40);
+                const boxWidth = textWidth + 16;
+                const boxHeight = 30;
+                const boxX = resultX - boxWidth / 2;
+
+                // 색상으로 덮기
+                ctx.fillStyle = this.hexToRgba(color, 0.5);
+                ctx.fillRect(boxX, resultY, boxWidth, boxHeight);
 
                 ctx.strokeStyle = color;
                 ctx.lineWidth = 3;
-                ctx.strokeRect(resultX - textWidth / 2 - 12, resultY - 15, textWidth + 24, 34);
+                ctx.strokeRect(boxX, resultY, boxWidth, boxHeight);
+
+                // 결과 텍스트 다시 그리기
+                const isWin = resultText !== '꽝';
+                ctx.fillStyle = isWin ? '#FFD700' : '#fff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(resultText, resultX, resultY + boxHeight / 2);
 
                 return endLine;
             }
@@ -1002,19 +1096,32 @@
                 }
                 ctx.stroke();
 
-                // 결과 강조
+                // 결과 강조 (기존 결과 박스와 동일 사이즈로 덮기)
                 const endLine = pathData.endLine;
                 const resultX = this.padding + endLine * this.lineSpacing;
-                const resultY = canvas.height - this.bottomPadding + 25;
+                const resultY = canvas.height - this.bottomPadding + 10;
                 const resultText = this.results[endLine];
 
-                ctx.fillStyle = this.hexToRgba(color, 0.4);
-                const textWidth = ctx.measureText(resultText).width;
-                ctx.fillRect(resultX - textWidth / 2 - 12, resultY - 15, textWidth + 24, 34);
+                ctx.font = 'bold 16px "Noto Sans KR"';
+                const textWidth = Math.max(ctx.measureText(resultText).width, 40);
+                const boxWidth = textWidth + 16;
+                const boxHeight = 30;
+                const boxX = resultX - boxWidth / 2;
+
+                // 색상으로 덮기
+                ctx.fillStyle = this.hexToRgba(color, 0.5);
+                ctx.fillRect(boxX, resultY, boxWidth, boxHeight);
 
                 ctx.strokeStyle = color;
                 ctx.lineWidth = 3;
-                ctx.strokeRect(resultX - textWidth / 2 - 12, resultY - 15, textWidth + 24, 34);
+                ctx.strokeRect(boxX, resultY, boxWidth, boxHeight);
+
+                // 결과 텍스트 다시 그리기
+                const isWin = resultText !== '꽝';
+                ctx.fillStyle = isWin ? '#FFD700' : '#fff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(resultText, resultX, resultY + boxHeight / 2);
             }
         }
 
@@ -1049,13 +1156,23 @@
             });
         }
 
+        // 배열 섞기 (Fisher-Yates)
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
         // 사다리 생성 (초기화/섞기)
         function generateLadder() {
-            participants = participantsInput.value.split(',').map(n => n.trim()).filter(n => n);
+            let rawParticipants = participantsInput.value.split(',').map(n => n.trim()).filter(n => n);
             const winningResults = resultsInput.value.split(',').map(n => n.trim()).filter(n => n);
             numBridges = parseInt(bridgesInput.value);
 
-            if (participants.length < 2) {
+            if (rawParticipants.length < 2) {
                 alert('참여자가 최소 2명 이상 필요합니다!');
                 return false;
             }
@@ -1065,70 +1182,183 @@
                 return false;
             }
 
+            // 참여자 위치 랜덤 섞기
+            participants = shuffleArray(rawParticipants);
+
             // 당첨 결과 + 나머지 꽝으로 채우기
             results = generateResults(winningResults, participants.length);
 
             matchingResults = {};
+            revealedParticipants = [];
+            drawnPaths = [];
             ladder = new Ladder(participants, results, numBridges);
             gameState = 'setup';
             drawLadder();
 
-            resultList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">🎮 시작을 눌러주세요!</div>';
+            // 버튼 상태 업데이트 (결과 없으므로 disabled)
+            revealAllBtn.disabled = true;
+
+            resultList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">사다리를 클릭하여 시작!</div>';
 
             return true;
         }
 
-        // 게임 시작 (가림 해제 + 자동 애니메이션)
-        async function startGame() {
-            if (!ladder || isAnimating) return;
+        // 게임 시작 (가림 해제만)
+        function startGame() {
+            if (!ladder || gameState !== 'setup') return;
 
-            isAnimating = true;
             gameState = 'revealed';
-            startBtn.disabled = true;
-            resetBtn.disabled = true;
 
             // 가림 해제하며 그리기
             ladder.draw(false);
 
-            // 잠시 대기
-            await new Promise(resolve => setTimeout(resolve, 500));
+            // 전체 결과 버튼 활성화
+            revealAllBtn.disabled = false;
 
-            // 순차적으로 모든 참여자 경로 애니메이션
-            const drawnPaths = [];
+            resultList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">참여자를 클릭하세요!</div>';
+        }
+
+        // 개별 참여자 결과 보기
+        async function revealParticipant(index) {
+            if (isAnimating || revealedParticipants.includes(index)) return;
+
+            isAnimating = true;
+            revealAllBtn.disabled = true;
+
+            // 애니메이션 실행
+            const resultIndex = await ladder.animatePath(index, drawnPaths);
+
+            // 애니메이션 중단된 경우 (초기화 버튼 눌림)
+            if (!isAnimating) return;
+
+            matchingResults[participants[index]] = results[resultIndex];
+            drawnPaths.push({ pathIndex: index, color: ladder.colors[index] });
+            revealedParticipants.push(index);
+            updateResults();
+
+            isAnimating = false;
+
+            // 모든 참여자 공개 완료 시
+            if (revealedParticipants.length === participants.length) {
+                gameState = 'finished';
+                revealAllBtn.disabled = true;
+            } else {
+                // 아직 공개 안된 참여자가 있으면 전체 결과 버튼 활성화
+                revealAllBtn.disabled = false;
+            }
+        }
+
+        // 전체 결과 보기
+        async function revealAll() {
+            if (isAnimating || gameState === 'setup') return;
+
+            isAnimating = true;
+            revealAllBtn.disabled = true;
+
             for (let i = 0; i < participants.length; i++) {
-                const resultIndex = await ladder.animatePath(i, drawnPaths);
-                matchingResults[participants[i]] = results[resultIndex];
-                drawnPaths.push({ pathIndex: i, color: ladder.colors[i] });
-                updateResults();
+                // 애니메이션 중단된 경우 (초기화 버튼 눌림)
+                if (!isAnimating) return;
 
-                // 다음 참여자 전 잠시 대기
-                if (i < participants.length - 1) {
-                    await new Promise(resolve => setTimeout(resolve, 300));
+                if (!revealedParticipants.includes(i)) {
+                    const resultIndex = await ladder.animatePath(i, drawnPaths);
+
+                    // 애니메이션 중단된 경우
+                    if (!isAnimating) return;
+
+                    matchingResults[participants[i]] = results[resultIndex];
+                    drawnPaths.push({ pathIndex: i, color: ladder.colors[i] });
+                    revealedParticipants.push(i);
+                    updateResults();
+
+                    // 다음 참여자 전 잠시 대기
+                    if (i < participants.length - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 300));
+                    }
                 }
             }
 
             gameState = 'finished';
             isAnimating = false;
-            startBtn.disabled = false;
-            resetBtn.disabled = false;
+            revealAllBtn.disabled = true;
         }
 
-        // 게임 시작 버튼 - 가림 해제 + 자동 진행
-        startBtn.addEventListener('click', () => {
-            if (gameState === 'setup' && ladder) {
-                // 이미 사다리가 있으면 시작
-                startGame();
-            } else if (gameState === 'finished' || !ladder) {
-                // 새로 생성하고 시작
-                if (generateLadder()) {
+        // 캔버스 클릭 이벤트 (마스크 클릭 또는 참여자 클릭)
+        canvas.addEventListener('click', (e) => {
+            if (!ladder || isAnimating) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // 마스크 클릭 체크 (게임 시작)
+            if (gameState === 'setup' && ladder.maskArea) {
+                const mask = ladder.maskArea;
+                if (x >= mask.x && x <= mask.x + mask.width &&
+                    y >= mask.y && y <= mask.y + mask.height) {
                     startGame();
+                    return;
+                }
+            }
+
+            // 참여자 박스 클릭 체크 (게임 진행 중)
+            if (gameState === 'revealed' && ladder.participantBoxes) {
+                for (const box of ladder.participantBoxes) {
+                    if (x >= box.x && x <= box.x + box.width &&
+                        y >= box.y && y <= box.y + box.height) {
+                        revealParticipant(box.index);
+                        break;
+                    }
                 }
             }
         });
 
-        // 초기화/섞기 버튼
+        // 커서 스타일 변경
+        canvas.addEventListener('mousemove', (e) => {
+            if (!ladder || isAnimating) {
+                canvas.style.cursor = 'default';
+                return;
+            }
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // 마스크 위에 있으면 pointer
+            if (gameState === 'setup' && ladder.maskArea) {
+                const mask = ladder.maskArea;
+                if (x >= mask.x && x <= mask.x + mask.width &&
+                    y >= mask.y && y <= mask.y + mask.height) {
+                    canvas.style.cursor = 'pointer';
+                    return;
+                }
+            }
+
+            // 참여자 위에 있으면 pointer
+            let isOverParticipant = false;
+            if (gameState === 'revealed' && ladder.participantBoxes) {
+                for (const box of ladder.participantBoxes) {
+                    if (x >= box.x && x <= box.x + box.width &&
+                        y >= box.y && y <= box.y + box.height &&
+                        !revealedParticipants.includes(box.index)) {
+                        isOverParticipant = true;
+                        break;
+                    }
+                }
+            }
+
+            canvas.style.cursor = isOverParticipant ? 'pointer' : 'default';
+        });
+
+        // 전체 결과 보기 버튼
+        revealAllBtn.addEventListener('click', () => {
+            if (gameState === 'revealed') {
+                revealAll();
+            }
+        });
+
+        // 초기화/섞기 버튼 (애니메이션 중에도 동작)
         resetBtn.addEventListener('click', () => {
-            if (isAnimating) return;
+            isAnimating = false; // 애니메이션 강제 중단
             generateLadder();
         });
 
