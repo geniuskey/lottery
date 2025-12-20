@@ -1362,7 +1362,8 @@
           addKOLog(attacker, target);
           eliminationOrder.push(target);
           updateAliveCount();
-          
+          updateRanking(); // 탈락 즉시 랭킹 업데이트
+
           const newAlive = fighters.filter(f => f.isAlive);
           if (newAlive.length <= winnerCount) {
             setTimeout(endGame, 500);
