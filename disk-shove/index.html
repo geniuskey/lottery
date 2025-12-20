@@ -946,17 +946,24 @@
                 player.boosting = true;
                 player.boostDuration = 300;
                 player.boostCooldown = 5000;
-                
-                // Boost towards a random direction or towards center
-                const towardCenter = Math.random() > 0.3;
+
+                // 다른 생존 플레이어를 타겟으로 선택
+                const otherPlayers = this.players.filter(p => p !== player && p.alive && !p.falling);
                 let angle;
-                
-                if (towardCenter) {
-                    angle = Math.atan2(this.centerY - player.y, this.centerX - player.x);
+
+                if (otherPlayers.length > 0) {
+                    // 랜덤하게 타겟 선택
+                    const target = otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
+                    // 타겟 방향 계산
+                    const baseAngle = Math.atan2(target.y - player.y, target.x - player.x);
+                    // +-30도 (약 0.52 라디안) 오차 추가
+                    const errorAngle = (Math.random() - 0.5) * (Math.PI / 3); // +-30도
+                    angle = baseAngle + errorAngle;
                 } else {
-                    angle = Math.random() * Math.PI * 2;
+                    // 다른 플레이어가 없으면 중심 방향으로
+                    angle = Math.atan2(this.centerY - player.y, this.centerX - player.x);
                 }
-                
+
                 const boostPower = 15 + Math.random() * 10;
                 player.vx += Math.cos(angle) * boostPower;
                 player.vy += Math.sin(angle) * boostPower;
