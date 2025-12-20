@@ -136,11 +136,16 @@ class ZombieSurvival {
         this.zombieDetectRange = 250;
         this.humanDetectRange = this.zombieDetectRange * 0.9; // 인간은 좀비의 90%
         this.runDuration = 60;
-        this.humanColors = ['#4CAF50','#2196F3','#FF9800','#9C27B0','#00BCD4','#FFEB3B','#E91E63','#3F51B5','#009688','#FF5722','#607D8B','#8BC34A'];
+        this.humanEmojis = ['😀','😊','😎','🤓','😃','😁','🥳','😺','🐶','🐱','🦊','🐻'];
         this.centerX = 0; this.centerY = 0; this.currentRadius = 0;
         this.targetRadius = 0; this.targetCenterX = 0; this.targetCenterY = 0;
         this.shrinkPhase = 0; this.shrinkTimer = 0;
         this.shrinkInterval = 600; this.shrinkWarningTime = 180; this.isShrinking = false;
+        // Load zombie image
+        this.zombieImage = new Image();
+        this.zombieImage.src = 'zombie_01.png';
+        this.zombieImageLoaded = false;
+        this.zombieImage.onload = () => { this.zombieImageLoaded = true; this.draw(); };
         this.setupCanvas(); this.bindEvents();
     }
     
@@ -196,7 +201,7 @@ class ZombieSurvival {
             this.entities.push({
                 name: shuffled[i], x: positions[i].x, y: positions[i].y, vx: 0, vy: 0,
                 angle: Math.random() * Math.PI * 2, isZombie: false, isRunning: false, runTimer: 0,
-                color: this.humanColors[i % this.humanColors.length],
+                emoji: this.humanEmojis[i % this.humanEmojis.length],
                 targetAngle: Math.random() * Math.PI * 2, wanderTimer: Math.random() * 120,
                 hasTarget: false, isInitialZombie: false, health: 100,
                 isTransforming: false, transformTimer: 0, eatingTimer: 0, zombieKills: 0,
@@ -573,10 +578,18 @@ class ZombieSurvival {
     
     drawDeadZombie(dead) {
         const ctx = this.ctx, alpha = dead.fadeTimer / 60;
-        ctx.save(); ctx.globalAlpha = alpha;
-        ctx.translate(dead.x, dead.y); ctx.rotate(dead.angle);
-        ctx.fillStyle = '#3a3a3a';
-        ctx.beginPath(); ctx.ellipse(0, 0, this.entityRadius, this.entityRadius * 0.5, 0, 0, Math.PI * 2); ctx.fill();
+        const zombieImgSize = this.entityRadius * 3 * 1.5; // 좀비 크기 1.5배
+        ctx.save(); ctx.globalAlpha = alpha * 0.5;
+        ctx.translate(dead.x, dead.y);
+        // 쓰러진 좀비 이미지 (회전하고 반투명하게)
+        ctx.rotate(Math.PI / 2); // 옆으로 쓰러진 모습
+        if (this.zombieImageLoaded) {
+            ctx.drawImage(this.zombieImage, -zombieImgSize/2, -zombieImgSize/2, zombieImgSize, zombieImgSize);
+        } else {
+            ctx.font = zombieImgSize + 'px serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('🧟', 0, 0);
+        }
         ctx.restore();
     }
     
@@ -595,34 +608,45 @@ class ZombieSurvival {
     
     drawEntity(entity) {
         const ctx = this.ctx, x = entity.x, y = entity.y, r = this.entityRadius;
+        const baseImgSize = r * 3; // 기본 이미지/이모지 크기
+        const zombieScale = 1.5; // 좀비 크기 배율
         ctx.save(); ctx.translate(x, y);
-        
+
         if (entity.isTransforming) {
             const progress = 1 - (entity.transformTimer / 60);
-            const pulseScale = 1 + Math.sin(progress * Math.PI * 6) * 0.2;
+            // 크기가 1에서 1.5로 점점 커지는 효과 + 펄스 효과
+            const sizeScale = 1 + (zombieScale - 1) * progress;
+            const pulseScale = sizeScale + Math.sin(progress * Math.PI * 6) * 0.2;
             ctx.scale(pulseScale, pulseScale);
-            const greenToRed = Math.floor(progress * 255);
-            ctx.fillStyle = 'rgb(' + (100 + greenToRed) + ',' + (150 - greenToRed * 0.5) + ',' + (100 - greenToRed * 0.3) + ')';
             const shake = (1 - progress) * 3;
             ctx.translate(Math.random() * shake - shake/2, Math.random() * shake - shake/2);
-            ctx.beginPath(); ctx.ellipse(0, 0, r, r * 0.7, 0, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = 'rgb(' + (150 + greenToRed * 0.4) + ',' + (180 - greenToRed * 0.5) + ',' + (150 - greenToRed * 0.4) + ')';
-            ctx.beginPath(); ctx.arc(r * 0.35, 0, r * 0.35, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = 'rgba(255,' + (255 - greenToRed) + ',0,' + (0.8 - progress * 0.5) + ')';
+            // 변환 중에는 이모지가 점점 좀비로 변하는 효과
+            ctx.globalAlpha = 1 - progress;
+            ctx.font = baseImgSize + 'px serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(entity.emoji || '😵', 0, 0);
+            ctx.globalAlpha = progress;
+            if (this.zombieImageLoaded) {
+                ctx.drawImage(this.zombieImage, -baseImgSize/2, -baseImgSize/2, baseImgSize, baseImgSize);
+            }
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = 'rgba(255,' + Math.floor(255 - progress * 255) + ',0,' + (0.8 - progress * 0.5) + ')';
             ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, r + 8 + progress * 5, 0, Math.PI * 2 * progress); ctx.stroke();
             ctx.restore();
+            const currentImgSize = baseImgSize * sizeScale;
             ctx.font = 'bold ' + Math.max(12, r * 1.2) + 'px "Noto Sans KR"';
             ctx.textAlign = 'center'; ctx.textBaseline = 'top';
             ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)'; ctx.lineWidth = 3;
-            ctx.strokeText('🧟' + entity.name, x, y + r + 5);
-            ctx.fillStyle = '#ffaa00'; ctx.fillText('🧟' + entity.name, x, y + r + 5);
+            ctx.strokeText(entity.name, x, y + currentImgSize/2 + 5);
+            ctx.fillStyle = '#ffaa00'; ctx.fillText(entity.name, x, y + currentImgSize/2 + 5);
             return;
         }
-        
+
         if (entity.isZombie) {
+            const zombieImgSize = baseImgSize * zombieScale; // 좀비는 1.5배 크기
             if (entity.eatingTimer > 0) {
                 ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
-                ctx.beginPath(); ctx.arc(0, 0, r + 5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(0, 0, zombieImgSize/2 + 5, 0, Math.PI * 2); ctx.fill();
             }
             if (!entity.hasTarget && entity.eatingTimer <= 0) {
                 ctx.rotate(entity.angle);
@@ -631,41 +655,54 @@ class ZombieSurvival {
                 ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, this.zombieDetectRange, -fovRad, fovRad); ctx.closePath(); ctx.fill();
                 ctx.rotate(-entity.angle);
             }
-            ctx.rotate(entity.angle);
-            ctx.fillStyle = '#4a5d4a'; ctx.beginPath(); ctx.ellipse(0, 0, r, r * 0.7, 0, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = '#5a6b5a'; ctx.beginPath(); ctx.arc(r * 0.4, 0, r * 0.4, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = entity.hasTarget ? '#ff0000' : '#ff4444';
-            ctx.beginPath(); ctx.arc(r * 0.5, -r * 0.1, r * 0.1, 0, Math.PI * 2); ctx.arc(r * 0.5, r * 0.1, r * 0.1, 0, Math.PI * 2); ctx.fill();
+            // 좀비 이미지 그리기 (1.5배 크기)
+            if (this.zombieImageLoaded) {
+                ctx.drawImage(this.zombieImage, -zombieImgSize/2, -zombieImgSize/2, zombieImgSize, zombieImgSize);
+            } else {
+                // 이미지 로딩 전 폴백
+                ctx.font = zombieImgSize + 'px serif';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText('🧟', 0, 0);
+            }
         } else {
+            // 시야 범위 그리기
             ctx.rotate(entity.angle);
             const fovRad = (this.humanFovAngle / 2) * (Math.PI / 180);
             ctx.fillStyle = 'rgba(255, 255, 100, 0.05)';
             ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, this.humanDetectRange, -fovRad, fovRad); ctx.closePath(); ctx.fill();
-            ctx.fillStyle = entity.color; ctx.beginPath(); ctx.ellipse(0, 0, r, r * 0.65, 0, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = '#FFDAB9'; ctx.beginPath(); ctx.arc(r * 0.35, 0, r * 0.35, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = '#333'; ctx.beginPath(); ctx.arc(r * 0.25, 0, r * 0.3, Math.PI * 0.7, -Math.PI * 0.7); ctx.fill();
+            ctx.rotate(-entity.angle);
+            // 얼굴 이모지 그리기 (선명하게)
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = '#ffffff';
+            ctx.font = baseImgSize + 'px serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(entity.emoji || '😀', 0, 0);
+            // 달리는 중 표시
             if (entity.isRunning) {
-                ctx.rotate(-entity.angle); ctx.strokeStyle = '#ffff00'; ctx.lineWidth = 2;
-                ctx.beginPath(); ctx.arc(0, 0, r + 3, 0, Math.PI * 2 * (entity.runTimer / this.runDuration)); ctx.stroke();
+                ctx.strokeStyle = '#ffff00'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(0, 0, baseImgSize/2 + 3, 0, Math.PI * 2 * (entity.runTimer / this.runDuration)); ctx.stroke();
             }
         }
         ctx.restore();
-        
+
+        // 현재 엔티티의 실제 크기 계산
+        const currentSize = entity.isZombie ? baseImgSize * zombieScale : baseImgSize;
+
         if (entity.helpTimer > 0 && !entity.isZombie) {
             const shake = Math.sin(Date.now() / 30) * 3;
-            const helpY = y - r - 20 + shake, helpX = x + Math.sin(Date.now() / 50) * 2;
+            const helpY = y - currentSize/2 - 10 + shake, helpX = x + Math.sin(Date.now() / 50) * 2;
             ctx.font = 'bold 14px "Noto Sans KR"'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
             ctx.shadowColor = 'rgba(255, 0, 0, 0.3)'; ctx.shadowBlur = 3;
             ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)'; ctx.lineWidth = 3; ctx.strokeText('Help!!', helpX, helpY);
             ctx.fillStyle = '#ff4444'; ctx.fillText('Help!!', helpX, helpY);
             ctx.shadowBlur = 0;
         }
-        
+
         ctx.font = 'bold ' + Math.max(12, r * 1.2) + 'px "Noto Sans KR"';
         ctx.textAlign = 'center'; ctx.textBaseline = 'top';
         const shortName = entity.name.length > 6 ? entity.name.slice(0, 5) + '..' : entity.name;
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)'; ctx.lineWidth = 3; ctx.strokeText(shortName, x, y + r + 5);
-        ctx.fillStyle = entity.isZombie ? '#ff6666' : '#fff'; ctx.fillText(shortName, x, y + r + 5);
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)'; ctx.lineWidth = 3; ctx.strokeText(shortName, x, y + currentSize/2 + 5);
+        ctx.fillStyle = entity.isZombie ? '#ff6666' : '#fff'; ctx.fillText(shortName, x, y + currentSize/2 + 5);
     }
     
     endGame(winners) {
