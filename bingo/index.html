@@ -909,7 +909,7 @@
 
     <section>
       <div class="section-title">👥 참여자 명단</div>
-      <textarea class="participants-input" id="participantsInput" placeholder="콤마로 구분하여 입력&#10;예: 철수, 영희, 민수, 지연, 현우">철수, 영희, 민수, 지연, 현우, 서연, 준호, 은지</textarea>
+      <textarea class="participants-input" id="participantsInput" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
     </section>
 
     <section class="settings-card">
@@ -1125,9 +1125,21 @@
       parseParticipants() {
         const text = this.participantsInput.value.trim();
         if (!text) return [];
-        return text.split(',')
-          .map(name => name.trim())
-          .filter(name => name.length > 0);
+        const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
+        const result = [];
+        for (const name of names) {
+          const match = name.match(/^(.+)\*(\d+)$/);
+          if (match) {
+            const baseName = match[1].trim();
+            const count = parseInt(match[2]);
+            for (let i = 0; i < count; i++) {
+              result.push(baseName);
+            }
+          } else {
+            result.push(name);
+          }
+        }
+        return result;
       }
 
       generateBingoBoard() {

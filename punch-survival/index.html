@@ -854,7 +854,7 @@
 
       <div class="input-group">
         <div class="section-title">👥 참여자 명단</div>
-        <textarea id="participants" placeholder="예: 철수, 영희, 민수, 지훈, 수진...&#10;콤마(,)로 구분하여 입력하세요">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+        <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
       </div>
 
       <div class="settings-group">
@@ -1248,7 +1248,19 @@
     function parseParticipants() {
       const text = participantsInput.value.trim();
       if (!text) return [];
-      return text.split(',').map(s => s.trim()).filter(s => s.length > 0);
+      const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
+      const result = [];
+      for (const name of names) {
+        const match = name.match(/^(.+)\*(\d+)$/);
+        if (match) {
+          const baseName = match[1].trim();
+          const count = parseInt(match[2]);
+          for (let i = 0; i < count; i++) result.push(baseName);
+        } else {
+          result.push(name);
+        }
+      }
+      return result;
     }
 
     // Initialize Game
