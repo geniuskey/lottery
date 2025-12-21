@@ -242,29 +242,27 @@
       background: var(--glass-bg);
       border: 1px solid var(--border-glow);
       border-radius: 12px;
-      padding: 14px;
+      padding: 12px;
     }
 
     .settings-card .section-title {
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .settings-card-content {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 2px;
     }
 
     .setting-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 4px 0;
     }
 
     .setting-item:last-child {
-      border-bottom: none;
       padding-bottom: 0;
     }
 
@@ -926,6 +924,15 @@
           </select>
         </div>
         <div class="setting-item">
+          <label>🔢 최대 숫자</label>
+          <select id="maxNumber">
+            <option value="25">25</option>
+            <option value="50" selected>50</option>
+            <option value="75">75</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+        <div class="setting-item">
           <label>📏 빙고 줄수</label>
           <select id="bingoLines">
             <option value="1">1줄</option>
@@ -1011,7 +1018,7 @@
           <li>참여자 명단을 <span class="help-highlight">콤마(,)</span>로 구분하여 입력합니다.</li>
           <li>우승자 수와 빙고 줄수를 설정합니다.</li>
           <li><span class="help-highlight">🎮 시작</span> 버튼을 누르면 게임이 시작됩니다.</li>
-          <li>1~99 사이의 숫자가 자동으로 호출됩니다.</li>
+          <li>설정한 최대 숫자 범위 내에서 숫자가 자동으로 호출됩니다.</li>
           <li>호출된 숫자가 빙고판에 있으면 자동으로 체크됩니다.</li>
         </ul>
       </div>
@@ -1026,6 +1033,7 @@
         <div class="help-section-title">⚙️ 설정 옵션</div>
         <ul>
           <li><span class="help-highlight">우승자 수</span>: 몇 명이 빙고를 완성하면 게임을 종료할지 설정 (1~5명)</li>
+          <li><span class="help-highlight">최대 숫자</span>: 빙고판에 사용할 숫자 범위 (25, 50, 75, 100)</li>
           <li><span class="help-highlight">빙고 줄수</span>: 승리에 필요한 완성 줄수 설정 (1~4줄)</li>
         </ul>
       </div>
@@ -1050,6 +1058,7 @@
         this.isRunning = false;
         this.requiredLines = 3;
         this.maxWinners = 3;
+        this.maxNumber = 50;
         this.callInterval = null;
         this.lastCalledNumber = null;
         this.previousRankings = {};
@@ -1064,6 +1073,7 @@
       initElements() {
         this.participantsInput = document.getElementById('participantsInput');
         this.winnerCountSelect = document.getElementById('winnerCount');
+        this.maxNumberSelect = document.getElementById('maxNumber');
         this.bingoLinesSelect = document.getElementById('bingoLines');
         this.dynamicSortToggle = document.getElementById('dynamicSortToggle');
         this.startBtn = document.getElementById('startBtn');
@@ -1093,6 +1103,7 @@
         });
         
         this.winnerCountSelect.addEventListener('change', () => this.saveSettings());
+        this.maxNumberSelect.addEventListener('change', () => this.saveSettings());
         this.bingoLinesSelect.addEventListener('change', () => this.saveSettings());
         this.dynamicSortToggle.addEventListener('change', () => {
           this.dynamicSort = this.dynamicSortToggle.checked;
@@ -1106,6 +1117,7 @@
       loadSettings() {
         const settings = JSON.parse(localStorage.getItem('bingoSettings') || '{}');
         if (settings.winnerCount) this.winnerCountSelect.value = settings.winnerCount;
+        if (settings.maxNumber) this.maxNumberSelect.value = settings.maxNumber;
         if (settings.bingoLines) this.bingoLinesSelect.value = settings.bingoLines;
         if (settings.dynamicSort !== undefined) {
           this.dynamicSort = settings.dynamicSort;
@@ -1116,6 +1128,7 @@
       saveSettings() {
         const settings = {
           winnerCount: this.winnerCountSelect.value,
+          maxNumber: this.maxNumberSelect.value,
           bingoLines: this.bingoLinesSelect.value,
           dynamicSort: this.dynamicSortToggle.checked
         };
@@ -1144,14 +1157,14 @@
 
       generateBingoBoard() {
         const numbers = [];
-        for (let i = 1; i <= 99; i++) numbers.push(i);
-        
+        for (let i = 1; i <= this.maxNumber; i++) numbers.push(i);
+
         // Shuffle and pick 25
         for (let i = numbers.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
         }
-        
+
         const board = [];
         for (let i = 0; i < 5; i++) {
           board.push(numbers.slice(i * 5, (i + 1) * 5));
@@ -1195,19 +1208,20 @@
         }
 
         this.maxWinners = parseInt(this.winnerCountSelect.value);
+        this.maxNumber = parseInt(this.maxNumberSelect.value);
         this.requiredLines = parseInt(this.bingoLinesSelect.value);
         this.dynamicSort = this.dynamicSortToggle.checked;
-        
+
         this.isRunning = true;
         this.winners = [];
         this.calledNumbers = [];
         this.boards = {};
         this.previousRankings = {};
         this.initialOrder = [...this.participants];
-        
+
         // Generate available numbers
         this.availableNumbers = [];
-        for (let i = 1; i <= 99; i++) this.availableNumbers.push(i);
+        for (let i = 1; i <= this.maxNumber; i++) this.availableNumbers.push(i);
         this.shuffleArray(this.availableNumbers);
 
         // Generate boards for each participant
