@@ -858,14 +858,27 @@ document.addEventListener('DOMContentLoaded', () => {
     function parseParticipants(text) {
         const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
         const result = [];
+        const nameCount = {};
         for (const name of names) {
             const match = name.match(/^(.+)\*(\d+)$/);
             if (match) {
                 const baseName = match[1].trim();
                 const count = parseInt(match[2]);
-                for (let i = 0; i < count; i++) result.push(baseName);
+                for (let i = 0; i < count; i++) {
+                    nameCount[baseName] = (nameCount[baseName] || 0) + 1;
+                    if (nameCount[baseName] === 1) {
+                        result.push(baseName);
+                    } else {
+                        result.push(`${baseName}(${nameCount[baseName]})`);
+                    }
+                }
             } else {
-                result.push(name);
+                nameCount[name] = (nameCount[name] || 0) + 1;
+                if (nameCount[name] === 1) {
+                    result.push(name);
+                } else {
+                    result.push(`${name}(${nameCount[name]})`);
+                }
             }
         }
         return result;
