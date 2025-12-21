@@ -672,8 +672,8 @@
 
         <div class="sidebar-content">
             <div class="input-group">
-                <label>👥 참여자 명단 (콤마로 구분)</label>
-                <textarea id="participantsInput" placeholder="예: 철수, 영희, 민수, 지훈, 수진">철수, 영희, 민수, 지훈, 수진, 하나, 둘리, 또치</textarea>
+                <label>👥 참여자 명단</label>
+                <textarea id="participantsInput" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
             </div>
 
             <div class="settings-group">
@@ -1292,9 +1292,25 @@
                 this.physics.render();
             }
 
+            parseParticipants(text) {
+                const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
+                const result = [];
+                for (const name of names) {
+                    const match = name.match(/^(.+)\*(\d+)$/);
+                    if (match) {
+                        const baseName = match[1].trim();
+                        const count = parseInt(match[2]);
+                        for (let i = 0; i < count; i++) result.push(baseName);
+                    } else {
+                        result.push(name);
+                    }
+                }
+                return result;
+            }
+
             start() {
                 const input = document.getElementById('participantsInput').value;
-                const names = input.split(',').map(n => n.trim()).filter(n => n);
+                const names = this.parseParticipants(input);
                 
                 if (names.length < 2) {
                     alert('최소 2명 이상의 참여자가 필요합니다!');

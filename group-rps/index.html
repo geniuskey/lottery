@@ -192,8 +192,8 @@
   <aside class="sidebar">
     <h2>✊ 단체 가위바위보</h2>
     <div class="settings-group">
-      <label for="participants">참여자 (콤마로 구분)</label>
-      <textarea id="participants" placeholder="예: 철수, 영희, 민수, 지영, 현우">철수, 영희, 민수, 지영, 현우, 서연, 도윤, 하은, 시우, 지아, 준서, 수빈</textarea>
+      <label for="participants">참여자</label>
+      <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
     </div>
     <div class="settings-group">
       <label>🏆 최종 생존자 수</label>
@@ -267,10 +267,22 @@
     winnerCountInput.addEventListener('input', () => { winnerValue.textContent = winnerCountInput.value; });
 
     function init() { renderStudents(); updateRanking(); }
-    function parseParticipants() { 
-      const t = participantsInput.value.trim(); 
+    function parseParticipants() {
+      const t = participantsInput.value.trim();
       if (!t) return [];
-      return t.split(',').map(n => n.trim()).filter(n => n.length > 0);
+      const names = t.split(/[,\n]/).map(n => n.trim()).filter(n => n);
+      const result = [];
+      for (const name of names) {
+        const match = name.match(/^(.+)\*(\d+)$/);
+        if (match) {
+          const baseName = match[1].trim();
+          const count = parseInt(match[2]);
+          for (let i = 0; i < count; i++) result.push(baseName);
+        } else {
+          result.push(name);
+        }
+      }
+      return result;
     }
     function randomHappyEmoji() { return HAPPY_EMOJIS[Math.floor(Math.random() * HAPPY_EMOJIS.length)]; }
     function randomSadEmoji() { return SAD_EMOJIS[Math.floor(Math.random() * SAD_EMOJIS.length)]; }

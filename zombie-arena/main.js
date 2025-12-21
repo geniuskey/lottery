@@ -855,7 +855,21 @@ document.addEventListener('DOMContentLoaded', () => {
         updateUI18n(); game.updateRanking();
     });
     
-    function parseParticipants(text) { return text.split(/[\n,]+/).map(s => s.trim()).filter(Boolean); }
+    function parseParticipants(text) {
+        const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
+        const result = [];
+        for (const name of names) {
+            const match = name.match(/^(.+)\*(\d+)$/);
+            if (match) {
+                const baseName = match[1].trim();
+                const count = parseInt(match[2]);
+                for (let i = 0; i < count; i++) result.push(baseName);
+            } else {
+                result.push(name);
+            }
+        }
+        return result;
+    }
     function updateGame() { game.setParticipants(parseParticipants(participantsInput.value)); }
     
     participantsInput.addEventListener('input', () => {
