@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<!--
+@game-meta
+{
+  "id": "bomb",
+  "title": "폭탄 돌리기",
+  "emoji": "💣",
+  "category": "서바이벌",
+  "description": "폭탄이 터지기 전에 넘겨라! 스릴 넘치는 폭탄 돌리기 게임",
+  "features": ["💥 폭발 이펙트", "🔥 긴장감 넘치는 타이머"],
+  "color": "red",
+  "badge": "NEW",
+  "version": "1.0.0",
+  "updated": "2025-12-23",
+  "author": {
+    "name": "Euiyun Edwin Kim",
+    "email": "geniuskey@gmail.com",
+    "github": "geniuskey"
+  },
+  "urls": {
+    "service": "https://geniuskey.github.io/lottery/bomb/",
+    "repository": "https://github.com/geniuskey/lottery"
+  },
+  "license": "MIT",
+  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+}
+@end-game-meta
+-->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>💣 폭탄 돌리기</title>
+
+  <!-- SEO 기본 -->
+  <meta name="description" content="폭탄이 터지기 전에 넘겨라! 스릴 넘치는 폭탄 돌리기 게임">
+  <meta name="author" content="Euiyun Edwin Kim">
+  <meta name="keywords" content="폭탄 돌리기, 폭탄, 추첨, 게임, lottery, bomb, hot potato">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="추첨 게임 포탈">
+  <meta property="og:title" content="💣 폭탄 돌리기">
+  <meta property="og:description" content="폭탄이 터지기 전에 넘겨라! 스릴 넘치는 폭탄 돌리기 게임">
+  <meta property="og:url" content="https://geniuskey.github.io/lottery/bomb/">
+  <meta property="og:locale" content="ko_KR">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="💣 폭탄 돌리기">
+  <meta name="twitter:description" content="폭탄이 터지기 전에 넘겨라! 스릴 넘치는 폭탄 돌리기 게임">
+
+  <!-- 추가 SEO -->
+  <link rel="canonical" href="https://geniuskey.github.io/lottery/bomb/">
+  <meta name="robots" content="index, follow">
+
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0a1a;
+      --bg-sidebar: #12122a;
+      --accent-primary: #ff4757;
+      --accent-secondary: #ff6b81;
+      --accent-gold: #ffd93d;
+      --accent-orange: #ffa502;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0c0;
+      --border-glow: rgba(255, 71, 87, 0.3);
+      --glass-bg: rgba(255, 255, 255, 0.05);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 320px;
+      min-width: 320px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-glow);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 15px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-glow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-header h1 .title-emoji { -webkit-text-fill-color: initial; background: none; }
+    .sidebar-header h1 .title-text {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .help-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      border: 1px solid var(--border-glow);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .help-btn:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      transform: scale(1.1);
+    }
+
+    .section-title {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .participants-input {
+      width: 100%;
+      background: var(--glass-bg);
+      border: 1px solid var(--border-glow);
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      resize: vertical;
+      min-height: 80px;
+      transition: all 0.3s ease;
+    }
+
+    .participants-input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 20px rgba(255, 71, 87, 0.2);
+    }
+
+    .participants-input::placeholder { color: var(--text-secondary); }
+
+    .settings-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--border-glow);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .settings-card .section-title { margin-bottom: 8px; }
+
+    .settings-card-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+
+    .setting-item label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .setting-item select {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-glow);
+      border-radius: 6px;
+      padding: 6px 10px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .setting-item select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-start {
+      flex: 1;
+      padding: 14px 20px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-orange));
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4);
+    }
+
+    .btn-start:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-reset {
+      width: 50px;
+      height: 50px;
+      border: 1px solid var(--border-glow);
+      border-radius: 12px;
+      background: var(--glass-bg);
+      color: var(--text-secondary);
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-reset:hover {
+      border-color: var(--accent-secondary);
+      color: var(--accent-secondary);
+    }
+
+    .rankings {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .rankings-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--glass-bg);
+      border-radius: 10px;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .rank-item.winner {
+      border-color: var(--accent-gold);
+      background: rgba(255, 217, 61, 0.1);
+    }
+
+    .rank-item.eliminated {
+      opacity: 0.5;
+      text-decoration: line-through;
+    }
+
+    .rank-item.alive {
+      border-color: rgba(0, 255, 136, 0.3);
+      background: rgba(0, 255, 136, 0.05);
+    }
+
+    .rank-badge {
+      font-size: 1.2rem;
+    }
+
+    .rank-name {
+      flex: 1;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .sidebar-footer {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border-glow);
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--glass-bg);
+      border: 1px solid var(--border-glow);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+      transform: translateY(-2px);
+    }
+
+    .icon-btn[data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-dark);
+      border: 1px solid var(--border-glow);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      z-index: 100;
+    }
+
+    .game-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    .copyright {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .circle-container {
+      position: relative;
+      width: 500px;
+      height: 500px;
+    }
+
+    .player {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .player-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      border: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .player.has-bomb .player-avatar {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 20px var(--accent-primary), 0 0 40px var(--accent-orange);
+      animation: bombPulse 0.3s ease infinite alternate;
+    }
+
+    @keyframes bombPulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.1); }
+    }
+
+    .player.eliminated .player-avatar {
+      opacity: 0.3;
+      filter: grayscale(1);
+    }
+
+    .player-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-align: center;
+      max-width: 80px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .player.eliminated .player-name {
+      opacity: 0.3;
+      text-decoration: line-through;
+    }
+
+    .bomb {
+      position: absolute;
+      font-size: 3rem;
+      transition: all 0.2s ease;
+      filter: drop-shadow(0 0 10px var(--accent-primary));
+      z-index: 10;
+    }
+
+    .bomb.shake {
+      animation: bombShake 0.1s ease infinite;
+    }
+
+    @keyframes bombShake {
+      0%, 100% { transform: translate(-50%, -50%) rotate(-5deg); }
+      50% { transform: translate(-50%, -50%) rotate(5deg); }
+    }
+
+    .timer-display {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--accent-primary);
+      text-shadow: 0 0 20px var(--accent-primary);
+    }
+
+    .timer-display.danger {
+      animation: timerDanger 0.5s ease infinite alternate;
+    }
+
+    @keyframes timerDanger {
+      from { color: var(--accent-primary); text-shadow: 0 0 20px var(--accent-primary); }
+      to { color: var(--accent-orange); text-shadow: 0 0 40px var(--accent-orange); }
+    }
+
+    .explosion {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle, var(--accent-orange), var(--accent-primary), transparent);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .explosion.show {
+      animation: explode 0.5s ease-out;
+    }
+
+    @keyframes explode {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .waiting-message {
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    .waiting-message .icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .game-over-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .game-over-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .game-over-content {
+      background: var(--bg-sidebar);
+      border: 2px solid var(--accent-gold);
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .game-over-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      color: var(--accent-gold);
+      margin-bottom: 20px;
+    }
+
+    .winner-name {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 2.5rem;
+      color: var(--text-primary);
+      margin-bottom: 30px;
+    }
+
+    .btn-close-overlay {
+      padding: 14px 40px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent-gold), #f0b90b);
+      color: var(--bg-dark);
+      transition: all 0.3s ease;
+    }
+
+    .btn-close-overlay:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 217, 61, 0.4);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg-sidebar);
+      border: 1px solid var(--accent-primary);
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 1rem;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1001;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Help Modal */
+    .help-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      padding: 20px;
+    }
+
+    .help-modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .help-modal {
+      background: var(--bg-sidebar);
+      border: 2px solid var(--accent-primary);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .help-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-glow);
+    }
+
+    .help-modal-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      color: var(--accent-primary);
+    }
+
+    .help-close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      border: 1px solid var(--border-glow);
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .help-close-btn:hover {
+      border-color: var(--accent-secondary);
+      color: var(--accent-secondary);
+    }
+
+    .help-section {
+      margin-bottom: 20px;
+    }
+
+    .help-section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      margin-bottom: 10px;
+    }
+
+    .help-section p, .help-section li {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .help-section ul {
+      padding-left: 20px;
+    }
+
+    .help-highlight {
+      color: var(--accent-primary);
+      font-weight: 700;
+    }
+
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      top: -10px;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        min-width: unset;
+        height: auto;
+        max-height: 40vh;
+        border-right: none;
+        border-bottom: 1px solid var(--border-glow);
+      }
+      .rankings { max-height: 100px; }
+      .game-area { flex: 1; min-height: 60vh; }
+      .circle-container { width: 300px; height: 300px; }
+      .player-avatar { width: 45px; height: 45px; font-size: 1.3rem; }
+      .player-name { font-size: 0.7rem; max-width: 60px; }
+      .timer-display { font-size: 2.5rem; }
+      .bomb { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <header class="sidebar-header">
+      <h1><span class="title-emoji">💣</span><span class="title-text">폭탄 돌리기</span></h1>
+      <button class="help-btn" id="helpBtn">?</button>
+    </header>
+
+    <section>
+      <div class="section-title">👥 참여자 명단</div>
+      <textarea class="participants-input" id="participantsInput" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+    </section>
+
+    <section class="settings-card">
+      <div class="section-title">⚙️ 게임 설정</div>
+      <div class="settings-card-content">
+        <div class="setting-item">
+          <label>🏆 생존자 수</label>
+          <select id="survivorCount">
+            <option value="1" selected>1명</option>
+            <option value="2">2명</option>
+            <option value="3">3명</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>⏱️ 폭탄 속도</label>
+          <select id="bombSpeed">
+            <option value="fast">빠름</option>
+            <option value="normal" selected>보통</option>
+            <option value="slow">느림</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <div class="btn-group">
+      <button class="btn-start" id="startBtn">💣 시작</button>
+      <button class="btn-reset" id="resetBtn">↺</button>
+    </div>
+
+    <section class="rankings">
+      <div class="section-title">📊 현황</div>
+      <div class="rankings-list" id="rankingsList">
+        <div class="waiting-message" style="padding: 20px; text-align: center;">
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">게임을 시작하세요!</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="sidebar-footer">
+      <a href="https://geniuskey.github.io/lottery/" class="icon-btn" data-tooltip="추첨 포탈 홈">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+      <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      </button>
+      <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+      </a>
+      <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
+      </a>
+    </div>
+  </aside>
+
+  <main class="game-area" id="gameArea">
+    <div class="waiting-message" id="waitingMessage">
+      <div class="icon">💣</div>
+      <p>참여자를 입력하고 게임을 시작하세요!</p>
+    </div>
+    <div class="game-container" id="gameContainer" style="display: none;">
+      <div class="circle-container" id="circleContainer"></div>
+      <div class="timer-display" id="timerDisplay">5</div>
+      <div class="bomb" id="bomb">💣</div>
+    </div>
+    <div class="explosion" id="explosion"></div>
+    <div class="copyright">© 2025 Euiyun Edwin Kim</div>
+  </main>
+
+  <div class="game-over-overlay" id="gameOverOverlay">
+    <div class="game-over-content">
+      <h2 class="game-over-title">🎉 게임 종료!</h2>
+      <div class="winner-name" id="winnerName"></div>
+      <button class="btn-close-overlay" id="closeOverlayBtn">확인</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="help-modal-overlay" id="helpModalOverlay">
+    <div class="help-modal">
+      <div class="help-modal-header">
+        <h2 class="help-modal-title">📖 게임 설명</h2>
+        <button class="help-close-btn" id="helpCloseBtn">✕</button>
+      </div>
+
+      <div class="help-section">
+        <div class="help-section-title">💣 게임 개요</div>
+        <p>폭탄 돌리기는 참여자들 사이에서 폭탄이 랜덤하게 전달되다가 터지면 그 사람이 탈락하는 스릴 넘치는 게임입니다.</p>
+      </div>
+
+      <div class="help-section">
+        <div class="help-section-title">🎮 게임 방법</div>
+        <ul>
+          <li>참여자 명단을 입력합니다.</li>
+          <li>생존자 수와 폭탄 속도를 설정합니다.</li>
+          <li><span class="help-highlight">💣 시작</span> 버튼을 누르면 게임이 시작됩니다.</li>
+          <li>폭탄이 랜덤하게 참여자들 사이를 돌아다닙니다.</li>
+          <li>타이머가 0이 되면 폭탄이 터지고, 들고 있던 사람이 탈락!</li>
+        </ul>
+      </div>
+
+      <div class="help-section">
+        <div class="help-section-title">💡 팁</div>
+        <p><span class="help-highlight">이름*숫자</span> 형식으로 입력하면 같은 이름으로 여러 명을 추가할 수 있습니다. (예: 영희*3)</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
+
+    const EMOJIS = ['😀', '😎', '🤩', '😊', '🥳', '😄', '🤗', '😋', '🙂', '😏', '🤠', '🧐', '🤓', '😇', '🥰'];
+    const COLORS = [
+      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+      '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9'
+    ];
+
+    class BombGame {
+      constructor() {
+        this.participants = [];
+        this.alivePlayers = [];
+        this.eliminatedPlayers = [];
+        this.survivors = [];
+        this.currentHolder = 0;
+        this.isRunning = false;
+        this.timer = 5;
+        this.maxTimer = 5;
+        this.survivorCount = 1;
+        this.bombSpeed = 'normal';
+        this.gameInterval = null;
+        this.passInterval = null;
+
+        this.initElements();
+        this.bindEvents();
+        this.loadSettings();
+      }
+
+      initElements() {
+        this.participantsInput = document.getElementById('participantsInput');
+        this.survivorCountSelect = document.getElementById('survivorCount');
+        this.bombSpeedSelect = document.getElementById('bombSpeed');
+        this.startBtn = document.getElementById('startBtn');
+        this.resetBtn = document.getElementById('resetBtn');
+        this.rankingsList = document.getElementById('rankingsList');
+        this.gameArea = document.getElementById('gameArea');
+        this.waitingMessage = document.getElementById('waitingMessage');
+        this.gameContainer = document.getElementById('gameContainer');
+        this.circleContainer = document.getElementById('circleContainer');
+        this.timerDisplay = document.getElementById('timerDisplay');
+        this.bombElement = document.getElementById('bomb');
+        this.explosion = document.getElementById('explosion');
+        this.gameOverOverlay = document.getElementById('gameOverOverlay');
+        this.winnerName = document.getElementById('winnerName');
+        this.closeOverlayBtn = document.getElementById('closeOverlayBtn');
+        this.copyResultBtn = document.getElementById('copyResultBtn');
+        this.toast = document.getElementById('toast');
+        this.helpBtn = document.getElementById('helpBtn');
+        this.helpModalOverlay = document.getElementById('helpModalOverlay');
+        this.helpCloseBtn = document.getElementById('helpCloseBtn');
+      }
+
+      bindEvents() {
+        this.startBtn.addEventListener('click', () => this.start());
+        this.resetBtn.addEventListener('click', () => this.reset());
+        this.closeOverlayBtn.addEventListener('click', () => this.hideOverlay());
+        this.copyResultBtn.addEventListener('click', () => this.copyResult());
+        this.helpBtn.addEventListener('click', () => this.showHelp());
+        this.helpCloseBtn.addEventListener('click', () => this.hideHelp());
+        this.helpModalOverlay.addEventListener('click', (e) => {
+          if (e.target === this.helpModalOverlay) this.hideHelp();
+        });
+
+        this.survivorCountSelect.addEventListener('change', () => this.saveSettings());
+        this.bombSpeedSelect.addEventListener('change', () => this.saveSettings());
+        this.participantsInput.addEventListener('input', () => this.saveSettings());
+      }
+
+      loadSettings() {
+        const settings = JSON.parse(localStorage.getItem('bombSettings') || '{}');
+        if (settings.survivorCount) this.survivorCountSelect.value = settings.survivorCount;
+        if (settings.bombSpeed) this.bombSpeedSelect.value = settings.bombSpeed;
+        if (settings.participants) this.participantsInput.value = settings.participants;
+      }
+
+      saveSettings() {
+        const settings = {
+          survivorCount: this.survivorCountSelect.value,
+          bombSpeed: this.bombSpeedSelect.value,
+          participants: this.participantsInput.value
+        };
+        localStorage.setItem('bombSettings', JSON.stringify(settings));
+      }
+
+      parseParticipants() {
+        const text = this.participantsInput.value.trim();
+        if (!text) return [];
+        const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
+        const result = [];
+        const nameCount = {};
+        for (const name of names) {
+          const match = name.match(/^(.+)\*(\d+)$/);
+          if (match) {
+            const baseName = match[1].trim();
+            const count = parseInt(match[2]);
+            for (let i = 0; i < count; i++) {
+              nameCount[baseName] = (nameCount[baseName] || 0) + 1;
+              if (nameCount[baseName] === 1) {
+                result.push(baseName);
+              } else {
+                result.push(`${baseName}(${nameCount[baseName]})`);
+              }
+            }
+          } else {
+            nameCount[name] = (nameCount[name] || 0) + 1;
+            if (nameCount[name] === 1) {
+              result.push(name);
+            } else {
+              result.push(`${name}(${nameCount[name]})`);
+            }
+          }
+        }
+        return result;
+      }
+
+      start() {
+        this.participants = this.parseParticipants();
+        this.survivorCount = parseInt(this.survivorCountSelect.value);
+        this.bombSpeed = this.bombSpeedSelect.value;
+
+        if (this.participants.length < 3) {
+          this.showToast('최소 3명의 참여자가 필요합니다!');
+          return;
+        }
+
+        if (this.survivorCount >= this.participants.length) {
+          this.showToast('생존자 수는 참여자 수보다 적어야 합니다!');
+          return;
+        }
+
+        this.alivePlayers = [...this.participants];
+        this.eliminatedPlayers = [];
+        this.survivors = [];
+        this.currentHolder = Math.floor(Math.random() * this.alivePlayers.length);
+        this.isRunning = true;
+        this.startBtn.disabled = true;
+
+        this.waitingMessage.style.display = 'none';
+        this.gameContainer.style.display = 'flex';
+
+        this.setupPlayers();
+        this.updateRankings();
+        this.startRound();
+      }
+
+      setupPlayers() {
+        this.circleContainer.innerHTML = '';
+
+        const container = this.circleContainer;
+        const rect = container.getBoundingClientRect();
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const radius = Math.min(centerX, centerY) - 50;
+
+        this.participants.forEach((name, i) => {
+          const angle = (i / this.participants.length) * 2 * Math.PI - Math.PI / 2;
+          const x = centerX + radius * Math.cos(angle);
+          const y = centerY + radius * Math.sin(angle);
+
+          const player = document.createElement('div');
+          player.className = 'player';
+          player.id = `player-${i}`;
+          player.style.left = `${x - 40}px`;
+          player.style.top = `${y - 45}px`;
+
+          const isEliminated = this.eliminatedPlayers.includes(name);
+          if (isEliminated) player.classList.add('eliminated');
+
+          player.innerHTML = `
+            <div class="player-avatar" style="background: ${COLORS[i % COLORS.length]}">${EMOJIS[i % EMOJIS.length]}</div>
+            <div class="player-name">${name}</div>
+          `;
+
+          container.appendChild(player);
+        });
+
+        this.updateBombPosition();
+      }
+
+      updateBombPosition() {
+        const holderIndex = this.participants.indexOf(this.alivePlayers[this.currentHolder]);
+        const player = document.getElementById(`player-${holderIndex}`);
+        if (!player) return;
+
+        // Remove has-bomb from all
+        document.querySelectorAll('.player').forEach(p => p.classList.remove('has-bomb'));
+        player.classList.add('has-bomb');
+
+        const rect = player.getBoundingClientRect();
+        const containerRect = this.circleContainer.getBoundingClientRect();
+        const avatar = player.querySelector('.player-avatar');
+        const avatarRect = avatar.getBoundingClientRect();
+
+        this.bombElement.style.left = `${avatarRect.left - containerRect.left + avatarRect.width / 2}px`;
+        this.bombElement.style.top = `${avatarRect.top - containerRect.top + avatarRect.height / 2}px`;
+      }
+
+      startRound() {
+        // Set timer based on speed
+        const speeds = { fast: 3, normal: 5, slow: 7 };
+        this.maxTimer = speeds[this.bombSpeed] + Math.random() * 3;
+        this.timer = this.maxTimer;
+
+        this.timerDisplay.textContent = Math.ceil(this.timer);
+        this.timerDisplay.classList.remove('danger');
+        this.bombElement.classList.remove('shake');
+
+        // Start countdown
+        this.gameInterval = setInterval(() => {
+          this.timer -= 0.1;
+          this.timerDisplay.textContent = Math.ceil(this.timer);
+
+          if (this.timer <= 2) {
+            this.timerDisplay.classList.add('danger');
+            this.bombElement.classList.add('shake');
+          }
+
+          if (this.timer <= 0) {
+            this.explode();
+          }
+        }, 100);
+
+        // Pass bomb randomly
+        const passSpeed = this.bombSpeed === 'fast' ? 300 : this.bombSpeed === 'slow' ? 600 : 450;
+        this.passInterval = setInterval(() => {
+          if (!this.isRunning) return;
+          this.passBomb();
+        }, passSpeed);
+      }
+
+      passBomb() {
+        if (this.alivePlayers.length <= 1) return;
+
+        let newHolder;
+        do {
+          newHolder = Math.floor(Math.random() * this.alivePlayers.length);
+        } while (newHolder === this.currentHolder);
+
+        this.currentHolder = newHolder;
+        this.updateBombPosition();
+      }
+
+      explode() {
+        clearInterval(this.gameInterval);
+        clearInterval(this.passInterval);
+
+        // Show explosion
+        this.explosion.classList.add('show');
+        setTimeout(() => this.explosion.classList.remove('show'), 500);
+
+        // Eliminate current holder
+        const eliminated = this.alivePlayers[this.currentHolder];
+        this.eliminatedPlayers.push(eliminated);
+        this.alivePlayers = this.alivePlayers.filter((_, i) => i !== this.currentHolder);
+
+        // Update player visual
+        const eliminatedIndex = this.participants.indexOf(eliminated);
+        const playerEl = document.getElementById(`player-${eliminatedIndex}`);
+        if (playerEl) {
+          playerEl.classList.add('eliminated');
+          playerEl.classList.remove('has-bomb');
+          playerEl.querySelector('.player-avatar').textContent = '💀';
+        }
+
+        this.updateRankings();
+
+        // Check if game is over
+        if (this.alivePlayers.length <= this.survivorCount) {
+          this.endGame();
+        } else {
+          // Continue with next round
+          this.currentHolder = Math.floor(Math.random() * this.alivePlayers.length);
+          setTimeout(() => {
+            this.updateBombPosition();
+            this.startRound();
+          }, 1000);
+        }
+      }
+
+      endGame() {
+        this.isRunning = false;
+        this.survivors = [...this.alivePlayers];
+
+        this.bombElement.style.display = 'none';
+        this.timerDisplay.textContent = '🎉';
+        this.timerDisplay.classList.remove('danger');
+
+        // Show winners
+        const medals = ['🥇', '🥈', '🥉'];
+        let winnerText = this.survivors.map((name, i) => `${medals[i] || '🏅'} ${name}`).join('<br>');
+        this.winnerName.innerHTML = winnerText;
+
+        this.createConfetti();
+        setTimeout(() => {
+          this.gameOverOverlay.classList.add('show');
+        }, 500);
+      }
+
+      updateRankings() {
+        let html = '';
+
+        // Survivors (winners)
+        this.survivors.forEach(name => {
+          html += `<div class="rank-item winner"><span class="rank-badge">🏆</span><span class="rank-name">${name}</span></div>`;
+        });
+
+        // Alive players
+        this.alivePlayers.forEach(name => {
+          if (!this.survivors.includes(name)) {
+            html += `<div class="rank-item alive"><span class="rank-badge">✓</span><span class="rank-name">${name}</span></div>`;
+          }
+        });
+
+        // Eliminated (most recent first)
+        [...this.eliminatedPlayers].reverse().forEach(name => {
+          html += `<div class="rank-item eliminated"><span class="rank-badge">💀</span><span class="rank-name">${name}</span></div>`;
+        });
+
+        if (html === '') {
+          html = `<div class="waiting-message" style="padding: 20px; text-align: center;">
+            <p style="font-size: 0.9rem; color: var(--text-secondary);">게임을 시작하세요!</p>
+          </div>`;
+        }
+
+        this.rankingsList.innerHTML = html;
+      }
+
+      reset() {
+        clearInterval(this.gameInterval);
+        clearInterval(this.passInterval);
+
+        this.isRunning = false;
+        this.alivePlayers = [];
+        this.eliminatedPlayers = [];
+        this.survivors = [];
+        this.startBtn.disabled = false;
+
+        this.waitingMessage.style.display = 'block';
+        this.gameContainer.style.display = 'none';
+        this.circleContainer.innerHTML = '';
+        this.bombElement.style.display = 'block';
+        this.timerDisplay.textContent = '5';
+        this.timerDisplay.classList.remove('danger');
+        this.bombElement.classList.remove('shake');
+
+        this.hideOverlay();
+        this.updateRankings();
+      }
+
+      hideOverlay() {
+        this.gameOverOverlay.classList.remove('show');
+        this.startBtn.disabled = false;
+      }
+
+      copyResult() {
+        if (this.survivors.length === 0 && this.eliminatedPlayers.length === 0) {
+          this.showToast('복사할 결과가 없습니다!');
+          return;
+        }
+
+        const medals = ['🥇', '🥈', '🥉'];
+        let result = '💣 폭탄 돌리기 결과\n';
+        result += '─'.repeat(20) + '\n';
+        result += '🏆 생존자\n';
+        this.survivors.forEach((name, i) => {
+          result += `${medals[i] || '🏅'} ${name}\n`;
+        });
+        result += '\n💀 탈락 순서\n';
+        this.eliminatedPlayers.forEach((name, i) => {
+          result += `${this.eliminatedPlayers.length - i}. ${name}\n`;
+        });
+
+        navigator.clipboard.writeText(result).then(() => {
+          this.showToast('결과가 복사되었습니다! 📋');
+        }).catch(() => {
+          this.showToast('복사에 실패했습니다.');
+        });
+      }
+
+      showToast(message) {
+        this.toast.textContent = message;
+        this.toast.classList.add('show');
+        setTimeout(() => this.toast.classList.remove('show'), 2500);
+      }
+
+      showHelp() {
+        this.helpModalOverlay.classList.add('show');
+      }
+
+      hideHelp() {
+        this.helpModalOverlay.classList.remove('show');
+      }
+
+      createConfetti() {
+        const colors = ['#ffd93d', '#ff6b6b', '#ff4757', '#ffa502', '#00f5d4'];
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.width = (Math.random() * 10 + 5) + 'px';
+            confetti.style.height = confetti.style.width;
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            document.body.appendChild(confetti);
+
+            confetti.animate([
+              { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+              { transform: `translateY(100vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+            ], {
+              duration: 2000 + Math.random() * 2000,
+              easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+            }).onfinish = () => confetti.remove();
+          }, i * 30);
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      new BombGame();
+    });
+  </script>
+</body>
+</html>
