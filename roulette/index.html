@@ -908,7 +908,7 @@
 
         // Target: winner slice should be at top (where pointer is)
         const targetSliceCenter = winnerIndex * sliceAngle + sliceAngle / 2;
-        const rotations = 5 + Math.random() * 3; // 5-8 full rotations
+        const rotations = 8 + Math.random() * 5; // 8-13 full rotations for more dramatic spin
         const targetAngle = rotations * 2 * Math.PI - targetSliceCenter + Math.PI / 2;
 
         const startAngle = this.currentAngle;

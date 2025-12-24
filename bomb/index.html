@@ -1018,13 +1018,12 @@
         document.querySelectorAll('.player').forEach(p => p.classList.remove('has-bomb'));
         player.classList.add('has-bomb');
 
-        const rect = player.getBoundingClientRect();
-        const containerRect = this.circleContainer.getBoundingClientRect();
         const avatar = player.querySelector('.player-avatar');
         const avatarRect = avatar.getBoundingClientRect();
+        const gameRect = this.gameContainer.getBoundingClientRect();
 
-        this.bombElement.style.left = `${avatarRect.left - containerRect.left + avatarRect.width / 2}px`;
-        this.bombElement.style.top = `${avatarRect.top - containerRect.top + avatarRect.height / 2}px`;
+        this.bombElement.style.left = `${avatarRect.left - gameRect.left + avatarRect.width / 2}px`;
+        this.bombElement.style.top = `${avatarRect.top - gameRect.top + avatarRect.height / 2}px`;
       }
 
       startRound() {
