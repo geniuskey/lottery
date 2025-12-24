@@ -859,10 +859,11 @@
         ctx.rotate(this.currentAngle);
         ctx.translate(-centerX, -centerY);
 
-        // Draw slices
+        // Draw slices - 0도(상단)부터 시계방향으로 그림
         currentParticipants.forEach((name, i) => {
           const startAngle = i * sliceAngle - Math.PI / 2;
           const endAngle = startAngle + sliceAngle;
+          // 실제 화면에서의 슬라이스 위치: startAngle + currentAngle
 
           // Draw slice
           ctx.beginPath();
@@ -922,13 +923,15 @@
         const sliceAngle = (2 * Math.PI) / currentParticipants.length;
         const winnerIndex = Math.floor(Math.random() * currentParticipants.length);
 
-        // Target: winner slice should be at top (where pointer is)
-        // Slice i center is at: i * sliceAngle + sliceAngle/2 - π/2
-        // After rotation by targetAngle, it should be at -π/2 (top)
-        // So: targetAngle = -targetSliceCenter
-        const targetSliceCenter = winnerIndex * sliceAngle + sliceAngle / 2;
-        const rotations = 8 + Math.random() * 5; // 8-13 full rotations for more dramatic spin
-        const targetAngle = rotations * 2 * Math.PI - targetSliceCenter;
+        // 당첨자 슬라이스를 포인터(상단) 위치에 정렬
+        // 슬라이스 i는 각도 (i * sliceAngle) ~ ((i+1) * sliceAngle) 에서 그려짐 (0부터 시작)
+        // 슬라이스 i의 중심: (i + 0.5) * sliceAngle
+        // 포인터는 상단(0도 = 12시 방향)에 위치
+        // 휠을 회전시켜 슬라이스 i 중심이 상단에 오도록 함
+        const rotations = 8 + Math.random() * 5;
+        const sliceCenterAngle = (winnerIndex + 0.5) * sliceAngle;
+        // 상단(0)에서 슬라이스 중심까지의 각도만큼 역방향으로 회전
+        const targetAngle = rotations * 2 * Math.PI - sliceCenterAngle;
 
         const startAngle = 0;
         const startTime = performance.now();
