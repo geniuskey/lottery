@@ -1028,8 +1028,8 @@
 
       startRound() {
         // Set timer based on speed
-        const speeds = { fast: 3, normal: 5, slow: 7 };
-        this.maxTimer = speeds[this.bombSpeed] + Math.random() * 3;
+        const speeds = { fast: 2, normal: 3, slow: 5 };
+        this.maxTimer = speeds[this.bombSpeed] + Math.random() * 2;
         this.timer = this.maxTimer;
 
         this.timerDisplay.textContent = Math.ceil(this.timer);
