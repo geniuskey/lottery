@@ -748,7 +748,11 @@
         this.spinDurationSelect.addEventListener('change', () => this.saveSettings());
         this.participantsInput.addEventListener('input', () => {
           this.saveSettings();
-          if (!this.isSpinning) this.drawWheel();
+          if (!this.isSpinning) {
+            // Update participants list when input changes
+            this.participants = this.parseParticipants().filter(p => !this.winners.includes(p));
+            this.drawWheel();
+          }
         });
 
         window.addEventListener('resize', () => {
@@ -763,6 +767,9 @@
         if (settings.winnerCount) this.winnerCountSelect.value = settings.winnerCount;
         if (settings.spinDuration) this.spinDurationSelect.value = settings.spinDuration;
         if (settings.participants) this.participantsInput.value = settings.participants;
+
+        // Initialize participants list
+        this.participants = this.parseParticipants();
       }
 
       saveSettings() {
@@ -836,9 +843,14 @@
         const centerY = wheelSize / 2;
         const radius = wheelSize / 2 - 10;
 
-        // Get current participants (excluding winners)
-        let currentParticipants = this.parseParticipants().filter(p => !this.winners.includes(p));
-        if (currentParticipants.length === 0) currentParticipants = this.parseParticipants();
+        // Use this.participants if set (during spin), otherwise parse from input
+        let currentParticipants;
+        if (this.participants && this.participants.length > 0) {
+          currentParticipants = this.participants;
+        } else {
+          currentParticipants = this.parseParticipants().filter(p => !this.winners.includes(p));
+          if (currentParticipants.length === 0) currentParticipants = this.parseParticipants();
+        }
 
         const sliceAngle = (2 * Math.PI) / currentParticipants.length;
 
