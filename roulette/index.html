@@ -901,7 +901,11 @@
         this.startBtn.disabled = true;
         this.winnerDisplay.classList.remove('show');
 
-        // Calculate target angle
+        // Reset angle for clean calculation with new participant count
+        this.currentAngle = 0;
+        this.drawWheel();
+
+        // Calculate target angle based on current (filtered) participants
         const currentParticipants = this.participants;
         const sliceAngle = (2 * Math.PI) / currentParticipants.length;
         const winnerIndex = Math.floor(Math.random() * currentParticipants.length);
@@ -911,7 +915,7 @@
         const rotations = 8 + Math.random() * 5; // 8-13 full rotations for more dramatic spin
         const targetAngle = rotations * 2 * Math.PI - targetSliceCenter + Math.PI / 2;
 
-        const startAngle = this.currentAngle;
+        const startAngle = 0;
         const startTime = performance.now();
         const duration = this.spinDuration * 1000;
 
