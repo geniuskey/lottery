@@ -786,9 +786,10 @@ textarea::placeholder { color: #555; }
     }
     .sidebar { 
         order: 2; 
-        max-height: none;
+        max-height: 45vh;
         padding: 15px;
         border-radius: 16px;
+        overflow-y: auto;
     }
     .game-area { order: 1; }
     .canvas-wrapper { 
