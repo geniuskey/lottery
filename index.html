@@ -101,22 +101,56 @@
       width: 100%;
       height: 100%;
       z-index: -1;
-      background: linear-gradient(180deg, #020617, var(--bg));
+      background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
       overflow: hidden;
+    }
+
+    .mouse-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 1000px;
+      height: 1000px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(168, 85, 247, 0.05) 30%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      transform: translate(-50%, -50%);
+      mix-blend-mode: color-dodge;
+      transition: width 0.5s, height 0.5s;
+      will-change: transform;
+    }
+
+    .mouse-particle {
+      position: fixed;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      animation: particle-fade 1s ease-out forwards;
+    }
+
+    @keyframes particle-fade {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
     }
 
     .floating-emoji {
       position: absolute;
       font-size: 24px;
-      opacity: 0.15;
-      animation: float 20s infinite linear;
+      opacity: 0;
+      animation: float 20s linear;
+      animation-fill-mode: backwards;
       pointer-events: none;
       user-select: none;
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
+      transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1);
     }
 
     @keyframes float {
       0% {
-        transform: translateY(100vh) rotate(0deg);
+        transform: translateY(101vh) rotate(0deg) scale(0.8);
         opacity: 0;
       }
       10% {
@@ -126,7 +160,7 @@
         opacity: 0.15;
       }
       100% {
-        transform: translateY(-100px) rotate(360deg);
+        transform: translateY(-15vh) rotate(360deg) scale(1.2);
         opacity: 0;
       }
     }
@@ -134,46 +168,61 @@
     .glow-orb {
       position: absolute;
       border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.3;
-      animation: pulse-orb 8s ease-in-out infinite;
+      filter: blur(100px);
+      opacity: 0.4;
+      mix-blend-mode: screen;
+      will-change: transform;
     }
 
     .orb-1 {
-      width: 400px;
-      height: 400px;
-      background: var(--accent);
-      top: -100px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--accent), transparent 70%);
+      top: -200px;
       right: -100px;
-      animation-delay: 0s;
+      animation: pulse-orb 10s ease-in-out infinite;
     }
 
     .orb-2 {
-      width: 300px;
-      height: 300px;
-      background: var(--purple);
-      bottom: 20%;
-      left: -50px;
-      animation-delay: 2s;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--purple), transparent 70%);
+      bottom: 10%;
+      left: -100px;
+      animation: pulse-orb 12s ease-in-out infinite 2s;
     }
 
     .orb-3 {
-      width: 250px;
-      height: 250px;
-      background: var(--pink);
-      top: 40%;
-      right: 10%;
-      animation-delay: 4s;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--pink), transparent 70%);
+      top: 30%;
+      right: 5%;
+      animation: pulse-orb 15s ease-in-out infinite 4s;
+    }
+
+    .orb-4 {
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, var(--orange), transparent 70%);
+      bottom: -100px;
+      right: 20%;
+      opacity: 0.2;
+      animation: pulse-orb 18s ease-in-out infinite 6s;
     }
 
     @keyframes pulse-orb {
       0%, 100% {
-        transform: scale(1);
-        opacity: 0.2;
+        transform: translate(0, 0) scale(1);
+        opacity: 0.3;
       }
-      50% {
-        transform: scale(1.2);
-        opacity: 0.35;
+      33% {
+        transform: translate(30px, -50px) scale(1.1);
+        opacity: 0.4;
+      }
+      66% {
+        transform: translate(-20px, 40px) scale(0.9);
+        opacity: 0.25;
       }
     }
 
@@ -1050,6 +1099,16 @@
     const emojis = ['🎲', '🎯', '🏆', '⭐', '🎮', '🎪', '🎨', '✨', '🌟', '💫', '🎉', '🎊', '🥏', '🥊', '🪑', '🎳', '👊', '🪜'];
     const bgContainer = document.querySelector('.bg-container');
 
+    // Create Mouse Glow element
+    const mouseGlow = document.createElement('div');
+    mouseGlow.className = 'mouse-glow';
+    bgContainer.appendChild(mouseGlow);
+
+    // Create a 4th orb for more depth
+    const orb4 = document.createElement('div');
+    orb4.className = 'glow-orb orb-4';
+    bgContainer.appendChild(orb4);
+
     function createFloatingEmoji() {
       const emoji = document.createElement('div');
       emoji.className = 'floating-emoji';
@@ -1057,19 +1116,99 @@
       emoji.style.left = Math.random() * 100 + '%';
       emoji.style.animationDuration = (15 + Math.random() * 15) + 's';
       emoji.style.animationDelay = Math.random() * 5 + 's';
-      emoji.style.fontSize = (16 + Math.random() * 16) + 'px';
+      emoji.style.fontSize = (16 + Math.random() * 24) + 'px';
       bgContainer.appendChild(emoji);
 
       setTimeout(() => emoji.remove(), 35000);
     }
 
-    // Create initial emojis
+    // Initial emojis
     for (let i = 0; i < 15; i++) {
-      setTimeout(createFloatingEmoji, i * 300);
+      setTimeout(createFloatingEmoji, i * 400);
+    }
+    setInterval(createFloatingEmoji, 2500);
+
+    // Interactive Mouse Movement
+    let mouseX = 0;
+    let mouseY = 0;
+    let lastX = 0;
+    let lastY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      
+      // Update mouse glow position
+      mouseGlow.style.left = mouseX + 'px';
+      mouseGlow.style.top = mouseY + 'px';
+
+      // Create interactive particles on move
+      const dist = Math.hypot(mouseX - lastX, mouseY - lastY);
+      if (dist > 10) {
+        createParticle(mouseX, mouseY);
+        lastX = mouseX;
+        lastY = mouseY;
+      }
+
+      // Dynamic Background Hue
+      const hue = (mouseX / window.innerWidth) * 40 - 20; // -20 to 20 deg
+      bgContainer.style.filter = `hue-rotate(${hue}deg) brightness(1.1)`;
+    });
+
+    function createParticle(x, y) {
+      const p = document.createElement('div');
+      p.className = 'mouse-particle';
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      p.style.background = `hsla(${Math.random() * 60 + 180}, 100%, 75%, 0.6)`;
+      
+      const dx = (Math.random() - 0.5) * 100;
+      const dy = (Math.random() - 0.5) * 100;
+      p.style.setProperty('--dx', dx + 'px');
+      p.style.setProperty('--dy', dy + 'px');
+      
+      bgContainer.appendChild(p);
+      setTimeout(() => p.remove(), 1000);
     }
 
-    // Continue creating emojis
-    setInterval(createFloatingEmoji, 2000);
+    // Smooth Parallax and Emoji Repulsion
+    function animateBackground() {
+      const orbs = document.querySelectorAll('.glow-orb');
+      const emojiElems = document.querySelectorAll('.floating-emoji');
+      
+      // Orb Parallax
+      orbs.forEach((orb, index) => {
+        const factor = (index + 1) * 10;
+        const x = (mouseX - window.innerWidth / 2) / factor;
+        const y = (mouseY - window.innerHeight / 2) / factor;
+        orb.style.transform = `translate(${x}px, ${y}px)`;
+      });
+
+      // Emoji Repulsion (Push away from mouse)
+      emojiElems.forEach(emoji => {
+        const rect = emoji.getBoundingClientRect();
+        const emojiX = rect.left + rect.width / 2;
+        const emojiY = rect.top + rect.height / 2;
+        
+        const dx = mouseX - emojiX;
+        const dy = mouseY - emojiY;
+        const distance = Math.hypot(dx, dy);
+        
+        if (distance < 200) {
+          const force = (200 - distance) / 20;
+          const pushX = (dx / distance) * -force * 10;
+          const pushY = (dy / distance) * -force * 10;
+          
+          // Apply extra transform on top of the animation
+          emoji.style.transform = `translate(${pushX}px, ${pushY}px) scale(${1 + force/10})`;
+        } else {
+          emoji.style.transform = 'translate(0, 0) scale(1)';
+        }
+      });
+      
+      requestAnimationFrame(animateBackground);
+    }
+    animateBackground();
 
     // Sparkle effect on card hover
     document.querySelectorAll('.card').forEach(card => {
