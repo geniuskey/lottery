@@ -116,6 +116,7 @@
             justify-content: space-between;
             align-items: center;
             background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), transparent);
+            flex-shrink: 0;
         }
 
         .sidebar-header h1 {
@@ -155,7 +156,6 @@
 
         .sidebar-content {
             flex: 1;
-            overflow-y: auto;
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -164,6 +164,7 @@
 
         .input-group {
             margin-bottom: 20px;
+            flex-shrink: 0;
         }
 
         .input-group label {
@@ -275,6 +276,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-shrink: 0;
         }
 
         .btn {
@@ -413,12 +415,12 @@
 
         /* Footer */
         .sidebar-footer {
-            padding: 15px 20px;
+            padding: 16px 20px;
             border-top: 1px solid var(--border);
             display: flex;
             justify-content: center;
             gap: 12px;
-            background: rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
         }
 
         .icon-btn {

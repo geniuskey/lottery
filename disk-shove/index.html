@@ -98,12 +98,15 @@
 
         .sidebar-content {
             flex: 1;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
             padding: 20px;
+            min-height: 0;
         }
 
         .input-group {
             margin-bottom: 20px;
+            flex-shrink: 0;
         }
 
         .input-group label {
@@ -139,6 +142,7 @@
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 20px;
+            flex-shrink: 0;
         }
 
         .settings-group h3 {
@@ -193,6 +197,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-shrink: 0;
         }
 
         .btn {
@@ -661,6 +666,26 @@
                 max-width: 90vw;
             }
         }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
     </style>
 </head>
 <body>
@@ -840,39 +865,38 @@
                 this.players.push(player);
             }
 
-            update(deltaTime, boostInterval) {
-                const dt = deltaTime * this.speedMultiplier;
+            update(deltaTime, boostInterval, gameTime) {
+                const dtScale = (deltaTime / 16.666) * this.speedMultiplier;
                 
                 // 원판 축소
                 if (this.arenaRadius > this.minArenaRadius) {
-                    this.arenaRadius -= this.shrinkRate * dt * 0.05;
+                    // shrinkRate is approx pixels per frame at 60fps in original code? 
+                    // original: this.arenaRadius -= this.shrinkRate * dt * 0.05; 
+                    // where dt was ms. 16.6 * 0.05 = 0.83.
+                    this.arenaRadius -= this.shrinkRate * dtScale * 0.8; 
                     if (this.arenaRadius < this.minArenaRadius) {
                         this.arenaRadius = this.minArenaRadius;
                     }
                 }
                 
                 for (const player of this.players) {
-                    // 완전히 탈락한 경우 스킵
                     if (!player.alive && !player.falling) continue;
                     
-                    // 떨어지는 중인 경우 별도 처리
                     if (player.falling) {
-                        player.fallProgress += dt * 0.002;
+                        player.fallProgress += dtScale * 0.03; // Adjusted from 0.002 * 16.6
                         
                         const distFromCenter = Math.sqrt(
                             Math.pow(player.x - this.centerX, 2) + 
                             Math.pow(player.y - this.centerY, 2)
                         );
                         
-                        // 바깥 방향으로 계속 이동
                         if (distFromCenter > 0) {
                             const outwardX = (player.x - this.centerX) / distFromCenter;
                             const outwardY = (player.y - this.centerY) / distFromCenter;
-                            player.x += outwardX * dt * 0.08;
-                            player.y += outwardY * dt * 0.08;
+                            player.x += outwardX * dtScale * 1.3; // Adjusted from 0.08 * 16.6
+                            player.y += outwardY * dtScale * 1.3;
                         }
                         
-                        // 애니메이션 완료
                         if (player.fallProgress >= 1) {
                             player.alive = false;
                             player.falling = false;
@@ -880,24 +904,21 @@
                         continue;
                     }
                     
-                    // Center attraction
                     const toCenterX = this.centerX - player.x;
                     const toCenterY = this.centerY - player.y;
                     const distToCenter = Math.sqrt(toCenterX * toCenterX + toCenterY * toCenterY);
                     
                     if (distToCenter > 0) {
-                        const attractionForce = this.centerAttraction * (distToCenter / this.arenaRadius);
+                        const attractionForce = this.centerAttraction * (distToCenter / this.arenaRadius) * dtScale;
                         player.vx += (toCenterX / distToCenter) * attractionForce;
                         player.vy += (toCenterY / distToCenter) * attractionForce;
                     }
                     
-                    // Random movement
-                    player.vx += (Math.random() - 0.5) * 0.5;
-                    player.vy += (Math.random() - 0.5) * 0.5;
+                    player.vx += (Math.random() - 0.5) * 0.5 * dtScale;
+                    player.vy += (Math.random() - 0.5) * 0.5 * dtScale;
                     
-                    // Boost logic
-                    player.boostCooldown -= dt;
-                    player.nextBoostTime -= dt;
+                    player.boostCooldown -= deltaTime * this.speedMultiplier;
+                    player.nextBoostTime -= deltaTime * this.speedMultiplier;
                     
                     if (player.nextBoostTime <= 0 && player.boostCooldown <= 0) {
                         this.activateBoost(player);
@@ -905,21 +926,19 @@
                     }
                     
                     if (player.boosting) {
-                        player.boostDuration -= dt;
+                        player.boostDuration -= deltaTime * this.speedMultiplier;
                         if (player.boostDuration <= 0) {
                             player.boosting = false;
                         }
                     }
                     
-                    // Apply velocity
-                    player.x += player.vx * dt * 0.05;
-                    player.y += player.vy * dt * 0.05;
+                    player.x += player.vx * dtScale * 0.8; // Adjusted from 0.05 * 16.6
+                    player.y += player.vy * dtScale * 0.8;
                     
-                    // Friction
-                    player.vx *= this.friction;
-                    player.vy *= this.friction;
+                    const currentFriction = Math.pow(this.friction, dtScale);
+                    player.vx *= currentFriction;
+                    player.vy *= currentFriction;
                     
-                    // Check arena boundary - 떨어지기 시작
                     const distFromCenter = Math.sqrt(
                         Math.pow(player.x - this.centerX, 2) + 
                         Math.pow(player.y - this.centerY, 2)
@@ -928,9 +947,8 @@
                     if (distFromCenter + player.radius * 0.5 > this.arenaRadius && !player.falling) {
                         player.falling = true;
                         player.fallProgress = 0;
-                        player.eliminatedAt = Date.now();
+                        player.eliminatedAt = gameTime;
                         
-                        // 바깥으로 밀려나는 속도 유지
                         const outwardX = (player.x - this.centerX) / distFromCenter;
                         const outwardY = (player.y - this.centerY) / distFromCenter;
                         player.vx = outwardX * 5;
@@ -938,8 +956,7 @@
                     }
                 }
                 
-                // Collision detection
-                this.handleCollisions();
+                this.handleCollisions(dtScale);
             }
 
             activateBoost(player) {
@@ -969,7 +986,7 @@
                 player.vy += Math.sin(angle) * boostPower;
             }
 
-            handleCollisions() {
+            handleCollisions(dtScale) {
                 // 여러 번 반복하여 겹침 완전 해소
                 for (let iter = 0; iter < 5; iter++) {
                     for (let i = 0; i < this.players.length; i++) {
@@ -977,7 +994,6 @@
                             const p1 = this.players[i];
                             const p2 = this.players[j];
                             
-                            // falling 중이거나 alive가 아니면 스킵
                             if (!p1.alive || !p2.alive || p1.falling || p2.falling) continue;
                             
                             const dx = p2.x - p1.x;
@@ -986,42 +1002,37 @@
                             const minDist = p1.radius + p2.radius;
                             
                             if (dist < minDist && dist > 0.001) {
-                                // 먼저 겹침 해소 (위치 분리)
                                 const overlap = minDist - dist;
                                 const nx = dx / dist;
                                 const ny = dy / dist;
                                 
-                                // 완전히 분리
-                                const separationX = (overlap / 2 + 0.5) * nx;
-                                const separationY = (overlap / 2 + 0.5) * ny;
+                                // 완전히 분리 (dtScale 고려)
+                                const separationFactor = (overlap / 2 + 0.1) * Math.min(1, dtScale);
+                                const separationX = separationFactor * nx;
+                                const separationY = separationFactor * ny;
                                 p1.x -= separationX;
                                 p1.y -= separationY;
                                 p2.x += separationX;
                                 p2.y += separationY;
                                 
-                                // 탄성 충돌 계산 (공처럼 튕기기)
                                 const dvx = p1.vx - p2.vx;
                                 const dvy = p1.vy - p2.vy;
                                 const dvn = dvx * nx + dvy * ny;
                                 
-                                // 서로 가까워지는 중일 때만 충돌 처리
                                 if (dvn > 0) {
-                                    // 부스터 질량 효과
                                     const m1 = p1.boosting ? 2.0 : 1.0;
                                     const m2 = p2.boosting ? 2.0 : 1.0;
                                     const totalMass = m1 + m2;
                                     
-                                    // 충격량 계산 (탄성 충돌 공식)
                                     const impulse = (2 * dvn * this.bounceFactor) / totalMass;
                                     
-                                    // 속도 업데이트
                                     p1.vx -= impulse * m2 * nx;
                                     p1.vy -= impulse * m2 * ny;
                                     p2.vx += impulse * m1 * nx;
                                     p2.vy += impulse * m1 * ny;
                                     
-                                    // 충돌 시 약간의 추가 반발력 (더 툭툭 튀는 느낌)
-                                    const bounceBoost = 1.5;
+                                    // 충돌 시 약간의 추가 반발력
+                                    const bounceBoost = 1.5 * Math.min(1, dtScale);
                                     p1.vx -= nx * bounceBoost;
                                     p1.vy -= ny * bounceBoost;
                                     p2.vx += nx * bounceBoost;
@@ -1259,7 +1270,8 @@
                 this.physics = new PhysicsEngine(this.canvas);
                 this.isRunning = false;
                 this.startTime = 0;
-                this.lastTime = 0;
+                this.gameTimeSeconds = 0;
+                this.lastTimestamp = 0;
                 this.animationId = null;
                 this.winners = [];
                 this.eliminationOrder = [];
@@ -1338,26 +1350,30 @@
                 
                 this.isRunning = true;
                 this.startTime = Date.now();
-                this.lastTime = performance.now();
+                this.gameTimeSeconds = 0;
+                this.lastTimestamp = performance.now();
                 this.winners = [];
                 this.eliminationOrder = [];
                 
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('gameStatus').textContent = '🔥 진행 중';
                 
-                this.gameLoop();
+                requestAnimationFrame((ts) => this.gameLoop(ts));
             }
 
-            gameLoop() {
+            gameLoop(timestamp) {
                 if (!this.isRunning) return;
                 
-                const currentTime = performance.now();
-                const deltaTime = currentTime - this.lastTime;
-                this.lastTime = currentTime;
+                const deltaTime = timestamp - this.lastTimestamp;
+                this.lastTimestamp = timestamp;
+                
+                // Limit dt to prevent glitches
+                const cappedDt = Math.min(deltaTime, 100);
+                this.gameTimeSeconds += cappedDt / 1000;
                 
                 const boostInterval = parseInt(document.getElementById('boostInterval').value);
                 
-                this.physics.update(deltaTime, boostInterval);
+                this.physics.update(cappedDt, boostInterval, this.gameTimeSeconds);
                 this.physics.render();
                 this.updateUI();
                 
@@ -1376,12 +1392,12 @@
                     return;
                 }
                 
-                this.animationId = requestAnimationFrame(() => this.gameLoop());
+                this.animationId = requestAnimationFrame((ts) => this.gameLoop(ts));
             }
 
             updateUI() {
                 // Timer
-                const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                const elapsed = Math.floor(this.gameTimeSeconds);
                 const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
                 const seconds = (elapsed % 60).toString().padStart(2, '0');
                 document.getElementById('gameTimer').textContent = `⏱️ ${minutes}:${seconds}`;

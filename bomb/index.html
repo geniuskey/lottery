@@ -99,7 +99,6 @@
       padding: 20px;
       gap: 15px;
       height: 100vh;
-      overflow-y: auto;
     }
 
     .sidebar-header {
@@ -108,6 +107,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-shrink: 0;
     }
 
     .sidebar-header h1 {
@@ -172,11 +172,16 @@
 
     .participants-input::placeholder { color: var(--text-secondary); }
 
+    .sidebar > section:not(.rankings) {
+      flex-shrink: 0;
+    }
+
     .settings-card {
       background: var(--glass-bg);
       border: 1px solid var(--border-glow);
       border-radius: 12px;
       padding: 12px;
+      flex-shrink: 0;
     }
 
     .settings-card .section-title { margin-bottom: 8px; }
@@ -217,6 +222,7 @@
     .btn-group {
       display: flex;
       gap: 10px;
+      flex-shrink: 0;
     }
 
     .btn-start {
@@ -311,12 +317,22 @@
       font-size: 0.95rem;
     }
 
+    .eliminated-round {
+      font-size: 0.7rem;
+      background: rgba(255, 71, 87, 0.2);
+      color: var(--accent-primary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 8px;
+    }
+
     .sidebar-footer {
       display: flex;
       justify-content: center;
       gap: 12px;
       padding-top: 15px;
       border-top: 1px solid var(--border-glow);
+      flex-shrink: 0;
     }
 
     .icon-btn {
@@ -484,6 +500,24 @@
       font-weight: 900;
       color: var(--accent-primary);
       text-shadow: 0 0 20px var(--accent-primary);
+    }
+
+    .round-counter {
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-glow);
+      padding: 8px 24px;
+      border-radius: 30px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      backdrop-filter: blur(10px);
+      z-index: 20;
+      display: none;
     }
 
     .timer-display.danger {
@@ -754,6 +788,12 @@
       .rankings { max-height: 100px; }
       .game-area { flex: 1; min-height: 60vh; }
     }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; transition: all 0.3s ease; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
   </style>
 </head>
 <body>
@@ -826,6 +866,7 @@
       <p>참여자를 입력하고 게임을 시작하세요!</p>
     </div>
     <div class="game-container" id="gameContainer" style="display: none;">
+      <div class="round-counter" id="roundCounter">ROUND 1</div>
       <div class="circle-container" id="circleContainer"></div>
       <div class="timer-display" id="timerDisplay">5</div>
       <div class="bomb" id="bomb">💣</div>
@@ -896,7 +937,9 @@
         this.survivorCount = 1;
         this.bombSpeed = 'normal';
         this.gameInterval = null;
-        this.passInterval = null;
+        this.holdTimer = 0;
+        this.currentRound = 0;
+        this.eliminationData = {}; // {playerName: roundNumber}
 
         this.initElements();
         this.bindEvents();
@@ -915,6 +958,7 @@
         this.gameContainer = document.getElementById('gameContainer');
         this.circleContainer = document.getElementById('circleContainer');
         this.timerDisplay = document.getElementById('timerDisplay');
+        this.roundCounter = document.getElementById('roundCounter');
         this.bombElement = document.getElementById('bomb');
         this.explosion = document.getElementById('explosion');
         this.gameOverOverlay = document.getElementById('gameOverOverlay');
@@ -1013,12 +1057,16 @@
         this.alivePlayers = [...this.participants];
         this.eliminatedPlayers = [];
         this.survivors = [];
+        this.eliminationData = {};
+        this.currentRound = 0;
         this.currentHolder = Math.floor(Math.random() * this.alivePlayers.length);
         this.isRunning = true;
         this.startBtn.disabled = true;
 
         this.waitingMessage.style.display = 'none';
         this.gameContainer.style.display = 'flex';
+        this.bombElement.style.display = 'block';
+        this.roundCounter.style.display = 'block';
 
         this.setupPlayers();
         this.updateRankings();
@@ -1072,65 +1120,75 @@
         const player = document.getElementById(`player-${holderIndex}`);
         if (!player) return;
 
-        const avatar = player.querySelector('.player-avatar');
-        const avatarRect = avatar.getBoundingClientRect();
-        const gameRect = this.gameContainer.getBoundingClientRect();
+        const updatePosition = () => {
+          const avatar = player.querySelector('.player-avatar');
+          const avatarRect = avatar.getBoundingClientRect();
+          const gameRect = this.gameContainer.getBoundingClientRect();
 
-        // Calculate offset to place bomb "in front" (towards center)
-        const dirX = parseFloat(player.dataset.dirX || 0);
-        const dirY = parseFloat(player.dataset.dirY || 0);
-        const offset = avatarRect.width / 2 + 5; // Distance from center of player
+          // Calculate offset to place bomb "in front" (towards center)
+          const dirX = parseFloat(player.dataset.dirX || 0);
+          const dirY = parseFloat(player.dataset.dirY || 0);
+          const offset = avatarRect.width / 2 + 5; // Distance from center of player
 
-        const targetX = (avatarRect.left - gameRect.left + avatarRect.width / 2) + (dirX * offset);
-        const targetY = (avatarRect.top - gameRect.top + avatarRect.height / 2) + (dirY * offset);
+          const targetX = (avatarRect.left - gameRect.left + avatarRect.width / 2) + (dirX * offset);
+          const targetY = (avatarRect.top - gameRect.top + avatarRect.height / 2) + (dirY * offset);
+
+          if (isInitial) {
+            this.bombElement.style.left = `${targetX}px`;
+            this.bombElement.style.top = `${targetY}px`;
+            document.querySelectorAll('.player').forEach(p => p.classList.remove('has-bomb'));
+            player.classList.add('has-bomb');
+            return;
+          }
+
+          // Animated throw
+          const startX = parseFloat(this.bombElement.style.left) || targetX;
+          const startY = parseFloat(this.bombElement.style.top) || targetY;
+
+          // Remove has-bomb from all during flight
+          document.querySelectorAll('.player').forEach(p => p.classList.remove('has-bomb'));
+
+          const duration = this.bombSpeed === 'fast' ? 250 : this.bombSpeed === 'slow' ? 500 : 350;
+
+          // Use Web Animations API for the "arc" effect (scaling)
+          const animation = this.bombElement.animate([
+            { left: `${startX}px`, top: `${startY}px`, transform: 'translate(-50%, -50%) scale(1) rotate(0deg)' },
+            { 
+              left: `${(startX + targetX) / 2}px`, 
+              top: `${(startY + targetY) / 2 - 20}px`, 
+              transform: 'translate(-50%, -50%) scale(1.5) rotate(180deg)' 
+            },
+            { left: `${targetX}px`, top: `${targetY}px`, transform: 'translate(-50%, -50%) scale(1) rotate(360deg)' }
+          ], {
+            duration: duration,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+          });
+
+          animation.onfinish = () => {
+            this.bombElement.style.left = `${targetX}px`;
+            this.bombElement.style.top = `${targetY}px`;
+            player.classList.add('has-bomb');
+            
+            // Recoil effect (away from center)
+            player.style.setProperty('--recoil-x', `${-dirX * 15}px`);
+            player.style.setProperty('--recoil-y', `${-dirY * 15}px`);
+            player.classList.add('recoil');
+            setTimeout(() => player.classList.remove('recoil'), 300);
+          };
+        };
 
         if (isInitial) {
-          this.bombElement.style.left = `${targetX}px`;
-          this.bombElement.style.top = `${targetY}px`;
-          document.querySelectorAll('.player').forEach(p => p.classList.remove('has-bomb'));
-          player.classList.add('has-bomb');
-          return;
+          // Wait for next frame to ensure DOM layout is complete
+          requestAnimationFrame(updatePosition);
+        } else {
+          updatePosition();
         }
-
-        // Animated throw
-        const startX = parseFloat(this.bombElement.style.left) || targetX;
-        const startY = parseFloat(this.bombElement.style.top) || targetY;
-
-        // Remove has-bomb from all during flight
-        document.querySelectorAll('.player').forEach(p => p.classList.remove('has-bomb'));
-
-        const duration = this.bombSpeed === 'fast' ? 250 : this.bombSpeed === 'slow' ? 500 : 350;
-
-        // Use Web Animations API for the "arc" effect (scaling)
-        const animation = this.bombElement.animate([
-          { left: `${startX}px`, top: `${startY}px`, transform: 'translate(-50%, -50%) scale(1) rotate(0deg)' },
-          { 
-            left: `${(startX + targetX) / 2}px`, 
-            top: `${(startY + targetY) / 2 - 20}px`, 
-            transform: 'translate(-50%, -50%) scale(1.5) rotate(180deg)' 
-          },
-          { left: `${targetX}px`, top: `${targetY}px`, transform: 'translate(-50%, -50%) scale(1) rotate(360deg)' }
-        ], {
-          duration: duration,
-          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-        });
-
-        animation.onfinish = () => {
-          this.bombElement.style.left = `${targetX}px`;
-          this.bombElement.style.top = `${targetY}px`;
-          player.classList.add('has-bomb');
-          
-          // Recoil effect (away from center)
-          player.style.setProperty('--recoil-x', `${-dirX * 15}px`);
-          player.style.setProperty('--recoil-y', `${-dirY * 15}px`);
-          player.classList.add('recoil');
-          setTimeout(() => player.classList.remove('recoil'), 300);
-          
-          // Play a subtle sound effect could be added here
-        };
       }
 
       startRound() {
+        this.currentRound++;
+        this.roundCounter.textContent = `ROUND ${this.currentRound}`;
+
         // Set timer based on speed
         const speeds = { fast: 2, normal: 3, slow: 5 };
         this.maxTimer = speeds[this.bombSpeed] + Math.random() * 2;
@@ -1140,8 +1198,13 @@
         this.timerDisplay.classList.remove('danger');
         this.bombElement.classList.remove('shake');
 
-        // Start countdown
+        // Set initial random hold timer
+        this.setNextHoldTimer();
+
+        // Start countdown and passing logic
         this.gameInterval = setInterval(() => {
+          if (!this.isRunning) return;
+
           this.timer -= 0.1;
           this.timerDisplay.textContent = Math.ceil(this.timer);
 
@@ -1152,15 +1215,34 @@
 
           if (this.timer <= 0) {
             this.explode();
+            return;
+          }
+
+          // Handle passing logic
+          this.holdTimer -= 100;
+          if (this.holdTimer <= 0) {
+            this.passBomb();
           }
         }, 100);
+      }
 
-        // Pass bomb randomly
-        const passSpeed = this.bombSpeed === 'fast' ? 300 : this.bombSpeed === 'slow' ? 600 : 450;
-        this.passInterval = setInterval(() => {
-          if (!this.isRunning) return;
-          this.passBomb();
-        }, passSpeed);
+      setNextHoldTimer() {
+        // Base delay ranges (ms)
+        const ranges = {
+          fast: { min: 300, max: 1000 },
+          normal: { min: 500, max: 2000 },
+          slow: { min: 800, max: 3500 }
+        };
+        const range = ranges[this.bombSpeed];
+        
+        // Ratio of time remaining (1.0 at start, 0.0 at end)
+        const timeRatio = Math.max(0, this.timer / this.maxTimer);
+        
+        // Scale the maximum delay based on time remaining
+        // As time runs out, the max delay approaches the min delay
+        const currentMax = range.min + (range.max - range.min) * timeRatio;
+        
+        this.holdTimer = range.min + Math.random() * (currentMax - range.min);
       }
 
       passBomb() {
@@ -1173,20 +1255,49 @@
 
         this.currentHolder = newHolder;
         this.updateBombPosition();
+        
+        // Schedule next pass with updated timing
+        this.setNextHoldTimer();
       }
 
       explode() {
         clearInterval(this.gameInterval);
-        clearInterval(this.passInterval);
+
+        // Stop any running throw animations
+        this.bombElement.getAnimations().forEach(anim => anim.pause());
 
         // Show explosion
         this.explosion.classList.add('show');
         setTimeout(() => this.explosion.classList.remove('show'), 500);
 
-        // Eliminate current holder
-        const eliminated = this.alivePlayers[this.currentHolder];
+        // Find the closest player to the bomb's current physical position
+        const bombRect = this.bombElement.getBoundingClientRect();
+        const bombX = bombRect.left + bombRect.width / 2;
+        const bombY = bombRect.top + bombRect.height / 2;
+
+        let closestPlayerIndex = -1;
+        let minDistance = Infinity;
+
+        this.alivePlayers.forEach((name, index) => {
+          const participantIndex = this.participants.indexOf(name);
+          const playerEl = document.getElementById(`player-${participantIndex}`);
+          const avatar = playerEl.querySelector('.player-avatar');
+          const avatarRect = avatar.getBoundingClientRect();
+          const playerX = avatarRect.left + avatarRect.width / 2;
+          const playerY = avatarRect.top + avatarRect.height / 2;
+
+          const dist = Math.sqrt(Math.pow(playerX - bombX, 2) + Math.pow(playerY - bombY, 2));
+          if (dist < minDistance) {
+            minDistance = dist;
+            closestPlayerIndex = index;
+          }
+        });
+
+        // Eliminate the closest player
+        const eliminated = this.alivePlayers[closestPlayerIndex];
         this.eliminatedPlayers.push(eliminated);
-        this.alivePlayers = this.alivePlayers.filter((_, i) => i !== this.currentHolder);
+        this.eliminationData[eliminated] = this.currentRound;
+        this.alivePlayers = this.alivePlayers.filter((_, i) => i !== closestPlayerIndex);
 
         // Update player visual
         const eliminatedIndex = this.participants.indexOf(eliminated);
@@ -1203,7 +1314,7 @@
         if (this.alivePlayers.length <= this.survivorCount) {
           this.endGame();
         } else {
-          // Continue with next round
+          // Continue with next round - pick a new random holder from those remaining
           this.currentHolder = Math.floor(Math.random() * this.alivePlayers.length);
           setTimeout(() => {
             this.updateBombPosition(true);
@@ -1248,7 +1359,12 @@
 
         // Eliminated (most recent first)
         [...this.eliminatedPlayers].reverse().forEach(name => {
-          html += `<div class="rank-item eliminated"><span class="rank-badge">💀</span><span class="rank-name">${name}</span></div>`;
+          const rd = this.eliminationData[name] || '?';
+          html += `<div class="rank-item eliminated">
+            <span class="rank-badge">💀</span>
+            <span class="rank-name">${name}</span>
+            <span class="eliminated-round">RD.${rd}</span>
+          </div>`;
         });
 
         if (html === '') {
@@ -1262,7 +1378,6 @@
 
       reset() {
         clearInterval(this.gameInterval);
-        clearInterval(this.passInterval);
 
         this.isRunning = false;
         this.alivePlayers = [];
@@ -1274,6 +1389,7 @@
         this.gameContainer.style.display = 'none';
         this.circleContainer.innerHTML = '';
         this.bombElement.style.display = 'block';
+        this.roundCounter.style.display = 'none';
         this.timerDisplay.textContent = '5';
         this.timerDisplay.classList.remove('danger');
         this.bombElement.classList.remove('shake');

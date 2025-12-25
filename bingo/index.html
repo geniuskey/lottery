@@ -49,7 +49,6 @@
       padding: 20px;
       gap: 20px;
       height: 100vh;
-      overflow-y: auto;
     }
 
     .sidebar-header {
@@ -58,6 +57,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-shrink: 0;
     }
 
     .sidebar-header h1 {
@@ -238,11 +238,16 @@
       color: var(--text-secondary);
     }
 
+    .sidebar > section:not(.rankings) {
+      flex-shrink: 0;
+    }
+
     .settings-card {
       background: var(--glass-bg);
       border: 1px solid var(--border-glow);
       border-radius: 12px;
       padding: 12px;
+      flex-shrink: 0;
     }
 
     .settings-card .section-title {
@@ -342,6 +347,7 @@
     .btn-group {
       display: flex;
       gap: 10px;
+      flex-shrink: 0;
     }
 
     .btn-start {
@@ -492,6 +498,7 @@
       gap: 12px;
       padding-top: 15px;
       border-top: 1px solid var(--border-glow);
+      flex-shrink: 0;
     }
 
     .icon-btn {
