@@ -55,6 +55,7 @@ body {
     order: 2;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 .sidebar-content {
