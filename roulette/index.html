@@ -412,22 +412,42 @@
 
     .winner-display {
       position: absolute;
-      bottom: 80px;
-      background: linear-gradient(135deg, var(--accent-gold), #f0b90b);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
+      background: linear-gradient(135deg, var(--accent-gold), #ff9f1c);
       color: #000;
-      padding: 15px 40px;
-      border-radius: 50px;
+      padding: 30px 60px;
+      border-radius: 20px;
       font-family: 'Black Han Sans', sans-serif;
-      font-size: 1.5rem;
+      font-size: 3rem;
       opacity: 0;
-      transform: scale(0.5);
-      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      box-shadow: 0 10px 40px rgba(255, 217, 61, 0.4);
+      pointer-events: none;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 0 50px rgba(255, 217, 61, 0.6), 0 0 100px rgba(255, 217, 61, 0.3);
+      z-index: 1000;
+      text-align: center;
+      white-space: nowrap;
+      border: 6px solid #fff;
+      backdrop-filter: blur(10px);
     }
 
     .winner-display.show {
       opacity: 1;
-      transform: scale(1);
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .winner-display .winner-label {
+      display: block;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: rgba(0, 0, 0, 0.7);
+    }
+
+    .winner-display .winner-name {
+      display: block;
+      font-size: 3.5rem;
+      text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.5);
     }
 
     .waiting-message {
@@ -708,10 +728,12 @@
         this.currentAngle = 0;
         this.maxWinners = 1;
         this.spinDuration = 5;
+        this.animationId = null;
 
         this.initElements();
         this.bindEvents();
         this.loadSettings();
+        this.updateWheelState();
       }
 
       initElements() {
@@ -744,19 +766,20 @@
           if (e.target === this.helpModalOverlay) this.hideHelp();
         });
 
-        this.winnerCountSelect.addEventListener('change', () => this.saveSettings());
+        this.winnerCountSelect.addEventListener('change', () => {
+          this.saveSettings();
+          this.updateWheelState();
+        });
         this.spinDurationSelect.addEventListener('change', () => this.saveSettings());
         this.participantsInput.addEventListener('input', () => {
           this.saveSettings();
           if (!this.isSpinning) {
-            // Update participants list when input changes
-            this.participants = this.parseParticipants().filter(p => !this.winners.includes(p));
-            this.drawWheel();
+            this.updateWheelState();
           }
         });
 
         window.addEventListener('resize', () => {
-          if (this.participants.length > 0 && !this.isSpinning) {
+          if (this.participants.length > 0) {
             this.drawWheel();
           }
         });
@@ -767,9 +790,6 @@
         if (settings.winnerCount) this.winnerCountSelect.value = settings.winnerCount;
         if (settings.spinDuration) this.spinDurationSelect.value = settings.spinDuration;
         if (settings.participants) this.participantsInput.value = settings.participants;
-
-        // Initialize participants list
-        this.participants = this.parseParticipants();
       }
 
       saveSettings() {
@@ -786,53 +806,71 @@
         if (!text) return [];
         const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
         const result = [];
-        const nameCount = {};
-        for (const name of names) {
-          const match = name.match(/^(.+)\*(\d+)$/);
+        const usedNames = new Set();
+
+        const addUniqueName = (baseName) => {
+          let name = baseName;
+          let counter = 1;
+          while (usedNames.has(name)) {
+            counter++;
+            name = `${baseName}(${counter})`;
+          }
+          usedNames.add(name);
+          result.push(name);
+        };
+
+        for (const rawName of names) {
+          const match = rawName.match(/^(.+)\*(\d+)$/);
           if (match) {
             const baseName = match[1].trim();
-            const count = parseInt(match[2]);
+            const count = Math.min(100, parseInt(match[2]) || 1);
             for (let i = 0; i < count; i++) {
-              nameCount[baseName] = (nameCount[baseName] || 0) + 1;
-              if (nameCount[baseName] === 1) {
-                result.push(baseName);
-              } else {
-                result.push(`${baseName}(${nameCount[baseName]})`);
-              }
+              addUniqueName(baseName);
             }
           } else {
-            nameCount[name] = (nameCount[name] || 0) + 1;
-            if (nameCount[name] === 1) {
-              result.push(name);
-            } else {
-              result.push(`${name}(${nameCount[name]})`);
-            }
+            addUniqueName(rawName);
           }
         }
         return result;
       }
 
-      setupWheel() {
-        this.participants = this.parseParticipants();
+      updateButtonState() {
+        const allParticipants = this.parseParticipants();
+        this.maxWinners = parseInt(this.winnerCountSelect.value);
 
-        // Remove already won participants
-        this.participants = this.participants.filter(p => !this.winners.includes(p));
-
-        if (this.participants.length < 2) {
-          this.showToast('최소 2명의 참여자가 필요합니다!');
-          return false;
+        if (allParticipants.length === 0) {
+          this.waitingMessage.style.display = 'block';
+          this.wheelContainer.style.display = 'none';
+          this.startBtn.disabled = true;
+          return;
         }
 
         this.waitingMessage.style.display = 'none';
         this.wheelContainer.style.display = 'flex';
 
+        if (this.winners.length >= this.maxWinners) {
+          this.startBtn.disabled = false;
+          this.startBtn.textContent = '🔄 다시 시작하기';
+        } else if (allParticipants.length - this.winners.length === 0) {
+          this.startBtn.disabled = true;
+          this.startBtn.textContent = '🎡 참여자 없음';
+        } else {
+          this.startBtn.disabled = false;
+          this.startBtn.textContent = this.winners.length > 0 ? '🎡 다시 돌리기' : '🎡 돌리기';
+        }
+      }
+
+      updateWheelState() {
+        const allParticipants = this.parseParticipants();
+        this.participants = allParticipants.filter(p => !this.winners.includes(p));
+        
+        this.updateButtonState();
         this.drawWheel();
-        return true;
       }
 
       drawWheel() {
         const container = this.gameArea;
-        const size = Math.min(container.clientWidth, container.clientHeight) - 80;
+        const size = Math.min(container.clientWidth, container.clientHeight) - 100;
         const wheelSize = Math.max(300, size);
 
         this.canvas.width = wheelSize;
@@ -843,51 +881,41 @@
         const centerY = wheelSize / 2;
         const radius = wheelSize / 2 - 10;
 
-        // Use this.participants if set (during spin), otherwise parse from input
-        let currentParticipants;
-        if (this.participants && this.participants.length > 0) {
-          currentParticipants = this.participants;
-        } else {
-          currentParticipants = this.parseParticipants().filter(p => !this.winners.includes(p));
-          if (currentParticipants.length === 0) currentParticipants = this.parseParticipants();
-        }
-
+        const currentParticipants = this.participants.length > 0 ? this.participants : ['?'];
         const sliceAngle = (2 * Math.PI) / currentParticipants.length;
 
+        ctx.clearRect(0, 0, wheelSize, wheelSize);
         ctx.save();
         ctx.translate(centerX, centerY);
         ctx.rotate(this.currentAngle);
         ctx.translate(-centerX, -centerY);
 
-        // Draw slices - 0도(상단)부터 시계방향으로 그림
         currentParticipants.forEach((name, i) => {
           const startAngle = i * sliceAngle - Math.PI / 2;
           const endAngle = startAngle + sliceAngle;
-          // 실제 화면에서의 슬라이스 위치: startAngle + currentAngle
 
-          // Draw slice
           ctx.beginPath();
           ctx.moveTo(centerX, centerY);
           ctx.arc(centerX, centerY, radius, startAngle, endAngle);
           ctx.closePath();
           ctx.fillStyle = COLORS[i % COLORS.length];
           ctx.fill();
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
           ctx.lineWidth = 2;
           ctx.stroke();
 
-          // Draw text
           ctx.save();
           ctx.translate(centerX, centerY);
           ctx.rotate(startAngle + sliceAngle / 2);
           ctx.textAlign = 'right';
           ctx.fillStyle = '#000';
-          ctx.font = `bold ${Math.max(12, Math.min(16, radius / 10))}px 'Noto Sans KR'`;
-          ctx.fillText(name, radius - 20, 5);
+          const fontSize = Math.max(10, Math.min(18, radius / 8));
+          ctx.font = `bold ${fontSize}px 'Noto Sans KR'`;
+          const displayName = name.length > 8 ? name.substring(0, 7) + '..' : name;
+          ctx.fillText(displayName, radius - 20, fontSize / 3);
           ctx.restore();
         });
 
-        // Draw outer ring
         ctx.beginPath();
         ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
@@ -899,14 +927,21 @@
 
       spin() {
         if (this.isSpinning) return;
+        
+        // 당첨자 선정 완료 후 다시 시작하거나, 다음 당첨자를 위해 휠 갱신
+        const isGameFinished = this.winners.length >= parseInt(this.winnerCountSelect.value);
+        if (isGameFinished) {
+          this.winners = [];
+          this.currentAngle = 0; // 새 게임 시작 시 각도 초기화
+          this.updateRankings(); // 당첨자 현황 리스트 초기화
+          this.updateWheelState();
+        } else {
+          // 다음 당첨자 추첨 시 현재 각도를 유지하며 참여자만 제거
+          this.updateWheelState();
+        }
 
-        if (!this.setupWheel()) return;
-
-        this.maxWinners = parseInt(this.winnerCountSelect.value);
-        this.spinDuration = parseInt(this.spinDurationSelect.value);
-
-        if (this.winners.length >= this.maxWinners) {
-          this.showToast('이미 모든 당첨자가 선정되었습니다!');
+        if (this.participants.length === 0) {
+          this.showToast('참여자가 없습니다!');
           return;
         }
 
@@ -914,72 +949,68 @@
         this.startBtn.disabled = true;
         this.winnerDisplay.classList.remove('show');
 
-        // Reset angle for clean calculation with new participant count
-        this.currentAngle = 0;
-        this.drawWheel();
+        // 정밀한 시작 각도 계산 (0 ~ 2PI 사이로 정규화)
+        const normalizedStartAngle = ((this.currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        this.currentAngle = normalizedStartAngle;
 
-        // Calculate target angle based on current (filtered) participants
         const currentParticipants = this.participants;
         const sliceAngle = (2 * Math.PI) / currentParticipants.length;
         const winnerIndex = Math.floor(Math.random() * currentParticipants.length);
 
-        // 당첨자 슬라이스를 포인터(상단) 위치에 정렬
-        // 슬라이스 i는 각도 (i * sliceAngle) ~ ((i+1) * sliceAngle) 에서 그려짐 (0부터 시작)
-        // 슬라이스 i의 중심: (i + 0.5) * sliceAngle
-        // 포인터는 상단(0도 = 12시 방향)에 위치
-        // 휠을 회전시켜 슬라이스 i 중심이 상단에 오도록 함
-        const rotations = 8 + Math.random() * 5;
-        const sliceCenterAngle = (winnerIndex + 0.5) * sliceAngle;
-        // 상단(0)에서 슬라이스 중심까지의 각도만큼 역방향으로 회전
-        const targetAngle = rotations * 2 * Math.PI - sliceCenterAngle;
-
-        const startAngle = 0;
+        // 목표 각도: (한 바퀴 - 슬라이스 중심 각도) + 여러 번의 회전
+        // 슬라이스 i의 중심 각도는 (i + 0.5) * sliceAngle 임
+        const rotations = 10 + Math.floor(Math.random() * 5); // 최소 10바퀴 이상
+        const targetRotation = rotations * 2 * Math.PI - (winnerIndex + 0.5) * sliceAngle;
+        
         const startTime = performance.now();
-        const duration = this.spinDuration * 1000;
+        const duration = parseInt(this.spinDurationSelect.value) * 1000;
 
         const animate = (currentTime) => {
           const elapsed = currentTime - startTime;
           const progress = Math.min(elapsed / duration, 1);
 
-          // Easing: slow down at the end
-          const easeOut = 1 - Math.pow(1 - progress, 4);
-
-          this.currentAngle = startAngle + (targetAngle - startAngle) * easeOut;
+          // Easing: Quintic Out (더 부드럽게 멈춤)
+          const easeOut = 1 - Math.pow(1 - progress, 5);
+          
+          this.currentAngle = normalizedStartAngle + (targetRotation - normalizedStartAngle) * easeOut;
           this.drawWheel();
 
           if (progress < 1) {
-            requestAnimationFrame(animate);
+            this.animationId = requestAnimationFrame(animate);
           } else {
+            // 마지막 위치 정확히 고정
+            this.currentAngle = targetRotation;
+            this.drawWheel();
             this.onSpinComplete(currentParticipants[winnerIndex]);
           }
         };
 
-        requestAnimationFrame(animate);
+        this.animationId = requestAnimationFrame(animate);
       }
 
       onSpinComplete(winner) {
         this.isSpinning = false;
         this.winners.push(winner);
+        this.currentAngle = this.currentAngle % (2 * Math.PI);
 
-        // Show winner
-        this.winnerDisplay.textContent = `🎉 ${winner} 당첨!`;
+        // Show winner with rich format
+        this.winnerDisplay.innerHTML = `
+          <span class="winner-label">🎊 CONGRATULATIONS 🎊</span>
+          <span class="winner-name">${winner}</span>
+        `;
         this.winnerDisplay.classList.add('show');
+
+        // Hide winner display after 4 seconds automatically to allow next interaction
+        setTimeout(() => {
+          this.winnerDisplay.classList.remove('show');
+        }, 4000);
 
         this.createConfetti();
         this.updateRankings();
-
-        // Check if more winners needed
-        if (this.winners.length < this.maxWinners) {
-          const remaining = this.parseParticipants().filter(p => !this.winners.includes(p));
-          if (remaining.length >= 1) {
-            this.startBtn.disabled = false;
-            this.startBtn.textContent = '🎡 다시 돌리기';
-          } else {
-            this.startBtn.disabled = true;
-          }
-        } else {
-          this.startBtn.disabled = true;
-        }
+        
+        // 중요: 당첨 즉시 휠을 갱신하지 않고 버튼 상태만 업데이트함
+        // 이를 통해 당첨자가 화살표가 가리키는 위치에 그대로 남아있게 됨
+        this.updateButtonState();
       }
 
       updateRankings() {
@@ -1009,25 +1040,15 @@
       }
 
       reset() {
+        if (this.animationId) {
+          cancelAnimationFrame(this.animationId);
+        }
         this.isSpinning = false;
         this.winners = [];
         this.currentAngle = 0;
-        this.startBtn.disabled = false;
-        this.startBtn.textContent = '🎡 돌리기';
         this.winnerDisplay.classList.remove('show');
-
-        const participants = this.parseParticipants();
-        if (participants.length >= 2) {
-          this.participants = participants;
-          this.waitingMessage.style.display = 'none';
-          this.wheelContainer.style.display = 'flex';
-          this.drawWheel();
-        } else {
-          this.waitingMessage.style.display = 'block';
-          this.wheelContainer.style.display = 'none';
-        }
-
         this.updateRankings();
+        this.updateWheelState();
       }
 
       copyResult() {

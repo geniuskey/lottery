@@ -51,19 +51,21 @@
     "@context": "https://schema.org",
     "@type": "ItemList",
     "name": "추첨 게임 목록",
-    "numberOfItems": 11,
+    "numberOfItems": 13,
     "itemListElement": [
       {"@type": "ListItem", "position": 1, "item": {"@type": "WebApplication", "name": "구슬 올림픽", "url": "https://geniuskey.github.io/lottery/marble-olympics/"}},
       {"@type": "ListItem", "position": 2, "item": {"@type": "WebApplication", "name": "좀비 아레나", "url": "https://geniuskey.github.io/lottery/zombie-arena/"}},
       {"@type": "ListItem", "position": 3, "item": {"@type": "WebApplication", "name": "단체 가위바위보", "url": "https://geniuskey.github.io/lottery/group-rps/"}},
       {"@type": "ListItem", "position": 4, "item": {"@type": "WebApplication", "name": "빙고", "url": "https://geniuskey.github.io/lottery/bingo/"}},
-      {"@type": "ListItem", "position": 5, "item": {"@type": "WebApplication", "name": "밤송이 서바이벌", "url": "https://geniuskey.github.io/lottery/chestnut-survival/"}},
-      {"@type": "ListItem", "position": 6, "item": {"@type": "WebApplication", "name": "원판 밀치기", "url": "https://geniuskey.github.io/lottery/disk-shove/"}},
-      {"@type": "ListItem", "position": 7, "item": {"@type": "WebApplication", "name": "펀치 서바이벌", "url": "https://geniuskey.github.io/lottery/punch-survival/"}},
-      {"@type": "ListItem", "position": 8, "item": {"@type": "WebApplication", "name": "의자 앉기", "url": "https://geniuskey.github.io/lottery/chair/"}},
-      {"@type": "ListItem", "position": 9, "item": {"@type": "WebApplication", "name": "술래로부터 살아남기", "url": "https://geniuskey.github.io/lottery/chaser-survival/"}},
-      {"@type": "ListItem", "position": 10, "item": {"@type": "WebApplication", "name": "볼링 서바이벌", "url": "https://geniuskey.github.io/lottery/bowling/"}},
-      {"@type": "ListItem", "position": 11, "item": {"@type": "WebApplication", "name": "사다리 추첨", "url": "https://geniuskey.github.io/lottery/ladder/"}}
+      {"@type": "ListItem", "position": 5, "item": {"@type": "WebApplication", "name": "폭탄 돌리기", "url": "https://geniuskey.github.io/lottery/bomb/"}},
+      {"@type": "ListItem", "position": 6, "item": {"@type": "WebApplication", "name": "룰렛 추첨", "url": "https://geniuskey.github.io/lottery/roulette/"}},
+      {"@type": "ListItem", "position": 7, "item": {"@type": "WebApplication", "name": "밤송이 서바이벌", "url": "https://geniuskey.github.io/lottery/chestnut-survival/"}},
+      {"@type": "ListItem", "position": 8, "item": {"@type": "WebApplication", "name": "원판 밀치기", "url": "https://geniuskey.github.io/lottery/disk-shove/"}},
+      {"@type": "ListItem", "position": 9, "item": {"@type": "WebApplication", "name": "펀치 서바이벌", "url": "https://geniuskey.github.io/lottery/punch-survival/"}},
+      {"@type": "ListItem", "position": 10, "item": {"@type": "WebApplication", "name": "의자 앉기", "url": "https://geniuskey.github.io/lottery/chair/"}},
+      {"@type": "ListItem", "position": 11, "item": {"@type": "WebApplication", "name": "술래로부터 살아남기", "url": "https://geniuskey.github.io/lottery/chaser-survival/"}},
+      {"@type": "ListItem", "position": 12, "item": {"@type": "WebApplication", "name": "볼링 서바이벌", "url": "https://geniuskey.github.io/lottery/bowling/"}},
+      {"@type": "ListItem", "position": 13, "item": {"@type": "WebApplication", "name": "사다리 추첨", "url": "https://geniuskey.github.io/lottery/ladder/"}}
     ]
   }
   </script>
@@ -513,6 +515,20 @@
       --card-bg: rgba(59, 130, 246, 0.15);
     }
 
+    .card.bomb {
+      --card-accent: #ef4444;
+      --card-accent2: #f97316;
+      --card-glow: rgba(239, 68, 68, 0.3);
+      --card-bg: rgba(239, 68, 68, 0.15);
+    }
+
+    .card.roulette {
+      --card-accent: #8b5cf6;
+      --card-accent2: #d946ef;
+      --card-glow: rgba(139, 92, 246, 0.3);
+      --card-bg: rgba(139, 92, 246, 0.15);
+    }
+
     /* Coming Soon Card */
     .card.coming-soon {
       opacity: 0.6;
@@ -777,6 +793,54 @@
         </div>
         <div class="card-footer">
           <a href="./bingo/" class="play-btn">
+            <span class="play-icon">▶</span>
+            게임 시작
+          </a>
+        </div>
+      </article>
+
+      <article class="card bomb" aria-label="폭탄 돌리기 게임">
+        <span class="new-badge">NEW</span>
+        <div class="card-header">
+          <div class="card-icon">💣</div>
+          <div class="card-title-wrap">
+            <h3>폭탄 돌리기</h3>
+            <span class="card-tag">서바이벌</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>폭탄이 터지기 전에 넘겨라! 스릴 넘치는 폭탄 돌리기 게임. 긴장감 넘치는 타이머와 폭발 효과!</p>
+          <div class="card-features">
+            <span class="feature-badge">💥 폭발 이펙트</span>
+            <span class="feature-badge">🔥 실시간 타이머</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="./bomb/" class="play-btn">
+            <span class="play-icon">▶</span>
+            게임 시작
+          </a>
+        </div>
+      </article>
+
+      <article class="card roulette" aria-label="룰렛 추첨 게임">
+        <span class="new-badge">NEW</span>
+        <div class="card-header">
+          <div class="card-icon">🎡</div>
+          <div class="card-title-wrap">
+            <h3>룰렛 추첨</h3>
+            <span class="card-tag">추첨</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>화려한 룰렛 휠을 돌려 행운의 당첨자를 선정하세요! 시각적으로 화려한 스핀 애니메이션.</p>
+          <div class="card-features">
+            <span class="feature-badge">🎨 화려한 색상</span>
+            <span class="feature-badge">⚡ 스핀 애니메이션</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="./roulette/" class="play-btn">
             <span class="play-icon">▶</span>
             게임 시작
           </a>

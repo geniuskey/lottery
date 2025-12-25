@@ -340,12 +340,26 @@
     
     .status-icon {
       font-size: 1rem;
+      min-width: 1.2rem;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .ranking-emoji {
+      font-size: 1.1rem;
+      margin-right: 4px;
     }
     
     .ranking-name {
       flex: 1;
       color: var(--text-light);
       font-size: 0.9rem;
+    }
+    
+    .death-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: 'Orbitron', sans-serif;
     }
     
     /* Sidebar Footer */
@@ -398,6 +412,62 @@
       flex: 1;
       position: relative;
       overflow: hidden;
+      transition: transform 0.1s;
+    }
+    
+    .game-area.shake {
+      animation: shake 0.2s double infinite;
+    }
+    
+    @keyframes shake {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(5px, 5px); }
+      50% { transform: translate(-5px, -5px); }
+      75% { transform: translate(5px, -5px); }
+      100% { transform: translate(0, 0); }
+    }
+    
+    .danger-ui {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 107, 107, 0.9);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 900;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      display: none;
+      animation: pulse 0.5s infinite alternate;
+      z-index: 10;
+      pointer-events: none;
+    }
+    
+    .game-timer {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffd700;
+      padding: 5px 20px;
+      border-radius: 30px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      z-index: 20;
+      pointer-events: none;
+      min-width: 120px;
+      text-align: center;
+      display: none;
+    }
+    
+    @keyframes pulse {
+      from { transform: translateX(-50%) scale(1); opacity: 0.8; }
+      to { transform: translateX(-50%) scale(1.1); opacity: 1; }
     }
     
     #gameCanvas {
@@ -553,6 +623,8 @@
     </aside>
     
     <main class="game-area">
+      <div class="game-timer" id="gameTimer">00:00.0</div>
+      <div class="danger-ui" id="dangerUI">⚠️ 위험! 가속 모드 ⚠️</div>
       <canvas id="gameCanvas"></canvas>
       <div class="copyright">© 2025 Euiyun Edwin Kim</div>
       <div class="game-over-overlay" id="gameOverOverlay">
@@ -614,22 +686,102 @@
     let birds = [];
     let targetSurvivors = 1;
     let animationId = null;
+    let gameTimeSeconds = 0; // 초 단위로 변경
+    let difficultyMultiplier = 1.0;
+    let lastTimestamp = 0;
     
-    // Happy emojis for alive players
+    // Caching for performance
+    const treeCanvas = document.createElement('canvas');
+    const treeCtx = treeCanvas.getContext('2d');
+    const chestnutCache = document.createElement('canvas');
+    const chestnutCtx = chestnutCache.getContext('2d');
+    let chestnutCacheSize = 40; // 최대 크기 기준
     const happyEmojis = ['😊', '😄', '😁', '🙂', '😀', '😃', '🤗', '😋', '🤩', '🥳'];
     // Hurt emojis for dead players
     const hurtEmojis = ['😵', '😵‍💫', '🥴', '😢', '😭', '🤕', '😫', '💀'];
     
+    // Pre-render chestnut for performance
+    function cacheChestnut() {
+      const r = 20; // Base size for cache
+      const padding = 10;
+      chestnutCache.width = (r + padding) * 2;
+      chestnutCache.height = (r + padding) * 2;
+      chestnutCacheSize = r;
+      
+      chestnutCtx.translate(r + padding, r + padding);
+      
+      // Main body
+      chestnutCtx.fillStyle = '#8B4513';
+      chestnutCtx.beginPath();
+      chestnutCtx.arc(0, 0, r, 0, Math.PI * 2);
+      chestnutCtx.fill();
+      
+      // Spikes
+      chestnutCtx.strokeStyle = '#5D3A1A';
+      chestnutCtx.lineWidth = 1.4;
+      const spikeCount = 20;
+      for (let i = 0; i < spikeCount; i++) {
+        const angle = (i / spikeCount) * Math.PI * 2;
+        const innerR = r * 0.85;
+        const outerR = r * 1.35;
+        chestnutCtx.beginPath();
+        chestnutCtx.moveTo(Math.cos(angle) * innerR, Math.sin(angle) * innerR);
+        chestnutCtx.lineTo(Math.cos(angle) * outerR, Math.sin(angle) * outerR);
+        chestnutCtx.stroke();
+      }
+      
+      // Highlight
+      chestnutCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      chestnutCtx.beginPath();
+      chestnutCtx.ellipse(-r * 0.3, -r * 0.3, r * 0.3, r * 0.2, -0.5, 0, Math.PI * 2);
+      chestnutCtx.fill();
+    }
+
     // Resize canvas
     function resizeCanvas() {
       canvas.width = canvas.parentElement.clientWidth;
       canvas.height = canvas.parentElement.clientHeight;
+      
+      // Update background cache
+      treeCanvas.width = canvas.width;
+      treeCanvas.height = canvas.height;
+      
       if (!gameRunning) {
         generateTrees();
         generateClouds();
         generateBirds();
+        cacheChestnut();
+        updateBackgroundCache();
         draw();
       }
+    }
+
+    function updateBackgroundCache() {
+      treeCtx.clearRect(0, 0, treeCanvas.width, treeCanvas.height);
+      drawSky(treeCtx);
+      drawGrass(treeCtx);
+      trees.forEach(tree => drawTree(treeCtx, tree));
+    }
+    
+    // Draw chestnut (밤송이)
+    function drawChestnut(chestnut) {
+      ctx.save();
+      ctx.translate(chestnut.x, chestnut.y);
+      ctx.rotate(chestnut.rotation);
+      
+      const r = chestnut.radius;
+      const scale = r / chestnutCacheSize;
+      
+      // Use cached canvas for drawing
+      ctx.drawImage(
+        chestnutCache, 
+        -(r + 10), 
+        -(r + 10), 
+        (r + 10) * 2, 
+        (r + 10) * 2
+      );
+      
+      ctx.restore();
     }
     
     // Generate trees
@@ -641,19 +793,19 @@
       for (let i = 0; i < treeCount; i++) {
         trees.push({
           x: (i + 0.5) * (canvas.width / treeCount) + (Math.random() - 0.5) * 40,
-          width: 100 + Math.random() * 60,
-          height: 150 + Math.random() * 100,
-          trunkWidth: 30 + Math.random() * 20,
-          trunkHeight: 80 + Math.random() * 40,
+          width: 110 + Math.random() * 70,
+          height: 225 + Math.random() * 150,
+          trunkWidth: 32 + Math.random() * 22,
+          trunkHeight: 140 + Math.random() * 95,
           leafLayers: 2 + Math.floor(Math.random() * 2)
         });
       }
       
       // 캔버스 크기 기반 스폰율 계산 (기준: 1000px 너비)
-      baseSpawnRate = 0.04 * (canvas.width / 1000);
+      baseSpawnRate = 0.024 * (canvas.width / 1000);
     }
     
-    let baseSpawnRate = 0.04;
+    let baseSpawnRate = 0.024;
     
     // Generate clouds
     function generateClouds() {
@@ -691,7 +843,8 @@
       const tree = trees[Math.floor(Math.random() * trees.length)];
       const x = tree.x + (Math.random() - 0.5) * tree.width * 0.8;
       const baseY = canvas.height * 0.65;
-      const startY = baseY - tree.trunkHeight - tree.height * 0.3; // 나무 잎사귀 아래에서 시작
+      // 생성 높이를 10% 낮춤 (지면과의 거리를 0.9배로 조절)
+      const startY = baseY - (tree.trunkHeight + tree.height * 0.8) * 0.9;
       
       return {
         x: x,
@@ -699,7 +852,7 @@
         vy: 0,
         radius: 12 + Math.random() * 8,
         rotation: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.1 // 속도 절반
+        rotationSpeed: (Math.random() - 0.5) * 0.1
       };
     }
     
@@ -711,22 +864,33 @@
         name: name,
         x: 100 + Math.random() * (canvas.width - 200),
         y: groundYBase + Math.random() * groundYRange, // 랜덤 Y 값
-        vx: (Math.random() - 0.5) * 1.5, // 속도 절반
+        vx: (Math.random() - 0.5) * 3.0, // 속도 2배 상향 (1.5 -> 3.0)
         alive: true,
         emoji: happyEmojis[Math.floor(Math.random() * happyEmojis.length)],
         size: 40,
         direction: 1,
-        changeTimer: Math.random() * 100
+        changeTimer: Math.random() * 100,
+        deathTimeSeconds: null
       }));
     }
     
+    // Format time (SS.sss)
+    function formatTime(frames) {
+      const seconds = frames / 60;
+      return seconds.toFixed(3) + 's';
+    }
+    
+    function formatTimeSeconds(seconds) {
+      return seconds.toFixed(3) + 's';
+    }
+    
     // Draw sky
-    function drawSky() {
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.7);
+    function drawSky(targetCtx) {
+      const gradient = targetCtx.createLinearGradient(0, 0, 0, canvas.height * 0.7);
       gradient.addColorStop(0, '#87CEEB');
       gradient.addColorStop(1, '#B0E2FF');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height * 0.7);
+      targetCtx.fillStyle = gradient;
+      targetCtx.fillRect(0, 0, canvas.width, canvas.height * 0.7);
       
       // Draw sun
       const sunX = canvas.width - 80;
@@ -734,32 +898,32 @@
       const sunRadius = 40;
       
       // Sun glow
-      const sunGlow = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, sunRadius * 2);
+      const sunGlow = targetCtx.createRadialGradient(sunX, sunY, 0, sunX, sunY, sunRadius * 2);
       sunGlow.addColorStop(0, 'rgba(255, 236, 179, 0.8)');
       sunGlow.addColorStop(0.5, 'rgba(255, 236, 179, 0.2)');
       sunGlow.addColorStop(1, 'rgba(255, 236, 179, 0)');
-      ctx.fillStyle = sunGlow;
-      ctx.beginPath();
-      ctx.arc(sunX, sunY, sunRadius * 2, 0, Math.PI * 2);
-      ctx.fill();
+      targetCtx.fillStyle = sunGlow;
+      targetCtx.beginPath();
+      targetCtx.arc(sunX, sunY, sunRadius * 2, 0, Math.PI * 2);
+      targetCtx.fill();
       
       // Sun body
-      ctx.fillStyle = '#FFE082';
-      ctx.beginPath();
-      ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
-      ctx.fill();
+      targetCtx.fillStyle = '#FFE082';
+      targetCtx.beginPath();
+      targetCtx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
+      targetCtx.fill();
       
       // Sun rays
-      ctx.strokeStyle = 'rgba(255, 224, 130, 0.5)';
-      ctx.lineWidth = 3;
+      targetCtx.strokeStyle = 'rgba(255, 224, 130, 0.5)';
+      targetCtx.lineWidth = 3;
       for (let i = 0; i < 12; i++) {
         const angle = (i / 12) * Math.PI * 2 + Date.now() * 0.0003;
         const innerR = sunRadius + 5;
         const outerR = sunRadius + 20;
-        ctx.beginPath();
-        ctx.moveTo(sunX + Math.cos(angle) * innerR, sunY + Math.sin(angle) * innerR);
-        ctx.lineTo(sunX + Math.cos(angle) * outerR, sunY + Math.sin(angle) * outerR);
-        ctx.stroke();
+        targetCtx.beginPath();
+        targetCtx.moveTo(sunX + Math.cos(angle) * innerR, sunY + Math.sin(angle) * innerR);
+        targetCtx.lineTo(sunX + Math.cos(angle) * outerR, sunY + Math.sin(angle) * outerR);
+        targetCtx.stroke();
       }
     }
     
@@ -828,32 +992,32 @@
     }
     
     // Draw grass
-    function drawGrass() {
+    function drawGrass(targetCtx) {
       const grassTop = canvas.height * 0.6;
-      const gradient = ctx.createLinearGradient(0, grassTop, 0, canvas.height);
+      const gradient = targetCtx.createLinearGradient(0, grassTop, 0, canvas.height);
       gradient.addColorStop(0, '#7CB342');
       gradient.addColorStop(0.3, '#8BC34A');
       gradient.addColorStop(1, '#558B2F');
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.moveTo(0, grassTop);
+      targetCtx.fillStyle = gradient;
+      targetCtx.beginPath();
+      targetCtx.moveTo(0, grassTop);
       // Wavy grass top
       for (let x = 0; x <= canvas.width; x += 20) {
-        ctx.lineTo(x, grassTop + Math.sin(x * 0.03) * 10);
+        targetCtx.lineTo(x, grassTop + Math.sin(x * 0.03) * 10);
       }
-      ctx.lineTo(canvas.width, canvas.height);
-      ctx.lineTo(0, canvas.height);
-      ctx.closePath();
-      ctx.fill();
+      targetCtx.lineTo(canvas.width, canvas.height);
+      targetCtx.lineTo(0, canvas.height);
+      targetCtx.closePath();
+      targetCtx.fill();
     }
     
     // Draw tree
-    function drawTree(tree) {
+    function drawTree(targetCtx, tree) {
       const baseY = canvas.height * 0.65;
       
       // Trunk
-      ctx.fillStyle = '#6D4C41';
-      ctx.fillRect(
+      targetCtx.fillStyle = '#6D4C41';
+      targetCtx.fillRect(
         tree.x - tree.trunkWidth / 2,
         baseY - tree.trunkHeight,
         tree.trunkWidth,
@@ -861,14 +1025,14 @@
       );
       
       // Trunk details
-      ctx.strokeStyle = '#5D4037';
-      ctx.lineWidth = 2;
+      targetCtx.strokeStyle = '#5D4037';
+      targetCtx.lineWidth = 2;
       for (let i = 0; i < 3; i++) {
         const lineY = baseY - tree.trunkHeight + 20 + i * 25;
-        ctx.beginPath();
-        ctx.moveTo(tree.x - tree.trunkWidth / 2 + 5, lineY);
-        ctx.lineTo(tree.x + tree.trunkWidth / 2 - 5, lineY + 10);
-        ctx.stroke();
+        targetCtx.beginPath();
+        targetCtx.moveTo(tree.x - tree.trunkWidth / 2 + 5, lineY);
+        targetCtx.lineTo(tree.x + tree.trunkWidth / 2 - 5, lineY + 10);
+        targetCtx.stroke();
       }
       
       // Leaves (multiple layers for depth)
@@ -877,28 +1041,28 @@
         const layerScale = 1 - layer * 0.15;
         
         // Back leaves (darker)
-        ctx.fillStyle = layer === 0 ? '#388E3C' : '#43A047';
-        ctx.beginPath();
-        ctx.ellipse(
+        targetCtx.fillStyle = layer === 0 ? '#388E3C' : '#43A047';
+        targetCtx.beginPath();
+        targetCtx.ellipse(
           tree.x,
           baseY - tree.trunkHeight - tree.height * 0.4 - layerOffset,
           tree.width * 0.6 * layerScale,
           tree.height * 0.5 * layerScale,
           0, 0, Math.PI * 2
         );
-        ctx.fill();
+        targetCtx.fill();
         
         // Front leaves (lighter)
-        ctx.fillStyle = layer === 0 ? '#4CAF50' : '#66BB6A';
-        ctx.beginPath();
-        ctx.ellipse(
+        targetCtx.fillStyle = layer === 0 ? '#4CAF50' : '#66BB6A';
+        targetCtx.beginPath();
+        targetCtx.ellipse(
           tree.x + 10,
           baseY - tree.trunkHeight - tree.height * 0.35 - layerOffset,
           tree.width * 0.5 * layerScale,
           tree.height * 0.4 * layerScale,
           0, 0, Math.PI * 2
         );
-        ctx.fill();
+        targetCtx.fill();
       }
     }
     
@@ -971,9 +1135,44 @@
     }
     
     // Update game
-    function update() {
-      const gravity = 0.15; // 속도 절반 (0.3 -> 0.15)
+    function update(dt) {
+      const dtScale = dt * 60; // 60fps 기준 스케일
+      gameTimeSeconds += dt;
+      
+      // Update Timer Display
+      document.getElementById('gameTimer').textContent = formatTimeSeconds(gameTimeSeconds);
+      
+      const totalInitial = participants.length;
       const alivePlayers = players.filter(p => p.alive);
+      const aliveCount = alivePlayers.length;
+      
+      // Difficulty escalation starts after 10 seconds
+      const timeInSeconds = gameTimeSeconds;
+      let timeScaling = 0;
+      if (timeInSeconds > 10) {
+        timeScaling = (timeInSeconds - 10) * 0.08;
+      }
+      
+      const deathRatio = (totalInitial - aliveCount) / (totalInitial - targetSurvivors);
+      difficultyMultiplier = 1.0 + timeScaling + (deathRatio * 0.7);
+      
+      // Update Danger UI
+      const dangerUI = document.getElementById('dangerUI');
+      if (timeInSeconds > 10) {
+        dangerUI.style.display = 'block';
+        if (timeInSeconds > 20) {
+          dangerUI.textContent = "🔥 초고속 모드!! 🔥";
+          dangerUI.style.background = "rgba(255, 0, 0, 0.9)";
+        } else {
+          dangerUI.textContent = "⚠️ 위험! 가속 모드 ⚠️";
+          dangerUI.style.background = "rgba(255, 107, 107, 0.9)";
+        }
+      } else {
+        dangerUI.style.display = 'none';
+      }
+      
+      const gravity = 0.13 * difficultyMultiplier * dtScale;
+      const spawnRate = baseSpawnRate * difficultyMultiplier * dtScale;
       
       // Check if game should end
       if (alivePlayers.length <= targetSurvivors) {
@@ -981,16 +1180,16 @@
         return;
       }
       
-      // Spawn new chestnuts - 캔버스 크기에 비례한 스폰율
-      if (Math.random() < baseSpawnRate) {
+      // Spawn new chestnuts
+      if (Math.random() < spawnRate) {
         chestnuts.push(createChestnut());
       }
       
       // Update chestnuts
       chestnuts.forEach(c => {
         c.vy += gravity;
-        c.y += c.vy;
-        c.rotation += c.rotationSpeed;
+        c.y += c.vy * dtScale;
+        c.rotation += c.rotationSpeed * difficultyMultiplier * dtScale;
       });
       
       // Remove off-screen chestnuts
@@ -1000,17 +1199,17 @@
       players.forEach(player => {
         if (!player.alive) return;
         
-        // Random movement
-        player.changeTimer--;
+        const moveSpeed = 3.0 * (1 + deathRatio * 0.8);
+        
+        player.changeTimer -= dtScale;
         if (player.changeTimer <= 0) {
-          player.vx = (Math.random() - 0.5) * 2; // 속도 절반 (4 -> 2)
-          player.changeTimer = 50 + Math.random() * 100;
+          player.vx = (Math.random() - 0.5) * moveSpeed * 2;
+          player.changeTimer = (50 + Math.random() * 100) / difficultyMultiplier;
           player.emoji = happyEmojis[Math.floor(Math.random() * happyEmojis.length)];
         }
         
-        player.x += player.vx;
+        player.x += player.vx * dtScale;
         
-        // Bounce off edges
         if (player.x < 50) {
           player.x = 50;
           player.vx = Math.abs(player.vx);
@@ -1028,37 +1227,70 @@
           
           if (dist < player.size / 2 + c.radius) {
             player.alive = false;
+            player.deathTimeSeconds = gameTimeSeconds;
             player.emoji = hurtEmojis[Math.floor(Math.random() * hurtEmojis.length)];
+            
+            const gameArea = document.querySelector('.game-area');
+            gameArea.classList.add('shake');
+            setTimeout(() => gameArea.classList.remove('shake'), 200);
+            
             updateRankings();
           }
         });
       });
+    }
+
+    // Draw danger indicators
+    function drawDangerIndicators() {
+      ctx.save();
+      chestnuts.forEach(c => {
+        // Only show indicators for chestnuts above a certain height
+        if (c.y < canvas.height - 150) {
+          const groundY = canvas.height - 100; // Rough ground Y
+          const timeLeft = Math.sqrt((groundY - c.y) / 0.1); // Rough approximation
+          
+          // Draw a pulsing shadow on the ground
+          const opacity = Math.min(0.4, (c.y / canvas.height));
+          const size = c.radius * (1 + Math.sin(gameTimeSeconds * 60 * 0.2) * 0.2);
+          
+          ctx.fillStyle = `rgba(0, 0, 0, ${opacity * 0.8})`; // Gray/Shadow color
+          ctx.beginPath();
+          ctx.ellipse(c.x, groundY + 30, size * 1.5, size * 0.5, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+      ctx.restore();
     }
     
     // Draw everything
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      drawSky();
+      // Use cached background
+      ctx.drawImage(treeCanvas, 0, 0);
+      
       drawClouds();
       drawBirds();
-      drawGrass();
       
-      // Draw trees
-      trees.forEach(drawTree);
+      drawDangerIndicators();
       
-      // Draw chestnuts
       chestnuts.forEach(drawChestnut);
       
-      // Draw players (sorted by y for depth)
       [...players].sort((a, b) => a.y - b.y).forEach(drawPlayer);
     }
     
     // Game loop
-    function gameLoop() {
+    function gameLoop(timestamp) {
       if (!gameRunning) return;
       
-      update();
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const dt = (timestamp - lastTimestamp) / 1000;
+      lastTimestamp = timestamp;
+
+      // Limit dt to prevent glitches (e.g. from tab switching)
+      const cappedDt = Math.min(dt, 0.1);
+      
+      update(cappedDt);
       draw();
       animationId = requestAnimationFrame(gameLoop);
     }
@@ -1068,18 +1300,27 @@
       const list = document.getElementById('rankingsList');
       list.innerHTML = '';
       
-      // Sort: alive first, then by name
+      // Sort: alive first, then by deathTimeSeconds (descending), then by name
       const sorted = [...players].sort((a, b) => {
         if (a.alive !== b.alive) return b.alive - a.alive;
+        if (!a.alive && !b.alive) return b.deathTimeSeconds - a.deathTimeSeconds;
         return a.name.localeCompare(b.name);
       });
       
       sorted.forEach(player => {
         const item = document.createElement('div');
         item.className = `ranking-item ${player.alive ? 'alive' : 'dead'}`;
+        
+        let timeInfo = '';
+        if (!player.alive && player.deathTimeSeconds) {
+          timeInfo = `<span class="death-time">${formatTimeSeconds(player.deathTimeSeconds)}</span>`;
+        }
+        
         item.innerHTML = `
           <span class="status-icon">${player.alive ? '✓' : '✗'}</span>
+          <span class="ranking-emoji">${player.emoji}</span>
           <span class="ranking-name">${player.name}</span>
+          ${timeInfo}
         `;
         list.appendChild(item);
       });
@@ -1091,19 +1332,25 @@
       cancelAnimationFrame(animationId);
       
       const winners = players.filter(p => p.alive);
+      const finalTime = formatTimeSeconds(gameTimeSeconds);
       
       // Update rankings with winner highlights
       const list = document.getElementById('rankingsList');
       list.querySelectorAll('.ranking-item.alive').forEach(item => {
         item.classList.add('winner');
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'death-time';
+        timeSpan.textContent = finalTime;
+        item.appendChild(timeSpan);
       });
       
       // Show game over overlay
       const overlay = document.getElementById('gameOverOverlay');
       const winnersList = document.getElementById('winnersList');
-      winnersList.innerHTML = winners.map(w => 
-        `<span class="winner-name">${w.emoji} ${w.name}</span>`
-      ).join('');
+      winnersList.innerHTML = `
+        <div style="margin-bottom: 15px; font-size: 1.2rem; color: #aaa;">생존 시간: ${finalTime}</div>
+        ${winners.map(w => `<span class="winner-name">${w.emoji} ${w.name}</span>`).join('')}
+      `;
       overlay.classList.add('show');
       
       // Confetti
@@ -1179,13 +1426,18 @@
       
       // Reset
       document.getElementById('gameOverOverlay').classList.remove('show');
+      document.getElementById('dangerUI').style.display = 'none';
+      document.getElementById('gameTimer').style.display = 'block';
       chestnuts = [];
+      gameTimeSeconds = 0;
+      lastTimestamp = 0;
+      difficultyMultiplier = 1.0;
       initPlayers();
       updateRankings();
       
       gameRunning = true;
       document.getElementById('startBtn').disabled = true;
-      gameLoop();
+      requestAnimationFrame(gameLoop);
     }
     
     // Reset game
@@ -1197,6 +1449,8 @@
       players = [];
       document.getElementById('rankingsList').innerHTML = '';
       document.getElementById('gameOverOverlay').classList.remove('show');
+      document.getElementById('dangerUI').style.display = 'none';
+      document.getElementById('gameTimer').style.display = 'none';
       document.getElementById('startBtn').disabled = false;
       
       draw();
