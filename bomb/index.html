@@ -67,6 +67,15 @@
       --text-secondary: #a0a0c0;
       --border-glow: rgba(255, 71, 87, 0.3);
       --glass-bg: rgba(255, 255, 255, 0.05);
+      
+      /* Game sizes */
+      --player-size: 80px;
+      --avatar-size: 60px;
+      --emoji-size: 1.8rem;
+      --name-size: 0.85rem;
+      --bomb-size: 3.5rem;
+      --timer-size: 5rem;
+      --circle-size: 500px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -378,8 +387,9 @@
 
     .circle-container {
       position: relative;
-      width: 500px;
-      height: 500px;
+      width: var(--circle-size);
+      height: var(--circle-size);
+      transition: all 0.5s ease;
     }
 
     .player {
@@ -389,16 +399,18 @@
       align-items: center;
       gap: 5px;
       transition: all 0.3s ease;
+      width: var(--player-size);
+      transform: translate(-50%, -50%);
     }
 
     .player-avatar {
-      width: 60px;
-      height: 60px;
+      width: var(--avatar-size);
+      height: var(--avatar-size);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.8rem;
+      font-size: var(--emoji-size);
       border: 3px solid transparent;
       transition: all 0.3s ease;
     }
@@ -414,16 +426,26 @@
       to { transform: scale(1.1); }
     }
 
+    .player.recoil {
+      animation: playerRecoil 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes playerRecoil {
+      0% { transform: translate(-50%, -50%) scale(1); }
+      30% { transform: translate(calc(-50% + var(--recoil-x, 0px)), calc(-50% + var(--recoil-y, 0px))) scale(0.85); }
+      100% { transform: translate(-50%, -50%) scale(1); }
+    }
+
     .player.eliminated .player-avatar {
       opacity: 0.3;
       filter: grayscale(1);
     }
 
     .player-name {
-      font-size: 0.85rem;
+      font-size: var(--name-size);
       font-weight: 700;
       text-align: center;
-      max-width: 80px;
+      width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -436,10 +458,11 @@
 
     .bomb {
       position: absolute;
-      font-size: 3rem;
-      transition: all 0.2s ease;
-      filter: drop-shadow(0 0 10px var(--accent-primary));
+      font-size: var(--bomb-size);
+      filter: drop-shadow(0 0 15px rgba(0,0,0,0.5)) drop-shadow(0 0 10px var(--accent-primary));
       z-index: 10;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
     }
 
     .bomb.shake {
@@ -457,7 +480,7 @@
       left: 50%;
       transform: translate(-50%, -50%);
       font-family: 'Orbitron', sans-serif;
-      font-size: 4rem;
+      font-size: var(--timer-size);
       font-weight: 900;
       color: var(--accent-primary);
       text-shadow: 0 0 20px var(--accent-primary);
@@ -691,7 +714,34 @@
       pointer-events: none;
     }
 
+    @media (min-width: 1400px) {
+      :root {
+        --player-size: 110px;
+        --avatar-size: 85px;
+        --emoji-size: 2.8rem;
+        --name-size: 1.1rem;
+        --bomb-size: 6rem;
+        --timer-size: 9rem;
+        --circle-size: min(80vh, 800px);
+      }
+    }
+
+    @media (max-width: 1399px) and (min-width: 901px) {
+      :root {
+        --circle-size: min(75vh, 550px);
+      }
+    }
+
     @media (max-width: 900px) {
+      :root {
+        --player-size: 70px;
+        --avatar-size: 50px;
+        --emoji-size: 1.5rem;
+        --name-size: 0.75rem;
+        --bomb-size: 2.5rem;
+        --timer-size: 3.5rem;
+        --circle-size: min(80vw, 400px);
+      }
       body { flex-direction: column; }
       .sidebar {
         width: 100%;
@@ -703,11 +753,6 @@
       }
       .rankings { max-height: 100px; }
       .game-area { flex: 1; min-height: 60vh; }
-      .circle-container { width: 300px; height: 300px; }
-      .player-avatar { width: 45px; height: 45px; font-size: 1.3rem; }
-      .player-name { font-size: 0.7rem; max-width: 60px; }
-      .timer-display { font-size: 2.5rem; }
-      .bomb { font-size: 2rem; }
     }
   </style>
 </head>
@@ -883,6 +928,11 @@
       }
 
       bindEvents() {
+        window.addEventListener('resize', () => {
+          if (this.isRunning || this.gameContainer.style.display !== 'none') {
+            this.setupPlayers();
+          }
+        });
         this.startBtn.addEventListener('click', () => this.start());
         this.resetBtn.addEventListener('click', () => this.reset());
         this.closeOverlayBtn.addEventListener('click', () => this.hideOverlay());
@@ -982,7 +1032,9 @@
         const rect = container.getBoundingClientRect();
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        const radius = Math.min(centerX, centerY) - 50;
+        // Use a responsive margin for the radius
+        const radiusMargin = Math.max(rect.width, rect.height) * 0.15;
+        const radius = Math.min(centerX, centerY) - radiusMargin;
 
         this.participants.forEach((name, i) => {
           const angle = (i / this.participants.length) * 2 * Math.PI - Math.PI / 2;
@@ -992,38 +1044,90 @@
           const player = document.createElement('div');
           player.className = 'player';
           player.id = `player-${i}`;
-          player.style.left = `${x - 40}px`;
-          player.style.top = `${y - 45}px`;
+          player.style.left = `${x}px`;
+          player.style.top = `${y}px`;
+          
+          // Store direction towards center for bomb positioning
+          const dirX = -Math.cos(angle);
+          const dirY = -Math.sin(angle);
+          player.dataset.dirX = dirX;
+          player.dataset.dirY = dirY;
 
           const isEliminated = this.eliminatedPlayers.includes(name);
           if (isEliminated) player.classList.add('eliminated');
 
           player.innerHTML = `
-            <div class="player-avatar" style="background: ${COLORS[i % COLORS.length]}">${EMOJIS[i % EMOJIS.length]}</div>
+            <div class="player-avatar" style="background: ${COLORS[i % COLORS.length]}">${isEliminated ? '💀' : EMOJIS[i % EMOJIS.length]}</div>
             <div class="player-name">${name}</div>
           `;
 
           container.appendChild(player);
         });
 
-        this.updateBombPosition();
+        this.updateBombPosition(true);
       }
 
-      updateBombPosition() {
+      updateBombPosition(isInitial = false) {
         const holderIndex = this.participants.indexOf(this.alivePlayers[this.currentHolder]);
         const player = document.getElementById(`player-${holderIndex}`);
         if (!player) return;
-
-        // Remove has-bomb from all
-        document.querySelectorAll('.player').forEach(p => p.classList.remove('has-bomb'));
-        player.classList.add('has-bomb');
 
         const avatar = player.querySelector('.player-avatar');
         const avatarRect = avatar.getBoundingClientRect();
         const gameRect = this.gameContainer.getBoundingClientRect();
 
-        this.bombElement.style.left = `${avatarRect.left - gameRect.left + avatarRect.width / 2}px`;
-        this.bombElement.style.top = `${avatarRect.top - gameRect.top + avatarRect.height / 2}px`;
+        // Calculate offset to place bomb "in front" (towards center)
+        const dirX = parseFloat(player.dataset.dirX || 0);
+        const dirY = parseFloat(player.dataset.dirY || 0);
+        const offset = avatarRect.width / 2 + 5; // Distance from center of player
+
+        const targetX = (avatarRect.left - gameRect.left + avatarRect.width / 2) + (dirX * offset);
+        const targetY = (avatarRect.top - gameRect.top + avatarRect.height / 2) + (dirY * offset);
+
+        if (isInitial) {
+          this.bombElement.style.left = `${targetX}px`;
+          this.bombElement.style.top = `${targetY}px`;
+          document.querySelectorAll('.player').forEach(p => p.classList.remove('has-bomb'));
+          player.classList.add('has-bomb');
+          return;
+        }
+
+        // Animated throw
+        const startX = parseFloat(this.bombElement.style.left) || targetX;
+        const startY = parseFloat(this.bombElement.style.top) || targetY;
+
+        // Remove has-bomb from all during flight
+        document.querySelectorAll('.player').forEach(p => p.classList.remove('has-bomb'));
+
+        const duration = this.bombSpeed === 'fast' ? 250 : this.bombSpeed === 'slow' ? 500 : 350;
+
+        // Use Web Animations API for the "arc" effect (scaling)
+        const animation = this.bombElement.animate([
+          { left: `${startX}px`, top: `${startY}px`, transform: 'translate(-50%, -50%) scale(1) rotate(0deg)' },
+          { 
+            left: `${(startX + targetX) / 2}px`, 
+            top: `${(startY + targetY) / 2 - 20}px`, 
+            transform: 'translate(-50%, -50%) scale(1.5) rotate(180deg)' 
+          },
+          { left: `${targetX}px`, top: `${targetY}px`, transform: 'translate(-50%, -50%) scale(1) rotate(360deg)' }
+        ], {
+          duration: duration,
+          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        });
+
+        animation.onfinish = () => {
+          this.bombElement.style.left = `${targetX}px`;
+          this.bombElement.style.top = `${targetY}px`;
+          player.classList.add('has-bomb');
+          
+          // Recoil effect (away from center)
+          player.style.setProperty('--recoil-x', `${-dirX * 15}px`);
+          player.style.setProperty('--recoil-y', `${-dirY * 15}px`);
+          player.classList.add('recoil');
+          setTimeout(() => player.classList.remove('recoil'), 300);
+          
+          // Play a subtle sound effect could be added here
+        };
       }
 
       startRound() {
@@ -1102,7 +1206,7 @@
           // Continue with next round
           this.currentHolder = Math.floor(Math.random() * this.alivePlayers.length);
           setTimeout(() => {
-            this.updateBombPosition();
+            this.updateBombPosition(true);
             this.startRound();
           }, 1000);
         }
