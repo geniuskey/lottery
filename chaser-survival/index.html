@@ -77,20 +77,28 @@
       flex-direction: column;
       padding: 20px;
       gap: 16px;
-      overflow-y: auto;
+      height: 100vh;
     }
 
-    .sidebar::-webkit-scrollbar {
-      width: 6px;
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
     }
 
-    .sidebar::-webkit-scrollbar-track {
-      background: rgba(255, 42, 42, 0.1);
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
     }
 
-    .sidebar::-webkit-scrollbar-thumb {
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 42, 42, 0.3);
+      border-radius: 10px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
       background: var(--rope-red);
-      border-radius: 3px;
     }
 
     .header {
@@ -98,6 +106,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 10px 0;
+      flex-shrink: 0;
     }
 
     .logo h1 {
@@ -139,6 +148,10 @@
       gap: 6px;
     }
 
+    .input-group {
+      flex-shrink: 0;
+    }
+
     .input-group textarea {
       width: 100%;
       height: 80px;
@@ -160,6 +173,7 @@
       background: var(--card-bg);
       border-radius: 12px;
       padding: 16px;
+      flex-shrink: 0;
     }
 
     .setting-item {
@@ -206,6 +220,7 @@
     .btn-group {
       display: flex;
       gap: 10px;
+      flex-shrink: 0;
     }
 
     .btn {
@@ -253,7 +268,7 @@
       border-radius: 12px;
       padding: 16px;
       overflow-y: auto;
-      min-height: 200px;
+      min-height: 0;
     }
 
     .ranking-list {
@@ -323,6 +338,7 @@
       gap: 12px;
       padding-top: 16px;
       border-top: 1px solid rgba(255, 42, 42, 0.2);
+      flex-shrink: 0;
     }
 
     .icon-btn {

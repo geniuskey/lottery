@@ -128,10 +128,12 @@ class ZombieSurvival {
         this.infectedOrder = []; this.notifications = [];
         this.isRunning = false; this.gameStarted = false;
         this.startTime = 0; this.endTime = 0;
+        this.gameTimeSeconds = 0;
+        this.lastTimestamp = 0;
         this.zombieCount = 3; this.survivorCount = 1;
         this.entityRadius = 10; this.maxZombies = 10;
-        this.humanWalkSpeed = 0.6; this.humanRunSpeed = 2.5;
-        this.zombieWalkSpeed = 0.5; this.zombieChaseSpeed = 2.0;
+        this.humanWalkSpeed = 0.6; this.humanRunSpeed = 3.75;
+        this.zombieWalkSpeed = 0.5; this.zombieChaseSpeed = 3.0;
         this.humanFovAngle = 140; this.zombieFovAngle = 80;
         this.zombieDetectRange = 250;
         this.humanDetectRange = this.zombieDetectRange * 0.9; // 인간은 좀비의 90%
@@ -189,6 +191,8 @@ class ZombieSurvival {
         this.isRunning = false; this.gameStarted = false;
         this.entities = []; this.deadZombies = []; this.infectedOrder = []; this.notifications = [];
         this.startTime = 0; this.endTime = 0;
+        this.gameTimeSeconds = 0;
+        this.lastTimestamp = 0;
         this.shrinkPhase = 0; this.shrinkTimer = 0; this.isShrinking = false;
         this.setupCanvas(); this.setupEntities(false);
         this.draw(); this.updateUI(); this.updateRanking();
@@ -224,7 +228,7 @@ class ZombieSurvival {
                     targetAngle: Math.random() * Math.PI * 2, wanderTimer: Math.random() * 120,
                     hasTarget: false, isInitialZombie: true, health: 100,
                     isTransforming: false, transformTimer: 0, eatingTimer: 0, zombieKills: 0,
-                    zombifiedAt: Date.now(), helpTimer: 0, spottedTimer: 0,
+                    zombifiedAt: 0, helpTimer: 0, spottedTimer: 0,
                     zombieImageIndex: i % 3 // 순서대로 좀비 이미지 (0, 1, 2, 0, 1, 2, ...)
                 });
             }
@@ -254,10 +258,10 @@ class ZombieSurvival {
     
     addNotification(message) { this.notifications.push({ text: message, timer: 180, opacity: 1 }); }
     
-    updateNotifications() {
+    updateNotifications(dtScale) {
         for (let i = this.notifications.length - 1; i >= 0; i--) {
-            this.notifications[i].timer--;
-            if (this.notifications[i].timer < 30) this.notifications[i].opacity = this.notifications[i].timer / 30;
+            this.notifications[i].timer -= dtScale;
+            if (this.notifications[i].timer < 30) this.notifications[i].opacity = Math.max(0, this.notifications[i].timer / 30);
             if (this.notifications[i].timer <= 0) this.notifications.splice(i, 1);
         }
         while (this.notifications.length > 5) this.notifications.shift();
@@ -268,7 +272,10 @@ class ZombieSurvival {
         this.reset(); this.setupEntities(true);
         this.gameStarted = true; this.isRunning = true;
         this.startTime = Date.now(); this.endTime = 0;
-        this.setControlsDisabled(true); this.draw(); this.gameLoop();
+        this.gameTimeSeconds = 0;
+        this.lastTimestamp = performance.now();
+        this.setControlsDisabled(true); this.draw();
+        requestAnimationFrame((ts) => this.gameLoop(ts));
     }
     
     stop() { this.isRunning = false; this.setControlsDisabled(false); }
@@ -278,12 +285,19 @@ class ZombieSurvival {
         document.getElementById('survivorCount').disabled = disabled;
     }
     
-    gameLoop() {
+    gameLoop(timestamp) {
         if (!this.isRunning) return;
-        this.update(); this.draw(); this.updateUI();
+        
+        const dt = (timestamp - this.lastTimestamp) / 1000;
+        this.lastTimestamp = timestamp;
+        
+        // Limit dt to prevent massive jumps when tab is inactive
+        const cappedDt = Math.min(dt, 0.1);
+        
+        this.update(cappedDt); this.draw(); this.updateUI();
         const humans = this.entities.filter(e => !e.isZombie && !e.isTransforming);
         if (humans.length <= this.survivorCount && this.isRunning) { this.endGame(humans); return; }
-        requestAnimationFrame(() => this.gameLoop());
+        requestAnimationFrame((ts) => this.gameLoop(ts));
     }
     
     getWallAvoidanceAngle(entity) {
@@ -308,9 +322,12 @@ class ZombieSurvival {
         return escapeAngle + (Math.random() - 0.5) * 0.3;
     }
     
-    update() {
-        this.updateShrinking(); this.updateTransformations();
-        this.updateNotifications(); this.updateDeadZombies();
+    update(dt) {
+        const dtScale = dt * 60; // Scale based on 60fps
+        this.gameTimeSeconds += dt;
+        
+        this.updateShrinking(dt); this.updateTransformations(dtScale);
+        this.updateNotifications(dtScale); this.updateDeadZombies(dtScale);
         
         const humans = this.entities.filter(e => !e.isZombie && !e.isTransforming);
         const zombies = this.entities.filter(e => e.isZombie);
@@ -318,15 +335,17 @@ class ZombieSurvival {
         
         for (const entity of this.entities) {
             if (entity.isTransforming) continue;
-            if (entity.helpTimer > 0) entity.helpTimer--;
-            if (entity.spottedTimer > 0) entity.spottedTimer--;
-            if (entity.eatingTimer > 0) { entity.eatingTimer--; entity.vx = 0; entity.vy = 0; continue; }
+            if (entity.helpTimer > 0) entity.helpTimer -= dtScale;
+            if (entity.spottedTimer > 0) entity.spottedTimer -= dtScale;
+            if (entity.eatingTimer > 0) { entity.eatingTimer -= dtScale; entity.vx = 0; entity.vy = 0; continue; }
             
-            if (entity.isZombie) this.updateZombie(entity, humans);
-            else this.updateHuman(entity, zombies);
+            if (entity.isZombie) this.updateZombie(entity, humans, dtScale);
+            else this.updateHuman(entity, zombies, dtScale);
             
-            entity.x += entity.vx; entity.y += entity.vy;
-            entity.vx *= 0.95; entity.vy *= 0.95;
+            entity.x += entity.vx * dtScale; entity.y += entity.vy * dtScale;
+            // Use Math.pow for consistent friction regardless of dt
+            const friction = Math.pow(0.95, dtScale);
+            entity.vx *= friction; entity.vy *= friction;
             
             const dx = entity.x - this.centerX, dy = entity.y - this.centerY;
             const distFromCenter = Math.sqrt(dx * dx + dy * dy);
@@ -341,7 +360,7 @@ class ZombieSurvival {
                 entity.vx -= 2 * dot * normalX * 0.5; entity.vy -= 2 * dot * normalY * 0.5;
             }
         }
-        this.checkInfections(humans, zombies); this.handleCollisions();
+        this.checkInfections(humans, zombies); this.handleCollisions(dtScale);
     }
     
     checkZombieLimit() {
@@ -359,21 +378,21 @@ class ZombieSurvival {
         }
     }
     
-    updateDeadZombies() {
+    updateDeadZombies(dtScale) {
         for (let i = this.deadZombies.length - 1; i >= 0; i--) {
-            this.deadZombies[i].fadeTimer--;
+            this.deadZombies[i].fadeTimer -= dtScale;
             if (this.deadZombies[i].fadeTimer <= 0) this.deadZombies.splice(i, 1);
         }
     }
     
-    updateTransformations() {
+    updateTransformations(dtScale) {
         for (const entity of this.entities) {
             if (entity.isTransforming) {
-                entity.transformTimer--;
+                entity.transformTimer -= dtScale;
                 if (entity.transformTimer <= 0) {
                     entity.isTransforming = false; entity.isZombie = true;
                     entity.color = '#666'; entity.hasTarget = false;
-                    entity.wanderTimer = 60; entity.zombifiedAt = Date.now();
+                    entity.wanderTimer = 60; entity.zombifiedAt = this.gameTimeSeconds;
                 }
             }
         }
@@ -402,12 +421,13 @@ class ZombieSurvival {
             // 감염자가 없는 경우 (영역 이탈 등) 랜덤 이미지
             entity.zombieImageIndex = Math.floor(Math.random() * 3);
         }
-        this.infectedOrder.push({ name: entity.name, time: Date.now() - this.startTime, cause: cause });
+        this.infectedOrder.push({ name: entity.name, time: this.gameTimeSeconds * 1000, cause: cause });
         this.updateRanking();
     }
     
-    updateShrinking() {
-        this.shrinkTimer++;
+    updateShrinking(dt) {
+        const dtScale = dt * 60;
+        this.shrinkTimer += dtScale;
         const warning = document.getElementById('shrinkWarning');
         if (this.shrinkTimer > this.shrinkInterval - this.shrinkWarningTime && this.shrinkTimer < this.shrinkInterval) {
             warning.style.display = 'block';
@@ -430,10 +450,10 @@ class ZombieSurvival {
         }
         
         if (this.isShrinking) {
-            const speed = 0.016;
-            this.centerX += (this.targetCenterX - this.centerX) * speed;
-            this.centerY += (this.targetCenterY - this.centerY) * speed;
-            this.currentRadius += (this.targetRadius - this.currentRadius) * speed;
+            const lerpFactor = 1 - Math.pow(0.984, dtScale); // Approximately 0.016 per frame at 60fps
+            this.centerX += (this.targetCenterX - this.centerX) * lerpFactor;
+            this.centerY += (this.targetCenterY - this.centerY) * lerpFactor;
+            this.currentRadius += (this.targetRadius - this.currentRadius) * lerpFactor;
             if (Math.abs(this.currentRadius - this.targetRadius) < 1) {
                 this.currentRadius = this.targetRadius;
                 this.centerX = this.targetCenterX; this.centerY = this.targetCenterY;
@@ -451,7 +471,7 @@ class ZombieSurvival {
         return Math.abs(angleDiff) < (fovAngle / 2) * (Math.PI / 180);
     }
     
-    updateZombie(zombie, humans) {
+    updateZombie(zombie, humans, dtScale) {
         if (humans.length === 0) return;
         const wallAngle = this.getWallAvoidanceAngle(zombie);
         if (wallAngle !== null && !zombie.hasTarget) zombie.targetAngle = wallAngle;
@@ -476,11 +496,11 @@ class ZombieSurvival {
             let angleDiff = targetAngle - zombie.angle;
             while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
             while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-            zombie.angle += angleDiff * 0.12;
+            zombie.angle += angleDiff * (1 - Math.pow(0.88, dtScale)); // Approx 0.12 per frame at 60fps
             zombie.vx = Math.cos(zombie.angle) * this.zombieChaseSpeed;
             zombie.vy = Math.sin(zombie.angle) * this.zombieChaseSpeed;
         } else {
-            zombie.hasTarget = false; zombie.wanderTimer--;
+            zombie.hasTarget = false; zombie.wanderTimer -= dtScale;
             zombie.spottedTimer = 0;
             if (zombie.wanderTimer <= 0) {
                 zombie.targetAngle = wallAngle !== null ? wallAngle : Math.random() * Math.PI * 2;
@@ -489,14 +509,14 @@ class ZombieSurvival {
             let angleDiff = zombie.targetAngle - zombie.angle;
             while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
             while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-            zombie.angle += angleDiff * 0.03;
+            zombie.angle += angleDiff * (1 - Math.pow(0.97, dtScale)); // Approx 0.03 per frame at 60fps
             zombie.vx = Math.cos(zombie.angle) * this.zombieWalkSpeed;
             zombie.vy = Math.sin(zombie.angle) * this.zombieWalkSpeed;
         }
     }
     
-    updateHuman(human, zombies) {
-        if (human.runTimer > 0) human.runTimer--;
+    updateHuman(human, zombies, dtScale) {
+        if (human.runTimer > 0) human.runTimer -= dtScale;
         const wallAngle = this.getWallAvoidanceAngle(human);
         if (wallAngle !== null && !human.isRunning) human.targetAngle = wallAngle;
         
@@ -523,7 +543,7 @@ class ZombieSurvival {
             human.vx = Math.cos(human.angle) * this.humanRunSpeed;
             human.vy = Math.sin(human.angle) * this.humanRunSpeed;
         } else {
-            human.isRunning = false; human.wanderTimer--;
+            human.isRunning = false; human.wanderTimer -= dtScale;
             if (human.wanderTimer <= 0) {
                 human.targetAngle = wallAngle !== null ? wallAngle : Math.random() * Math.PI * 2;
                 human.wanderTimer = 60 + Math.random() * 120;
@@ -531,7 +551,7 @@ class ZombieSurvival {
             let angleDiff = human.targetAngle - human.angle;
             while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
             while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-            human.angle += angleDiff * 0.04;
+            human.angle += angleDiff * (1 - Math.pow(0.96, dtScale)); // Approx 0.04 per frame at 60fps
             human.vx = Math.cos(human.angle) * this.humanWalkSpeed;
             human.vy = Math.sin(human.angle) * this.humanWalkSpeed;
         }
@@ -549,7 +569,7 @@ class ZombieSurvival {
         }
     }
     
-    handleCollisions() {
+    handleCollisions(dtScale) {
         for (let i = 0; i < this.entities.length; i++) {
             for (let j = i + 1; j < this.entities.length; j++) {
                 const a = this.entities[i], b = this.entities[j];
@@ -560,8 +580,9 @@ class ZombieSurvival {
                 if (dist < minDist && dist > 0) {
                     const overlap = (minDist - dist) / 2;
                     const nx = dx / dist, ny = dy / dist;
-                    a.x -= nx * overlap * 0.5; a.y -= ny * overlap * 0.5;
-                    b.x += nx * overlap * 0.5; b.y += ny * overlap * 0.5;
+                    const correction = overlap * 0.5 * Math.min(1, dtScale);
+                    a.x -= nx * correction; a.y -= ny * correction;
+                    b.x += nx * correction; b.y += ny * correction;
                 }
             }
         }
@@ -743,12 +764,12 @@ class ZombieSurvival {
     }
     
     endGame(winners) {
-        this.isRunning = false; this.endTime = Date.now();
+        this.isRunning = false;
         this.setControlsDisabled(false);
         document.getElementById('shrinkWarning').style.display = 'none';
         this.updateUI();
         if (winners && winners.length > 0) {
-            const survivalTime = ((this.endTime - this.startTime) / 1000).toFixed(1);
+            const survivalTime = this.gameTimeSeconds.toFixed(1);
             const winnerNames = winners.map(w => w.name).join(', ');
             document.getElementById('winnerName').textContent = winnerNames;
             document.getElementById('winnerStats').textContent = t('survivalTime', { time: survivalTime });
@@ -801,7 +822,7 @@ class ZombieSurvival {
         document.getElementById('humanCount').textContent = humans.length;
         document.getElementById('zombieCountDisplay').textContent = zombies.length;
         if (this.isRunning) {
-            const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+            const elapsed = Math.floor(this.gameTimeSeconds);
             const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
             const seconds = (elapsed % 60).toString().padStart(2, '0');
             document.getElementById('timerDisplay').textContent = minutes + ':' + seconds;
