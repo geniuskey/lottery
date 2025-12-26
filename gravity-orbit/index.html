@@ -308,19 +308,53 @@
             font-size: 12px;
         }
 
-        .rank-1 {
-            background: var(--accent-gold);
-            color: #000;
-        }
-
-        .rank-2 {
-            background: #e5e7eb;
-            color: #000;
-        }
-
-        .rank-3 {
-            background: #d97706;
+        .ranking-item .rank.rank-1 {
+            background: linear-gradient(135deg, #fbbf24, #b45309);
             color: #fff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+        }
+
+        .ranking-item .rank.rank-2 {
+            background: linear-gradient(135deg, #e2e8f0, #475569);
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 12px rgba(226, 232, 240, 0.2);
+        }
+
+        .ranking-item .rank.rank-3 {
+            background: linear-gradient(135deg, #d97706, #78350f);
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 10px rgba(217, 119, 6, 0.2);
+        }
+
+        /* Toast Popup */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            z-index: 100000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s;
+            opacity: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
 
         .ranking-item .name {
@@ -436,29 +470,79 @@
             border: 1px solid var(--glass-border);
             color: var(--accent-cyan);
             pointer-events: none;
+            z-index: 100;
         }
 
-        /* Result Overlay */
-        .result-overlay {
+        /* Kill Feed */
+        .kill-feed {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+            z-index: 1000;
+            align-items: flex-end;
+        }
+
+        .kill-item {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            border-left: 3px solid var(--accent-pink);
+            color: rgba(255, 255, 255, 0.9);
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            animation: killSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
+                killFadeOut 0.5s ease-in 4s forwards;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--accent-pink);
+        }
+
+        @keyframes killSlideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes killFadeOut {
+            to {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+        }
+
+        /* Cinematic Victory Overlay (Transplanted from Neon Race style) */
+        .winner-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.92);
             backdrop-filter: blur(15px);
-            display: flex;
+            display: none;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            padding: 40px 20px;
             z-index: 10000;
-            opacity: 0;
-            pointer-events: none;
-            transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
         }
 
-        .result-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
+        .winner-overlay.active {
+            display: flex;
+            animation: fadeIn 0.8s ease forwards;
         }
 
         @keyframes fadeIn {
@@ -469,6 +553,204 @@
             to {
                 opacity: 1;
             }
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 20px;
+            margin-top: 40px;
+        }
+
+        .winner-label {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            margin-bottom: 15px;
+        }
+
+        .winner-title {
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 5rem;
+            color: var(--accent-purple);
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px var(--accent-purple);
+            animation: championGlow 2s infinite alternate, championPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes championGlow {
+            0% {
+                text-shadow: 0 0 20px var(--accent-purple), 0 0 40px var(--accent-cyan);
+                color: #fff;
+            }
+
+            100% {
+                text-shadow: 0 0 50px var(--accent-cyan), 0 0 80px var(--accent-purple);
+                color: var(--accent-purple);
+            }
+        }
+
+        @keyframes championPop {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .winner-name-display {
+            font-size: 3.5rem;
+            color: #fff;
+            margin-bottom: 40px;
+            animation: namePulse 1.5s infinite ease-in-out;
+            font-family: 'Black Han Sans', sans-serif;
+        }
+
+        @keyframes namePulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                text-shadow: 0 0 15px #fff;
+            }
+
+            50% {
+                transform: scale(1.05);
+                text-shadow: 0 0 30px var(--accent-cyan);
+                color: var(--accent-cyan);
+            }
+        }
+
+        .final-rankings {
+            width: 100%;
+            max-width: 520px;
+            max-height: 40vh;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 40px;
+            scrollbar-width: thin;
+        }
+
+        .final-rankings::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .final-rankings::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .final-ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            animation: resultSlideIn 0.5s ease forwards;
+            opacity: 0;
+            border: 1px solid transparent;
+        }
+
+        @keyframes resultSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .final-ranking-item.rank-1 {
+            background: linear-gradient(90deg, rgba(234, 179, 8, 0.15), transparent);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+        }
+
+        .final-ranking-item.rank-2 {
+            background: linear-gradient(90deg, rgba(148, 163, 184, 0.1), transparent);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .final-ranking-item.rank-3 {
+            background: linear-gradient(90deg, rgba(180, 83, 9, 0.1), transparent);
+            border: 1px solid rgba(180, 83, 9, 0.2);
+        }
+
+        .final-pos {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .rank-1 .final-pos {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            color: #000;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+        }
+
+        .rank-2 .final-pos {
+            background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+            color: #000;
+        }
+
+        .rank-3 .final-pos {
+            background: linear-gradient(135deg, #f59e0b, #b45309);
+            color: #fff;
+        }
+
+        .final-name {
+            flex: 1;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .final-score {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .rank-1 .final-score,
+        .rank-2 .final-score,
+        .rank-3 .final-score {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .result-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            width: 100%;
+            max-width: 520px;
+        }
+
+        .winner-btn {
+            flex: 1;
+            padding: 18px;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
         /* Global Game Timer */
@@ -675,9 +957,33 @@
         <main class="main-content" id="gameArea">
             <div id="gameTimer">0.00s</div>
             <div id="seedDisplay" class="seed-info" style="display: none;">HASH: N/A</div>
+            <div id="killFeed" class="kill-feed"></div>
             <canvas id="gameCanvas"></canvas>
             <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
         </main>
+    </div>
+
+    <canvas id="celebCanvas"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:11000; pointer-events:none;"></canvas>
+
+    <div class="winner-overlay" id="resultOverlay">
+        <div class="result-header">
+            <div class="winner-label">🏆 CHAMPION</div>
+            <div class="winner-title">GRAVITY SURVIVOR</div>
+            <div class="winner-name-display" id="winnerName">-</div>
+        </div>
+        <div class="final-rankings">
+            <div
+                style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; text-align: center;">
+                🏁 FINAL RANKINGS</div>
+            <div id="finalRankingList"></div>
+        </div>
+        <div class="result-buttons">
+            <button class="btn btn-secondary winner-btn" id="copyResultOverlayBtn"
+                style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">📋 결과 복사</button>
+            <button class="btn btn-primary winner-btn" id="restartBtn"
+                onclick="document.getElementById('resultOverlay').classList.remove('active')">확인</button>
+        </div>
     </div>
 
     <script>
@@ -689,6 +995,16 @@
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastText = toast.querySelector('.toast-text');
+            toastText.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
 
 
@@ -711,6 +1027,39 @@
                 ctx.save();
                 ctx.globalAlpha = Math.max(0, this.alpha);
                 ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class ExplosionParticle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 4 + 2;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.size = Math.random() * 3 + 1;
+                this.alpha = 1.0;
+                this.color = color;
+            }
+            update(dt) {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx *= 0.96;
+                this.vy *= 0.96;
+                this.alpha -= dt * 1.2;
+            }
+            draw(ctx) {
+                if (this.alpha <= 0) return;
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
@@ -788,6 +1137,9 @@
                 if (centerDist > 1200) { // Stable absolute boundary
                     this.isEliminated = true;
                     this.reason = "LOST";
+                    if (typeof game !== 'undefined') {
+                        game.addKillMessage(this.name, this.reason);
+                    }
                     return;
                 }
 
@@ -795,6 +1147,10 @@
                 if (dist < CONFIG.PLANET_RADIUS + CONFIG.PARTICLE_RADIUS) {
                     this.isEliminated = true;
                     this.reason = "CRASHED";
+                    if (typeof game !== 'undefined') {
+                        game.createExplosion(this.x, this.y, this.color);
+                        game.addKillMessage(this.name, this.reason);
+                    }
                     return;
                 }
 
@@ -887,15 +1243,20 @@
             constructor() {
                 this.canvas = document.getElementById('gameCanvas');
                 this.ctx = this.canvas.getContext('2d');
+                this.celebCanvas = document.getElementById('celebCanvas');
+                this.celebCtx = this.celebCanvas.getContext('2d');
                 this.particles = [];
                 this.planet = { x: 0, y: 0 };
                 this.isRunning = false;
+                this.isCelebrating = false;
                 this.lastTime = 0;
                 this.rng = null;
                 this.gameTime = 0;
                 this.winCondition = 'survival';
                 this.stars = [];
                 this.mouseParticles = [];
+                this.celebParticles = [];
+                this.explosionParticles = [];
                 this.mousePos = { x: -100, y: -100 };
                 this.zoom = 1.0;
                 this.targetZoom = 1.0;
@@ -941,6 +1302,11 @@
                 const rect = this.canvas.parentElement.getBoundingClientRect();
                 this.canvas.width = rect.width;
                 this.canvas.height = rect.height;
+
+                // Sync celebration canvas
+                this.celebCanvas.width = window.innerWidth;
+                this.celebCanvas.height = window.innerHeight;
+
                 this.planet.x = this.canvas.width / 2;
                 this.planet.y = this.canvas.height / 2;
                 this.initStars();
@@ -952,10 +1318,13 @@
                 const names = this.parseParticipants(input);
                 if (names.length === 0) return alert("참여자를 입력해주세요.");
 
+                // Reset for new game
                 this.isRunning = true;
+                this.particles = [];
                 this.gameTime = 0;
                 this.zoom = 1.0;
                 this.targetZoom = 1.0;
+                document.getElementById('rankingList').innerHTML = "";
                 this.lastTime = performance.now();
                 this.winCondition = document.getElementById('winCondition').value;
 
@@ -1007,7 +1376,7 @@
                 if (!this.lastTime) this.lastTime = timestamp;
                 const elapsed = timestamp - this.lastTime;
 
-                // Cap to 60 FPS (approx 16.67ms per frame)
+                // Cap to 60 FPS
                 if (elapsed >= 16.67) {
                     const dt = Math.min(elapsed / 1000, 0.1);
                     this.lastTime = timestamp;
@@ -1020,11 +1389,19 @@
                         const winnerCountNeeded = parseInt(document.getElementById('winnerCount').value) || 1;
 
                         if (this.gameTime >= 40 || (this.winCondition === 'survival' && alive.length <= winnerCountNeeded && this.particles.length > winnerCountNeeded)) {
-                            setTimeout(() => this.endGame(), 500);
+                            setTimeout(() => this.endGame(), 1000);
                         }
                     }
 
+                    if (this.isCelebrating) {
+                        this.updateCelebration();
+                    }
+
                     this.draw();
+
+                    if (this.isCelebrating) {
+                        this.drawCelebration();
+                    }
                 }
 
                 requestAnimationFrame((t) => this.loop(t));
@@ -1107,6 +1484,13 @@
                 this.ctx.translate(this.planet.x, this.planet.y);
                 this.ctx.scale(this.zoom, this.zoom);
                 this.ctx.translate(-this.planet.x, -this.planet.y);
+
+                // Update & Draw Explosion Particles (Inside scaled context)
+                this.explosionParticles = this.explosionParticles.filter(p => p.alpha > 0);
+                this.explosionParticles.forEach(p => {
+                    p.update(1 / 60);
+                    p.draw(this.ctx);
+                });
 
                 // Star Field (Stars don't zoom for parallax effect)
                 this.ctx.save();
@@ -1205,7 +1589,7 @@
                 }
 
                 const list = document.getElementById('rankingList');
-                list.innerHTML = sorted.slice(0, 20).map((p, i) => `
+                list.innerHTML = sorted.map((p, i) => `
                     <div class="ranking-item">
                         <div class="rank ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</div>
                         <div class="particle-color" style="background:${p.color}; box-shadow: 0 0 5px ${p.color}"></div>
@@ -1259,12 +1643,85 @@
                 const top = sorted.slice(0, count);
                 const winnerNames = top.map(w => w.name).join(', ');
 
+                // Update UI Elements
                 document.getElementById('winnerName').innerText = winnerNames;
+
+                // Generate Ranking List for UI
+                const rankList = document.getElementById('finalRankingList');
+                rankList.innerHTML = "";
+                sorted.forEach((p, i) => {
+                    const rankClass = i < 3 ? `rank-${i + 1}` : "";
+                    const status = p.isEliminated ? `${p.survivalTime.toFixed(2)}s` : "SURVIVED";
+                    const item = document.createElement('div');
+                    item.className = `final-ranking-item ${rankClass}`;
+                    item.style.animationDelay = `${i * 0.1}s`;
+                    item.innerHTML = `
+                        <div class="final-pos">${i + 1}</div>
+                        <div class="final-name">${p.name}</div>
+                        <div class="final-score">${status}</div>
+                    `;
+                    rankList.appendChild(item);
+                });
+
                 document.getElementById('resultOverlay').classList.add('active');
+                this.createConfetti();
+            }
+
+            createConfetti() {
+                const colors = ['#a855f7', '#38bdf8', '#fbbf24', '#f472b6', '#ffffff'];
+                for (let i = 0; i < 150; i++) {
+                    this.celebParticles.push({
+                        x: Math.random() * window.innerWidth,
+                        y: Math.random() * -window.innerHeight,
+                        vx: (Math.random() - 0.5) * 10,
+                        vy: Math.random() * 5 + 5,
+                        size: Math.random() * 10 + 5,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        rotation: Math.random() * Math.PI * 2,
+                        rVel: (Math.random() - 0.5) * 0.2
+                    });
+                }
+            }
+
+            updateCelebration() {
+                if (!this.isCelebrating) return;
+                this.celebParticles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.rotation += p.rVel;
+                    if (p.y > window.innerHeight) {
+                        p.y = -20;
+                        p.x = Math.random() * window.innerWidth;
+                    }
+                });
+            }
+
+            drawCelebration() {
+                this.celebCtx.clearRect(0, 0, this.celebCanvas.width, this.celebCanvas.height);
+                if (!this.isCelebrating) return;
+
+                this.celebParticles.forEach(p => {
+                    this.celebCtx.save();
+                    this.celebCtx.translate(p.x, p.y);
+                    this.celebCtx.rotate(p.rotation);
+                    this.celebCtx.fillStyle = p.color;
+                    this.celebCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    this.celebCtx.restore();
+                });
+            }
+
+            closeResult() {
+                this.isCelebrating = false;
+                this.celebParticles = [];
+                this.celebCtx.clearRect(0, 0, this.celebCanvas.width, this.celebCanvas.height);
+                document.getElementById('resultOverlay').classList.remove('active');
             }
 
             reset() {
                 this.isRunning = false;
+                this.isCelebrating = false;
+                this.celebParticles = [];
+                this.celebCtx.clearRect(0, 0, this.celebCanvas.width, this.celebCanvas.height);
                 this.particles = [];
                 this.gameTime = 0;
                 this.lastTime = 0;
@@ -1272,7 +1729,53 @@
                 document.getElementById('liveStatus').style.display = "none";
                 document.getElementById('seedDisplay').style.display = "none";
                 document.getElementById('rankingList').innerHTML = '<div style="text-align: center; color: #555; font-size: 13px; margin-top: 20px;">참여자를 입력하고 시작하세요</div>';
+                document.getElementById('resultOverlay').classList.remove('active');
+                document.getElementById('killFeed').innerHTML = ""; // Clear feed on reset
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            createExplosion(x, y, color) {
+                for (let i = 0; i < 20; i++) {
+                    this.explosionParticles.push(new ExplosionParticle(x, y, color));
+                }
+            }
+
+            addKillMessage(name, reason) {
+                const feed = document.getElementById('killFeed');
+                const item = document.createElement('div');
+                item.className = 'kill-item';
+
+                let message = "";
+                if (reason === "CRASHED") {
+                    const msgs = [
+                        "님이 행성에 충돌하여 파괴되었습니다. 💥",
+                        "님이 중력을 견디지 못하고 추락했습니다. 🔥",
+                        "님이 행성 표면에 소멸되었습니다. ☄️"
+                    ];
+                    message = msgs[Math.floor(Math.random() * msgs.length)];
+                } else {
+                    const msgs = [
+                        "님이 궤도를 이탈하여 실종되었습니다. 📡",
+                        "님이 먼 우주로 튕겨나가 사라졌습니다. ✨",
+                        "님이 심우주로 사라져 행방불명되었습니다. 🌌"
+                    ];
+                    message = msgs[Math.floor(Math.random() * msgs.length)];
+                }
+
+                item.innerHTML = `<span style="font-weight: 800; color: #fff; margin-right: 4px;">${name}</span>${message}`;
+                feed.insertBefore(item, feed.firstChild);
+
+                // Auto remove from DOM after animation
+                setTimeout(() => {
+                    if (item.parentElement === feed) {
+                        feed.removeChild(item);
+                    }
+                }, 4500);
+
+                // Limit count
+                while (feed.children.length > 5) {
+                    feed.removeChild(feed.lastChild);
+                }
             }
         }
 
@@ -1282,6 +1785,12 @@
         const game = new Game();
         document.getElementById('startBtn').onclick = () => game.start();
         document.getElementById('resetBtn').onclick = () => game.reset();
+        document.getElementById('restartBtn').onclick = () => game.closeResult();
+
+        document.getElementById('copyResultOverlayBtn').onclick = () => {
+            const btn = document.getElementById('copyResultBtn');
+            btn.click();
+        };
 
         // LocalStorage logic
         const STORAGE_KEY = 'gravity_orbit_settings';
@@ -1334,7 +1843,7 @@
                 resultText += `${i + 1}위. ${p.name} (${status})\n`;
             });
 
-            navigator.clipboard.writeText(resultText).then(() => alert("전체 결과가 복사되었습니다!"));
+            navigator.clipboard.writeText(resultText).then(() => showToast("전체 결과가 복사되었습니다! ✨"));
         };
 
         // Help Modal (Simple alert for brevity, or full modal if needed)
@@ -1342,14 +1851,9 @@
             alert("🪐 중력 궤도 생존 추첨 가이드\n\n1. 참여자를 입력합니다 (쉼표/줄바꿈 구분).\n2. 당첨 규칙을 선택합니다.\n   - 서바이벌: 태양에 충돌하거나 튕겨나가지 않고 생존\n   - 안정성: 궤도가 얼마나 일정한 원형인가\n   - 타겟: 특정 궤도 범위(하늘색)에 오래 머물기\n3. 시작 버튼을 누르면 Seed 기반 물리 시뮬레이션이 진행됩니다.");
         };
     </script>
-    <div class="result-overlay" id="resultOverlay">
-        <div style="text-align: center;">
-            <div class="winner-label" style="font-size: 1.2rem; opacity: 0.8;">WINNER</div>
-            <div class="winner-name" id="winnerName">-</div>
-            <button class="btn btn-secondary"
-                onclick="document.getElementById('resultOverlay').classList.remove('active')"
-                style="margin: 30px auto 0; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">확인</button>
-        </div>
+    <div id="toast">
+        <span class="toast-icon">✅</span>
+        <span class="toast-text">결과가 복사되었습니다!</span>
     </div>
 </body>
 
