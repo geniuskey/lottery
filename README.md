@@ -17,8 +17,10 @@
 
 | 게임 | 설명 | 카테고리 |
 |------|------|----------|
+| 🌌 [네온 레이스](./neon-race/) | 사이버펑크 네온 레이싱 | 레이싱 |
 | 🏅 [구슬 올림픽](./marble-olympics/) | 물리 엔진 기반 구슬 레이싱 | 레이싱 |
 | 🧟 [좀비 아레나](./zombie-arena/) | 좀비 배틀로얄 서바이벌 | 서바이벌 |
+| 💃 [교실에서 춤을!](./school-dance/) | 선생님 몰래 춤추는 서바이벌 | 서바이벌 |
 | ✊ [단체 가위바위보](./group-rps/) | 교실 테마의 가위바위보 토너먼트 | 토너먼트 |
 | 🎯 [빙고](./bingo/) | 실시간 랭킹 빙고 게임 | 보드게임 |
 | 💣 [폭탄 돌리기](./bomb/) | 긴장감 넘치는 폭탄 돌리기 | 서바이벌 |
@@ -27,6 +29,7 @@
 | 🥏 [원판 밀치기](./disk-shove/) | 원형 아레나 밀치기 배틀 | 서바이벌 |
 | 🥊 [펀치 서바이벌](./punch-survival/) | 링 위의 복싱 난타전 | 액션 |
 | 🪑 [의자 앉기](./chair/) | 뮤지컬 체어 의자 뺏기 | 서바이벌 |
+| 🪐 [중력 궤도 생존](./gravity-orbit/) | 행성 중력 궤도 서바이벌 | 서바이벌 |
 | 👹 [술래로부터 살아남기](./chaser-survival/) | 술래를 피해 도망치기 | 서바이벌 |
 | 🎳 [볼링 서바이벌](./bowling/) | 핀이 되어 볼링공 피하기 | 서바이벌 |
 | 🪜 [사다리 추첨](./ladder/) | 클래식 사다리 타기 | 추첨 |
@@ -64,8 +67,10 @@ lottery/
 ├── index.html              # 게임 포털 메인 페이지
 ├── README.md
 ├── LICENSE
+├── neon-race/
 ├── marble-olympics/
 ├── zombie-arena/
+├── school-dance/
 ├── group-rps/
 ├── bingo/
 ├── bomb/
@@ -74,6 +79,7 @@ lottery/
 ├── disk-shove/
 ├── punch-survival/
 ├── chair/
+├── gravity-orbit/
 ├── chaser-survival/
 ├── bowling/
 └── ladder/

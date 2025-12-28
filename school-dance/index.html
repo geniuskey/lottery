@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<!--
+@game-meta
+{
+  "id": "school-dance",
+  "title": "교실에서 춤을!",
+  "emoji": "💃",
+  "category": "서바이벌",
+  "description": "선생님이 수학 문제를 풀 때 몰래 춤을 추세요! 정답을 쓰고 뒤돌아볼 때 멈추지 못하면 탈락!",
+  "features": ["🏫 교실 테마", "🕺 댄스 애니메이션", "🔢 수학 문제 모드"],
+  "color": "mugunghwa",
+  "badge": "NEW",
+  "version": "1.7.0",
+  "updated": "2025-12-28",
+  "author": {
+    "name": "Euiyun Edwin Kim",
+    "email": "geniuskey@gmail.com",
+    "github": "geniuskey"
+  },
+  "urls": {
+    "service": "https://geniuskey.github.io/lottery/school-dance/",
+    "repository": "https://github.com/geniuskey/lottery"
+  },
+  "license": "MIT",
+  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+}
+@end-game-meta
+-->
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>💃 교실에서 춤을!</title>
+
+  <!-- SEO 기본 -->
+  <meta name="description" content="선생님이 수학 문제를 풀 때 몰래 춤을 추세요! 정답을 쓰고 뒤돌아볼 때 멈추지 못하면 탈락하는 서바이벌 추첨 게임">
+  <meta name="author" content="Euiyun Edwin Kim">
+  <meta name="keywords" content="교실에서 춤을!, school-dance, 추첨, 게임, lottery, 서바이벌, 수학 시간, 댄스 배틀">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="추첨 게임 포탈">
+  <meta property="og:title" content="💃 교실에서 춤을!">
+  <meta property="og:description" content="선생님이 수학 문제를 풀 때 몰래 춤을 추세요! 정답을 쓰고 뒤돌아볼 때 멈추지 못하면 탈락!">
+  <meta property="og:url" content="https://geniuskey.github.io/lottery/school-dance/">
+  <meta property="og:locale" content="ko_KR">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="💃 교실에서 춤을!">
+  <meta name="twitter:description" content="선생님이 수학 문제를 풀 때 몰래 춤을 추세요! 정답을 쓰고 뒤돌아볼 때 멈추지 못하면 탈락!">
+
+  <!-- 추가 SEO -->
+  <link rel="canonical" href="https://geniuskey.github.io/lottery/school-dance/">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#1a1a2e">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      height: 100vh;
+      display: flex;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    /* Sidebar Standard Styles */
+    .sidebar {
+      width: 300px;
+      min-width: 280px;
+      max-width: 300px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar h2 {
+      color: #fff;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .help-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .help-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    .sidebar label {
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar textarea {
+      width: 100%;
+      height: 80px;
+      padding: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      resize: none;
+      font-size: 0.95rem;
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .sidebar textarea:focus {
+      border-color: #ff4b2b;
+      outline: none;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .settings-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slider-container input[type="range"] {
+      flex: 1;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .slider-container input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(255, 75, 43, 0.4);
+    }
+
+    .slider-value {
+      min-width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: #ff4b2b;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%);
+      color: #fff;
+    }
+
+    .btn-start:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(255, 75, 43, 0.4);
+    }
+
+    .btn-start:disabled {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.3);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-reset {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.7);
+      flex: 0 0 54px;
+    }
+
+    .ranking-board {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 16px;
+      padding: 12px;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .ranking-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #fff;
+    }
+
+    .ranking-item.winner {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 179, 71, 0.3) 100%);
+      border: 1px solid rgba(255, 215, 0, 0.5);
+    }
+
+    .ranking-item.eliminated {
+      background: rgba(255, 107, 107, 0.15);
+      color: #ff8a8a;
+    }
+
+    .ranking-item .round-badge {
+      margin-left: auto;
+      font-size: 0.7rem;
+      opacity: 0.7;
+    }
+
+    /* Footer Standard Styles */
+    .sidebar-footer {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 75, 43, 0.3);
+      color: #ff4b2b;
+      transform: translateY(-2px);
+    }
+
+    .icon-btn[data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      margin-bottom: 8px;
+    }
+
+    /* Game Area Styles */
+    .game-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .classroom {
+      flex: 1;
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      background: #C4A484;
+    }
+
+    .round-counter {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 1rem;
+      z-index: 1000;
+      display: none;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .students-area {
+      position: absolute;
+      top: 15%;
+      left: 5%;
+      right: 5%;
+      height: 55%;
+      display: grid;
+      justify-items: center;
+      align-content: start;
+      gap: 30px;
+      z-index: 10;
+    }
+
+    .bottom-stage {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 20%;
+      background: linear-gradient(180deg, #98D8C8 0%, #7fc8b8 100%);
+      border-top: 5px solid #8B4513;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 10px;
+    }
+
+    .speech-bubble {
+      position: absolute;
+      bottom: 30%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      padding: 15px 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      font-size: clamp(1.2rem, 2vw, 2rem);
+      font-weight: 800;
+      color: #333;
+      z-index: 600;
+      min-width: 250px;
+      text-align: center;
+      display: none;
+      white-space: pre-line;
+    }
+
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-top: 15px solid #fff;
+    }
+
+    /* Teacher */
+    .teacher-container {
+      position: absolute;
+      top: -70px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 130px;
+      z-index: 100;
+    }
+
+    .teacher {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-style: preserve-3d;
+    }
+
+    .teacher.watching {
+      transform: rotateY(180deg);
+    }
+
+    .teacher-front,
+    .teacher-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .teacher-back {
+      transform: rotateY(0deg);
+    }
+
+    .teacher-front {
+      transform: rotateY(180deg);
+    }
+
+    .t-head {
+      font-size: 50px;
+      margin-bottom: -10px;
+      z-index: 2;
+    }
+
+    .t-body {
+      width: 60px;
+      height: 70px;
+      background: #2c3e50;
+      border-radius: 12px 12px 5px 5px;
+      position: relative;
+    }
+
+    .t-arm {
+      width: 14px;
+      height: 45px;
+      background: #2c3e50;
+      position: absolute;
+      top: 10px;
+      border-radius: 7px;
+    }
+
+    .t-arm.l {
+      left: -12px;
+    }
+
+    .t-arm.r {
+      right: -12px;
+      transform-origin: top center;
+    }
+
+    .teacher-back .t-arm.r {
+      animation: writing 0.8s infinite alternate;
+    }
+
+    @keyframes writing {
+      from {
+        transform: rotate(-10deg);
+      }
+
+      to {
+        transform: rotate(-60deg);
+      }
+    }
+
+    /* Students */
+    .student {
+      position: relative;
+      width: 80px;
+      height: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .student-name {
+      position: absolute;
+      top: -25px;
+      font-size: 0.8rem;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      z-index: 500;
+    }
+
+    .chair {
+      position: absolute;
+      top: 25px;
+      font-size: 40px;
+      z-index: 5;
+      opacity: 0.8;
+    }
+
+    .char {
+      width: 50px;
+      height: 80px;
+      position: relative;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 10;
+      margin-top: 10px;
+    }
+
+    .c-head {
+      width: 32px;
+      height: 32px;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 0;
+      left: 9px;
+      z-index: 5;
+    }
+
+    .c-body {
+      width: 26px;
+      height: 30px;
+      background: var(--color, #3498db);
+      border-radius: 6px;
+      position: absolute;
+      top: 30px;
+      left: 12px;
+    }
+
+    .c-arm {
+      width: 8px;
+      height: 25px;
+      background: var(--color, #3498db);
+      position: absolute;
+      top: 32px;
+      border-radius: 4px;
+      transform-origin: top center;
+      transition: transform 0.3s ease;
+    }
+
+    .c-arm.l {
+      left: 4px;
+    }
+
+    .c-arm.r {
+      right: 4px;
+    }
+
+    .c-leg {
+      width: 9px;
+      height: 25px;
+      background: #333;
+      position: absolute;
+      top: 55px;
+      border-radius: 4px;
+      transform-origin: top center;
+    }
+
+    .c-leg.l {
+      left: 13px;
+    }
+
+    .c-leg.r {
+      right: 13px;
+    }
+
+    .desk-group {
+      position: absolute;
+      bottom: 5px;
+      width: 70px;
+      height: 45px;
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    .desk-top {
+      width: 70px;
+      height: 10px;
+      background: #DEB887;
+      border: 2px solid #C4954B;
+      border-radius: 4px;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .desk-leg {
+      width: 4px;
+      height: 35px;
+      background: #8B4513;
+      position: absolute;
+      top: 8px;
+    }
+
+    .desk-leg.l {
+      left: 5px;
+    }
+
+    .desk-leg.r {
+      right: 5px;
+    }
+
+    /* Target Mark */
+    .target-mark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(calc(-50% + 45px), calc(-50% - 20px));
+      width: 100px;
+      height: 100px;
+      border: 4px solid #ff4b2b;
+      border-radius: 50%;
+      display: none;
+      z-index: 600;
+      pointer-events: none;
+    }
+
+    .target-mark::before,
+    .target-mark::after {
+      content: '';
+      position: absolute;
+      background: #ff4b2b;
+    }
+
+    .target-mark::before {
+      width: 120%;
+      height: 2px;
+      top: 50%;
+      left: -10%;
+    }
+
+    .target-mark::after {
+      width: 2px;
+      height: 120%;
+      top: -10%;
+      left: 50%;
+    }
+
+    .student.caught .target-mark {
+      display: block;
+      animation: pulse-target 0.5s infinite alternate;
+    }
+
+    .student.caught .char {
+      transform: translate(45px, -20px) scale(1.1);
+      z-index: 150;
+    }
+
+    .student.caught .char * {
+      animation-play-state: paused !important;
+    }
+
+    @keyframes pulse-target {
+      from {
+        transform: translate(calc(-50% + 45px), calc(-50% - 20px)) scale(1);
+        opacity: 1;
+      }
+
+      to {
+        transform: translate(calc(-50% + 45px), calc(-50% - 20px)) scale(1.2);
+        opacity: 0.6;
+      }
+    }
+
+    /* Student States */
+    .student.dancing .char {
+      transform: translate(45px, -20px) scale(1.1);
+      z-index: 100;
+    }
+
+    .student.dancing .c-arm.l {
+      animation: intense-wave-l 0.3s infinite alternate;
+    }
+
+    .student.dancing .c-arm.r {
+      animation: intense-wave-r 0.3s infinite alternate;
+    }
+
+    .student.dancing .c-leg.l {
+      animation: intense-kick-l 0.3s infinite alternate;
+    }
+
+    .student.dancing .c-leg.r {
+      animation: intense-kick-r 0.3s infinite alternate-reverse;
+    }
+
+    .student.dancing .c-head {
+      animation: head-bob 0.3s infinite alternate;
+    }
+
+    /* Caught State */
+    .student.eliminated .char {
+      transform: translate(0, 0);
+      z-index: 10;
+    }
+
+    .student.eliminated .c-arm.l {
+      transform: rotate(160deg);
+    }
+
+    .student.eliminated .c-arm.r {
+      transform: rotate(-160deg);
+    }
+
+    .student.eliminated .c-head {
+      animation: apology-bob 0.4s infinite alternate;
+    }
+
+    @keyframes apology-bob {
+      from {
+        transform: translateY(0);
+      }
+
+      to {
+        transform: translateY(5px);
+      }
+    }
+
+    .apology-bubble {
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      display: none;
+      z-index: 600;
+      white-space: nowrap;
+    }
+
+    .student.eliminated .apology-bubble {
+      display: block;
+    }
+
+    @keyframes intense-wave-l {
+      from {
+        transform: rotate(30deg);
+      }
+
+      to {
+        transform: rotate(170deg);
+      }
+    }
+
+    @keyframes intense-wave-r {
+      from {
+        transform: rotate(-30deg);
+      }
+
+      to {
+        transform: rotate(-170deg);
+      }
+    }
+
+    @keyframes intense-kick-l {
+      from {
+        transform: rotate(-10deg);
+      }
+
+      to {
+        transform: rotate(70deg);
+      }
+    }
+
+    @keyframes intense-kick-r {
+      from {
+        transform: rotate(10deg);
+      }
+
+      to {
+        transform: rotate(-70deg);
+      }
+    }
+
+    @keyframes head-bob {
+      from {
+        transform: translateY(0);
+      }
+
+      to {
+        transform: translateY(-5px) rotate(10deg);
+      }
+    }
+
+    /* Certificate Styles */
+    .winner-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(10px);
+    }
+
+    .certificate {
+      background: #fff;
+      width: 90%;
+      max-width: 600px;
+      padding: 40px;
+      border: 15px double #d4af37;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 50px rgba(212, 175, 55, 0.1);
+      text-align: center;
+      position: relative;
+      color: #333;
+    }
+
+    .certificate::before {
+      content: '🎖️';
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 40px;
+      opacity: 0.2;
+    }
+
+    .cert-title {
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: 15px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #333;
+      display: inline-block;
+      padding-bottom: 5px;
+    }
+
+    .cert-award-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .cert-names {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    .cert-content {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      text-align: justify;
+      margin-bottom: 40px;
+      word-break: keep-all;
+    }
+
+    .cert-date {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .cert-footer {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .cert-btn {
+      margin-top: 30px;
+      padding: 10px 40px;
+      background: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .cert-btn:hover {
+      background: #555;
+    }
+
+    .copyright {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal-content {
+      background: #1a1a2e;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 32px;
+      border-radius: 24px;
+      max-width: 500px;
+      width: 90%;
+      color: #fff;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content h3 {
+      margin-bottom: 16px;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-content p {
+      line-height: 1.6;
+      margin-bottom: 12px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .modal-content ul {
+      margin-left: 20px;
+      margin-bottom: 20px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .modal-close-btn {
+      width: 100%;
+      padding: 12px;
+      background: #ff4b2b;
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 14px 28px;
+      border-radius: 12px;
+      z-index: 3000;
+      animation: toast-in 0.3s ease;
+    }
+
+    @keyframes toast-in {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    /* Custom Scrollbar */
+    .sidebar::-webkit-scrollbar,
+    .ranking-board::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-track,
+    .ranking-board::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 10px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb,
+    .ranking-board::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover,
+    .ranking-board::-webkit-scrollbar-thumb:hover {
+      background: #ff4b2b;
+    }
+
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .sidebar {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        max-height: 45vh;
+        overflow-y: auto;
+      }
+
+      .game-area {
+        flex: 1;
+      }
+
+      .teacher-container {
+        width: 70px;
+        height: 90px;
+        top: -50px;
+      }
+
+      .t-head {
+        font-size: 35px;
+      }
+
+      .t-body {
+        width: 40px;
+        height: 50px;
+      }
+
+      .speech-bubble {
+        font-size: 1rem;
+        min-width: 180px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>💃 교실에서 춤을!</h2>
+      <button class="help-btn" id="helpBtn">?</button>
+    </div>
+
+    <div class="settings-group">
+      <label for="participants">참여자</label>
+      <textarea id="participants"
+        placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+    </div>
+
+    <div class="settings-group">
+      <label>🏆 최종 생존자 수</label>
+      <div class="slider-container">
+        <input type="range" id="winnerCount" min="1" max="10" value="1">
+        <div class="slider-value" id="winnerValue">1</div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-start" id="startBtn">🎮 시작</button>
+      <button class="btn btn-reset" id="resetBtn">↺</button>
+    </div>
+
+    <div class="ranking-board">
+      <div class="ranking-list" id="rankingList">
+        <div style="color:rgba(255,255,255,0.4);text-align:center;padding:20px;">참여자를 입력하세요</div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="https://geniuskey.github.io/lottery/" class="icon-btn" data-tooltip="추첨 포탈 홈">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </a>
+      <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </button>
+      <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z">
+          </path>
+        </svg>
+      </a>
+      <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.081 1.156.147 1.737.158 2.48.043 4.966-.096 7.447-.177.179-.005.301.035.405.16.065.078.137.204.159.286.073.302.14.606.225.908.012.044.042.108.03.146zM5.946 5.972c-.039.133-.086.27-.126.407-.191.659-.408 1.32-.606 1.987-.26.875-1.02 1.582-2.0 1.708-1.086.14-2.13-.21-2.807-1.145-.258-.355-.405-.834-.41-1.283-.007-.597.161-1.184.338-1.753.157-.504.331-1.006.503-1.506.172-.5.44-.991.804-1.396.487-.541 1.21-.79 1.912-.877C5.172 1.866 6.818 3.046 5.946 5.972z">
+          </path>
+        </svg>
+      </a>
+    </div>
+  </aside>
+
+  <main class="game-area">
+    <div class="classroom" id="classroom">
+      <div id="roundCounter" class="round-counter">ROUND 1</div>
+      <div class="students-area" id="studentsArea"></div>
+
+      <div id="speechBubble" class="speech-bubble"></div>
+
+      <div class="bottom-stage">
+        <div class="teacher-container">
+          <div class="teacher" id="teacher">
+            <div class="teacher-back">
+              <div class="t-head">😑</div>
+              <div class="t-body">
+                <div class="t-arm r"></div>
+              </div>
+            </div>
+            <div class="teacher-front">
+              <div class="t-head">🧐</div>
+              <div class="t-body">
+                <div class="t-arm l"></div>
+                <div class="t-arm r"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="copyright">© 2025 Euiyun Edwin Kim. Licensed under the MIT License.</div>
+    </div>
+  </main>
+
+  <!-- Help Modal -->
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal-content">
+      <h3>❓ 게임 방법</h3>
+      <p>선생님이 수학 문제를 푸는 동안 몰래 춤을 추는 서바이벌 게임입니다!</p>
+      <ul>
+        <li>선생님이 칠판을 보고 있을 때 학생들이 춤을 춥니다.</li>
+        <li>문제가 풀리고 <strong>'='</strong> 기호가 나타나면 눈치를 보며 자리에 앉아야 합니다.</li>
+        <li>선생님이 뒤를 돌아봤을 때 완전히 앉지 못한 학생은 적발되어 반성하게 됩니다.</li>
+        <li>최후까지 적발되지 않고 살아남은 학생이 승리합니다!</li>
+      </ul>
+      <button class="modal-close-btn" id="modalCloseBtn">확인</button>
+    </div>
+  </div>
+
+  <script>
+    const COLORS = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#e67e22', '#1abc9c', '#d35400', '#27ae60'];
+    const EMOJIS = ['😊', '😁', '🥰', '🤪', '😮', '😋', '🙂‍↔️', '😏', '😆', '😙', '🤖'];
+
+    let participants = [], alivePlayers = [], eliminatedPlayers = [], winners = [], playerEmojis = {}, eliminationRounds = {}, reactionTimeouts = {};
+    let gameRunning = false, gameStopped = false, currentRound = 0;
+
+    const $ = id => document.getElementById(id);
+    const pInput = $('participants'), wCount = $('winnerCount'), wVal = $('winnerValue');
+    const startBtn = $('startBtn'), resetBtn = $('resetBtn'), rList = $('rankingList');
+    const sArea = $('studentsArea'), teacher = $('teacher'), bubble = $('speechBubble'), rCounter = $('roundCounter');
+    const helpBtn = $('helpBtn'), helpModal = $('helpModal'), modalCloseBtn = $('modalCloseBtn'), copyResultBtn = $('copyResultBtn');
+
+    // Storage logic
+    function saveSettings() {
+      localStorage.setItem('mugunghwa_participants', pInput.value);
+      localStorage.setItem('mugunghwa_winnerCount', wCount.value);
+    }
+
+    function loadSettings() {
+      const savedParticipants = localStorage.getItem('mugunghwa_participants');
+      const savedWinnerCount = localStorage.getItem('mugunghwa_winnerCount');
+      if (savedParticipants) pInput.value = savedParticipants;
+      if (savedWinnerCount) {
+        wCount.value = savedWinnerCount;
+        wVal.textContent = savedWinnerCount;
+      }
+    }
+
+    wCount.oninput = () => {
+      wVal.textContent = wCount.value;
+      saveSettings();
+    };
+
+    pInput.oninput = () => {
+      saveSettings();
+      if (!gameRunning) renderStudents();
+    };
+
+    // Standard parse function
+    function parseParticipants(input) {
+      const names = input.split(/[,\n]/).map(n => n.trim()).filter(n => n);
+      const result = [];
+      const nameCount = {};
+
+      for (const name of names) {
+        const match = name.match(/^(.+)\*(\d+)$/);
+        if (match) {
+          const baseName = match[1].trim();
+          const count = parseInt(match[2]);
+          for (let i = 0; i < count; i++) {
+            nameCount[baseName] = (nameCount[baseName] || 0) + 1;
+            result.push(nameCount[baseName] > 1 ? `${baseName}(${nameCount[baseName]})` : baseName);
+          }
+        } else {
+          nameCount[name] = (nameCount[name] || 0) + 1;
+          result.push(nameCount[name] > 1 ? `${name}(${nameCount[name]})` : name);
+        }
+      }
+      return result;
+    }
+
+    function init() {
+      loadSettings();
+      renderStudents(true);
+    }
+
+    function renderStudents(resetEmojis = false) {
+      participants = parseParticipants(pInput.value);
+      alivePlayers = [...participants];
+      eliminatedPlayers = [];
+      winners = [];
+      if (resetEmojis) playerEmojis = {};
+      eliminationRounds = {};
+      reactionTimeouts = {};
+      currentRound = 0;
+      rCounter.style.display = 'none';
+
+      sArea.innerHTML = '';
+      if (participants.length === 0) {
+        rList.innerHTML = '<div style="color:rgba(255,255,255,0.4);text-align:center;padding:20px;">참여자를 입력하세요</div>';
+        return;
+      }
+
+      const cols = Math.ceil(Math.sqrt(participants.length * 1.5));
+      sArea.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+      participants.forEach((name, i) => {
+        const color = COLORS[i % COLORS.length];
+        if (!playerEmojis[name]) {
+          playerEmojis[name] = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+        }
+        const emoji = playerEmojis[name];
+
+        const el = document.createElement('div');
+        el.className = 'student';
+        el.id = `student-${i}`;
+        el.innerHTML = `
+          <div class="student-name">${name}</div>
+          <div class="target-mark"></div>
+          <div class="apology-bubble">잘못했어요..😭</div>
+          <div class="chair">🪑</div>
+          <div class="char" style="--color: ${color}">
+            <div class="c-head">${emoji}</div>
+            <div class="c-body"></div>
+            <div class="c-arm l"></div>
+            <div class="c-arm r"></div>
+            <div class="c-leg l"></div>
+            <div class="c-leg r"></div>
+          </div>
+          <div class="desk-group">
+            <div class="desk-top"></div>
+            <div class="desk-leg l"></div>
+            <div class="desk-leg r"></div>
+          </div>
+        `;
+        sArea.appendChild(el);
+      });
+      updateRanking();
+    }
+
+    function updateRanking() {
+      let h = '';
+      winners.forEach(n => h += `<div class="ranking-item winner">🏆 ${playerEmojis[n]} ${n}</div>`);
+      alivePlayers.forEach(n => h += `<div class="ranking-item">✓ ${playerEmojis[n]} ${n}</div>`);
+      [...eliminatedPlayers].reverse().forEach(n => {
+        h += `<div class="ranking-item eliminated">✗ ${playerEmojis[n]} ${n} <span class="round-badge">Round ${eliminationRounds[n]}</span></div>`;
+      });
+      rList.innerHTML = h || '<div style="color:rgba(255,255,255,0.4);text-align:center;padding:20px;">참여자를 입력하세요</div>';
+    }
+
+    function generateMathProblem() {
+      const a = Math.floor(Math.random() * 20) + 1;
+      const b = Math.floor(Math.random() * 20) + 1;
+      const ops = ['+', '-'];
+      const op = ops[Math.floor(Math.random() * ops.length)];
+      return `${a} ${op} ${b} = ${op === '+' ? a + b : a - b}`;
+    }
+
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    async function gameLoop() {
+      while (gameRunning && alivePlayers.length > parseInt(wCount.value)) {
+        if (gameStopped) break;
+
+        currentRound++;
+        rCounter.textContent = `ROUND ${currentRound}`;
+        rCounter.style.display = 'block';
+
+        teacher.classList.remove('watching');
+        bubble.style.display = 'block';
+        bubble.textContent = '';
+        bubble.style.color = '#333';
+
+        reactionTimeouts = {};
+
+        const aliveIndices = participants.map((n, i) => alivePlayers.includes(n) ? i : -1).filter(i => i !== -1);
+        aliveIndices.forEach(idx => $('student-' + idx).classList.add('dancing'));
+
+        const problem = generateMathProblem();
+        const speed = Math.max(40, 150 - (10 - alivePlayers.length) * 10);
+
+        const isPeacefulRound = (currentRound === 1 || Math.random() > 0.8);
+        const reactionTimes = {};
+        for (let char of problem) {
+          if (gameStopped) return;
+          bubble.textContent += char;
+
+          if (char === '=') {
+            const guaranteedLateIdx = isPeacefulRound ? -1 : aliveIndices[Math.floor(Math.random() * aliveIndices.length)];
+
+            aliveIndices.forEach(idx => {
+              let time;
+              if (idx === guaranteedLateIdx) {
+                time = 1500;
+              } else if (isPeacefulRound) {
+                time = 50 + Math.random() * 100;
+              } else {
+                time = 100 + Math.random() * 600;
+              }
+
+              const name = participants[idx];
+              reactionTimes[name] = Date.now() + time;
+              reactionTimeouts[name] = setTimeout(() => {
+                const el = $('student-' + idx);
+                if (el) el.classList.remove('dancing');
+              }, time);
+            });
+          }
+          await sleep(speed + Math.random() * 40);
+        }
+
+        await sleep(150);
+
+        teacher.classList.add('watching');
+        bubble.textContent = "거기 누구야!!";
+        bubble.style.color = "#ff4b2b";
+
+        const catchTime = Date.now();
+        const candidates = alivePlayers.filter(name => !reactionTimes[name] || reactionTimes[name] > catchTime);
+
+        const maxEliminatable = alivePlayers.length - parseInt(wCount.value);
+        let toEliminate = [];
+
+        if (candidates.length > maxEliminatable) {
+          toEliminate = candidates.sort(() => Math.random() - 0.5).slice(0, maxEliminatable);
+        } else {
+          toEliminate = candidates;
+        }
+
+        if (toEliminate.length > 0) {
+          toEliminate.forEach(name => {
+            if (reactionTimeouts[name]) clearTimeout(reactionTimeouts[name]);
+            const idx = participants.indexOf(name);
+            $('student-' + idx).classList.add('caught');
+          });
+
+          await sleep(400);
+
+          const styledNames = toEliminate.map(name => `<span style="color: black;">${name}</span>`).join(', ');
+          bubble.innerHTML = `수업 시간에 춤 금지!!\n${styledNames} 손들고 반성해!`;
+
+          toEliminate.forEach(name => {
+            const idx = participants.indexOf(name);
+            const el = $('student-' + idx);
+            el.classList.remove('dancing');
+            el.classList.remove('caught');
+            el.classList.add('eliminated');
+            el.querySelector('.c-head').textContent = '😭';
+            alivePlayers = alivePlayers.filter(n => n !== name);
+            eliminatedPlayers.push(name);
+            eliminationRounds[name] = currentRound;
+          });
+          updateRanking();
+          await sleep(2000);
+        } else {
+          bubble.style.color = "black";
+          bubble.textContent = "수업 잘 듣고 있군요.\n좋습니다. 계속 수업할게요.";
+          await sleep(1000);
+        }
+      }
+
+      if (!gameStopped) {
+        winners = [...alivePlayers];
+        alivePlayers = [];
+        updateRanking();
+        showWinner();
+      }
+    }
+
+    function showWinner() {
+      bubble.style.display = 'none';
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      const day = now.getDate();
+
+      const winnersList = winners.map(w => `${playerEmojis[w]} ${w}`).join(', ');
+
+      const overlay = document.createElement('div');
+      overlay.className = 'winner-overlay';
+      overlay.innerHTML = `
+        <div class="certificate">
+          <div class="cert-title">상 장</div>
+          <div class="cert-award-name">제 2025-수학-01호 (모범상)</div>
+          <div class="cert-names">성명: ${winnersList}</div>
+          <div class="cert-content">
+            위 학생들은 평소 투철한 학업 정신과 성실한 자세로 수학 시간에 임하였으며, 
+            특히 선생님이 칠판을 향해 열정적으로 문제를 풀이하는 동안 
+            단 한 순간의 흔들림 없이 책상을 지키며 학업에 전념하여 타의 귀감이 되었으므로 
+            이에 상장을 수여하여 그 공로를 치하함.
+          </div>
+          <div class="cert-date">${year}년 ${month}월 ${day}일</div>
+          <div class="cert-footer">수학 선생님 일동 (인)</div>
+          <button class="cert-btn" onclick="this.parentElement.parentElement.remove()">확인</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
+
+    function showToast(m) {
+      const e = document.querySelector('.toast');
+      if (e) e.remove();
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = m;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2500);
+    }
+
+    copyResultBtn.onclick = () => {
+      if (winners.length === 0 && eliminatedPlayers.length === 0) {
+        showToast('아직 게임 결과가 없습니다!');
+        return;
+      }
+      let r = '💃 교실에서 춤을! 결과\n━━━━━━━━━━━━━━━\n';
+      if (winners.length > 0) r += `🏆 최종 생존자: ${winners.join(', ')}\n`;
+      r += `📊 총 ${currentRound}라운드 진행\n👥 참여자: ${participants.length}명\n`;
+      if (eliminatedPlayers.length > 0) {
+        r += `❌ 탈락자 목록:\n`;
+        eliminatedPlayers.forEach(n => r += `- ${n} (Round ${eliminationRounds[n]})
+`);
+      }
+      navigator.clipboard.writeText(r).then(() => showToast('결과가 복사되었습니다!'))
+        .catch(() => showToast('복사에 실패했습니다.'));
+    };
+
+    startBtn.onclick = async () => {
+      if (gameRunning) return;
+      const names = parseParticipants(pInput.value);
+      if (names.length <= parseInt(wCount.value)) {
+        alert("참여자가 생존자 수보다 많아야 합니다!");
+        return;
+      }
+      gameRunning = true;
+      gameStopped = false;
+      startBtn.disabled = true;
+      renderStudents();
+      await sleep(500);
+      gameLoop();
+    };
+
+    resetBtn.onclick = () => {
+      gameStopped = true;
+      gameRunning = false;
+      startBtn.disabled = false;
+      renderStudents(true);
+      teacher.classList.remove('watching');
+      bubble.style.display = 'none';
+      rCounter.style.display = 'none';
+    };
+
+    helpBtn.onclick = () => helpModal.style.display = 'flex';
+    modalCloseBtn.onclick = () => helpModal.style.display = 'none';
+    window.onclick = (e) => { if (e.target === helpModal) helpModal.style.display = 'none'; };
+
+    init();
+  </script>
+</body>
+
+</html>
