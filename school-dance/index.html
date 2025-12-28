@@ -487,11 +487,23 @@
 
     .t-arm {
       width: 14px;
-      height: 45px;
+      height: 25px; /* Upper arm */
       background: #2c3e50;
       position: absolute;
       top: 10px;
       border-radius: 7px;
+      transform-origin: top center;
+    }
+
+    .t-forearm {
+      width: 14px;
+      height: 25px;
+      background: #2c3e50;
+      position: absolute;
+      top: 20px;
+      left: 0;
+      border-radius: 7px;
+      transform-origin: top center;
     }
 
     .t-arm.l {
@@ -500,21 +512,24 @@
 
     .t-arm.r {
       right: -12px;
-      transform-origin: top center;
     }
 
     .teacher-back .t-arm.r {
       animation: writing 0.8s infinite alternate;
     }
 
-    @keyframes writing {
-      from {
-        transform: rotate(-10deg);
-      }
+    .teacher-back .t-arm.r .t-forearm {
+      animation: writing-forearm 0.8s infinite alternate;
+    }
 
-      to {
-        transform: rotate(-60deg);
-      }
+    @keyframes writing {
+      from { transform: rotate(-10deg); }
+      to { transform: rotate(-40deg); }
+    }
+
+    @keyframes writing-forearm {
+      from { transform: rotate(-10deg); }
+      to { transform: rotate(-60deg); }
     }
 
     /* Students */
@@ -581,13 +596,24 @@
 
     .c-arm {
       width: 8px;
-      height: 25px;
+      height: 15px; /* Upper arm */
       background: var(--color, #3498db);
       position: absolute;
       top: 32px;
       border-radius: 4px;
       transform-origin: top center;
       transition: transform 0.3s ease;
+    }
+
+    .c-forearm {
+      width: 8px;
+      height: 15px;
+      background: var(--color, #3498db);
+      position: absolute;
+      top: 12px;
+      left: 0;
+      border-radius: 4px;
+      transform-origin: top center;
     }
 
     .c-arm.l {
@@ -600,10 +626,21 @@
 
     .c-leg {
       width: 9px;
-      height: 25px;
+      height: 15px; /* Thigh */
       background: #333;
       position: absolute;
       top: 55px;
+      border-radius: 4px;
+      transform-origin: top center;
+    }
+
+    .c-shin {
+      width: 9px;
+      height: 15px;
+      background: #333;
+      position: absolute;
+      top: 12px;
+      left: 0;
       border-radius: 4px;
       transform-origin: top center;
     }
@@ -718,26 +755,58 @@
     .student.dancing .char {
       transform: translate(45px, -20px) scale(1.1);
       z-index: 100;
+      transform-origin: center center;
+      animation: body-sway var(--dur, 0.3s) infinite alternate;
+    }
+
+    @keyframes body-sway {
+      from { transform: translate(42px, -20px) scale(1.1) rotate(-3deg); }
+      to { transform: translate(48px, -20px) scale(1.1) rotate(3deg); }
     }
 
     .student.dancing .c-arm.l {
-      animation: intense-wave-l 0.3s infinite alternate;
+      animation: intense-wave-l var(--dur, 0.3s) infinite alternate;
+      animation-delay: var(--del-al, 0s);
     }
 
     .student.dancing .c-arm.r {
-      animation: intense-wave-r 0.3s infinite alternate;
+      animation: intense-wave-r var(--dur, 0.3s) infinite alternate;
+      animation-delay: var(--del-ar, 0s);
+    }
+
+    .student.dancing .c-arm.l .c-forearm {
+      animation: forearm-wave-l var(--dur, 0.3s) infinite alternate;
+      animation-delay: var(--del-f, 0s);
+    }
+
+    .student.dancing .c-arm.r .c-forearm {
+      animation: forearm-wave-r var(--dur, 0.3s) infinite alternate;
+      animation-delay: var(--del-f, 0s);
     }
 
     .student.dancing .c-leg.l {
-      animation: intense-kick-l 0.3s infinite alternate;
+      animation: intense-kick-l var(--dur, 0.3s) infinite alternate;
+      animation-delay: var(--del-ll, 0s);
     }
 
     .student.dancing .c-leg.r {
-      animation: intense-kick-r 0.3s infinite alternate-reverse;
+      animation: intense-kick-r var(--dur, 0.3s) infinite alternate-reverse;
+      animation-delay: var(--del-lr, 0s);
+    }
+
+    .student.dancing .c-leg.l .c-shin {
+      animation: shin-kick-l var(--dur, 0.3s) infinite alternate;
+      animation-delay: var(--del-s, 0s);
+    }
+
+    .student.dancing .c-leg.r .c-shin {
+      animation: shin-kick-r var(--dur, 0.3s) infinite alternate;
+      animation-delay: var(--del-s, 0s);
     }
 
     .student.dancing .c-head {
-      animation: head-bob 0.3s infinite alternate;
+      animation: head-bob var(--dur, 0.3s) infinite alternate;
+      animation-delay: var(--del-h, 0s);
     }
 
     /* Caught State */
@@ -754,8 +823,36 @@
       transform: rotate(-160deg);
     }
 
+    .student.eliminated .c-arm.l .c-forearm {
+      transform: rotate(20deg);
+    }
+
+    .student.eliminated .c-arm.r .c-forearm {
+      transform: rotate(-20deg);
+    }
+
     .student.eliminated .c-head {
       animation: apology-bob 0.4s infinite alternate;
+    }
+
+    @keyframes forearm-wave-l {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(100deg); }
+    }
+
+    @keyframes forearm-wave-r {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-100deg); }
+    }
+
+    @keyframes shin-kick-l {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-70deg); }
+    }
+
+    @keyframes shin-kick-r {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(70deg); }
     }
 
     @keyframes apology-bob {
@@ -1160,14 +1257,14 @@
             <div class="teacher-back">
               <div class="t-head">😑</div>
               <div class="t-body">
-                <div class="t-arm r"></div>
+                <div class="t-arm r"><div class="t-forearm"></div></div>
               </div>
             </div>
             <div class="teacher-front">
               <div class="t-head">🧐</div>
               <div class="t-body">
-                <div class="t-arm l"></div>
-                <div class="t-arm r"></div>
+                <div class="t-arm l"><div class="t-forearm"></div></div>
+                <div class="t-arm r"><div class="t-forearm"></div></div>
               </div>
             </div>
           </div>
@@ -1286,9 +1383,28 @@
         }
         const emoji = playerEmojis[name];
 
+        // Individual dance randomness
+        const dur = (0.2 + Math.random() * 0.3).toFixed(2) + 's';
+        const delAl = (Math.random() * -1).toFixed(2) + 's';
+        const delAr = (Math.random() * -1).toFixed(2) + 's';
+        const delF = (Math.random() * -1).toFixed(2) + 's';
+        const delLl = (Math.random() * -1).toFixed(2) + 's';
+        const delLr = (Math.random() * -1).toFixed(2) + 's';
+        const delS = (Math.random() * -1).toFixed(2) + 's';
+        const delH = (Math.random() * -1).toFixed(2) + 's';
+
         const el = document.createElement('div');
         el.className = 'student';
         el.id = `student-${i}`;
+        el.style.setProperty('--dur', dur);
+        el.style.setProperty('--del-al', delAl);
+        el.style.setProperty('--del-ar', delAr);
+        el.style.setProperty('--del-f', delF);
+        el.style.setProperty('--del-ll', delLl);
+        el.style.setProperty('--del-lr', delLr);
+        el.style.setProperty('--del-s', delS);
+        el.style.setProperty('--del-h', delH);
+        
         el.innerHTML = `
           <div class="student-name">${name}</div>
           <div class="target-mark"></div>
@@ -1297,10 +1413,10 @@
           <div class="char" style="--color: ${color}">
             <div class="c-head">${emoji}</div>
             <div class="c-body"></div>
-            <div class="c-arm l"></div>
-            <div class="c-arm r"></div>
-            <div class="c-leg l"></div>
-            <div class="c-leg r"></div>
+            <div class="c-arm l"><div class="c-forearm"></div></div>
+            <div class="c-arm r"><div class="c-forearm"></div></div>
+            <div class="c-leg l"><div class="c-shin"></div></div>
+            <div class="c-leg r"><div class="c-shin"></div></div>
           </div>
           <div class="desk-group">
             <div class="desk-top"></div>
