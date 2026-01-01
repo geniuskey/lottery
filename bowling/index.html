@@ -837,12 +837,12 @@
         function initThree() {
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x1a2332);
-            scene.fog = new THREE.Fog(0x1a2332, 20, 80);
+            scene.fog = new THREE.Fog(0x1a2332, 20, 120);
 
             const aspect = gameArea.clientWidth / gameArea.clientHeight;
             camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
-            camera.position.set(0, 15, 25);
-            camera.lookAt(0, 0, 0);
+            camera.position.set(0, 8, 30);
+            camera.lookAt(0, 0, -10);
 
             renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
             renderer.setSize(gameArea.clientWidth, gameArea.clientHeight);
@@ -901,7 +901,7 @@
         function createEnvironment() {
             // Floor - Bowling Lane
             const laneWidth = 10;
-            const laneLength = 40;
+            const laneLength = 80;
             const gutterWidth = 1.5;
             const gutterDepth = 0.4;
             const wallHeight = 1.5;
@@ -1247,18 +1247,27 @@
 
             const count = participants.length;
             
-            // Triangle formation (bowling style) - 1, 2, 3, 4... pins per row
-            // Wide spacing to reduce chain reactions
-            const spacingX = 2.5;  // Much wider horizontal spacing
-            const spacingZ = 2.2;  // Much wider depth spacing
-            
-            // Calculate rows needed
+            // Calculate rows needed for triangle formation
             let rows = 0;
             let totalSpots = 0;
             while (totalSpots < count) {
                 rows++;
                 totalSpots += rows;
             }
+
+            // Lane width is 10. We want to keep pins within roughly 8.5 units to be safe
+            const maxLaneWidth = 8.5;
+            const maxPinsInRow = rows;
+            
+            // Dynamically adjust spacingX based on the number of pins
+            let spacingX = 2.5; 
+            if (maxPinsInRow > 1) {
+                spacingX = Math.min(2.5, maxLaneWidth / (maxPinsInRow - 1));
+            }
+            // Ensure minimum spacing so pins don't overlap (belly diameter is ~0.6)
+            spacingX = Math.max(spacingX, 0.8);
+            
+            const spacingZ = 2.2; 
             
             // Position pins at the back of the lane
             const backPosition = -12;
@@ -1499,9 +1508,9 @@
                 const checkBall = setInterval(() => {
                     checkCount++;
                     
-                    // Ball has passed the pins (z < -22) or stopped moving or max time reached
+                    // Ball has passed the pins or stopped moving or max time reached
                     const ballStopped = ballBody && (
-                        ballBody.position.z < -22 || 
+                        ballBody.position.z < -45 || 
                         ballBody.velocity.length() < 0.5 ||
                         checkCount >= maxChecks
                     );
