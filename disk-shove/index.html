@@ -856,12 +856,92 @@
     <script>
         // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
         
+        class SoundManager {
+            constructor() {
+                this.ctx = null;
+            }
+
+            init() {
+                if (this.ctx) return;
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            playStart() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(440, this.ctx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+            }
+
+            playBump() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, this.ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+            }
+
+            playBoost() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+            }
+
+            playFall() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+            }
+
+            playWin() {
+                if (!this.ctx) return;
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
+                    gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
+                    gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
+                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.1 + 0.4);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(this.ctx.currentTime + i * 0.1);
+                    osc.stop(this.ctx.currentTime + i * 0.1 + 0.4);
+                });
+            }
+        }
+
         const EMOJIS = ['😀', '😎', '🤠', '🥳', '😺', '🐶', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐸', '🐵', '🐔', '🦄', '🐲', '👻', '🤖', '👽', '🎃', '💀', '🦸', '🧙', '🧛', '🧜', '🧚', '🦹', '🥷'];
         
         class PhysicsEngine {
-            constructor(canvas) {
+            constructor(canvas, soundManager) {
                 this.canvas = canvas;
                 this.ctx = canvas.getContext('2d');
+                this.sound = soundManager;
                 this.players = [];
                 this.centerX = 0;
                 this.centerY = 0;
@@ -1000,6 +1080,7 @@
                         player.falling = true;
                         player.fallProgress = 0;
                         player.eliminatedAt = gameTime;
+                        this.sound.playFall();
                         
                         const outwardX = (player.x - this.centerX) / distFromCenter;
                         const outwardY = (player.y - this.centerY) / distFromCenter;
@@ -1015,6 +1096,7 @@
                 player.boosting = true;
                 player.boostDuration = 300;
                 player.boostCooldown = 5000;
+                this.sound.playBoost();
 
                 // 다른 생존 플레이어를 타겟으로 선택
                 const otherPlayers = this.players.filter(p => p !== player && p.alive && !p.falling);
@@ -1072,6 +1154,7 @@
                                 const dvn = dvx * nx + dvy * ny;
                                 
                                 if (dvn > 0) {
+                                    this.sound.playBump();
                                     const m1 = p1.boosting ? 2.0 : 1.0;
                                     const m2 = p2.boosting ? 2.0 : 1.0;
                                     const totalMass = m1 + m2;
@@ -1319,7 +1402,8 @@
         class Game {
             constructor() {
                 this.canvas = document.getElementById('gameCanvas');
-                this.physics = new PhysicsEngine(this.canvas);
+                this.sound = new SoundManager();
+                this.physics = new PhysicsEngine(this.canvas, this.sound);
                 this.isRunning = false;
                 this.startTime = 0;
                 this.gameTimeSeconds = 0;
@@ -1376,6 +1460,8 @@
                 const input = document.getElementById('participantsInput').value;
                 const names = this.parseParticipants(input);
                 
+                this.sound.init();
+
                 if (names.length < 2) {
                     alert('최소 2명 이상의 참여자가 필요합니다!');
                     return;
@@ -1390,6 +1476,7 @@
                 this.reset();
                 this.physics.resize();
                 this.physics.speedMultiplier = 1;
+                this.sound.playStart();
                 
                 const shuffledEmojis = [...EMOJIS].sort(() => Math.random() - 0.5);
                 
@@ -1523,6 +1610,7 @@
             endGame() {
                 document.getElementById('gameStatus').textContent = '🏆 종료';
                 document.getElementById('startBtn').disabled = false;
+                this.sound.playWin();
                 
                 // Show winner overlay
                 const winnerNames = this.winners.map(p => `${p.emoji} ${p.name}`).join(', ');

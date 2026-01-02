@@ -743,6 +743,63 @@
   <script>
     // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
 
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+      }
+
+      init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      playStart() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.1);
+      }
+
+      playTick() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.05);
+      }
+
+      playWin() {
+        if (!this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.1 + 0.4);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.1);
+          osc.stop(this.ctx.currentTime + i * 0.1 + 0.4);
+        });
+      }
+    }
+
     const COLORS = [
       '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
       '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
@@ -758,6 +815,7 @@
         this.maxWinners = 1;
         this.spinDuration = 5;
         this.animationId = null;
+        this.sound = new SoundManager();
 
         this.initElements();
         this.bindEvents();
@@ -956,6 +1014,7 @@
 
       spin() {
         if (this.isSpinning) return;
+        this.sound.init();
         
         // 당첨자 선정 완료 후 다시 시작하거나, 다음 당첨자를 위해 휠 갱신
         const isGameFinished = this.winners.length >= parseInt(this.winnerCountSelect.value);
@@ -977,6 +1036,7 @@
         this.isSpinning = true;
         this.startBtn.disabled = true;
         this.winnerDisplay.classList.remove('show');
+        this.sound.playStart();
 
         // 정밀한 시작 각도 계산 (0 ~ 2PI 사이로 정규화)
         const normalizedStartAngle = ((this.currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
@@ -993,6 +1053,7 @@
         
         const startTime = performance.now();
         const duration = parseInt(this.spinDurationSelect.value) * 1000;
+        let lastTickAngle = normalizedStartAngle;
 
         const animate = (currentTime) => {
           const elapsed = currentTime - startTime;
@@ -1001,7 +1062,18 @@
           // Easing: Quintic Out (더 부드럽게 멈춤)
           const easeOut = 1 - Math.pow(1 - progress, 5);
           
+          const prevAngle = this.currentAngle;
           this.currentAngle = normalizedStartAngle + (targetRotation - normalizedStartAngle) * easeOut;
+          
+          // Tick sound logic
+          const sliceSize = (2 * Math.PI) / currentParticipants.length;
+          const currentTickPos = Math.floor((this.currentAngle + Math.PI / 2) / sliceSize);
+          const lastTickPos = Math.floor((prevAngle + Math.PI / 2) / sliceSize);
+          
+          if (currentTickPos !== lastTickPos) {
+            this.sound.playTick();
+          }
+
           this.drawWheel();
 
           if (progress < 1) {
@@ -1021,6 +1093,7 @@
         this.isSpinning = false;
         this.winners.push(winner);
         this.currentAngle = this.currentAngle % (2 * Math.PI);
+        this.sound.playWin();
 
         // Show winner with rich format
         this.winnerDisplay.innerHTML = `

@@ -670,6 +670,95 @@
  * ------------------------------------------------------------
  */
 
+class SoundManager {
+    constructor() {
+        this.ctx = null;
+        this.enabled = true;
+    }
+
+    init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    playStart() {
+        if (!this.enabled || !this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(440, this.ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.5);
+    }
+
+    playInfect() {
+        if (!this.enabled || !this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(40, this.ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.2);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.2);
+    }
+
+    playShrink() {
+        if (!this.enabled || !this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.05, this.ctx.currentTime + 0.1);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.5);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.5);
+    }
+
+    playWin() {
+        if (!this.enabled || !this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
+            gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
+            gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
+            gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.1 + 0.4);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(this.ctx.currentTime + i * 0.1);
+            osc.stop(this.ctx.currentTime + i * 0.1 + 0.4);
+        });
+    }
+
+    playDeath() {
+        if (!this.enabled || !this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'brown' || 'sine'; 
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(20, this.ctx.currentTime + 0.8);
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.8);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.8);
+    }
+}
+
 const i18n = {
     ko: {
         title: '좀비 아레나', participants: '참여자 명단',
@@ -791,6 +880,7 @@ class ZombieSurvival {
         this.targetRadius = 0; this.targetCenterX = 0; this.targetCenterY = 0;
         this.shrinkPhase = 0; this.shrinkTimer = 0;
         this.shrinkInterval = 600; this.shrinkWarningTime = 180; this.isShrinking = false;
+        this.sound = new SoundManager();
         // Load zombie images (3 types)
         this.zombieImages = [];
         this.zombieImagesLoaded = [false, false, false];
@@ -917,12 +1007,14 @@ class ZombieSurvival {
     
     start() {
         if (this.participants.length < 2) { alert(t('minParticipants')); return; }
+        this.sound.init();
         this.reset(); this.setupEntities(true);
         this.gameStarted = true; this.isRunning = true;
         this.startTime = Date.now(); this.endTime = 0;
         this.gameTimeSeconds = 0;
         this.lastTimestamp = performance.now();
         this.setControlsDisabled(true); this.draw();
+        this.sound.playStart();
         requestAnimationFrame((ts) => this.gameLoop(ts));
     }
     
@@ -1018,6 +1110,7 @@ class ZombieSurvival {
             const toKill = zombies.length - this.maxZombies;
             for (let i = 0; i < toKill; i++) {
                 const zombie = zombies[i];
+                this.sound.playDeath();
                 this.addNotification(t('zombieDied', { name: zombie.name }));
                 this.deadZombies.push({ ...zombie, fadeTimer: 60 });
                 const idx = this.entities.indexOf(zombie);
@@ -1052,6 +1145,7 @@ class ZombieSurvival {
         entity.vx = 0; entity.vy = 0;
 
         if (infector) {
+            this.sound.playInfect();
             // 공격자의 좀비 이미지 인덱스를 계승
             entity.zombieImageIndex = infector.zombieImageIndex;
             infector.eatingTimer = 30; infector.vx = 0; infector.vy = 0; infector.zombieKills++;
@@ -1079,6 +1173,7 @@ class ZombieSurvival {
         const warning = document.getElementById('shrinkWarning');
         if (this.shrinkTimer > this.shrinkInterval - this.shrinkWarningTime && this.shrinkTimer < this.shrinkInterval) {
             warning.style.display = 'block';
+            if (Math.floor(this.shrinkTimer) % 60 === 0) this.sound.playShrink();
         } else { warning.style.display = 'none'; }
         
         if (this.shrinkTimer >= this.shrinkInterval) {
@@ -1417,6 +1512,7 @@ class ZombieSurvival {
         document.getElementById('shrinkWarning').style.display = 'none';
         this.updateUI();
         if (winners && winners.length > 0) {
+            this.sound.playWin();
             const survivalTime = this.gameTimeSeconds.toFixed(1);
             const winnerNames = winners.map(w => w.name).join(', ');
             document.getElementById('winnerName').textContent = winnerNames;

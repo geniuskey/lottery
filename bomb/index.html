@@ -925,6 +925,84 @@
   <script>
     // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
 
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+      }
+
+      init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      playStart() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(440, this.ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+      }
+
+      playTick(isDanger = false) {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(isDanger ? 800 : 400, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.05);
+      }
+
+      playPass() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(600, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+      }
+
+      playExplode() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(20, this.ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.5);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+      }
+
+      playWin() {
+        if (!this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.1 + 0.4);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.1);
+          osc.stop(this.ctx.currentTime + i * 0.1 + 0.4);
+        });
+      }
+    }
+
     const EMOJIS = ['😀', '😎', '🤩', '😊', '🥳', '😄', '🤗', '😋', '🙂', '😏', '🤠', '🧐', '🤓', '😇', '🥰'];
     const COLORS = [
       '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
@@ -947,6 +1025,7 @@
         this.holdTimer = 0;
         this.currentRound = 0;
         this.eliminationData = {}; // {playerName: roundNumber}
+        this.sound = new SoundManager();
 
         this.initElements();
         this.bindEvents();
@@ -1051,6 +1130,8 @@
         this.survivorCount = parseInt(this.survivorCountSelect.value);
         this.bombSpeed = this.bombSpeedSelect.value;
 
+        this.sound.init();
+
         if (this.participants.length < 3) {
           this.showToast('최소 3명의 참여자가 필요합니다!');
           return;
@@ -1077,6 +1158,7 @@
 
         this.setupPlayers();
         this.updateRankings();
+        this.sound.playStart();
         this.startRound();
       }
 
@@ -1212,8 +1294,15 @@
         this.gameInterval = setInterval(() => {
           if (!this.isRunning) return;
 
+          const prevTimer = this.timer;
           this.timer -= 0.1;
           this.timerDisplay.textContent = Math.ceil(this.timer);
+
+          // Ticking sound
+          const tickInterval = this.timer <= 2 ? 0.25 : 1.0;
+          if (Math.floor(this.timer / tickInterval) !== Math.floor(prevTimer / tickInterval)) {
+            this.sound.playTick(this.timer <= 2);
+          }
 
           if (this.timer <= 2) {
             this.timerDisplay.classList.add('danger');
@@ -1262,6 +1351,7 @@
 
         this.currentHolder = newHolder;
         this.updateBombPosition();
+        this.sound.playPass();
         
         // Schedule next pass with updated timing
         this.setNextHoldTimer();
@@ -1269,6 +1359,7 @@
 
       explode() {
         clearInterval(this.gameInterval);
+        this.sound.playExplode();
 
         // Stop any running throw animations
         this.bombElement.getAnimations().forEach(anim => anim.pause());
@@ -1333,6 +1424,7 @@
       endGame() {
         this.isRunning = false;
         this.survivors = [...this.alivePlayers];
+        this.sound.playWin();
 
         this.bombElement.style.display = 'none';
         this.timerDisplay.textContent = '🎉';

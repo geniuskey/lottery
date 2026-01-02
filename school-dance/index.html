@@ -1441,11 +1441,84 @@
   </div>
 
   <script>
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      playStart() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+      }
+      playTick() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.05);
+      }
+      playWarning() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.2);
+      }
+      playCaught() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(50, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.3);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+      }
+      playWin() {
+        if (!this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.15);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.15);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.15 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.15 + 0.5);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.15);
+          osc.stop(this.ctx.currentTime + i * 0.15 + 0.5);
+        });
+      }
+    }
+
     const COLORS = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#e67e22', '#1abc9c', '#d35400', '#27ae60'];
     const EMOJIS = ['😊', '😁', '🤪', '😮', '😋', '🙂‍↔️', '😏', '😆', '😙', '🤖'];
 
     let participants = [], alivePlayers = [], eliminatedPlayers = [], winners = [], playerEmojis = {}, eliminationRounds = {}, reactionTimeouts = {};
     let gameRunning = false, gameStopped = false, currentRound = 0;
+    const sound = new SoundManager();
 
     const REASONS = {
       DANCING: "춤추다 걸림 💃",
@@ -1692,12 +1765,14 @@
         for (let char of problem) {
           if (gameStopped) return;
           bubble.textContent += char;
+          sound.playTick();
 
           if (roundType === 1 && !isPeacefulRound && bubble.textContent.length > problem.length * 0.7) {
             break;
           }
 
           if (char === '=') {
+            sound.playWarning();
             actors.forEach(idx => {
               let time;
               const isCaughtTarget = !isPeacefulRound && actors.indexOf(idx) < numToAct;
@@ -1748,6 +1823,7 @@
 
         if (toEliminate.length > 0) {
           let reason = roundType === 1 ? REASONS.CHATTING : (roundType === 2 ? REASONS.SLEEPING : REASONS.DANCING);
+          sound.playCaught();
 
           toEliminate.forEach(name => {
             if (reactionTimeouts[name]) clearTimeout(reactionTimeouts[name]);
@@ -1793,6 +1869,7 @@
 
     function showWinner() {
       bubble.style.display = 'none';
+      sound.playWin();
       const now = new Date();
       const year = now.getFullYear();
       const month = now.getMonth() + 1;
@@ -1857,6 +1934,8 @@
         alert("참여자가 생존자 수보다 많아야 합니다!");
         return;
       }
+      sound.init();
+      sound.playStart();
       gameRunning = true;
       gameStopped = false;
       startBtn.disabled = true;

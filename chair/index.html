@@ -532,6 +532,92 @@
     </div>
 
     <script>
+        class SoundManager {
+            constructor() {
+                this.ctx = null;
+                this.musicInterval = null;
+            }
+
+            init() {
+                if (this.ctx) return;
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            playDanceMusic() {
+                if (!this.ctx) return;
+                this.stopMusic();
+                let beat = 0;
+                this.musicInterval = setInterval(() => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    // 춤추는 느낌의 리듬 (C4, G4, E4, G4...)
+                    const freqs = [261.63, 392.00, 329.63, 392.00];
+                    osc.frequency.setValueAtTime(freqs[beat % 4], this.ctx.currentTime);
+                    gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.1);
+                    beat++;
+                }, 200);
+            }
+
+            stopMusic() {
+                if (this.musicInterval) {
+                    clearInterval(this.musicInterval);
+                    this.musicInterval = null;
+                }
+            }
+
+            playChairAppear() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.2);
+            }
+
+            playSit() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.1);
+            }
+
+            playWin() {
+                if (!this.ctx) return;
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
+                    gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
+                    gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
+                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.1 + 0.4);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(this.ctx.currentTime + i * 0.1);
+                    osc.stop(this.ctx.currentTime + i * 0.1 + 0.4);
+                });
+            }
+        }
+
         // Matter.js 모듈
         const { Engine, World, Bodies, Body } = Matter;
 
@@ -560,6 +646,7 @@
         let winnerCount = 1;
         let chairs = [];
         let stateStartTime = 0; // 상태 시작 시간
+        const soundManager = new SoundManager();
 
         // 이모지 풀
         const emojis = ['😀', '😎', '🥳', '😊', '🤗', '😆', '😄', '🙂', '😃', '😁', '🤩', '😇', '🥰', '😍', '🤠', '🥴'];
@@ -840,6 +927,8 @@
         // 의자 대기
         function startChairWait() {
             gameState = 'chair_wait';
+            soundManager.stopMusic();
+            soundManager.playChairAppear();
             stateStartTime = Date.now();
             
             const aliveCount = participants.filter(p => !p.eliminated).length;
@@ -915,12 +1004,15 @@
                 setTimeout(showWinners, 1000);
             } else {
                 gameState = 'dancing';
+                soundManager.playDanceMusic();
                 stateStartTime = Date.now();
             }
         }
 
         // 우승자 표시
         function showWinners() {
+            soundManager.stopMusic();
+            soundManager.playWin();
             const winners = participants.filter(p => !p.eliminated);
             
             ctx.save();
@@ -990,6 +1082,7 @@
                         chair.occupied = true;
                         chair.occupiedBy = closestParticipant;
                         closestParticipant.groupJoined = true;
+                        soundManager.playSit();
                         Body.setVelocity(closestParticipant.body, { x: 0, y: 0 });
                         Body.setPosition(closestParticipant.body, { x: chair.x, y: chair.y });
                     }
@@ -1055,6 +1148,8 @@
             const names = parseParticipants(participantsInput.value);
             winnerCount = parseInt(winnerCountInput.value);
 
+            soundManager.init();
+
             if (names.length < 2) {
                 alert('참여자가 최소 2명 이상 필요합니다!');
                 return;
@@ -1070,6 +1165,7 @@
             participants = names.map(name => new Participant(name));
             eliminatedParticipants = [];
             gameState = 'dancing';
+            soundManager.playDanceMusic();
             stateStartTime = Date.now();
             startBtn.disabled = true;
             updateRanking();
@@ -1079,6 +1175,7 @@
         // 초기화
         resetBtn.addEventListener('click', () => {
             gameState = 'idle';
+            soundManager.stopMusic();
             participants.forEach(p => p.destroy());
             participants = [];
             eliminatedParticipants = [];

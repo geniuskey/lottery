@@ -778,6 +778,79 @@
   <div class="toast" id="toast">결과가 복사되었습니다!</div>
 
   <script>
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      playStart() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+      }
+      playPunch() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(60, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+      }
+      playKO() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(40, this.ctx.currentTime + 0.4);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.4);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.4);
+      }
+      playShout() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(900, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.15);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.15);
+      }
+      playWin() {
+        if (!this.ctx) return;
+        const notes = [261.63, 329.63, 392.00, 523.25];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.1 + 0.4);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.1);
+          osc.stop(this.ctx.currentTime + i * 0.1 + 0.4);
+        });
+      }
+    }
+
     (function() {
       // DOM Elements
       const canvas = document.getElementById('gameCanvas');
@@ -822,6 +895,7 @@
       let punchEffects = [];
       let textEffects = [];
       let eliminatedParticipants = [];
+      const soundManager = new SoundManager();
 
       // Canvas resize
       function resizeCanvas() {
@@ -898,6 +972,7 @@
         const wc = Math.min(parseInt(winnerCountInput.value) || 1, names.length - 1);
         winnerCountInput.value = wc;
 
+        soundManager.init();
         resizeCanvas();
 
         const startHP = parseInt(startHPSelect.value) || 5;
@@ -949,6 +1024,7 @@
         gameRunning = true;
         startBtn.disabled = true;
         gameStatus.textContent = '👊 술래가 쫓아옵니다!';
+        soundManager.playStart();
 
         updateAliveCount();
         updateRanking();
@@ -1020,10 +1096,12 @@
               // Create punch text effect
               createTextEffect(target.x, target.y - 30, punch.name, '#ffcc00');
               createPunchEffect(target.x, target.y);
+              soundManager.playPunch();
               
               // Check if KO
               if (target.hp <= 0) {
                 target.alive = false;
+                soundManager.playKO();
                 eliminationOrder.push(target);
                 createTextEffect(target.x, target.y - 50, 'K.O.', '#ff0000', true);
                 
@@ -1154,6 +1232,7 @@
           const dangerDistance = 80;
           if (distToChaser < dangerDistance && p.helpCooldown <= 0) {
             createTextEffect(p.x, p.y - 40, 'Help!', '#00ffff', false, 2);
+            soundManager.playShout();
             p.helpCooldown = 120; // 2 seconds cooldown
           }
           
@@ -1577,6 +1656,7 @@
         cancelAnimationFrame(animationId);
         survivors = participants.filter(p => p.alive);
         gameStatus.textContent = '🏆 게임 종료!';
+        soundManager.playWin();
 
         let html = '';
         survivors.forEach((p, i) => {

@@ -1205,6 +1205,94 @@
     </div>
 
     <script>
+        // ===== SoundManager =====
+        class SoundManager {
+            constructor() {
+                this.ctx = null;
+            }
+            init() {
+                if (this.ctx) return;
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            playStart() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+            }
+            playHit(volume = 0.1) {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(200 + Math.random() * 200, this.ctx.currentTime);
+                gain.gain.setValueAtTime(Math.min(volume, 0.2), this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.05);
+            }
+            playBumper() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(400, this.ctx.currentTime + 0.1);
+                osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+            }
+            playPortal() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(220, this.ctx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.2);
+            }
+            playFinish() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(660, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1320, this.ctx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.15);
+            }
+            playWin() {
+                if (!this.ctx) return;
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.15);
+                    gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.15);
+                    gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.15 + 0.05);
+                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.15 + 0.5);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(this.ctx.currentTime + i * 0.15);
+                    osc.stop(this.ctx.currentTime + i * 0.15 + 0.5);
+                });
+            }
+        }
+
+        const sound = new SoundManager();
+
         // ===== Vector2 =====
         class Vector2 {
             constructor(x = 0, y = 0) { this.x = x; this.y = y; }
@@ -1503,6 +1591,7 @@
                         ball.vel = new Vector2(ball.vel.x * 0.2, 0);
                         ball.trail = [];  // trail 즉시 제거
                         this.rankings.push(ball);
+                        sound.playFinish();
                     }
                     
                     // 막힘 감지 및 해제 (1.5초 이상 멈춰있으면)
@@ -1538,14 +1627,17 @@
                 if (ball.pos.x - ball.radius < margin) {
                     ball.pos.x = ball.radius + margin;
                     ball.vel.x *= -wallRestitution;
+                    sound.playHit(Math.abs(ball.vel.x) * 0.001);
                 }
                 if (ball.pos.x + ball.radius > this.width - margin) {
                     ball.pos.x = this.width - ball.radius - margin;
                     ball.vel.x *= -wallRestitution;
+                    sound.playHit(Math.abs(ball.vel.x) * 0.001);
                 }
                 if (ball.pos.y - ball.radius < margin) {
                     ball.pos.y = ball.radius + margin;
                     ball.vel.y *= -wallRestitution;
+                    sound.playHit(Math.abs(ball.vel.y) * 0.001);
                 }
             }
 
@@ -1567,6 +1659,7 @@
                             ball.vel.y += (dy / dist) * impulse * 0.05;
                         }
                         obs.hitTime = this.time;
+                        sound.playBumper();
                     }
                 } else if (obs.type === 'spinner') {
                     const ep = obs.getEndpoints();
@@ -1583,10 +1676,12 @@
                             ball.pos.x = obs.x2;
                             ball.pos.y = obs.y2 + obs.radius + ball.radius + 5;
                             obs.cooldown.set(ball, this.time);
+                            sound.playPortal();
                         } else if (dist2 < obs.radius + ball.radius) {
                             ball.pos.x = obs.x1;
                             ball.pos.y = obs.y1 + obs.radius + ball.radius + 5;
                             obs.cooldown.set(ball, this.time);
+                            sound.playPortal();
                         }
                     }
                 } else if (obs.type === 'booster') {
@@ -1596,6 +1691,7 @@
                         ball.vel.x += Math.cos(obs.angle) * obs.force * 0.06;
                         ball.vel.y += Math.sin(obs.angle) * obs.force * 0.06;
                         obs.hitTime = this.time;
+                        sound.playBumper();
                     }
                 } else if (obs.type === 'triangle') {
                     const verts = obs.getVertices();
@@ -1626,6 +1722,7 @@
                     const bounce = 1 + restitution * ball.restitution;
                     ball.vel.x -= bounce * dotProduct * nx;
                     ball.vel.y -= bounce * dotProduct * ny;
+                    sound.playHit(Math.abs(dotProduct) * 0.002);
                     return true;
                 }
                 return false;
@@ -1657,6 +1754,7 @@
                     const bounce = 1 + ball.restitution * 0.9;
                     ball.vel.x -= bounce * dotProduct * normal.x;
                     ball.vel.y -= bounce * dotProduct * normal.y;
+                    sound.playHit(Math.abs(dotProduct) * 0.002);
                 }
             }
 
@@ -1689,6 +1787,7 @@
                         a.vel.y -= impulse * ny;
                         b.vel.x += impulse * nx;
                         b.vel.y += impulse * ny;
+                        sound.playHit(Math.abs(impulse) * 0.002);
                     }
                 }
             }
@@ -2232,6 +2331,8 @@
             start() {
                 if (this.participants.length === 0) return;
                 
+                sound.init();
+                sound.playStart();
                 this.isRunning = true;
                 this.setupWorld();
                 this.gameStartTime = performance.now();
@@ -2470,6 +2571,7 @@
 
             showWinner(isTimeout = false) {
                 let rankings = [...this.world.rankings];
+                sound.playWin();
                 
                 // firstWins가 false면 순위 뒤집기
                 if (!this.firstWins) {
