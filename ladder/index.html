@@ -534,6 +534,83 @@
     </div>
 
     <script>
+        // SoundManager 클래스
+        class SoundManager {
+            constructor() {
+                this.ctx = null;
+            }
+            init() {
+                if (this.ctx) return;
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            playReset() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(260, this.ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.02, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+            }
+            playStart() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(300, this.ctx.currentTime + 0.4);
+                gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.03, this.ctx.currentTime + 0.2);
+                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.4);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.4);
+            }
+            playMove() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(330, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.02);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.02);
+            }
+            playFinish() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(110, this.ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.3);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+            }
+            playWin() {
+                if (!this.ctx) return;
+                const notes = [261.63, 329.63, 392.00, 523.25]; // 한 옥타브 낮춤
+                notes.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.15);
+                    gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.15);
+                    gain.gain.linearRampToValueAtTime(0.02, this.ctx.currentTime + i * 0.15 + 0.05);
+                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.15 + 0.6);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(this.ctx.currentTime + i * 0.15);
+                    osc.stop(this.ctx.currentTime + i * 0.15 + 0.6);
+                });
+            }
+        }
+
+        const sound = new SoundManager();
+
         // Canvas 설정
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -1017,6 +1094,7 @@
                         let accumulatedLength = 0;
                         let lastX = fullPath[0].x;
                         let lastY = fullPath[0].y;
+                        let lastSegmentIndex = 0;
 
                         for (let i = 1; i < fullPath.length; i++) {
                             const dx = fullPath[i].x - fullPath[i-1].x;
@@ -1028,6 +1106,11 @@
                                 lastX = fullPath[i].x;
                                 lastY = fullPath[i].y;
                                 accumulatedLength += segmentLength;
+                                
+                                if (i > lastSegmentIndex) {
+                                    sound.playMove();
+                                    lastSegmentIndex = i;
+                                }
                             } else {
                                 const remainingLength = targetLength - accumulatedLength;
                                 const t = remainingLength / segmentLength;
@@ -1079,6 +1162,9 @@
 
                 // 결과 텍스트 다시 그리기
                 const isWin = resultText !== '꽝';
+                if (isWin) sound.playWin();
+                else sound.playFinish();
+                
                 ctx.fillStyle = isWin ? '#FFD700' : '#fff';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
@@ -1205,6 +1291,8 @@
 
         // 사다리 생성 (초기화/섞기)
         function generateLadder() {
+            sound.init();
+            sound.playReset();
             let rawParticipants = parseParticipants(participantsInput.value);
             const winningResults = resultsInput.value.split(',').map(n => n.trim()).filter(n => n);
             numBridges = parseInt(bridgesInput.value);
@@ -1244,6 +1332,7 @@
         function startGame() {
             if (!ladder || gameState !== 'setup') return;
 
+            sound.playStart();
             gameState = 'revealed';
 
             // 가림 해제하며 그리기

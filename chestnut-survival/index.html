@@ -729,6 +729,56 @@
   <script>
     // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
     
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      playStart() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+      }
+      playHit() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(40, this.ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.2);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.2);
+      }
+      playWin() {
+        if (!this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.15);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.15);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.15 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.15 + 0.5);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.15);
+          osc.stop(this.ctx.currentTime + i * 0.15 + 0.5);
+        });
+      }
+    }
+
+    const sound = new SoundManager();
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     
@@ -1285,6 +1335,7 @@
             player.alive = false;
             player.deathTimeSeconds = gameTimeSeconds;
             player.emoji = hurtEmojis[Math.floor(Math.random() * hurtEmojis.length)];
+            sound.playHit();
             
             const gameArea = document.querySelector('.game-area');
             gameArea.classList.add('shake');
@@ -1386,6 +1437,7 @@
     function endGame() {
       gameRunning = false;
       cancelAnimationFrame(animationId);
+      sound.playWin();
       
       const winners = players.filter(p => p.alive);
       const finalTime = formatTimeSeconds(gameTimeSeconds);
@@ -1488,6 +1540,8 @@
       gameTimeSeconds = 0;
       lastTimestamp = 0;
       difficultyMultiplier = 1.0;
+      sound.init();
+      sound.playStart();
       initPlayers();
       updateRankings();
       
