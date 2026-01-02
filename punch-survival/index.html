@@ -1012,6 +1012,7 @@
     let animationId = null;
     let gameResults = [];
     let eliminationOrder = [];
+    let lastTime = 0; // Only one lastTime declaration
 
     // Fighter avatars - 얼굴 이모지
     const avatars = ['😀', '😎', '🤩', '😤', '😠', '🥳', '😈', '🤠', '😺', '🐶', '🦁', '🐯', '🐻', '🐼', '🐸'];
@@ -1060,9 +1061,9 @@
       setInitialPosition(canvasWidth, canvasHeight) {
         const ringPadding = 100;
         const minX = ringPadding;
-        const maxX = canvasWidth - ringPadding;
+        const maxX = Math.max(minX + 50, canvasWidth - ringPadding);
         const minY = ringPadding;
-        const maxY = canvasHeight - ringPadding;
+        const maxY = Math.max(minY + 50, canvasHeight - ringPadding);
         
         this.x = minX + Math.random() * (maxX - minX);
         this.y = minY + Math.random() * (maxY - minY);
@@ -1091,7 +1092,10 @@
         }
       }
 
-      update(canvasWidth, canvasHeight) {
+      update(deltaTime, canvasWidth, canvasHeight) {
+        // Normalize deltaTime relative to 60fps
+        const timeScale = deltaTime * 60;
+
         // 탈락한 경우 링 밖으로 이동 후 가만히 있기
         if (!this.isAlive) {
           const dx = this.eliminatedX - this.x;
@@ -1099,10 +1103,9 @@
           const dist = Math.sqrt(dx * dx + dy * dy);
           
           if (dist > 3) {
-            this.x += dx * 0.05;
-            this.y += dy * 0.05;
+            this.x += dx * 0.05 * timeScale;
+            this.y += dy * 0.05 * timeScale;
           }
-          // 탈락자는 애니메이션 없이 가만히
           this.angle = 0;
           this.isHit = false;
           this.isPunching = false;
@@ -1111,66 +1114,63 @@
 
         const ringPadding = 100;
         const minX = ringPadding;
-        const maxX = canvasWidth - ringPadding;
+        const maxX = Math.max(minX + 50, canvasWidth - ringPadding);
         const minY = ringPadding;
-        const maxY = canvasHeight - ringPadding;
+        const maxY = Math.max(minY + 50, canvasHeight - ringPadding);
 
-        // 다른 생존 파이터를 향해 이동 (50% 확률) 또는 랜덤 이동
-        if (Math.random() < 0.015) {
+        // 다른 생존 파이터를 향해 이동
+        if (Math.random() < 0.015 * timeScale) {
           const otherFighters = fighters.filter(f => f !== this && f.isAlive);
           if (otherFighters.length > 0 && Math.random() < 0.7) {
-            // 다른 파이터를 향해 이동
             const target = otherFighters[Math.floor(Math.random() * otherFighters.length)];
             this.targetX = target.x + (Math.random() - 0.5) * 60;
             this.targetY = target.y + (Math.random() - 0.5) * 60;
           } else {
-            // 랜덤 이동
             this.targetX = minX + Math.random() * (maxX - minX);
             this.targetY = minY + Math.random() * (maxY - minY);
           }
         }
 
-        // 목표를 향해 이동 - 더 느리게 (0.01 -> 0.003)
         const dx = this.targetX - this.x;
         const dy = this.targetY - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         
         if (dist > 5) {
-          this.vx += dx * 0.003;
-          this.vy += dy * 0.003;
+          // Acceleration
+          this.vx += dx * 0.003 * timeScale;
+          this.vy += dy * 0.003 * timeScale;
         }
 
-        // 마찰력 증가 (0.95 -> 0.92)
-        this.vx *= 0.92;
-        this.vy *= 0.92;
+        // Friction
+        const friction = Math.pow(0.92, timeScale);
+        this.vx *= friction;
+        this.vy *= friction;
 
-        // 최대 속도 제한
-        const maxSpeed = 2;
-        const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-        if (speed > maxSpeed) {
-          this.vx = (this.vx / speed) * maxSpeed;
-          this.vy = (this.vy / speed) * maxSpeed;
+        // Velocity limit
+        const maxSpeed = 4; // Absolute max speed (pixels per frame at 60fps)
+        const currentSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+        if (currentSpeed > maxSpeed) {
+          this.vx = (this.vx / currentSpeed) * maxSpeed;
+          this.vy = (this.vy / currentSpeed) * maxSpeed;
         }
 
-        // 위치 업데이트
-        this.x += this.vx;
-        this.y += this.vy;
+        // Position update
+        this.x += this.vx * timeScale;
+        this.y += this.vy * timeScale;
 
-        // 경계 체크
+        // Boundary clamp
         this.x = Math.max(minX, Math.min(maxX, this.x));
         this.y = Math.max(minY, Math.min(maxY, this.y));
 
-        // 애니메이션 타이머 업데이트
         if (this.isHit) {
-          this.hitTimer--;
+          this.hitTimer -= deltaTime;
           if (this.hitTimer <= 0) this.isHit = false;
         }
         if (this.isPunching) {
-          this.punchTimer--;
+          this.punchTimer -= deltaTime;
           if (this.punchTimer <= 0) this.isPunching = false;
         }
 
-        // 가벼운 흔들림 애니메이션 - 더 느리게
         this.angle = Math.sin(Date.now() * 0.002 + this.index) * 0.05;
       }
 
@@ -1226,10 +1226,11 @@
 
       takeDamage(damage) {
         this.hp = Math.max(0, this.hp - damage);
+        this.isAlive = this.hp > 0;
         this.isHit = true;
-        this.hitTimer = 10;
+        this.hitTimer = 0.2; // 0.2 seconds
         
-        // 넉백 - 적당한 수준으로
+        // 넉백
         this.vx += (Math.random() - 0.5) * 8;
         this.vy += (Math.random() - 0.5) * 8;
 
@@ -1243,13 +1244,14 @@
 
       punch() {
         this.isPunching = true;
-        this.punchTimer = 15;
+        this.punchTimer = 0.3; // 0.3 seconds
       }
     }
 
     // Initialize Canvas
     function resizeCanvas() {
       const container = canvas.parentElement;
+      if (!container) return;
       canvas.width = container.clientWidth;
       canvas.height = container.clientHeight;
     }
@@ -1276,7 +1278,7 @@
     // Initialize Game
     function initGame() {
       const names = parseParticipants();
-      const winnerCount = parseInt(winnerCountInput.value);
+      let winnerCount = parseInt(winnerCountInput.value);
 
       if (names.length < 2) {
         showToast('최소 2명 이상의 참여자가 필요합니다!');
@@ -1290,7 +1292,8 @@
       
       // 당첨 인원이 참여자 수 - 1 초과하면 조정
       if (winnerCount > names.length - 1) {
-        winnerCountInput.value = Math.max(1, names.length - 1);
+        winnerCount = names.length - 1;
+        winnerCountInput.value = winnerCount;
       }
 
       resizeCanvas();
@@ -1306,19 +1309,32 @@
       
       updateRanking();
       updateAliveCount();
+      // Removed performance.now() call that might cause script errors here
 
       return true;
     }
 
     // Game Loop
-    function gameLoop() {
+    function gameLoop(currentTime) {
       if (!gameRunning) return;
+
+      if (!lastTime || lastTime === 0) {
+        lastTime = currentTime;
+        animationId = requestAnimationFrame(gameLoop);
+        return;
+      }
+      
+      const deltaTime = (currentTime - lastTime) / 1000; // in seconds
+      lastTime = currentTime;
+
+      // Skip frames with too much lag to avoid teleporting
+      const clampedDeltaTime = Math.min(deltaTime, 0.1);
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Update and draw all fighters
       fighters.forEach(fighter => {
-        fighter.update(canvas.width, canvas.height);
+        fighter.update(clampedDeltaTime, canvas.width, canvas.height);
       });
       
       // 탈락자 먼저 그리기 (흐리게)
@@ -1579,7 +1595,9 @@
       startBtn.textContent = '⏳ 진행 중...';
       gameStatus.textContent = '🔔 라운드 시작!';
 
-      gameLoop();
+      // Reset timing and start loop properly
+      lastTime = 0;
+      animationId = requestAnimationFrame(gameLoop);
       setTimeout(doPunchRound, 1000);
     });
 
@@ -1590,6 +1608,7 @@
       fighters = [];
       gameResults = [];
       eliminationOrder = [];
+      lastTime = 0; // Reset lastTime on reset
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       koLog.innerHTML = '';
