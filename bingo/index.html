@@ -1,13 +1,61 @@
-<!DOCTYPE html>
 <!--
-  Bingo Lottery Game
-  Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
+@game-meta
+{
+  "id": "bingo",
+  "title": "빙고",
+  "emoji": "🎯",
+  "category": "보드게임",
+  "description": "클래식 빙고를 현대적으로 재해석한 추첨 게임. 5x5 그리드에서 실시간 랭킹 경쟁!",
+  "features": ["📊 실시간 랭킹", "🎨 FLIP 애니메이션"],
+  "color": "purple",
+  "version": "1.0.0",
+  "updated": "2025-01-15",
+  "author": {
+    "name": "Euiyun Edwin Kim",
+    "email": "geniuskey@gmail.com",
+    "github": "geniuskey"
+  },
+  "urls": {
+    "service": "https://geniuskey.github.io/lottery/bingo/",
+    "repository": "https://github.com/geniuskey/lottery"
+  },
+  "license": "MIT",
+  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+}
+@end-game-meta
 -->
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎯 빙고 추첨 게임</title>
+  <title>빙고 - 추첨 게임 포털</title>
+
+  <!-- SEO 기본 -->
+  <meta name="description" content="클래식 빙고를 현대적으로 재해석한 온라인 추첨 게임! 5x5 그리드에서 숫자를 맞추고 실시간 랭킹 경쟁을 즐기세요. 학교, 회사, 이벤트용으로 최고!">
+  <meta name="keywords" content="빙고, 빙고 게임, 온라인 빙고, 추첨 게임, 랜덤 숫자, 빙고 추첨, 실시간 빙고, 레크리에이션 게임">
+  <meta name="author" content="Euiyun Edwin Kim">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="추첨 게임 포털">
+  <meta property="og:title" content="🎯 빙고 - 실시간 온라인 빙고 추첨">
+  <meta property="og:description" content="5x5 그리드에서 펼쳐지는 박진감 넘치는 빙고 추첨! 실시간 순위 변동과 화려한 애니메이션을 즐기세요.">
+  <meta property="og:url" content="https://geniuskey.github.io/lottery/bingo/">
+  <meta property="og:image" content="https://geniuskey.github.io/lottery/og-image.png">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="🎯 빙고 - 실시간 온라인 빙고 추첨">
+  <meta name="twitter:description" content="5x5 그리드에서 펼쳐지는 박진감 넘치는 빙고 추첨! 실시간 순위 변동과 화려한 애니메이션을 즐기세요.">
+  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/og-image.png">
+
+  <!-- Canonical & Favicon -->
+  <link rel="canonical" href="https://geniuskey.github.io/lottery/bingo/">
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+
   <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
   <style>
     :root {
