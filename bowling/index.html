@@ -793,6 +793,109 @@
     </div>
 
     <script>
+        class SoundManager {
+            constructor() {
+                this.ctx = null;
+                this.rollOsc = null;
+                this.rollGain = null;
+            }
+            async init() {
+                if (this.ctx) {
+                    if (this.ctx.state === 'suspended') await this.ctx.resume();
+                    return;
+                }
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            playStart() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+            }
+            startRoll() {
+                if (!this.ctx || this.rollOsc) return;
+                this.rollOsc = this.ctx.createOscillator();
+                this.rollGain = this.ctx.createGain();
+                this.rollOsc.type = 'triangle';
+                // 웅웅거림을 줄이기 위해 주파수 조정 및 볼륨 대폭 축소
+                this.rollOsc.frequency.setValueAtTime(180, this.ctx.currentTime);
+                this.rollGain.gain.setValueAtTime(0, this.ctx.currentTime);
+                this.rollGain.gain.linearRampToValueAtTime(0.05, this.ctx.currentTime + 0.3);
+                this.rollOsc.connect(this.rollGain);
+                this.rollGain.connect(this.ctx.destination);
+                this.rollOsc.start();
+            }
+            stopRoll() {
+                if (this.rollGain) {
+                    this.rollGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+                    const oldOsc = this.rollOsc;
+                    setTimeout(() => {
+                        try { oldOsc.stop(); } catch(e) {}
+                    }, 300);
+                    this.rollOsc = null;
+                    this.rollGain = null;
+                }
+            }
+            playStrike() {
+                if (!this.ctx) return;
+                // 1. 묵직한 타격음 (Thud)
+                const osc1 = this.ctx.createOscillator();
+                const gain1 = this.ctx.createGain();
+                osc1.type = 'triangle';
+                osc1.frequency.setValueAtTime(150, this.ctx.currentTime);
+                osc1.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.2);
+                gain1.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain1.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+                osc1.connect(gain1); gain1.connect(this.ctx.destination);
+                osc1.start(); osc1.stop(this.ctx.currentTime + 0.2);
+
+                // 2. 핀 부딪히는 맑은 소리 (Clack) - 주파수 하향 및 볼륨 축소
+                const osc2 = this.ctx.createOscillator();
+                const gain2 = this.ctx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(600, this.ctx.currentTime);
+                gain2.gain.setValueAtTime(0.05, this.ctx.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+                osc2.connect(gain2); gain2.connect(this.ctx.destination);
+                osc2.start(); osc2.stop(this.ctx.currentTime + 0.05);
+            }
+            playPinHit() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                // 주파수 대폭 하향 (800~1000Hz -> 400~600Hz) 및 볼륨 축소
+                osc.frequency.setValueAtTime(400 + Math.random() * 200, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + 0.08);
+            }
+            playWin() {
+                if (!this.ctx) return;
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.15);
+                    gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.15);
+                    gain.gain.linearRampToValueAtTime(0.15, this.ctx.currentTime + i * 0.15 + 0.05);
+                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.15 + 0.5);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(this.ctx.currentTime + i * 0.15);
+                    osc.stop(this.ctx.currentTime + i * 0.15 + 0.5);
+                });
+            }
+        }
+
+        const sound = new SoundManager();
+
         // Game State
         let gameRunning = false;
         let participants = [];
@@ -1191,6 +1294,7 @@
                 linearDamping: 0.5,
                 angularDamping: 0.6
             });
+            pinBody.isPin = true;
             
             // Position body center at half height (box center)
             pinBody.position.set(x, physicsHeight / 2, z);
@@ -1229,6 +1333,12 @@
                 position: new CANNON.Vec3(x, BALL_RADIUS, z),
                 linearDamping: 0.01,
                 angularDamping: 0.01
+            });
+            ballBody.isBall = true;
+            ballBody.addEventListener('collide', (e) => {
+                if (e.body.isPin) {
+                    sound.playStrike();
+                }
             });
 
             // Fixed fast speed
@@ -1582,6 +1692,7 @@
         function endGame() {
             gameRunning = false;
             startBtn.disabled = false;
+            sound.playWin();
 
             winnerNames.textContent = winners.join(', ');
             winnerOverlay.classList.add('show');
@@ -1640,6 +1751,9 @@
                 alert('최소 2명의 참여자가 필요합니다.');
                 return;
             }
+
+            sound.init();
+            sound.playStart();
 
             winnerCount = parseInt(winnerCountSelect.value);
 

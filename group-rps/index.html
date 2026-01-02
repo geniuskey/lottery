@@ -258,6 +258,78 @@
   </main>
   <script>
     // Copyright (c) 2025 Euiyun Edwin Kim (geniuskey@gmail.com)
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      playStart() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+      }
+      playShout() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+      }
+      playReveal() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.15);
+      }
+      playEliminate() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(50, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.3);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+      }
+      playWin() {
+        if (!this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.15);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.15);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.15 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.15 + 0.5);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.15);
+          osc.stop(this.ctx.currentTime + i * 0.15 + 0.5);
+        });
+      }
+    }
+
     const RPS = ['✊', '✌️', '🖐️'];
     const HAPPY_EMOJIS = ['😊', '😄', '😁', '🙂', '😎', '🤗', '😋', '🥳', '😃', '🤩'];
     const SAD_EMOJIS = ['😢', '😭', '😿', '🥺', '😞', '😔'];
@@ -265,6 +337,7 @@
     
     let participants = [], alivePlayers = [], eliminatedPlayers = [], winners = [], gameRunning = false, gameStopped = false, currentRound = 0, pvpMode = false;
     let renderTimeout = null;
+    const sound = new SoundManager();
     const speeds = { shout: 500, show: 1000, result: 1200 };
     const $ = id => document.getElementById(id);
     const participantsInput = $('participants'), winnerCountInput = $('winnerCount'), winnerValue = $('winnerValue');
@@ -485,12 +558,14 @@
       for (const t of ['가위!', '바위!', '보!']) { 
         if (gameStopped) return 'stopped';
         showShout(t); 
+        sound.playShout();
         await sleep(speeds.shout); 
       }
       
       if (gameStopped) return 'stopped';
       
       const tc = Math.floor(Math.random() * 3);
+      sound.playReveal();
       showTeacherRPS(tc);
       setBlackboardText(RPS[tc]);
       
@@ -511,6 +586,7 @@
         return 'continue';
       }
       
+      if (losers.length > 0) sound.playEliminate();
       losers.forEach(i => {
         const n = participants[i];
         alivePlayers = alivePlayers.filter(x => x !== n);
@@ -541,6 +617,7 @@
       for (const t of ['가위!', '바위!', '보!']) { 
         if (gameStopped) return 'stopped';
         showShout(t); 
+        sound.playShout();
         await sleep(speeds.shout); 
       }
       
@@ -549,6 +626,7 @@
       const ai = participants.map((n, i) => alivePlayers.includes(n) ? i : -1).filter(i => i !== -1);
       const pc = {};
       ai.forEach(i => { const c = Math.floor(Math.random() * 3); pc[i] = c; showStudentRPS(i, c); });
+      sound.playReveal();
       
       await sleep(speeds.show);
       if (gameStopped) return 'stopped';
@@ -579,6 +657,7 @@
       const spotsLeft = wc - winners.length;
       
       if (roundWinners.length <= spotsLeft) {
+        if (roundLosers.length > 0) sound.playEliminate();
         roundWinners.forEach(i => {
           const n = participants[i];
           if (!winners.includes(n)) {
@@ -606,6 +685,7 @@
         if (winners.length >= wc || alivePlayers.length === 0) return 'end';
         return 'continue';
       } else {
+        if (roundLosers.length > 0) sound.playEliminate();
         roundLosers.forEach(i => {
           const n = participants[i];
           alivePlayers = alivePlayers.filter(x => x !== n);
@@ -635,6 +715,7 @@
       const o = document.createElement('div'); o.className = 'winner-overlay'; o.id = 'winnerOverlay';
       o.innerHTML = `<div class="winner-display"><h2><span class="trophy">🏆</span> 최종 생존자 <span class="trophy">🏆</span></h2><div class="winner-list">${winners.map(n => `<div class="winner-name">${n}</div>`).join('')}</div><button class="winner-confirm-btn" id="winnerConfirmBtn">확인</button></div>`;
       classroom.appendChild(o); createConfetti(); setBlackboardText('축하합니다!');
+      sound.playWin();
       $('winnerConfirmBtn').addEventListener('click', closeWinnerDisplay);
     }
 
@@ -668,6 +749,8 @@
       if (participants.length < 2) { showToast('최소 2명의 참여자가 필요합니다!'); return; }
       if (wc >= participants.length) { showToast('생존자 수는 참여자 수보다 적어야 합니다!'); return; }
       
+      sound.init();
+      sound.playStart();
       gameRunning = true;
       gameStopped = false;
       startBtn.disabled = true;

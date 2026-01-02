@@ -1103,7 +1103,78 @@
 
   <script>
     // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
-    
+
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      playStart() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+      }
+      playTick() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.05);
+      }
+      playHit() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.05);
+      }
+      playBingo() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1600, this.ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.2);
+      }
+      playWin() {
+        if (!this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.1 + 0.4);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.1);
+          osc.stop(this.ctx.currentTime + i * 0.1 + 0.4);
+        });
+      }
+    }
+
     class BingoGame {
       constructor() {
         this.participants = [];
@@ -1120,6 +1191,7 @@
         this.previousRankings = {};
         this.dynamicSort = true;
         this.initialOrder = [];
+        this.sound = new SoundManager();
 
         this.initElements();
         this.bindEvents();
@@ -1275,6 +1347,9 @@
         this.previousRankings = {};
         this.initialOrder = [...this.participants];
 
+        this.sound.init();
+        this.sound.playStart();
+
         // Generate available numbers
         this.availableNumbers = [];
         for (let i = 1; i <= this.maxNumber; i++) this.availableNumbers.push(i);
@@ -1314,6 +1389,10 @@
         const number = this.availableNumbers.pop();
         this.calledNumbers.push(number);
         this.lastCalledNumber = number;
+        this.sound.playTick();
+
+        let hitOccurred = false;
+        let bingoOccurred = false;
 
         // Check boards
         this.participants.forEach(name => {
@@ -1325,6 +1404,7 @@
               if (board.grid[i][j] === number && !board.checked[i][j]) {
                 board.checked[i][j] = true;
                 board.checkedCount++;
+                hitOccurred = true;
               }
             }
           }
@@ -1333,6 +1413,9 @@
           const newLines = this.countLines(board.checked);
           if (newLines > board.lines) {
             board.lines = newLines;
+            if (board.lines >= this.requiredLines) {
+              bingoOccurred = true;
+            }
           }
           
           // Check for bingo
@@ -1345,6 +1428,9 @@
             }
           }
         });
+
+        if (bingoOccurred) this.sound.playBingo();
+        else if (hitOccurred) this.sound.playHit();
 
         this.renderGame();
         this.updateRankings();
@@ -1566,6 +1652,7 @@
           this.callInterval = null;
         }
         
+        this.sound.playWin();
         this.startBtn.disabled = false;
         this.showOverlay();
       }
