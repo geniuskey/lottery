@@ -111,6 +111,7 @@
       z-index: -1;
       background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
       overflow: hidden;
+      perspective: 1000px;
     }
 
     .mouse-glow {
@@ -153,32 +154,32 @@
 
     .floating-emoji {
       position: absolute;
+      top: -20vh;
       font-size: 24px;
       opacity: 0;
-      animation: float 20s linear;
-      animation-fill-mode: backwards;
+      animation: float 20s linear infinite;
       pointer-events: none;
       user-select: none;
       filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
-      transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+      will-change: transform, top;
     }
 
     @keyframes float {
       0% {
-        transform: translateY(101vh) rotate(0deg) scale(0.8);
+        top: -20vh;
         opacity: 0;
       }
 
       10% {
-        opacity: 0.15;
+        opacity: var(--base-opacity, 0.15);
       }
 
       90% {
-        opacity: 0.15;
+        opacity: var(--base-opacity, 0.15);
       }
 
       100% {
-        transform: translateY(-15vh) rotate(360deg) scale(1.2);
+        top: 110vh;
         opacity: 0;
       }
     }
@@ -1210,24 +1211,44 @@
     orb4.className = 'glow-orb orb-4';
     bgContainer.appendChild(orb4);
 
-    function createFloatingEmoji() {
+    function createFloatingEmoji(isInitial = false) {
       const emoji = document.createElement('div');
       emoji.className = 'floating-emoji';
       emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      
+      // Depth (0: far, 1: near)
+      const z = Math.random();
+      const size = 12 + (z * 40); // 12px to 52px
+      const opacity = 0.05 + (z * 0.2); // 0.05 to 0.25
+      const blur = (1 - z) * 4; // far emojis are blurrier
+      const duration = 15 + ((1 - z) * 20); // far emojis move slower
+      
       emoji.style.left = Math.random() * 100 + '%';
-      emoji.style.animationDuration = (15 + Math.random() * 15) + 's';
-      emoji.style.animationDelay = Math.random() * 5 + 's';
-      emoji.style.fontSize = (16 + Math.random() * 24) + 'px';
+      emoji.style.fontSize = size + 'px';
+      emoji.style.setProperty('--base-opacity', opacity);
+      emoji.style.filter = `blur(${blur}px) drop-shadow(0 0 8px rgba(255, 255, 255, 0.2))`;
+      emoji.style.zIndex = Math.floor(z * 10);
+      emoji.dataset.z = z; // Store depth for parallax
+      
+      emoji.style.animationDuration = duration + 's';
+      
+      if (isInitial) {
+        emoji.style.animationDelay = -(Math.random() * duration) + 's';
+      }
+      
       bgContainer.appendChild(emoji);
 
-      setTimeout(() => emoji.remove(), 35000);
+      if (!isInitial) {
+        setTimeout(() => emoji.remove(), duration * 1000);
+      }
     }
 
-    // Initial emojis
-    for (let i = 0; i < 15; i++) {
-      setTimeout(createFloatingEmoji, i * 400);
+    // Initial emojis: 즉시 20개 생성하여 화면을 채움
+    for (let i = 0; i < 20; i++) {
+      createFloatingEmoji(true);
     }
-    setInterval(createFloatingEmoji, 2500);
+    // 추가로 계속 생성
+    setInterval(() => createFloatingEmoji(false), 2000);
 
     // Interactive Mouse Movement
     let mouseX = 0;
@@ -1277,34 +1298,32 @@
       const orbs = document.querySelectorAll('.glow-orb');
       const emojiElems = document.querySelectorAll('.floating-emoji');
 
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      
+      // Calculate normalized mouse offset (-1 to 1)
+      const moveX = (mouseX - centerX) / centerX;
+      const moveY = (mouseY - centerY) / centerY;
+
       // Orb Parallax
       orbs.forEach((orb, index) => {
-        const factor = (index + 1) * 10;
-        const x = (mouseX - window.innerWidth / 2) / factor;
-        const y = (mouseY - window.innerHeight / 2) / factor;
-        orb.style.transform = `translate(${x}px, ${y}px)`;
+        const factor = (index + 1) * 20;
+        orb.style.transform = `translate(${moveX * factor}px, ${moveY * factor}px)`;
       });
 
-      // Emoji Repulsion (Push away from mouse)
+      // 3D Emoji Parallax
       emojiElems.forEach(emoji => {
-        const rect = emoji.getBoundingClientRect();
-        const emojiX = rect.left + rect.width / 2;
-        const emojiY = rect.top + rect.height / 2;
+        const z = parseFloat(emoji.dataset.z) || 0.5;
+        
+        // Closer objects (high z) move MORE in the opposite direction of mouse
+        // to create a camera pivot effect
+        const pX = moveX * z * -100;
+        const pY = moveY * z * -100;
+        
+        // Add a slight constant rotation
+        const rotation = (moveX * z * 20);
 
-        const dx = mouseX - emojiX;
-        const dy = mouseY - emojiY;
-        const distance = Math.hypot(dx, dy);
-
-        if (distance < 200) {
-          const force = (200 - distance) / 20;
-          const pushX = (dx / distance) * -force * 10;
-          const pushY = (dy / distance) * -force * 10;
-
-          // Apply extra transform on top of the animation
-          emoji.style.transform = `translate(${pushX}px, ${pushY}px) scale(${1 + force / 10})`;
-        } else {
-          emoji.style.transform = 'translate(0, 0) scale(1)';
-        }
+        emoji.style.transform = `translate3d(${pX}px, ${pY}px, 0) rotate(${rotation}deg)`;
       });
 
       requestAnimationFrame(animateBackground);
