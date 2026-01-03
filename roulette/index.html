@@ -80,6 +80,7 @@
       min-height: 100vh;
       display: flex;
       overflow: hidden;
+      touch-action: manipulation;
     }
 
     .sidebar {
@@ -372,6 +373,7 @@
       justify-content: center;
       padding: 20px;
       position: relative;
+      min-width: 0; /* Allow shrinking in flex container */
     }
 
     .copyright {
@@ -392,6 +394,7 @@
     }
 
     #wheelCanvas {
+      display: block;
       border-radius: 50%;
       box-shadow: 0 0 50px rgba(155, 93, 229, 0.3), 0 0 100px rgba(155, 93, 229, 0.1);
     }
@@ -598,18 +601,31 @@
     }
 
     @media (max-width: 900px) {
-      body { flex-direction: column; }
+      body { flex-direction: column; overflow-y: auto; }
       .sidebar {
         width: 100%;
         min-width: unset;
         height: auto;
-        max-height: 45vh;
+        max-height: none;
         border-right: none;
         border-bottom: 1px solid var(--border-glow);
-        overflow-y: auto;
+        padding: 15px;
       }
-      .rankings { max-height: 150px; }
-      .game-area { flex: 1; min-height: 55vh; }
+      .rankings { max-height: 200px; min-height: 100px; }
+      .game-area { 
+        flex: none; 
+        width: 100%;
+        height: 60vh; 
+        min-height: 400px;
+        padding: 10px;
+      }
+      .winner-display {
+        font-size: 2rem;
+        padding: 20px 40px;
+      }
+      .winner-display .winner-name {
+        font-size: 2.5rem;
+      }
     }
 
     /* Custom Scrollbar */
@@ -957,13 +973,29 @@
 
       drawWheel() {
         const container = this.gameArea;
-        const size = Math.min(container.clientWidth, container.clientHeight) - 100;
-        const wheelSize = Math.max(300, size);
+        const dpr = window.devicePixelRatio || 1;
+        
+        // Calculate container-aware size
+        const padding = 40;
+        const size = Math.min(container.clientWidth, container.clientHeight) - padding;
+        const wheelSize = Math.max(200, size); // Reduce floor to 200px
 
-        this.canvas.width = wheelSize;
-        this.canvas.height = wheelSize;
+        // Set logical display size
+        this.canvas.style.width = `${wheelSize}px`;
+        this.canvas.style.height = `${wheelSize}px`;
+        
+        // Ensure container matches wheel size for correct pointer positioning
+        this.wheelContainer.style.width = `${wheelSize}px`;
+        this.wheelContainer.style.height = `${wheelSize}px`;
+        
+        // Set actual pixel resolution
+        this.canvas.width = wheelSize * dpr;
+        this.canvas.height = wheelSize * dpr;
 
         const ctx = this.ctx;
+        ctx.save();
+        ctx.scale(dpr, dpr); // Handle high DPI
+        
         const centerX = wheelSize / 2;
         const centerY = wheelSize / 2;
         const radius = wheelSize / 2 - 10;
@@ -1010,6 +1042,7 @@
         ctx.stroke();
 
         ctx.restore();
+        ctx.restore(); // Restore dpr scale
       }
 
       spin() {
