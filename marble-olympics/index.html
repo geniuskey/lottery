@@ -82,12 +82,19 @@
             box-sizing: border-box;
         }
 
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
+
         body {
             font-family: 'Noto Sans KR', sans-serif;
             background: var(--bg-gradient);
             min-height: 100vh;
             color: #fff;
             overflow-x: hidden;
+            touch-action: manipulation;
         }
 
         .bg-effects {
@@ -124,27 +131,24 @@
         .container {
             position: relative;
             z-index: 1;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 30px;
-            min-height: 100vh;
+            display: flex;
+            width: 100%;
             height: 100vh;
-            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .sidebar {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 20px;
+            width: 320px;
+            min-width: 320px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            max-height: 95vh;
-            overflow-y: auto;
+            gap: 20px;
+            height: 100vh;
+            z-index: 100;
         }
 
         .sidebar-top {
@@ -162,176 +166,175 @@
             flex-direction: column;
         }
 
-        .logo-row {
+        .sidebar-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+            gap: 10px;
         }
 
-        .logo {
-            font-family: 'Black Han Sans', sans-serif;
+        .sidebar-header h1 {
+            font-family: 'Noto Sans KR', sans-serif;
             font-size: 1.5rem;
-            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink), var(--accent-cyan));
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            white-space: nowrap;
+            
+            /* 프리미엄 금속 광택 효과 */
+            background: linear-gradient(
+                to right, 
+                var(--accent-gold) 0%, 
+                #fff 45%, 
+                #fff 55%, 
+                var(--accent-gold) 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 5s linear infinite;
+            letter-spacing: -0.8px;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        .sidebar-header h1 .logo-emoji {
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+            -webkit-text-fill-color: initial; /* 이모지는 그라데이션 제외 */
+        }
+
+        .sidebar-header h1 .logo-text {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .logo-emoji {
-            -webkit-background-clip: unset;
-            -webkit-text-fill-color: initial;
-            background: none;
+        .header-btns {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
         }
 
-        .help-btn {
+        .help-btn, .sound-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--accent-cyan);
             width: 32px;
             height: 32px;
-            border-radius: 50%;
-            border: 2px solid var(--glass-border);
-            background: transparent;
-            color: #888;
-            font-size: 1rem;
-            font-weight: 700;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
         }
 
-        .help-btn:hover {
-            border-color: var(--accent-cyan);
-            color: var(--accent-cyan);
+        .help-btn:hover, .sound-btn:hover {
             background: rgba(0, 212, 255, 0.1);
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
         }
 
         .section-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #888;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 700;
             margin-bottom: 6px;
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
+            flex-shrink: 0;
         }
 
-        .input-group.compact {
-            gap: 4px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 100px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
+        textarea, select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
             padding: 12px;
             color: #fff;
             font-family: inherit;
-            font-size: 0.85rem;
-            resize: none;
-            transition: all 0.3s ease;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
-        }
-
-        textarea::placeholder { color: #555; }
-
-        .hint {
-            font-size: 0.65rem;
-            color: #666;
-            line-height: 1.3;
-        }
-
-        /* Dropdown Select */
-        .map-select {
-            width: 100%;
-            padding: 10px 14px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            color: #fff;
-            font-family: inherit;
             font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
+            resize: none;
+            transition: all 0.3s;
         }
 
-        .map-select:focus {
+        textarea:focus, select:focus {
             outline: none;
             border-color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.1);
         }
 
-        .map-select option {
-            background: #1a1a2e;
-            color: #fff;
-            padding: 10px;
+        textarea {
+            min-height: 100px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+            width: 100%;
         }
 
         .btn {
-            padding: 12px 16px;
+            padding: 12px 8px;
             border: none;
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 0.9rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
+            font-family: inherit;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-        }
-
-        .btn-sm {
-            padding: 10px 12px;
-            font-size: 0.8rem;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-group .btn-primary {
+            gap: 4px;
             flex: 1;
+            white-space: nowrap;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent-gold), #ff8c00);
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange));
             color: #000;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            flex: 1.5;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
         }
 
         .btn-secondary {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
 
         .btn-reset {
-            background: transparent;
-            border: 1px solid rgba(255, 107, 157, 0.5);
+            background: rgba(255, 255, 255, 0.05);
             color: var(--accent-pink);
+            border: 1px solid rgba(255, 107, 157, 0.2);
+            flex: 0.4;
         }
 
-        .btn-reset:hover { background: rgba(255, 107, 157, 0.1); }
+        .btn-reset:hover {
+            background: rgba(255, 107, 157, 0.1);
+        }
 
         .btn-danger {
             background: linear-gradient(135deg, #ff4757, #ff6b6b) !important;
@@ -346,14 +349,14 @@
 
         /* Rankings in Sidebar */
         .rankings {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 12px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            min-height: 150px;
+            flex: 1;
+            min-height: 0;
             overflow: hidden;
         }
 
@@ -620,21 +623,24 @@
         }
 
         .game-area {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            height: 100%;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+            background: #000;
         }
 
         .canvas-wrapper {
             position: relative;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
+            background: transparent;
+            border: none;
+            border-radius: 0;
             overflow: hidden;
             flex: 1;
-            min-height: 400px;
-            max-height: calc(100vh - 40px);
+            height: 100%;
+            width: 100%;
         }
 
         #gameCanvas {
@@ -860,31 +866,30 @@
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
 
-        @media (max-width: 900px) {
+        /* Mobile */
+        /* Mobile */
+        @media (max-width: 768px) {
+            body { overflow-y: auto; height: auto; touch-action: manipulation; }
             .container { 
-                grid-template-columns: 1fr; 
-                padding: 10px;
-                gap: 15px;
+                display: flex !important;
+                flex-direction: column !important; 
+                padding: 0; gap: 0; height: auto; 
+                max-width: none;
             }
             .sidebar { 
-                order: 2; 
-                max-height: none;
-                padding: 15px;
-                border-radius: 16px;
+                order: 2; /* 아래 배치 */
+                width: 100%; min-width: 100%; height: auto; max-height: none; 
+                border-right: none; border-top: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0; padding: 20px;
+                background: rgba(255, 255, 255, 0.03);
             }
-            .game-area { order: 1; }
-            .canvas-wrapper { 
-                min-height: 50vh;
-                max-height: 60vh;
-                border-radius: 16px;
+            .game-area { 
+                order: 1; /* 위에 배치 */
+                flex: none; width: 100%; height: 80vh; min-height: 500px; padding: 0; 
             }
-            .winner-name { font-size: 2rem; }
+            .canvas-wrapper { border-radius: 0; border: none; height: 100%; min-height: 100%; }
             .logo { font-size: 1.2rem; }
-            .section-title { font-size: 0.75rem; }
-            textarea { font-size: 14px; min-height: 60px; }
-            .btn { padding: 10px 14px; font-size: 0.8rem; }
-            .sidebar-top { gap: 12px; }
-            .input-group { gap: 6px; }
+            .btn { padding: 12px 14px; font-size: 0.9rem; }
+            .rankings { min-height: 250px; max-height: 400px; }
         }
 
         /* 모바일 가로 모드 최적화 */
@@ -892,11 +897,15 @@
             .container {
                 grid-template-columns: 1fr 280px;
                 min-height: 100vh;
+                display: grid !important;
             }
             .sidebar { 
                 order: 2;
                 max-height: 100vh;
                 overflow-y: auto;
+                border-radius: 0;
+                border-top: none;
+                border-left: 1px solid var(--glass-border);
             }
             .game-area { order: 1; height: 100%; }
             .canvas-wrapper { 
@@ -907,13 +916,9 @@
 
         /* 아주 작은 화면 (세로 모드) */
         @media (max-width: 480px) {
-            .container { padding: 8px; gap: 10px; }
-            .sidebar { padding: 12px; }
-            .canvas-wrapper { min-height: 45vh; max-height: 50vh; }
             .logo { font-size: 1.1rem; }
             .btn-group { flex-wrap: wrap; }
             .btn { flex: 1; min-width: 80px; }
-            .participants-preview { max-height: 40px; }
             .ranking-item { padding: 6px 8px; font-size: 0.7rem; }
             .ranking-position { width: 18px; height: 18px; font-size: 0.6rem; }
             .help-btn { width: 28px; height: 28px; font-size: 0.85rem; }
@@ -1082,18 +1087,18 @@
     <div class="container">
         <aside class="sidebar">
             <div class="sidebar-top">
-                <div class="logo-row">
-                    <div class="logo">
-                        <span class="logo-emoji">🏅</span> 구슬 올림픽
+                <div class="sidebar-header">
+                    <h1><span class="logo-emoji">🏅</span> <span class="logo-text">구슬 올림픽</span></h1>
+                    <div class="header-btns">
+                        <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
+                        <button class="help-btn" id="helpBtn" title="도움말">?</button>
                     </div>
-                    <button class="help-btn" id="helpBtn" title="도움말">?</button>
                 </div>
 
                 <div class="input-group">
-                    <div class="section-title">참여자 입력</div>
+                    <label>참여자 입력</label>
                     <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)
 예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
-                    <div class="hint">💡 이름*숫자 형식으로 복수 참여 가능</div>
                 </div>
 
                 <div class="input-group">
@@ -1113,10 +1118,10 @@
                     </label>
                 </div>
 
-                <div class="btn-group">
-                    <button class="btn btn-secondary btn-sm" id="shuffleBtn">🔀 섞기</button>
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="shuffleBtn">🔀 섞기</button>
                     <button class="btn btn-primary" id="startBtn">▶️ 시작!</button>
-                    <button class="btn btn-reset btn-sm" id="resetBtn">↺ 초기화</button>
+                    <button class="btn btn-reset" id="resetBtn">↺ 초기화</button>
                 </div>
             </div>
 
@@ -1135,7 +1140,7 @@
                 </div>
                 
                 <div class="bottom-btn-group">
-                    <a href="https://geniuskey.github.io/lottery/" class="bottom-btn" title="추첨 포탈 홈">
+                    <a href="../" class="bottom-btn" title="추첨 포탈 홈">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                     </a>
                     <button class="bottom-btn" id="copyResultBtn2" disabled title="결과 복사">📋</button>
@@ -1209,13 +1214,28 @@
         class SoundManager {
             constructor() {
                 this.ctx = null;
+                this.enabled = true;
+                this.setupToggleButton();
+            }
+            setupToggleButton() {
+                const btn = document.getElementById('soundToggle');
+                if (btn) {
+                    btn.onclick = () => {
+                        this.enabled = !this.enabled;
+                        btn.textContent = this.enabled ? '🔊' : '🔇';
+                        if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
+                            this.ctx.resume();
+                        }
+                    };
+                }
             }
             init() {
                 if (this.ctx) return;
                 this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             }
             playStart() {
-                if (!this.ctx) return;
+                if (!this.enabled) return;
+                this.init();
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = 'square';
@@ -1227,7 +1247,8 @@
                 osc.start(); osc.stop(this.ctx.currentTime + 0.1);
             }
             playHit(volume = 0.1) {
-                if (!this.ctx) return;
+                if (!this.enabled) return;
+                this.init();
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = 'sine';
@@ -1238,7 +1259,8 @@
                 osc.start(); osc.stop(this.ctx.currentTime + 0.05);
             }
             playBumper() {
-                if (!this.ctx) return;
+                if (!this.enabled) return;
+                this.init();
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = 'sine';
@@ -1251,7 +1273,8 @@
                 osc.start(); osc.stop(this.ctx.currentTime + 0.3);
             }
             playPortal() {
-                if (!this.ctx) return;
+                if (!this.enabled) return;
+                this.init();
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = 'sine';
@@ -1263,7 +1286,8 @@
                 osc.start(); osc.stop(this.ctx.currentTime + 0.2);
             }
             playFinish() {
-                if (!this.ctx) return;
+                if (!this.enabled) return;
+                this.init();
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = 'triangle';
@@ -1540,7 +1564,22 @@
             }
 
             addBall(ball) { this.balls.push(ball); }
-            addObstacle(obs) { this.obstacles.push(obs); }
+            addObstacle(obs) { 
+                // Auto-scale obstacles based on world width (base: 600px)
+                // Reduce by an additional 10% on mobile to prevent balls from getting stuck
+                const isMobile = window.innerWidth <= 768;
+                const s = (this.width / 600) * (isMobile ? 0.9 : 1.0);
+                
+                if (obs.radius) obs.radius *= s;
+                if (obs.length) obs.length *= s;
+                if (obs.thickness) obs.thickness *= s;
+                if (obs.size) obs.size *= s;
+                
+                // Extra clearance for pegs on mobile
+                if (obs.type === 'peg') obs.radius = Math.max(obs.radius, 3 * s);
+                
+                this.obstacles.push(obs); 
+            }
             
             // 가장 앞서가는 공(아직 도착 안 한 공 중 가장 아래에 있는 공) 찾기
             getLeadingBall() {
@@ -2271,25 +2310,18 @@
                 // 핀 위치 수집
                 const pegs = this.world.obstacles.filter(o => o.type === 'peg');
                 
-                // 모든 장애물에 스케일 적용 + 크기 제한
+                // 모든 장애물에 크기 제한 및 핀 영역 보정 (스케일링은 addObstacle에서 이미 처리됨)
                 for (const obs of this.world.obstacles) {
-                    if (obs.radius) {
-                        obs.radius *= scale;
-                        // 범퍼 최대 크기 제한 (기존의 80%)
-                        if (obs.type === 'bumper') {
-                            obs.radius = Math.min(obs.radius, 24 * scale);
-                        }
+                    // 범퍼 최대 크기 제한
+                    if (obs.type === 'bumper' && obs.radius) {
+                        obs.radius = Math.min(obs.radius, 24 * scale);
                     }
-                    if (obs.length) {
-                        obs.length *= scale;
-                        // 스피너 최대 길이 1.5배 증가
-                        if (obs.type === 'spinner') {
-                            obs.length = Math.min(obs.length * 1.5, 120 * scale);
-                        }
+                    // 스피너 최대 길이 제한
+                    if (obs.type === 'spinner' && obs.length) {
+                        obs.length = Math.min(obs.length, 120 * scale);
                     }
-                    // 삼각형 크기 제한 (기존의 80%)
+                    // 삼각형 크기 제한
                     if (obs.type === 'triangle' && obs.size) {
-                        obs.size *= scale;
                         obs.size = Math.min(obs.size, 22 * scale);
                     }
                 }
@@ -2314,8 +2346,10 @@
                 });
 
                 // Create balls - 스케일 적용 + 초기 속도
-                const baseBallRadius = Math.max(10, Math.min(18, 250 / Math.max(1, this.participants.length)));
-                const ballRadius = baseBallRadius * scale;
+                const isMobile = window.innerWidth <= 768;
+                const adjustedScale = scale * (isMobile ? 0.9 : 1.0);
+                const baseBallRadius = Math.max(8, Math.min(14, 200 / Math.max(1, this.participants.length)));
+                const ballRadius = baseBallRadius * adjustedScale;
                 const startArea = w * 0.6;
                 const startX = (w - startArea) / 2;
                 const initialVelY = 150 + Math.random() * 100;  // 초기 하향 속도
