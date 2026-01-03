@@ -1328,7 +1328,10 @@
       }
 
       bindEvents() {
-        this.startBtn.addEventListener('click', () => this.startGame());
+        this.startBtn.addEventListener('click', () => {
+            this.startGame();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
         this.resetBtn.addEventListener('click', () => this.resetGame());
         this.closeOverlayBtn.addEventListener('click', () => this.hideOverlay());
         this.copyResultBtn.addEventListener('click', () => this.copyResult());

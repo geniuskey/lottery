@@ -1586,7 +1586,10 @@
                 this.physics.resize();
                 window.addEventListener('resize', () => this.physics.resize());
                 
-                document.getElementById('startBtn').addEventListener('click', () => this.start());
+                document.getElementById('startBtn').addEventListener('click', () => {
+            this.start();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
                 document.getElementById('resetBtn').addEventListener('click', () => this.reset());
                 document.getElementById('closeOverlay').addEventListener('click', () => this.closeWinnerOverlay());
                 document.getElementById('copyResultBtn').addEventListener('click', () => this.copyResults());

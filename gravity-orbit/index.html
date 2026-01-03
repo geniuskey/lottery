@@ -1995,8 +1995,10 @@
          * 4. Initialization
          */
         const game = new Game();
-        document.getElementById('startBtn').onclick = () => game.start();
-        document.getElementById('resetBtn').onclick = () => game.reset();
+                    document.getElementById('startBtn').onclick = () => {
+                        game.start();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    };        document.getElementById('resetBtn').onclick = () => game.reset();
         document.getElementById('restartBtn').onclick = () => game.closeResult();
 
         document.getElementById('copyResultOverlayBtn').onclick = () => {

@@ -1114,8 +1114,10 @@
     const toast = document.getElementById('toast');
 
     // Event Listeners
-    startBtn.addEventListener('click', startTournament);
-    resetBtn.addEventListener('click', resetGame);
+            startBtn.addEventListener('click', () => {
+                startTournament();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });    resetBtn.addEventListener('click', resetGame);
     speedSelect.addEventListener('change', (e) => gameSpeed = e.target.value);
     roundTypeSelect.addEventListener('change', (e) => roundType = e.target.value);
     copyResultBtn.addEventListener('click', copyResults);

@@ -1763,6 +1763,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (participants.length < 2) { alert(t('minParticipants')); return; }
         if (game.survivorCount >= participants.length) { alert(t('survivorError')); return; }
         game.setParticipants(participants); game.start();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
     
     document.getElementById('resetBtn').addEventListener('click', () => { game.stop(); game.reset(); });

@@ -950,8 +950,10 @@
       }, 300);
     });
 
-    startBtn.addEventListener('click', startGame);
-    resetBtn.addEventListener('click', resetGame);
+            startBtn.addEventListener('click', () => {
+                startGame();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });    resetBtn.addEventListener('click', resetGame);
     copyResultBtn.addEventListener('click', copyResults);
     window.addEventListener('resize', () => { if (!gameRunning) renderStudents(); });
     init();

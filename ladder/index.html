@@ -1394,6 +1394,7 @@
         function startGame() {
             if (!ladder || gameState !== 'setup') return;
 
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             sound.playStart();
             gameState = 'revealed';
 

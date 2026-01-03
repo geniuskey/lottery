@@ -1980,6 +1980,7 @@
         startBtn.addEventListener('click', () => {
             saveSettings();
             startGame();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
         resetBtn.addEventListener('click', resetGame);

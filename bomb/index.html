@@ -1126,7 +1126,10 @@
             this.setupPlayers();
           }
         });
-        this.startBtn.addEventListener('click', () => this.start());
+        this.startBtn.addEventListener('click', () => {
+            this.start();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
         this.resetBtn.addEventListener('click', () => this.reset());
         this.closeOverlayBtn.addEventListener('click', () => this.hideOverlay());
         this.copyResultBtn.addEventListener('click', () => this.copyResult());

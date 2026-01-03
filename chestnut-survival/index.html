@@ -1646,7 +1646,10 @@
     }
     
     // Event listeners
-    document.getElementById('startBtn').addEventListener('click', startGame);
+    document.getElementById('startBtn').addEventListener('click', () => {
+        startGame();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
     document.getElementById('resetBtn').addEventListener('click', resetGame);
     document.getElementById('copyResultBtn').addEventListener('click', copyResults);
     document.getElementById('confirmBtn').addEventListener('click', () => {

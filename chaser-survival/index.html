@@ -1898,8 +1898,10 @@
       participantsInput.addEventListener('input', saveSettings);
       winnerCountInput.addEventListener('change', saveSettings);
       startHPSelect.addEventListener('change', saveSettings);
-      startBtn.addEventListener('click', initGame);
-      resetBtn.addEventListener('click', resetGame);
+              startBtn.addEventListener('click', () => {
+                  initGame();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+              });      resetBtn.addEventListener('click', resetGame);
       copyResultBtn.addEventListener('click', copyResult);
       helpBtn.addEventListener('click', () => helpModal.classList.add('show'));
       closeHelp.addEventListener('click', () => helpModal.classList.remove('show'));

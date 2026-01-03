@@ -1797,6 +1797,7 @@
       
       if (!initGame()) return;
       
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       sound.init();
       sound.playGong();
       gameRunning = true;

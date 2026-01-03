@@ -910,7 +910,10 @@
       }
 
       bindEvents() {
-        this.startBtn.addEventListener('click', () => this.spin());
+        this.startBtn.addEventListener('click', () => {
+            this.spin();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
         this.resetBtn.addEventListener('click', () => this.reset());
         this.copyResultBtn.addEventListener('click', () => this.copyResult());
         this.helpBtn.addEventListener('click', () => this.showHelp());

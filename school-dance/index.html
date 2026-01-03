@@ -2045,6 +2045,7 @@
       sound.playStart();
       gameRunning = true;
       gameStopped = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       startBtn.disabled = true;
       renderStudents();
       await sleep(500);

@@ -1264,7 +1264,12 @@
             raceLengthSlider.addEventListener('input', (e) => { raceLengthValue.textContent = e.target.value; updateInit(false); });
             densitySlider.addEventListener('input', (e) => { densityValue.textContent = getDensityText(e.target.value); updateInit(false); });
 
-            document.getElementById('startBtn').addEventListener('click', () => { if (game.isRunning) return; game.start(); });
+            document.getElementById('startBtn').addEventListener('click', () => { 
+                if (game.isRunning) return; 
+                game.start(); 
+                // 모바일에서 시작 시 게임 화면으로 자동 스크롤
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
             document.getElementById('resetBtn').addEventListener('click', () => { updateInit(true); });
             document.getElementById('finishBtn').addEventListener('click', () => { game.forceFinish(); });
             document.getElementById('helpBtn').addEventListener('click', () => { alert('🌌 네온 레이스\n\n1. 참여자들이 네온 도시를 질주합니다.\n2. 파란색 육각형은 가속(Boost), 빨간색은 감속(Slow)입니다.\n3. 🎁 아이템 박스를 획득하여 마리오 카트처럼 역전할 수 있습니다.\n4. 하단 미니맵을 드래그하여 시점을 고정할 수 있습니다.\n5. ↺ 버튼을 누르면 참여자 순서가 무작위로 섞입니다.'); });

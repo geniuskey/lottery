@@ -1276,6 +1276,7 @@
                 return;
             }
 
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             participants.forEach(p => p.destroy());
             
             participants = names.map(name => new Participant(name));
