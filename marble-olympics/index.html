@@ -2363,7 +2363,7 @@
             }
 
             start() {
-                if (this.participants.length === 0) return;
+                if (this.isRunning || this.participants.length === 0) return;
                 
                 sound.init();
                 sound.playStart();
@@ -3097,8 +3097,10 @@
                     
                     if (savedParticipants) {
                         participantsInput.value = savedParticipants;
-                        updateGame();
                     }
+                    
+                    // 항상 현재 textarea 값으로 게임 데이터 업데이트
+                    updateGame();
                     
                     if (savedMap && ['chaos', 'pinball', 'funnel'].includes(savedMap)) {
                         mapSelect.value = savedMap;
@@ -3201,11 +3203,7 @@
             });
 
             startBtn.addEventListener('click', () => {
-                if (isRankingFinished) {
-                    resetGame();
-                } else {
-                    startGame();
-                }
+                game.start();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
