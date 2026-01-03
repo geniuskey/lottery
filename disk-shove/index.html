@@ -621,6 +621,41 @@
             z-index: 999;
         }
 
+        /* KO Log */
+        .ko-log {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 50;
+            pointer-events: none;
+            align-items: flex-end;
+            max-height: 50vh;
+            overflow: hidden;
+        }
+
+        .ko-log-item {
+            background: rgba(0, 0, 0, 0.75);
+            border-right: 4px solid var(--danger);
+            padding: 8px 16px;
+            border-radius: 4px;
+            color: #eee;
+            font-size: 0.9rem;
+            animation: logSlideIn 0.3s ease-out forwards;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        @keyframes logSlideIn {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
         /* Help Modal */
         .help-modal {
             position: fixed;
@@ -813,6 +848,8 @@
             <div class="info-badge" id="arenaSize">📐 100%</div>
             <div class="info-badge" id="gameStatus">대기 중</div>
         </div>
+
+        <div class="ko-log" id="koLog"></div>
 
         <div class="arena-container">
             <canvas id="gameCanvas"></canvas>
@@ -1081,6 +1118,29 @@
                         player.fallProgress = 0;
                         player.eliminatedAt = gameTime;
                         this.sound.playFall();
+
+                        // Add to top-right log with a random funny message
+                        const messages = [
+                            "탈락! 📦",
+                            "아웃! 🍎",
+                            "우주 미아! 🌌",
+                            "자유 낙하! 🪂",
+                            "강제 퇴장! 🚪",
+                            "바닥 청소! 🧹",
+                            "안녕히! 👋",
+                            "실종! ✨"
+                        ];
+                        const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+                        const log = document.getElementById('koLog');
+                        const logItem = document.createElement('div');
+                        logItem.className = 'ko-log-item';
+                        logItem.innerHTML = `<span style="font-size:1.2rem;">${player.emoji}</span> <span style="font-weight:bold;color:#fff;">${player.name}</span>: ${randomMsg}`;
+                        log.insertBefore(logItem, log.firstChild);
+                        
+                        // Keep only recent logs
+                        while (log.children.length > 5) {
+                            log.removeChild(log.lastChild);
+                        }
                         
                         const outwardX = (player.x - this.centerX) / distFromCenter;
                         const outwardY = (player.y - this.centerY) / distFromCenter;
@@ -1635,6 +1695,7 @@
                 this.physics.render();
                 this.winners = [];
                 this.eliminationOrder = [];
+                document.getElementById('koLog').innerHTML = '';
                 
                 document.getElementById('gameTimer').textContent = '⏱️ 00:00';
                 document.getElementById('gameStatus').textContent = '대기 중';

@@ -555,6 +555,40 @@
       100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
     }
 
+    /* KO Log */
+    .ko-log {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 50;
+      pointer-events: none;
+      align-items: flex-end;
+      max-height: 40vh;
+      overflow: hidden;
+    }
+
+    .ko-log-item {
+      background: rgba(0, 0, 0, 0.7);
+      border-right: 4px solid var(--knockout-red);
+      padding: 6px 12px;
+      border-radius: 4px;
+      color: #ddd;
+      font-size: 0.85rem;
+      animation: log-slide-in 0.3s ease-out forwards;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    @keyframes log-slide-in {
+      from { transform: translateX(30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -741,6 +775,7 @@
 
     <main class="game-area">
       <div class="game-status" id="gameStatus">👊 링에 오를 준비를 하세요!</div>
+      <div class="ko-log" id="koLog"></div>
       <div class="ring-container">
         <div class="boxing-ring"></div>
         <div class="corner-post top-left"></div>
@@ -974,6 +1009,7 @@
 
         soundManager.init();
         resizeCanvas();
+        document.getElementById('koLog').innerHTML = '';
 
         const startHP = parseInt(startHPSelect.value) || 5;
 
@@ -1136,6 +1172,20 @@
                   x: exitX,
                   y: exitY
                 });
+
+                // Add to top-right log
+                const messages = ["KO! 🥊", "탈락! 💀", "아웃! 💨", "안녕! 👋"];
+                const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+                const log = document.getElementById('koLog');
+                const logItem = document.createElement('div');
+                logItem.className = 'ko-log-item';
+                logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${target.name}</span>: ${randomMsg}`;
+                log.insertBefore(logItem, log.firstChild);
+                
+                // Keep only recent logs
+                while (log.children.length > 5) {
+                    log.removeChild(log.lastChild);
+                }
                 
                 updateAliveCount();
                 updateRanking();
@@ -1710,6 +1760,7 @@
         punchEffects = [];
         textEffects = [];
         eliminatedParticipants = [];
+        document.getElementById('koLog').innerHTML = '';
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         gameStatus.textContent = '👊 링에 오를 준비를 하세요!';
         aliveCount.innerHTML = '생존자: <span>0</span> / 0';

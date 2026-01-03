@@ -405,7 +405,49 @@
             cursor: pointer;
         }
 
-        /* Responsive */
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+        }
+
+        /* KO Log */
+        .ko-log {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 50;
+            pointer-events: none;
+            align-items: flex-end;
+            max-height: 40vh;
+            overflow: hidden;
+        }
+
+        .ko-log-item {
+            background: rgba(0, 0, 0, 0.7);
+            border-right: 4px solid #a855f7;
+            padding: 6px 12px;
+            border-radius: 4px;
+            color: #ddd;
+            font-size: 0.85rem;
+            animation: log-slide-in 0.3s ease-out forwards;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        @keyframes log-slide-in {
+            from { transform: translateX(30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Mobile */
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -496,6 +538,7 @@
 
         <!-- Game Area -->
         <div class="game-area">
+            <div class="ko-log" id="koLog"></div>
             <canvas id="gameCanvas"></canvas>
             <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
         </div>
@@ -985,13 +1028,27 @@
         // 탈락 처리
         function eliminateChairPlayers() {
             const alive = participants.filter(p => !p.eliminated);
+            const log = document.getElementById('koLog');
+            const messages = ["의자 없음! 🪑", "탈락! 💀", "아웃! 💨"];
             
             alive.forEach(p => {
                 if (!p.groupJoined) {
                     p.eliminated = true;
                     eliminatedParticipants.push(p.name);
+
+                    // Add to top-right log
+                    const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+                    const logItem = document.createElement('div');
+                    logItem.className = 'ko-log-item';
+                    logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${p.name}</span>: ${randomMsg}`;
+                    log.insertBefore(logItem, log.firstChild);
                 }
             });
+
+            // Keep only recent logs
+            while (log.children.length > 5) {
+                log.removeChild(log.lastChild);
+            }
 
             chairs = [];
             updateRanking();
@@ -1164,6 +1221,7 @@
             
             participants = names.map(name => new Participant(name));
             eliminatedParticipants = [];
+            document.getElementById('koLog').innerHTML = '';
             gameState = 'dancing';
             soundManager.playDanceMusic();
             stateStartTime = Date.now();
@@ -1180,6 +1238,7 @@
             participants = [];
             eliminatedParticipants = [];
             chairs = [];
+            document.getElementById('koLog').innerHTML = '';
             startBtn.disabled = false;
             rankingList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">게임을 시작하세요!</div>';
             

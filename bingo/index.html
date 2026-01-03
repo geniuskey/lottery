@@ -776,7 +776,12 @@
     }
 
     .board-cell.bingo-line {
-      box-shadow: 0 0 15px var(--accent-gold);
+      background: linear-gradient(135deg, var(--accent-gold), #f0b90b) !important;
+      color: #000 !important;
+      border-color: #fff !important;
+      box-shadow: 0 0 20px var(--accent-gold), inset 0 0 10px rgba(255,255,255,0.5);
+      z-index: 2;
+      transform: scale(1.05);
     }
 
     /* Waiting State */
@@ -915,6 +920,45 @@
       z-index: 999;
     }
 
+    /* Event Log */
+    .event-log {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 50;
+      pointer-events: none;
+      align-items: flex-end;
+      max-height: 40vh;
+      overflow: hidden;
+    }
+
+    .event-log-item {
+      background: rgba(0, 0, 0, 0.7);
+      border-right: 4px solid var(--accent-primary);
+      padding: 6px 12px;
+      border-radius: 4px;
+      color: #ddd;
+      font-size: 0.85rem;
+      animation: log-slide-in 0.3s ease-out forwards;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .event-log-item.bingo-complete {
+      border-right-color: var(--accent-gold);
+      background: rgba(155, 93, 229, 0.4);
+    }
+
+    @keyframes log-slide-in {
+      from { transform: translateX(30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
     @keyframes confettiFall {
       to {
         top: 100vh;
@@ -1038,9 +1082,12 @@
   </aside>
 
   <main class="game-area" id="gameArea">
-    <div class="waiting-message" id="waitingMessage">
-      <div class="icon">🎯</div>
-      <p>참여자를 입력하고 게임을 시작하세요!</p>
+    <div class="event-log" id="eventLog"></div>
+    <div id="gameContent" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+      <div class="waiting-message" id="waitingMessage">
+        <div class="icon">🎯</div>
+        <p>참여자를 입력하고 게임을 시작하세요!</p>
+      </div>
     </div>
     <div class="copyright">© 2025 Euiyun Edwin Kim</div>
   </main>
@@ -1208,6 +1255,7 @@
         this.resetBtn = document.getElementById('resetBtn');
         this.rankingsList = document.getElementById('rankingsList');
         this.gameArea = document.getElementById('gameArea');
+        this.gameContent = document.getElementById('gameContent');
         this.waitingMessage = document.getElementById('waitingMessage');
         this.gameOverOverlay = document.getElementById('gameOverOverlay');
         this.winnersList = document.getElementById('winnersList');
@@ -1346,6 +1394,7 @@
         this.boards = {};
         this.previousRankings = {};
         this.initialOrder = [...this.participants];
+        document.getElementById('eventLog').innerHTML = '';
 
         this.sound.init();
         this.sound.playStart();
@@ -1412,6 +1461,21 @@
           // Calculate lines
           const newLines = this.countLines(board.checked);
           if (newLines > board.lines) {
+            const isBingo = newLines >= this.requiredLines;
+            
+            // Add to event log
+            const log = document.getElementById('eventLog');
+            const logItem = document.createElement('div');
+            logItem.className = 'event-log-item' + (isBingo ? ' bingo-complete' : '');
+            const msg = isBingo ? "BINGO! 🎯" : `${newLines}줄 완성! ✨`;
+            logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${name}</span>: ${msg}`;
+            log.insertBefore(logItem, log.firstChild);
+            
+            // Limit to 5 logs
+            while (log.children.length > 5) {
+              log.removeChild(log.lastChild);
+            }
+
             board.lines = newLines;
             if (board.lines >= this.requiredLines) {
               bingoOccurred = true;
@@ -1465,6 +1529,44 @@
         return lines;
       }
 
+      getBingoCells(checked) {
+        const bingoCells = Array(5).fill(null).map(() => Array(5).fill(false));
+        
+        // Rows
+        for (let i = 0; i < 5; i++) {
+          if (checked[i].every(cell => cell)) {
+            for (let j = 0; j < 5; j++) bingoCells[i][j] = true;
+          }
+        }
+        
+        // Columns
+        for (let j = 0; j < 5; j++) {
+          let complete = true;
+          for (let i = 0; i < 5; i++) {
+            if (!checked[i][j]) { complete = false; break; }
+          }
+          if (complete) {
+            for (let i = 0; i < 5; i++) bingoCells[i][j] = true;
+          }
+        }
+        
+        // Diagonal 1
+        let diag1 = true;
+        for (let i = 0; i < 5; i++) if (!checked[i][i]) diag1 = false;
+        if (diag1) {
+          for (let i = 0; i < 5; i++) bingoCells[i][i] = true;
+        }
+        
+        // Diagonal 2
+        let diag2 = true;
+        for (let i = 0; i < 5; i++) if (!checked[i][4 - i]) diag2 = false;
+        if (diag2) {
+          for (let i = 0; i < 5; i++) bingoCells[i][4 - i] = true;
+        }
+        
+        return bingoCells;
+      }
+
       renderGame() {
         const cellSize = this.calculateBoardSize(this.participants.length);
         
@@ -1480,7 +1582,7 @@
             }));
         
         // FLIP Animation: First - 기존 위치 저장
-        const boardsContainer = this.gameArea.querySelector('.boards-container');
+        const boardsContainer = this.gameContent.querySelector('.boards-container');
         const oldPositions = {};
         
         if (boardsContainer && this.dynamicSort) {
@@ -1536,13 +1638,16 @@
               <div class="board-grid">
           `;
 
+          const bingoCells = this.getBingoCells(board.checked);
+
           for (let i = 0; i < 5; i++) {
             for (let j = 0; j < 5; j++) {
               const num = board.grid[i][j];
               const isChecked = board.checked[i][j];
+              const isBingoLine = bingoCells[i][j];
               const isNewCheck = isChecked && num === this.lastCalledNumber;
               html += `
-                <div class="board-cell ${isChecked ? 'checked' : ''} ${isNewCheck ? 'new-check' : ''}">
+                <div class="board-cell ${isChecked ? 'checked' : ''} ${isBingoLine ? 'bingo-line' : ''} ${isNewCheck ? 'new-check' : ''}">
                   ${num}
                 </div>
               `;
@@ -1553,11 +1658,11 @@
         });
 
         html += '</div>';
-        this.gameArea.innerHTML = html;
+        this.gameContent.innerHTML = html;
 
         // FLIP Animation: Last, Invert, Play (only when dynamicSort is on)
         if (this.dynamicSort && Object.keys(oldPositions).length > 0) {
-          const newBoardsContainer = this.gameArea.querySelector('.boards-container');
+          const newBoardsContainer = this.gameContent.querySelector('.boards-container');
           const newBoards = newBoardsContainer.querySelectorAll('.bingo-board');
           
           newBoards.forEach(board => {
@@ -1694,8 +1799,9 @@
         this.boards = {};
         this.previousRankings = {};
         this.startBtn.disabled = false;
+        document.getElementById('eventLog').innerHTML = '';
         
-        this.gameArea.innerHTML = `
+        this.gameContent.innerHTML = `
           <div class="waiting-message">
             <div class="icon">🎯</div>
             <p>참여자를 입력하고 게임을 시작하세요!</p>
