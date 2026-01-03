@@ -526,7 +526,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px;
+            padding: 0;
             position: relative;
             overflow: hidden;
         }
@@ -544,8 +544,10 @@
         .arena-container {
             position: relative;
             width: 100%;
-            max-width: 700px;
-            aspect-ratio: 1;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #gameCanvas {
@@ -799,7 +801,6 @@
             }
 
             .main-area {
-                padding: 0;
                 width: 100%;
                 height: auto;
                 aspect-ratio: 1 / 1;
@@ -808,7 +809,6 @@
             }
 
             .arena-container {
-                max-width: 100%;
                 width: 100%;
                 height: 100%;
             }
@@ -924,8 +924,6 @@
     <main class="main-area">
         <div class="game-info">
             <div class="info-badge time" id="gameTimer">⏱️ 00:00</div>
-            <div class="info-badge" id="arenaSize">📐 100%</div>
-            <div class="info-badge" id="gameStatus">대기 중</div>
         </div>
 
         <div class="ko-log" id="koLog"></div>
@@ -1665,7 +1663,6 @@
                 this.eliminationOrder = [];
                 
                 document.getElementById('startBtn').disabled = true;
-                document.getElementById('gameStatus').textContent = '🔥 진행 중';
                 
                 requestAnimationFrame((ts) => this.gameLoop(ts));
             }
@@ -1710,21 +1707,6 @@
                 const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
                 const seconds = (elapsed % 60).toString().padStart(2, '0');
                 document.getElementById('gameTimer').textContent = `⏱️ ${minutes}:${seconds}`;
-                
-                // Arena size
-                const sizePercent = Math.round(
-                    (this.physics.arenaRadius - this.physics.minArenaRadius) / 
-                    (this.physics.initialArenaRadius - this.physics.minArenaRadius) * 100
-                );
-                const arenaSizeEl = document.getElementById('arenaSize');
-                arenaSizeEl.textContent = `📐 ${sizePercent}%`;
-                if (sizePercent < 30) {
-                    arenaSizeEl.style.color = '#ef4444';
-                } else if (sizePercent < 60) {
-                    arenaSizeEl.style.color = '#fbbf24';
-                } else {
-                    arenaSizeEl.style.color = '';
-                }
                 
                 // Alive count
                 const alivePlayers = this.physics.getAlivePlayers();
@@ -1778,7 +1760,6 @@
             }
 
             endGame() {
-                document.getElementById('gameStatus').textContent = '🏆 종료';
                 document.getElementById('startBtn').disabled = false;
                 this.sound.playWin();
                 
@@ -1808,7 +1789,6 @@
                 document.getElementById('koLog').innerHTML = '';
                 
                 document.getElementById('gameTimer').textContent = '⏱️ 00:00';
-                document.getElementById('gameStatus').textContent = '대기 중';
                 document.getElementById('aliveCount').textContent = '생존: 0명';
                 document.getElementById('startBtn').disabled = false;
                 document.getElementById('rankingList').innerHTML = `

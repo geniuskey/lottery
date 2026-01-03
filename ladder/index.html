@@ -338,15 +338,14 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 20px;
+            padding: 0;
         }
 
         canvas {
-            border-radius: 12px;
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            display: block;
             max-width: 100%;
             max-height: 100%;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(0, 0, 0, 0.1);
         }
 
         .copyright {
@@ -451,11 +450,6 @@
                 height: 75vh;
                 min-height: 500px;
                 padding: 0;
-            }
-
-            canvas {
-                border-radius: 0;
-                box-shadow: none;
             }
         }
 
@@ -698,17 +692,14 @@
         // 반응형 캔버스 크기
         function resizeCanvas() {
             const container = canvas.parentElement;
-            const maxWidth = Math.min(container.clientWidth - 40, 1000);
-            const maxHeight = Math.min(container.clientHeight - 40, 800);
-            canvas.width = maxWidth;
-            canvas.height = maxHeight;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
 
-            if (ladder) {
-                drawLadder();
+            // 크기가 바뀔 때 사다리 구조를 새로 계산하여 정렬을 맞춤
+            if (gameState !== 'running') {
+                generateLadder(true);
             }
         }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
 
         // UI 요소
         const participantsInput = document.getElementById('participantsInput');
@@ -1352,9 +1343,9 @@
         }
 
         // 사다리 생성 (초기화/섞기)
-        function generateLadder() {
+        function generateLadder(silent = false) {
             sound.init();
-            sound.playReset();
+            if (!silent) sound.playReset();
             let rawParticipants = parseParticipants(participantsInput.value);
             const winningResults = resultsInput.value.split(',').map(n => n.trim()).filter(n => n);
             numBridges = parseInt(bridgesInput.value);
@@ -1576,6 +1567,16 @@
         });
 
         // 초기 화면 - 사다리 생성
+        resizeCanvas();
+        
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                resizeCanvas();
+            }, 250);
+        });
+
         generateLadder();
     </script>
 </body>
