@@ -195,12 +195,18 @@
     .card:hover {
       transform: translateY(-8px) scale(1.02);
       border-color: var(--card-accent, var(--accent));
+      background: rgba(30, 41, 59, 0.7); /* 배경을 더 선명하게 */
       /* 조이스틱 커서 적용 */
       cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' style='font-size:60px'><text y='60'>🕹️</text></svg>") 30 30, pointer;
-      /* 주변에 퍼지는 네온 효과 추가 */
+      /* 주변에 퍼지는 네온 효과 및 내부 광채 추가 */
       box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.5),
-        0 0 30px var(--card-bg); /* --card-bg(0.5 농도)를 광채로 활용 */
+        0 20px 40px rgba(0, 0, 0, 0.6),
+        0 0 20px var(--card-bg),
+        inset 0 0 12px var(--card-bg);
+    }
+
+    .card:hover h3 {
+      color: var(--card-accent);
     }
 
     .card-header {
