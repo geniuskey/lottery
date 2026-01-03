@@ -82,6 +82,12 @@
       --glow-winner: 0 0 40px rgba(46,204,113,0.5);
     }
 
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 71, 87, 0.3); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff4757; }
+
     body {
       font-family: 'Noto Sans KR', sans-serif;
       background: var(--bg-dark);
@@ -89,6 +95,7 @@
       min-height: 100vh;
       display: flex;
       overflow: hidden;
+      touch-action: manipulation;
     }
 
     /* Sidebar */
@@ -109,34 +116,55 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
     }
 
     .sidebar-header h1 {
-      font-family: 'Black Han Sans', sans-serif;
+      font-family: 'Noto Sans KR', sans-serif;
       font-size: 1.5rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
+      gap: 10px;
+      flex: 1;
+      white-space: nowrap;
+      letter-spacing: -0.8px;
+
+      /* 프리미엄 금속 광택 효과 */
+      background: linear-gradient(
+        to right, 
+        #ff4757 0%, 
+        #fff 45%, 
+        #fff 55%, 
+        #ff4757 100%
+      );
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 5s linear infinite;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+    }
+
+    @keyframes shine {
+      to { background-position: 200% center; }
+    }
+
+    .sidebar-header h1 .logo-emoji {
+      filter: drop-shadow(0 0 5px rgba(255, 71, 87, 0.5));
+      -webkit-text-fill-color: initial;
+      background: none;
+    }
+
+    .header-btns {
+      display: flex;
       gap: 8px;
+      flex-shrink: 0;
     }
 
-    .title-text {
-      color: #ff4757;
-      text-shadow: 
-        2px 2px 0 #000,
-        -1px -1px 0 #000,
-        1px -1px 0 #000,
-        -1px 1px 0 #000,
-        0 0 20px rgba(255, 71, 87, 0.5);
-    }
-
-    .title-emoji {
-      font-size: 1.3rem;
-    }
-
-    .help-btn {
+    .help-btn, .sound-btn {
       width: 32px;
       height: 32px;
-      border-radius: 50%;
+      border-radius: 8px;
       background: var(--bg-dark);
       border: 1px solid var(--border-color);
       color: var(--text-secondary);
@@ -148,9 +176,10 @@
       justify-content: center;
     }
 
-    .help-btn:hover {
+    .help-btn:hover, .sound-btn:hover {
       background: rgba(255,255,255,0.1);
       color: var(--text-primary);
+      transform: translateY(-2px);
     }
 
     .sidebar-content {
@@ -807,24 +836,30 @@
     /* Mobile Responsive */
     @media (max-width: 768px) {
       body {
-        flex-direction: column;
+        flex-direction: column-reverse;
+        overflow-y: auto;
+        height: auto;
       }
 
       .sidebar {
         width: 100%;
         min-width: 100%;
         height: auto;
-        max-height: 50vh;
+        max-height: none;
         border-right: none;
-        border-bottom: 1px solid var(--border-color);
+        border-top: 1px solid var(--border-color);
+        padding: 20px;
       }
 
       .sidebar-content {
-        padding: 16px;
+        padding: 0;
+        overflow-y: visible;
       }
 
       .main-area {
-        height: 50vh;
+        height: 75vh;
+        min-height: 500px;
+        flex: none;
       }
 
       .tournament-arena {
@@ -843,10 +878,13 @@
 </head>
 <body>
   <aside class="sidebar">
-    <div class="sidebar-header">
-      <h1><span class="title-text">토너먼트</span> <span class="title-emoji">✌️✊🖐️</span></h1>
-      <button class="help-btn" id="helpBtn">?</button>
-    </div>
+        <div class="sidebar-header">
+            <h1><span class="logo-emoji">🥊</span> <span class="logo-text">RPS 토너먼트</span></h1>
+            <div class="header-btns">
+                <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
+                <button class="help-btn" id="helpBtn">?</button>
+            </div>
+        </div>
     
     <div class="sidebar-content">
       <div class="input-section">
@@ -889,7 +927,7 @@
     </div>
 
     <div class="sidebar-footer">
-      <a href="https://geniuskey.github.io/lottery/" class="icon-btn" data-tooltip="추첨 포탈 홈">
+      <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
       </a>
       <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
@@ -947,6 +985,98 @@
 
   <script>
     // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
+    
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.setupToggleButton();
+      }
+      setupToggleButton() {
+        const btn = document.getElementById('soundToggle');
+        if (btn) {
+          btn.onclick = () => {
+            this.enabled = !this.enabled;
+            btn.textContent = this.enabled ? '🔊' : '🔇';
+            if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
+              this.ctx.resume();
+            }
+          };
+        }
+      }
+      init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      playStart() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+      }
+      playThink() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.05);
+      }
+      playReveal() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+      }
+      playEliminate() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(50, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.3);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+      }
+      playWin() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.1 + 0.4);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.1);
+          osc.stop(this.ctx.currentTime + i * 0.1 + 0.4);
+        });
+      }
+    }
+
+    const sound = new SoundManager();
     
     const CHOICES = ['rock', 'paper', 'scissors'];
     const CHOICE_EMOJI = { rock: '✊', paper: '✋', scissors: '✌️' };
@@ -1058,6 +1188,8 @@
         return;
       }
 
+      sound.init();
+      sound.playStart();
       isPlaying = true;
       startBtn.disabled = true;
       
@@ -1181,6 +1313,7 @@
       while (match.score1 < winsNeeded && match.score2 < winsNeeded) {
         // Thinking animation
         updateMatchDisplay(matchIndex, 'thinking', null, null);
+        sound.playThink();
         await delay(delays.think);
         
         // Make choices
@@ -1192,10 +1325,18 @@
         
         // Reveal choices
         updateMatchDisplay(matchIndex, 'revealed', choice1, choice2);
+        sound.playReveal();
         await delay(delays.reveal);
         
         // Determine result
         const result = determineWinner(choice1, choice2);
+        
+        if (result === 'player1' || result === 'player2') {
+          // If someone scored, play a slightly different sound or handle winner/loser
+          if (match.score1 + 1 >= winsNeeded || match.score2 + 1 >= winsNeeded) {
+            // Match is about to end
+          }
+        }
         
         if (result === 'player1') {
           match.score1++;
@@ -1212,6 +1353,9 @@
         
         await delay(delays.result);
       }
+      
+      // Mark loser as eliminated and play sound
+      sound.playEliminate();
       
       // Save final choices to match object
       match.lastChoice1 = lastChoice1;
@@ -1339,6 +1483,7 @@
     function showFinalWinner(name) {
       winnerName.textContent = name;
       finalWinner.classList.add('show');
+      sound.playWin();
       createConfetti();
     }
 

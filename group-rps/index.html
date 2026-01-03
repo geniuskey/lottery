@@ -63,26 +63,102 @@
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; overflow: hidden; }
+    html, body { min-height: 100%; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
       height: 100vh;
       display: flex;
-      padding: 20px;
-      gap: 20px;
+      padding: 0; /* 제거: 20px -> 0 */
+      gap: 0;    /* 제거: 20px -> 0 */
+      overflow: hidden;
+      touch-action: manipulation;
     }
     .sidebar {
-      width: 300px; min-width: 280px; max-width: 300px;
+      width: 320px; min-width: 280px; max-width: 320px;
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(20px);
       padding: 24px;
       display: flex; flex-direction: column; gap: 16px;
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0; /* 제거: 24px -> 0 */
+      border: none;     /* 제거 */
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
       overflow: hidden;
     }
-    .sidebar h2 { color: #fff; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .header-btns {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .help-btn, .sound-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .help-btn:hover, .sound-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #4facfe;
+      transform: translateY(-2px);
+    }
+
+    .sidebar h2 { 
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      margin: 0;
+      white-space: nowrap;
+      letter-spacing: -0.8px;
+    }
+
+    .sidebar h2 .title-emoji {
+      filter: drop-shadow(0 0 5px rgba(79, 172, 254, 0.5));
+      -webkit-text-fill-color: initial;
+      background: none;
+    }
+
+    .sidebar h2 .title-text {
+      /* 프리미엄 금속 광택 효과 */
+      background: linear-gradient(
+        to right, 
+        #4facfe 0%, 
+        #fff 45%, 
+        #fff 55%, 
+        #4facfe 100%
+      );
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 5s linear infinite;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+    }
+
+    @keyframes shine {
+      to { background-position: 200% center; }
+    }
     .sidebar label { font-weight: 600; color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
     .sidebar textarea {
       width: 100%; height: 80px; padding: 12px;
@@ -136,7 +212,7 @@
     .icon-btn:hover { background: rgba(79, 172, 254, 0.3); color: #4facfe; transform: translateY(-2px); }
     .icon-btn[data-tooltip]:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; white-space: nowrap; margin-bottom: 8px; }
     .game-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; position: relative; }
-    .classroom { flex: 1; border-radius: 24px; position: relative; overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); }
+    .classroom { flex: 1; border-radius: 0; position: relative; overflow: hidden; }
     .sky { position: absolute; top: 0; left: 0; right: 0; height: 30%; background: linear-gradient(180deg, #87CEEB 0%, #a8d8ea 100%); }
     .platform { position: absolute; top: 30%; left: 0; right: 0; height: 12%; background: linear-gradient(180deg, #98D8C8 0%, #7fc8b8 100%); }
     .floor { position: absolute; top: 42%; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, #C4A484 0%, #B8956E 100%); }
@@ -179,12 +255,41 @@
     .winner-confirm-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: rgba(255, 255, 255, 0.4); transform: translateY(-2px); }
     @keyframes winner-pop { 0% { transform: scale(0.8); opacity: 0; } 70% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
     .confetti { position: absolute; width: 10px; height: 10px; pointer-events: none; z-index: 300; }
-    @media (max-width: 900px) { 
-      body { flex-direction: column; padding: 10px; gap: 10px; } 
-      .sidebar { width: 100%; min-width: 100%; max-width: 100%; max-height: 45vh; padding: 16px; overflow-y: auto; } 
-      .sidebar textarea { height: 50px; } 
-      .ranking-board { min-height: 60px; } 
-      .game-area { flex: 1; min-height: 50vh; }
+    @media (max-width: 768px) {
+      body { 
+        flex-direction: column-reverse; 
+        padding: 0; /* Remove body padding */
+        gap: 0; 
+        overflow-y: auto; 
+        height: auto; 
+      } 
+      .sidebar { 
+        width: 100%; 
+        min-width: 100%; 
+        max-width: 100%; 
+        height: auto;
+        max-height: none; 
+        padding: 20px; 
+        border-radius: 0; /* Square corners */
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      } 
+      .sidebar textarea { height: 60px; } 
+      .ranking-board { 
+        min-height: 150px; 
+        max-height: 250px;
+      } 
+      .game-area { 
+        flex: none; 
+        width: 100%;
+        height: 75vh; 
+        min-height: 500px;
+        padding: 0;
+      }
+      .classroom {
+        border-radius: 0; /* Square corners */
+        box-shadow: none;
+      }
     }
     .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); color: white; padding: 14px 28px; border-radius: 12px; z-index: 1000; animation: toast-in 0.3s ease; backdrop-filter: blur(10px); }
     @keyframes toast-in { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
@@ -199,7 +304,13 @@
 </head>
 <body>
   <aside class="sidebar">
-    <h2>✊ 단체 가위바위보</h2>
+    <div class="sidebar-header">
+      <h2><span class="title-emoji">✊</span> <span class="title-text">단체 가위바위보</span></h2>
+      <div class="header-btns">
+        <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
+        <button class="help-btn" id="helpBtn">?</button>
+      </div>
+    </div>
     <div class="settings-group">
       <label for="participants">참여자</label>
       <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
@@ -222,7 +333,7 @@
       </div>
     </div>
     <div class="sidebar-footer">
-      <a href="https://geniuskey.github.io/lottery/" class="icon-btn" data-tooltip="추첨 포탈 홈">
+      <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
       </a>
       <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
@@ -261,13 +372,28 @@
     class SoundManager {
       constructor() {
         this.ctx = null;
+        this.enabled = true;
+        this.setupToggleButton();
+      }
+      setupToggleButton() {
+        const btn = document.getElementById('soundToggle');
+        if (btn) {
+          btn.onclick = () => {
+            this.enabled = !this.enabled;
+            btn.textContent = this.enabled ? '🔊' : '🔇';
+            if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
+              this.ctx.resume();
+            }
+          };
+        }
       }
       init() {
         if (this.ctx) return;
         this.ctx = new (window.AudioContext || window.webkitAudioContext)();
       }
       playStart() {
-        if (!this.ctx) return;
+        if (!this.enabled || !this.ctx) return;
+        this.init();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'square';
@@ -279,7 +405,8 @@
         osc.start(); osc.stop(this.ctx.currentTime + 0.1);
       }
       playShout() {
-        if (!this.ctx) return;
+        if (!this.enabled || !this.ctx) return;
+        this.init();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sine';
@@ -314,8 +441,9 @@
         osc.start(); osc.stop(this.ctx.currentTime + 0.3);
       }
       playWin() {
-        if (!this.ctx) return;
-        const notes = [523.25, 659.25, 783.99, 1046.50];
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const notes = [261.63, 329.63, 392.00, 523.25]; // C, E, G, C
         notes.forEach((freq, i) => {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
