@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<!--
+@game-meta
+{
+  "id": "devil-survival",
+  "title": "악마로부터 살아남기",
+  "emoji": "😈",
+  "category": "서바이벌",
+  "description": "무시무시한 악마의 돌진을 피해 마지막까지 살아남으세요! 특정 방향으로 돌진하는 악마를 피해 생존하는 스릴 넘치는 추첨 게임.",
+  "features": ["🔥 돌진 액션", "😈 악마 시스템"],
+  "color": "purple",
+  "badge": "NEW",
+  "version": "1.0.0",
+  "updated": "2026-01-12",
+  "author": {
+    "name": "Euiyun Edwin Kim",
+    "email": "geniuskey@gmail.com",
+    "github": "geniuskey"
+  },
+  "urls": {
+    "service": "https://geniuskey.github.io/lottery/devil-survival/",
+    "repository": "https://github.com/geniuskey/lottery"
+  },
+  "license": "MIT",
+  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+}
+@end-game-meta
+-->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GFTNV73W8L');
+  </script>
+
+  <title>악마로부터 살아남기</title>
+
+  <!-- SEO 기본 -->
+  <meta name="description" content="무시무시한 악마의 돌진을 피해 마지막까지 살아남으세요! 특정 방향으로 돌진하는 악마를 피해 생존하는 스릴 넘치는 추첨 게임.">
+  <meta name="keywords" content="악마 살아남기, 서바이벌 게임, 추첨 게임, 온라인 추첨, 랜덤 선택, 악마로부터 살아남기, 레크리에이션">
+  <meta name="author" content="Euiyun Edwin Kim">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="추첨 게임 포털">
+  <meta property="og:title" content="😈 악마로부터 살아남기 - 공포의 생존 추첨">
+  <meta property="og:description" content="악마의 돌진을 피하고 최후의 생존자가 되어보세요! 박진감 넘치는 실시간 서바이벌 추첨 게임.">
+  <meta property="og:url" content="https://geniuskey.github.io/lottery/devil-survival/">
+  <meta property="og:image" content="https://geniuskey.github.io/lottery/og-image.png">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="😈 악마로부터 살아남기 - 공포의 생존 추첨">
+  <meta name="twitter:description" content="악마의 돌진을 피하고 최후의 생존자가 되어보세요! 박진감 넘치는 실시간 서바이벌 추첨 게임.">
+  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/og-image.png">
+
+  <!-- Canonical & Favicon -->
+  <link rel="canonical" href="https://geniuskey.github.io/lottery/devil-survival/">
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>😈</text></svg>">
+
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #0a0505;
+      --bg-ring: #1a081a;
+      --rope-red: #9400d3;
+      --rope-white: #f0f0f0;
+      --gold: #ff4500;
+      --gold-dark: #8b0000;
+      --knockout-red: #ff0000;
+      --survivor-green: #00ff88;
+      --sidebar-bg: rgba(15, 5, 15, 0.95);
+      --card-bg: rgba(30, 10, 30, 0.9);
+      --text-primary: #fff;
+      --text-secondary: #aaa;
+      --accent: #ff00ff;
+      --pad-x: 100px;
+      --pad-y: 100px;
+      --ring-size: 600px;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 320px;
+      min-width: 320px;
+      background: var(--sidebar-bg);
+      border-right: 3px solid var(--rope-red);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 16px;
+      height: 100vh;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 0, 211, 0.3);
+      border-radius: 10px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--rope-red);
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .sidebar-header h1 {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      letter-spacing: -0.8px;
+      flex: 1;
+    }
+
+    .sidebar-header h1 .title-emoji {
+      filter: drop-shadow(0 0 5px rgba(255, 0, 255, 0.5));
+      -webkit-text-fill-color: initial;
+      background: none;
+    }
+
+    .sidebar-header h1 .title-text {
+      background: linear-gradient(
+        to right, 
+        var(--gold) 0%, 
+        #fff 45%, 
+        #fff 55%, 
+        var(--gold) 100%
+      );
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 5s linear infinite;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+    }
+
+    @keyframes shine {
+      to { background-position: 200% center; }
+    }
+
+    .logo p {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .header-btns {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .help-btn, .sound-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 69, 0, 0.15);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .help-btn:hover, .sound-btn:hover {
+      background: rgba(255, 69, 0, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .section-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--gold);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .input-group {
+      flex-shrink: 0;
+    }
+
+    .input-group textarea {
+      width: 100%;
+      height: 80px;
+      background: var(--card-bg);
+      border: 1px solid rgba(148, 0, 211, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      resize: none;
+    }
+
+    .input-group textarea:focus {
+      outline: none;
+      border-color: var(--rope-red);
+    }
+
+    .settings-group {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      flex-shrink: 0;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(148, 0, 211, 0.15);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-item label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .setting-item input,
+    .setting-item select {
+      background: rgba(30, 0, 30, 0.9);
+      border: 1px solid rgba(148, 0, 211, 0.3);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+    }
+
+    .setting-item select option {
+      background: #1a051a;
+      color: var(--text-primary);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, var(--rope-red), #4b0082);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(148, 0, 211, 0.4);
+    }
+
+    .btn-start:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(148, 0, 211, 0.5);
+    }
+
+    .btn-start:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-reset {
+      flex: 0 0 50px;
+      background: var(--card-bg);
+      color: var(--text-secondary);
+      border: 1px solid rgba(148, 0, 211, 0.3);
+    }
+
+    .btn-reset:hover {
+      background: rgba(148, 0, 211, 0.2);
+      color: var(--text-primary);
+    }
+
+    .ranking-board {
+      flex: 1;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .ranking-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: rgba(148, 0, 211, 0.1);
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+
+    .rank-item.eliminated {
+      opacity: 0.5;
+      background: rgba(100, 100, 100, 0.2);
+    }
+
+    .rank-item.winner {
+      background: linear-gradient(135deg, rgba(255, 69, 0, 0.3), rgba(255, 69, 0, 0.1));
+      border: 1px solid var(--gold);
+    }
+
+    .rank-num {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--rope-red);
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .rank-item.winner .rank-num {
+      background: var(--gold);
+      color: #fff;
+    }
+
+    .rank-name {
+      flex: 1;
+      font-size: 0.85rem;
+    }
+
+    .rank-status {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background: rgba(0, 255, 136, 0.2);
+      color: var(--survivor-green);
+    }
+
+    .rank-item.eliminated .rank-status {
+      background: rgba(255, 0, 0, 0.2);
+      color: var(--knockout-red);
+    }
+
+    .sidebar-footer {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(148, 0, 211, 0.2);
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--card-bg);
+      border: 1px solid rgba(148, 0, 211, 0.3);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .icon-btn:hover {
+      background: rgba(148, 0, 211, 0.2);
+      color: var(--text-primary);
+      border-color: var(--rope-red);
+    }
+
+    .game-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      background: radial-gradient(ellipse at center, #2a052a 0%, var(--bg-dark) 100%);
+    }
+
+    .game-status {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+    }
+
+    .ring-container {
+      position: relative;
+      width: min(90vw, 780px);
+      height: min(90vw, 780px);
+      max-width: 780px;
+      max-height: 780px;
+    }
+
+    .boxing-ring {
+      position: absolute;
+      left: var(--pad-x);
+      top: var(--pad-y);
+      width: var(--ring-size);
+      height: var(--ring-size);
+      background: linear-gradient(135deg, #1a052a 0%, #0a000a 50%, #1a001a 100%);
+      border-radius: 4px;
+      box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .corner-post {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, var(--rope-red), #4b0082);
+      border-radius: 50%;
+      box-shadow: 0 0 15px rgba(148, 0, 211, 0.6);
+      z-index: 10;
+    }
+
+    .corner-post.top-left { top: calc(var(--pad-y) - 12px); left: calc(var(--pad-x) - 12px); }
+    .corner-post.top-right { top: calc(var(--pad-y) - 12px); left: calc(var(--pad-x) + var(--ring-size) - 12px); }
+    .corner-post.bottom-left { top: calc(var(--pad-y) + var(--ring-size) - 12px); left: calc(var(--pad-x) - 12px); }
+    .corner-post.bottom-right { top: calc(var(--pad-y) + var(--ring-size) - 12px); left: calc(var(--pad-x) + var(--ring-size) - 12px); }
+
+    #gameCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 5;
+    }
+
+    .alive-count {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.2rem;
+      color: var(--text-primary);
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px 25px;
+      border-radius: 25px;
+      border: 2px solid var(--rope-red);
+    }
+
+    .alive-count span {
+      color: var(--survivor-green);
+    }
+
+    .copyright {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .winner-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.5s;
+    }
+
+    .winner-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .winner-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 3rem;
+      color: var(--gold);
+      text-shadow: 0 0 30px rgba(255, 69, 0, 0.5);
+      margin-bottom: 30px;
+      animation: pulse 1s ease infinite;
+    }
+
+    .winner-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      max-width: 600px;
+    }
+
+    .winner-card {
+      background: linear-gradient(135deg, rgba(255, 69, 0, 0.2), rgba(255, 69, 0, 0.05));
+      border: 2px solid var(--gold);
+      border-radius: 16px;
+      padding: 20px 30px;
+      text-align: center;
+      animation: winnerPop 0.5s ease backwards;
+    }
+
+    .winner-card .emoji {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    .winner-card .name {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+    }
+
+    .winner-card .rank {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-top: 5px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes winnerPop {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* KO Log */
+    .ko-log {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 50;
+      pointer-events: none;
+      align-items: flex-end;
+      max-height: 40vh;
+      overflow: hidden;
+    }
+
+    .ko-log-item {
+      background: rgba(0, 0, 0, 0.7);
+      border-right: 4px solid var(--rope-red);
+      padding: 6px 12px;
+      border-radius: 4px;
+      color: #ddd;
+      font-size: 0.85rem;
+      animation: log-slide-in 0.3s ease-out forwards;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    @keyframes log-slide-in {
+      from { transform: translateX(30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: var(--sidebar-bg);
+      border: 2px solid var(--rope-red);
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal h2 {
+      font-family: 'Black Han Sans', sans-serif;
+      color: var(--gold);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .modal p {
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .modal ul {
+      color: var(--text-secondary);
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+
+    .modal li {
+      margin-bottom: 8px;
+    }
+
+    .modal-close {
+      width: 100%;
+      padding: 12px;
+      background: var(--rope-red);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--card-bg);
+      border: 1px solid var(--gold);
+      color: var(--text-primary);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      z-index: 300;
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      body { overflow-y: auto; }
+      .container { flex-direction: column-reverse; height: auto; }
+      .sidebar {
+        width: 100%;
+        min-width: auto;
+        height: auto;
+        max-height: none;
+        border-right: none;
+        border-top: 3px solid var(--rope-red);
+        padding: 16px;
+      }
+      .ranking-board {
+        min-height: 150px;
+        max-height: 250px;
+      }
+      .game-area { 
+        flex: none;
+        width: 100%;
+        height: 70vh;
+        min-height: 500px;
+        padding: 10px 0;
+      }
+      .ring-container {
+        width: 100%;
+        height: 95%;
+      }
+      .game-status { font-size: 1.1rem; top: 10px; }
+      .winner-title { font-size: 2rem; }
+      .ko-log { top: 50px; right: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1><span class="title-emoji">😈</span> <span class="title-text">악마로부터<br>살아남기</span></h1>
+            <div class="header-btns">
+                <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
+                <button class="help-btn" id="helpBtn" title="도움말">?</button>
+            </div>
+        </div>
+
+      <div class="input-group">
+        <div class="section-title">👥 생존자 명단</div>
+        <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)\n예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+      </div>
+
+      <div class="settings-group">
+        <div class="section-title">⚙️ 게임 설정</div>
+        <div class="setting-item">
+          <label>🏆 생존자 수</label>
+          <select id="winnerCount">
+            <option value="1" selected>1명</option>
+            <option value="2">2명</option>
+            <option value="3">3명</option>
+            <option value="4">4명</option>
+            <option value="5">5명</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>❤️ 시작 HP</label>
+          <select id="startHP">
+            <option value="1">1 (즉사)</option>
+            <option value="3" selected>3</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-start" id="startBtn">🎮 지옥문 열기</button>
+        <button class="btn btn-reset" id="resetBtn">↺</button>
+      </div>
+
+      <div class="ranking-board">
+        <div class="section-title">🏆 실시간 랭킹</div>
+        <div class="ranking-list" id="rankingList">
+          <div style="text-align:center;color:var(--text-secondary);padding:20px;">
+            생존자들을 입력하고<br>지옥문을 여세요!
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </a>
+        <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </button>
+        <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+        </a>
+      </div>
+    </aside>
+
+    <main class="game-area">
+      <div class="game-status" id="gameStatus">😈 악마가 타겟을 노리고 있습니다!</div>
+      <div class="ko-log" id="koLog"></div>
+      <div class="ring-container">
+        <div class="boxing-ring"></div>
+        <div class="corner-post top-left"></div>
+        <div class="corner-post top-right"></div>
+        <div class="corner-post bottom-left"></div>
+        <div class="corner-post bottom-right"></div>
+        <canvas id="gameCanvas"></canvas>
+      </div>
+      <div class="alive-count" id="aliveCount">생존자: <span>0</span> / 0</div>
+      <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
+    </main>
+  </div>
+
+  <div class="winner-overlay" id="winnerOverlay">
+    <div class="winner-title">🏆 최후의 생존자!</div>
+    <div class="winner-list" id="winnerList"></div>
+  </div>
+
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal">
+      <h2>😈 악마로부터 살아남기</h2>
+      <p>특정 방향으로 돌진하는 무시무시한 악마로부터 도망쳐 살아남으세요!</p>
+      <ul>
+        <li>👹 <strong>악마</strong>는 주기적으로 타겟을 정해 돌진합니다.</li>
+        <li>🎯 돌진 전에는 <strong>빨간색 가이드 라인</strong>이 표시됩니다.</li>
+        <li>💥 악마가 벽에 부딪히면 <strong>2초간</strong> 정신을 못 차립니다.</li>
+        <li>🔥 돌진 경로에 있으면 HP가 깎이며 멀리 튕겨나갑니다.</li>
+        <li>❤️ HP가 0이 되면 지옥으로 끌려갑니다 (K.O.)</li>
+        <li>🏆 설정한 생존자 수만큼 남으면 게임이 끝납니다.</li>
+      </ul>
+      <button class="modal-close" id="closeHelp">확인</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">결과가 복사되었습니다!</div>
+
+  <script>
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.setupToggleButton();
+      }
+      setupToggleButton() {
+        const btn = document.getElementById('soundToggle');
+        if (btn) {
+          btn.onclick = () => {
+            this.enabled = !this.enabled;
+            btn.textContent = this.enabled ? '🔊' : '🔇';
+            if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
+              this.ctx.resume();
+            }
+          };
+        }
+      }
+      init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      playStart() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(400, this.ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+      }
+      playCharge() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(600, this.ctx.currentTime + 1.5);
+        gain.gain.setValueAtTime(0, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + 1.0);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 1.5);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 1.5);
+      }
+      playDash() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+      }
+      playBeep(freq = 400) {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+      }
+      playCrash() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(80, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(30, this.ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.2);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.2);
+      }
+      playHit() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(60, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
+      }
+      playKO() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(20, this.ctx.currentTime + 0.6);
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.6);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.6);
+      }
+      playWin() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const notes = [200, 300, 400, 600];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.15);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.15);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.15 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.15 + 0.5);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.15);
+          osc.stop(this.ctx.currentTime + i * 0.15 + 0.5);
+        });
+      }
+    }
+
+    (function() {
+      // DOM Elements
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      const participantsInput = document.getElementById('participants');
+      const winnerCountInput = document.getElementById('winnerCount');
+      const startHPSelect = document.getElementById('startHP');
+      const startBtn = document.getElementById('startBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const copyResultBtn = document.getElementById('copyResultBtn');
+      const rankingList = document.getElementById('rankingList');
+      const gameStatus = document.getElementById('gameStatus');
+      const aliveCount = document.getElementById('aliveCount');
+      const winnerOverlay = document.getElementById('winnerOverlay');
+      const winnerList = document.getElementById('winnerList');
+      const helpBtn = document.getElementById('helpBtn');
+      const helpModal = document.getElementById('helpModal');
+      const closeHelp = document.getElementById('closeHelp');
+      const toast = document.getElementById('toast');
+
+      // Constants
+      const STORAGE_KEY = 'devilSurvival';
+      const EMOJIS = ['😀','😃','😄','😁','😆','😊','🙂','😎','🤓','😇','🥳','😺','🐶','🐱','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐸','🐵','🐔','🐧','🐦','🐤','🦄','🐝','🦋','😎'];
+      
+      // Game State
+      let participants = [];
+      let devil = null;
+      let gameRunning = false;
+      let animationId = null;
+      let ringBounds = { x: 0, y: 0, w: 0, h: 0 };
+      let eliminationOrder = [];
+      let survivors = [];
+      let effects = [];
+      let textEffects = [];
+      let eliminatedParticipants = [];
+      const soundManager = new SoundManager();
+
+      // Canvas resize
+      function resizeCanvas() {
+        const container = canvas.parentElement;
+        if (!container) return;
+        
+        canvas.width = container.offsetWidth;
+        canvas.height = container.offsetHeight;
+        
+        const isMobile = window.innerWidth <= 768;
+        const minPadX = isMobile ? 15 : 80;
+        const minPadY = isMobile ? 80 : 100;
+        
+        const availableW = canvas.width - minPadX * 2;
+        const availableH = canvas.height - minPadY * 2;
+        
+        const side = Math.min(availableW, availableH);
+        const padX = (canvas.width - side) / 2;
+        const padY = (canvas.height - side) / 2;
+        
+        document.documentElement.style.setProperty('--pad-x', padX + 'px');
+        document.documentElement.style.setProperty('--pad-y', padY + 'px');
+        document.documentElement.style.setProperty('--ring-size', side + 'px');
+
+        ringBounds = {
+          x: padX,
+          y: padY,
+          w: side,
+          h: side
+        };
+        
+        drawRing();
+      }
+      
+      function drawRing() {
+        ctx.strokeStyle = '#9400d3';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(ringBounds.x, ringBounds.y, ringBounds.w, ringBounds.h);
+      }
+
+      // LocalStorage
+      function saveSettings() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          participants: participantsInput.value,
+          winnerCount: winnerCountInput.value,
+          startHP: startHPSelect.value
+        }));
+      }
+
+      function loadSettings() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (saved) {
+            participantsInput.value = saved.participants || participantsInput.value;
+            winnerCountInput.value = saved.winnerCount || 1;
+            startHPSelect.value = saved.startHP || '3';
+          }
+        } catch (e) {
+          console.error('Settings load error:', e);
+        }
+      }
+
+      function parseParticipants(text) {
+        const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
+        const result = [];
+        for (const name of names) {
+          const match = name.match(/^(.+)\*(\d+)$/);
+          if (match) {
+            const baseName = match[1].trim();
+            const count = parseInt(match[2]);
+            for (let i = 0; i < count; i++) result.push(baseName);
+          } else {
+            result.push(name);
+          }
+        }
+        return result;
+      }
+
+      function initGame() {
+        const names = parseParticipants(participantsInput.value);
+        if (names.length < 2) {
+          showToast('최소 2명 이상 입력하세요!');
+          return;
+        }
+
+        const wc = Math.min(parseInt(winnerCountInput.value) || 1, names.length - 1);
+        winnerCountInput.value = wc;
+
+        soundManager.init();
+        resizeCanvas();
+        document.getElementById('koLog').innerHTML = '';
+
+        const startHP = parseInt(startHPSelect.value) || 3;
+
+        participants = names.map((name, i) => {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = Math.random() * Math.min(ringBounds.w, ringBounds.h) * 0.25 + 50;
+          return {
+            name: name,
+            emoji: EMOJIS[i % EMOJIS.length],
+            x: ringBounds.x + ringBounds.w / 2 + Math.cos(angle) * dist,
+            y: ringBounds.y + ringBounds.h / 2 + Math.sin(angle) * dist,
+            vx: 0,
+            vy: 0,
+            alive: true,
+            hp: startHP,
+            maxHp: startHP,
+            radius: 22,
+            hitFlash: 0,
+            wanderAngle: Math.random() * Math.PI * 2,
+            wanderTimer: Math.random() * 60
+          };
+        });
+
+        devil = {
+          x: ringBounds.x + ringBounds.w / 2,
+          y: ringBounds.y + ringBounds.h / 2,
+          vx: 0,
+          vy: 0,
+          radius: 35,
+          facingAngle: 0,
+          state: 'IDLE', // IDLE, AIMING, DASHING, RECOVERING
+          stateTimer: 60,
+          target: null,
+          dashAngle: 0,
+          dashSpeed: 18,
+          shake: 0
+        };
+
+        eliminationOrder = [];
+        survivors = [];
+        effects = [];
+        textEffects = [];
+        eliminatedParticipants = [];
+        gameRunning = true;
+        startBtn.disabled = true;
+        gameStatus.textContent = '😈 악마가 깨어났습니다!';
+        soundManager.playStart();
+
+        updateAliveCount();
+        updateRanking();
+        gameLoop();
+      }
+
+      function gameLoop() {
+        if (!gameRunning) return;
+        update();
+        draw();
+        animationId = requestAnimationFrame(gameLoop);
+      }
+
+      function update() {
+        const alive = participants.filter(p => p.alive);
+
+        if (alive.length <= parseInt(winnerCountInput.value)) {
+          endGame();
+          return;
+        }
+
+        // Devil Logic
+        devil.stateTimer--;
+
+        if (devil.state === 'IDLE') {
+          if (devil.stateTimer <= 0) {
+            // Find target
+            devil.target = alive[Math.floor(Math.random() * alive.length)];
+            devil.state = 'AIMING';
+            devil.stateTimer = 120; // 2 seconds
+            gameStatus.textContent = `🎯 악마가 ${devil.target.name}을(를) 노립니다!`;
+            soundManager.playCharge();
+          } else {
+            // Idle wander
+            devil.vx += (Math.random() - 0.5) * 0.5;
+            devil.vy += (Math.random() - 0.5) * 0.5;
+            devil.vx *= 0.9;
+            devil.vy *= 0.9;
+            devil.x += devil.vx;
+            devil.y += devil.vy;
+          }
+        } 
+        else if (devil.state === 'AIMING') {
+          if (!devil.target || !devil.target.alive) {
+            devil.target = alive[Math.floor(Math.random() * alive.length)];
+          }
+          
+          if (devil.target) {
+            devil.dashAngle = Math.atan2(devil.target.y - devil.y, devil.target.x - devil.x);
+            devil.facingAngle = devil.dashAngle;
+          }
+          
+          // Ticking sound logic
+          const tickIntervals = [90, 60, 40, 30, 20, 15, 10, 5];
+          if (tickIntervals.includes(devil.stateTimer)) {
+            soundManager.playBeep(400 + (120 - devil.stateTimer) * 2);
+          }
+
+          devil.shake = (devil.stateTimer < 60) ? (60 - devil.stateTimer) / 10 : 0;
+          
+          if (devil.stateTimer <= 0) {
+            devil.state = 'DASHING';
+            devil.stateTimer = 0;
+            gameStatus.textContent = '🔥 돌진!!!';
+            soundManager.playDash();
+          }
+        } 
+        else if (devil.state === 'DASHING') {
+          const prevX = devil.x;
+          const prevY = devil.y;
+          
+          devil.x += Math.cos(devil.dashAngle) * devil.dashSpeed;
+          devil.y += Math.sin(devil.dashAngle) * devil.dashSpeed;
+
+          // Check wall hit with a small epsilon to avoid immediate stuck
+          let hit = false;
+          const wallMargin = devil.radius - 2; 
+          
+          if (devil.x < ringBounds.x + wallMargin) { 
+            devil.x = ringBounds.x + devil.radius; 
+            if (Math.cos(devil.dashAngle) < 0) hit = true; 
+          }
+          if (devil.x > ringBounds.x + ringBounds.w - wallMargin) { 
+            devil.x = ringBounds.x + ringBounds.w - devil.radius; 
+            if (Math.cos(devil.dashAngle) > 0) hit = true; 
+          }
+          if (devil.y < ringBounds.y + wallMargin) { 
+            devil.y = ringBounds.y + devil.radius; 
+            if (Math.sin(devil.dashAngle) < 0) hit = true; 
+          }
+          if (devil.y > ringBounds.y + ringBounds.h - wallMargin) { 
+            devil.y = ringBounds.y + ringBounds.h - devil.radius; 
+            if (Math.sin(devil.dashAngle) > 0) hit = true; 
+          }
+
+          if (hit) {
+            devil.state = 'RECOVERING';
+            devil.stateTimer = 120; // 2 seconds
+            gameStatus.textContent = '💥 쿵!! 악마가 벽에 박혔습니다!';
+            soundManager.playCrash();
+            createCrashEffect(devil.x, devil.y);
+          }
+
+          // Check participant hit
+          alive.forEach(p => {
+            if (p.hitCooldown > 0) {
+              p.hitCooldown--;
+              return;
+            }
+            const dist = Math.hypot(p.x - devil.x, p.y - devil.y);
+            if (dist < p.radius + devil.radius) {
+              p.hp--;
+              p.hitFlash = 15;
+              p.hitCooldown = 30;
+              p.vx = Math.cos(devil.dashAngle) * 15;
+              p.vy = Math.sin(devil.dashAngle) * 15;
+              soundManager.playHit();
+              createTextEffect(p.x, p.y - 30, '-1 HP', '#ff4500');
+
+              if (p.hp <= 0) {
+                p.alive = false;
+                soundManager.playKO();
+                eliminationOrder.push(p);
+                createTextEffect(p.x, p.y - 50, '지옥행', '#ff0000', true);
+                
+                // Exit position
+                const angle = Math.atan2(p.y - (ringBounds.y + ringBounds.h/2), p.x - (ringBounds.x + ringBounds.w/2));
+                eliminatedParticipants.push({
+                  name: p.name,
+                  x: p.x + Math.cos(angle) * 100,
+                  y: p.y + Math.sin(angle) * 100
+                });
+
+                const messages = ["지옥행 급행열차! 🚂", "영혼 탈탈! 👻", "박살! 💥", "광탈! ⚡", "지옥으로! 🔥"];
+                const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+                const log = document.getElementById('koLog');
+                const logItem = document.createElement('div');
+                logItem.className = 'ko-log-item';
+                logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${p.name}</span>: ${randomMsg}`;
+                log.insertBefore(logItem, log.firstChild);
+                
+                if (log.children.length > 5) log.removeChild(log.lastChild);
+                
+                updateAliveCount();
+                updateRanking();
+              }
+            }
+          });
+        } 
+        else if (devil.state === 'RECOVERING') {
+          devil.shake = Math.sin(devil.stateTimer * 0.5) * 2;
+          if (devil.stateTimer <= 0) {
+            devil.state = 'IDLE';
+            devil.stateTimer = 60;
+            gameStatus.textContent = '😈 악마가 정신을 차렸습니다.';
+          }
+        }
+
+        // Keep Devil inside ring (except when dashing)
+        if (devil.state !== 'DASHING') {
+          const margin = devil.radius + 2;
+          if (devil.x < ringBounds.x + margin) devil.x = ringBounds.x + margin;
+          if (devil.x > ringBounds.x + ringBounds.w - margin) devil.x = ringBounds.x + ringBounds.w - margin;
+          if (devil.y < ringBounds.y + margin) devil.y = ringBounds.y + margin;
+          if (devil.y > ringBounds.y + ringBounds.h - margin) devil.y = ringBounds.y + ringBounds.h - margin;
+        }
+
+        // Participants AI
+        participants.forEach(p => {
+          if (!p.alive) return;
+
+          if (p.hitFlash > 0) p.hitFlash--;
+          if (p.hitCooldown > 0) p.hitCooldown--;
+
+          // Basic wandering
+          p.wanderTimer--;
+          if (p.wanderTimer <= 0) {
+            p.wanderAngle = Math.random() * Math.PI * 2;
+            p.wanderTimer = 30 + Math.random() * 60;
+          }
+
+          // Basic wandering (Always active for smooth movement)
+          p.vx += Math.cos(p.wanderAngle) * 0.15;
+          p.vy += Math.sin(p.wanderAngle) * 0.15;
+
+          // Dodge logic: Supplement wandering when devil is aiming or dashing
+          let moveSpeed = 1.2;
+          if (devil.state === 'AIMING' || devil.state === 'DASHING') {
+            const dx = p.x - devil.x;
+            const dy = p.y - devil.y;
+            const dist = Math.hypot(dx, dy);
+            
+            // Perpendicular avoidance for dash path
+            const targetAngle = devil.dashAngle;
+            const angleToP = Math.atan2(dy, dx);
+            const diff = angleToP - targetAngle;
+            
+            // Also avoid the devil itself when aiming
+            if (devil.state === 'AIMING') {
+              if (dist < 250) {
+                p.vx += (dx / dist) * 0.6;
+                p.vy += (dy / dist) * 0.6;
+                moveSpeed = 3.5;
+              }
+            }
+
+            if (dist < 200) {
+              const avoidAngle = targetAngle + (Math.sin(diff) > 0 ? Math.PI/2 : -Math.PI/2);
+              p.vx += Math.cos(avoidAngle) * 0.6;
+              p.vy += Math.sin(avoidAngle) * 0.7;
+              moveSpeed = 3.5;
+            }
+          }
+
+          p.vx *= 0.95;
+          p.vy *= 0.95;
+          
+          const curSpeed = Math.hypot(p.vx, p.vy);
+          if (curSpeed > moveSpeed) {
+            p.vx = (p.vx / curSpeed) * moveSpeed;
+            p.vy = (p.vy / curSpeed) * moveSpeed;
+          }
+
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // Wall bounce
+          const margin = 20;
+          if (p.x < ringBounds.x + margin) { p.x = ringBounds.x + margin; p.vx *= -1; }
+          if (p.x > ringBounds.x + ringBounds.w - margin) { p.x = ringBounds.x + ringBounds.w - margin; p.vx *= -1; }
+          if (p.y < ringBounds.y + margin) { p.y = ringBounds.y + margin; p.vy *= -1; }
+          if (p.y > ringBounds.y + ringBounds.h - margin) { p.y = ringBounds.y + ringBounds.h - margin; p.vy *= -1; }
+        });
+
+        // Prevention of overlap
+        for (let i = 0; i < participants.length; i++) {
+          const p1 = participants[i];
+          if (!p1.alive) continue;
+          for (let j = i + 1; j < participants.length; j++) {
+            const p2 = participants[j];
+            if (!p2.alive) continue;
+            const d = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+            const min = p1.radius + p2.radius;
+            if (d < min) {
+              const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+              const push = (min - d) / 2;
+              p1.x -= Math.cos(angle) * push;
+              p1.y -= Math.sin(angle) * push;
+              p2.x += Math.cos(angle) * push;
+              p2.y += Math.sin(angle) * push;
+            }
+          }
+        }
+      }
+
+      function createTextEffect(x, y, text, color, isKO = false) {
+        textEffects.push({ x, y, text, color, life: 60, maxLife: 60, isKO, scale: isKO ? 1.5 : 1 });
+      }
+
+      function createCrashEffect(x, y) {
+        effects.push({ x, y, type: 'CRASH', life: 30 });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawRing();
+
+        // Draw eliminated
+        eliminatedParticipants.forEach(ep => {
+          ctx.save();
+          ctx.globalAlpha = 0.5;
+          ctx.font = '30px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText('👻', ep.x, ep.y);
+          ctx.font = '14px Noto Sans KR';
+          ctx.fillText(ep.name, ep.x, ep.y + 25);
+          ctx.restore();
+        });
+
+        // Draw Guide Line
+        if (devil && devil.state === 'AIMING') {
+          ctx.save();
+          const angle = devil.dashAngle;
+          const dist = 1000;
+          const step = 40;
+          const opacity = (Math.sin(Date.now() * 0.01) + 1) * 0.5;
+          
+          ctx.font = 'bold 40px Arial';
+          ctx.fillStyle = `rgba(255, 0, 0, ${opacity})`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+
+          for (let i = 70; i < dist; i += step) {
+            const gx = devil.x + Math.cos(angle) * i;
+            const gy = devil.y + Math.sin(angle) * i;
+            ctx.save();
+            ctx.translate(gx, gy);
+            ctx.rotate(angle);
+            ctx.fillText('>', 0, 0);
+            ctx.restore();
+          }
+          ctx.restore();
+        }
+
+        // Draw Participants
+        participants.forEach(p => {
+          if (!p.alive) return;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          
+          if (p.hitFlash > 0) {
+            ctx.beginPath();
+            ctx.arc(0, 0, p.radius + 5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 69, 0, ${p.hitFlash / 15})`;
+            ctx.fill();
+          }
+
+          ctx.beginPath();
+          ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+          ctx.fill();
+          ctx.strokeStyle = '#9400d3';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.font = '30px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(p.emoji, 0, 0);
+
+          ctx.font = 'bold 16px Noto Sans KR';
+          ctx.fillStyle = '#fff';
+          ctx.shadowBlur = 4;
+          ctx.shadowColor = '#000';
+          ctx.fillText(p.name, 0, p.radius + 18);
+
+          // HP
+          const hpW = 30;
+          ctx.fillStyle = '#000';
+          ctx.fillRect(-hpW/2, -p.radius - 10, hpW, 4);
+          ctx.fillStyle = p.hp > 1 ? '#00ff88' : '#ff0000';
+          ctx.fillRect(-hpW/2, -p.radius - 10, hpW * (p.hp / p.maxHp), 4);
+          
+          ctx.restore();
+        });
+
+        // Draw Devil
+        if (devil) {
+          ctx.save();
+          const sx = devil.shake ? (Math.random() - 0.5) * devil.shake : 0;
+          const sy = devil.shake ? (Math.random() - 0.5) * devil.shake : 0;
+          ctx.translate(devil.x + sx, devil.y + sy);
+          
+          // Aura
+          const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, devil.radius + 20);
+          grad.addColorStop(0, 'rgba(255, 0, 0, 0.3)');
+          grad.addColorStop(1, 'rgba(255, 0, 255, 0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(0, 0, devil.radius + 20, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.font = '50px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('😈', 0, 0);
+
+          if (devil.state === 'RECOVERING') {
+            ctx.font = '20px Arial';
+            ctx.fillText('😵', 0, -devil.radius);
+          } else if (devil.state === 'AIMING') {
+            ctx.font = '24px Arial';
+            ctx.fillText('💢', 25, -25);
+          }
+
+          ctx.restore();
+        }
+
+        // Effects
+        effects = effects.filter(e => {
+          e.life--;
+          if (e.type === 'CRASH') {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(e.x, e.y, (30 - e.life) * 2, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${e.life / 30})`;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.restore();
+          }
+          return e.life > 0;
+        });
+
+        textEffects = textEffects.filter(e => {
+          e.life--;
+          ctx.save();
+          ctx.globalAlpha = e.life / 60;
+          ctx.font = `bold ${20 * e.scale}px 'Black Han Sans'`;
+          ctx.fillStyle = e.color;
+          ctx.textAlign = 'center';
+          ctx.fillText(e.text, e.x, e.y - (60 - e.life) * 0.5);
+          ctx.restore();
+          return e.life > 0;
+        });
+      }
+
+      function updateAliveCount() {
+        const alive = participants.filter(p => p.alive).length;
+        aliveCount.innerHTML = `생존자: <span>${alive}</span> / ${participants.length}`;
+      }
+
+      function updateRanking() {
+        const alive = participants.filter(p => p.alive).sort((a, b) => b.hp - a.hp);
+        const dead = eliminationOrder.slice().reverse();
+
+        let html = '';
+        alive.forEach((p, i) => {
+          html += `<div class="rank-item">
+            <span class="rank-num">${i + 1}</span>
+            <span class="rank-name">${p.emoji} ${p.name}</span>
+            <span class="rank-status">${'❤️'.repeat(p.hp)}</span>
+          </div>`;
+        });
+        dead.forEach((p, i) => {
+          html += `<div class="rank-item eliminated">
+            <span class="rank-num">${alive.length + i + 1}</span>
+            <span class="rank-name">👻 ${p.name}</span>
+            <span class="rank-status">K.O.</span>
+          </div>`;
+        });
+        rankingList.innerHTML = html || `<div style="text-align:center;color:var(--text-secondary);padding:20px;">
+            생존자들을 입력하고<br>지옥문을 여세요!
+          </div>`;
+      }
+
+      function endGame() {
+        gameRunning = false;
+        cancelAnimationFrame(animationId);
+        survivors = participants.filter(p => p.alive);
+        gameStatus.textContent = '🏆 게임 종료!';
+        soundManager.playWin();
+
+        let html = '';
+        survivors.forEach((p, i) => {
+          html += `<div class="winner-card" style="animation-delay:${i * 0.1}s">
+            <div class="emoji">${p.emoji}</div>
+            <div class="name">${p.name}</div>
+            <div class="rank">생존</div>
+          </div>`;
+        });
+        winnerList.innerHTML = html;
+        setTimeout(() => { winnerOverlay.classList.add('show'); createConfetti(); }, 500);
+        updateRanking();
+        startBtn.disabled = false;
+      }
+
+      function createConfetti() {
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.style.cssText = `position: fixed; width: 10px; height: 10px; left: ${Math.random() * 100}vw; top: -20px; background: ${['#ff4500', '#9400d3', '#ff00ff', '#000', '#fff'][Math.floor(Math.random() * 5)]}; z-index: 999; pointer-events: none; animation: confettiFall 3s linear forwards;`;
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 3000);
+          }, i * 30);
+        }
+      }
+
+      function resetGame() {
+        gameRunning = false;
+        cancelAnimationFrame(animationId);
+        participants = []; devil = null; eliminationOrder = []; survivors = []; effects = []; textEffects = []; eliminatedParticipants = [];
+        document.getElementById('koLog').innerHTML = '';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawRing();
+        gameStatus.textContent = '😈 악마가 타겟을 노리고 있습니다!';
+        aliveCount.innerHTML = '생존자: <span>0</span> / 0';
+        rankingList.innerHTML = `<div style="text-align:center;color:var(--text-secondary);padding:20px;">
+            생존자들을 입력하고<br>지옥문을 여세요!
+          </div>`;
+        winnerOverlay.classList.remove('show');
+        startBtn.disabled = false;
+      }
+
+      function copyResult() {
+        if (survivors.length === 0 && eliminationOrder.length === 0) {
+          showToast('복사할 결과가 없습니다!');
+          return;
+        }
+        let result = '😈 악마로부터 살아남기 결과\n━━━━━━━━━━━━━━━━━━\n\n🏆 생존자:\n';
+        survivors.forEach((p, i) => { result += `- ${p.name}\n`; });
+        result += '\n💀 탈락 순서:\n';
+        eliminationOrder.forEach((p, i) => { result += `${survivors.length + i + 1}위: ${p.name}\n`; });
+        navigator.clipboard.writeText(result).then(() => { showToast('결과가 복사되었습니다!'); });
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      }
+
+      participantsInput.addEventListener('input', saveSettings);
+      winnerCountInput.addEventListener('change', saveSettings);
+      startHPSelect.addEventListener('change', saveSettings);
+      startBtn.addEventListener('click', () => { initGame(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      resetBtn.addEventListener('click', resetGame);
+      copyResultBtn.addEventListener('click', copyResult);
+      helpBtn.addEventListener('click', () => helpModal.classList.add('show'));
+      closeHelp.addEventListener('click', () => helpModal.classList.remove('show'));
+      helpModal.addEventListener('click', e => { if (e.target === helpModal) helpModal.classList.remove('show'); });
+      winnerOverlay.addEventListener('click', () => winnerOverlay.classList.remove('show'));
+      window.addEventListener('resize', () => { if (!gameRunning) resizeCanvas(); });
+
+      loadSettings();
+      resizeCanvas();
+    })();
+  </script>
+</body>
+</html>

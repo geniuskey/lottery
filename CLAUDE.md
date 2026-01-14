@@ -61,8 +61,18 @@ single page 추첨 게임들을 만듭니다. 모든 게임은 아래 플랫폼 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-GFTNV73W8L');
+    </script>
+
     <title>{emoji} {title}</title>
-    
+
     <!-- SEO 기본 -->
     <meta name="description" content="{description}">
     <meta name="author" content="{author.name}">
@@ -105,6 +115,23 @@ single page 추첨 게임들을 만듭니다. 모든 게임은 아래 플랫폼 
 | twitter:card | 카드 유형 | "summary" 기본 |
 | canonical | 대표 URL | @game-meta urls.service |
 | robots | 크롤링 지시 | "index, follow" 고정 |
+
+## Google Analytics 규격
+모든 HTML 파일에 Google Analytics 태그를 포함합니다. viewport 메타 태그 바로 다음에 위치합니다.
+
+```html
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GFTNV73W8L');
+</script>
+```
+
+- **Measurement ID**: `G-GFTNV73W8L`
+- **위치**: `<head>` 섹션 내, viewport 메타 태그 바로 다음
 
 ## Side Bar 구성 규격
 * 최상단: 좌측 title, 우측 ? 버튼(도움말 모달)
