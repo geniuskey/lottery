@@ -1453,7 +1453,39 @@
           const dist = 1000;
           const step = 40;
           const opacity = (Math.sin(Date.now() * 0.01) + 1) * 0.5;
-          
+          const guideWidth = devil.radius + 20; // 가이드 라인 폭 (악마 반경 + 여유)
+
+          // 양쪽 가이드 라인 그리기
+          ctx.strokeStyle = `rgba(255, 0, 0, ${opacity * 0.7})`;
+          ctx.lineWidth = 3;
+          ctx.setLineDash([15, 10]); // 점선 패턴
+
+          // 왼쪽 가이드 라인
+          const perpAngle = angle + Math.PI / 2;
+          const leftStartX = devil.x + Math.cos(perpAngle) * guideWidth;
+          const leftStartY = devil.y + Math.sin(perpAngle) * guideWidth;
+          const leftEndX = leftStartX + Math.cos(angle) * dist;
+          const leftEndY = leftStartY + Math.sin(angle) * dist;
+
+          ctx.beginPath();
+          ctx.moveTo(leftStartX, leftStartY);
+          ctx.lineTo(leftEndX, leftEndY);
+          ctx.stroke();
+
+          // 오른쪽 가이드 라인
+          const rightStartX = devil.x - Math.cos(perpAngle) * guideWidth;
+          const rightStartY = devil.y - Math.sin(perpAngle) * guideWidth;
+          const rightEndX = rightStartX + Math.cos(angle) * dist;
+          const rightEndY = rightStartY + Math.sin(angle) * dist;
+
+          ctx.beginPath();
+          ctx.moveTo(rightStartX, rightStartY);
+          ctx.lineTo(rightEndX, rightEndY);
+          ctx.stroke();
+
+          ctx.setLineDash([]); // 점선 해제
+
+          // 중앙 화살표 그리기
           ctx.font = 'bold 40px Arial';
           ctx.fillStyle = `rgba(255, 0, 0, ${opacity})`;
           ctx.textAlign = 'center';
