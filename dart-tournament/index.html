@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<!--
+@game-meta
+{
+  "id": "dart-tournament",
+  "title": "다트 토너먼트",
+  "emoji": "🎯",
+  "category": "토너먼트",
+  "description": "참여자들이 다트를 던져 과녁 중심에 가까울수록 높은 점수! 여러 라운드 후 총점으로 우승자를 결정하는 다트 추첨 게임.",
+  "features": ["🎯 정밀 다트", "🏆 토너먼트"],
+  "color": "red",
+  "badge": "NEW",
+  "version": "1.0.0",
+  "updated": "2026-01-23",
+  "author": {
+    "name": "Euiyun Edwin Kim",
+    "email": "geniuskey@gmail.com",
+    "github": "geniuskey"
+  },
+  "urls": {
+    "service": "https://geniuskey.github.io/lottery/dart-tournament/",
+    "repository": "https://github.com/geniuskey/lottery"
+  },
+  "license": "MIT",
+  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+}
+@end-game-meta
+-->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GFTNV73W8L');
+  </script>
+
+  <title>🎯 다트 토너먼트</title>
+
+  <!-- SEO 기본 -->
+  <meta name="description" content="참여자들이 다트를 던져 과녁 중심에 가까울수록 높은 점수! 여러 라운드 후 총점으로 우승자를 결정하는 다트 추첨 게임.">
+  <meta name="keywords" content="다트 토너먼트, 다트 게임, 토너먼트 게임, 추첨 게임, 온라인 추첨, 랜덤 선택, 레크리에이션">
+  <meta name="author" content="Euiyun Edwin Kim">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="추첨 게임 포털">
+  <meta property="og:title" content="🎯 다트 토너먼트 - 정밀 다트 추첨">
+  <meta property="og:description" content="참여자들이 다트를 던져 과녁 중심에 가까울수록 높은 점수! 여러 라운드 후 총점으로 우승자를 결정합니다.">
+  <meta property="og:url" content="https://geniuskey.github.io/lottery/dart-tournament/">
+  <meta property="og:locale" content="ko_KR">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="🎯 다트 토너먼트 - 정밀 다트 추첨">
+  <meta name="twitter:description" content="참여자들이 다트를 던져 과녁 중심에 가까울수록 높은 점수! 여러 라운드 후 총점으로 우승자를 결정합니다.">
+
+  <!-- Canonical & Favicon -->
+  <link rel="canonical" href="https://geniuskey.github.io/lottery/dart-tournament/">
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #1a0a0a;
+      --bg-board: #0d1a0d;
+      --dart-red: #dc2626;
+      --dart-red-dark: #991b1b;
+      --dart-green: #16a34a;
+      --dart-green-dark: #166534;
+      --gold: #fbbf24;
+      --gold-dark: #b45309;
+      --silver: #94a3b8;
+      --bronze: #d97706;
+      --sidebar-bg: rgba(26, 10, 10, 0.95);
+      --card-bg: rgba(40, 20, 20, 0.9);
+      --text-primary: #fff;
+      --text-secondary: #94a3b8;
+      --accent: #dc2626;
+      --accent-green: #16a34a;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 320px;
+      min-width: 320px;
+      background: var(--sidebar-bg);
+      border-right: 3px solid var(--dart-red);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 16px;
+      height: 100vh;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(220, 38, 38, 0.3);
+      border-radius: 10px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--dart-red);
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .sidebar-header h1 {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      letter-spacing: -0.8px;
+      flex: 1;
+    }
+
+    .sidebar-header h1 .title-emoji {
+      filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.6));
+      -webkit-text-fill-color: initial;
+      background: none;
+    }
+
+    .sidebar-header h1 .title-text {
+      background: linear-gradient(
+        to right,
+        var(--dart-red) 0%,
+        #fff 45%,
+        #fff 55%,
+        var(--dart-green) 100%
+      );
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 5s linear infinite;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+    }
+
+    @keyframes shine {
+      to { background-position: 200% center; }
+    }
+
+    .header-btns {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .help-btn, .sound-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(220, 38, 38, 0.15);
+      border: 1px solid var(--dart-red);
+      color: var(--dart-red);
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .help-btn:hover, .sound-btn:hover {
+      background: rgba(220, 38, 38, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .section-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--dart-red);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .input-group {
+      flex-shrink: 0;
+    }
+
+    .input-group textarea {
+      width: 100%;
+      height: 80px;
+      background: var(--card-bg);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      resize: none;
+    }
+
+    .input-group textarea:focus {
+      outline: none;
+      border-color: var(--dart-red);
+    }
+
+    .settings-group {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      flex-shrink: 0;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(220, 38, 38, 0.15);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-item label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .setting-item input,
+    .setting-item select {
+      background: rgba(40, 10, 10, 0.9);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+    }
+
+    .setting-item select option {
+      background: #1a0a0a;
+      color: var(--text-primary);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, var(--dart-red), var(--dart-green));
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+    }
+
+    .btn-start:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+    }
+
+    .btn-start:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-reset {
+      flex: 0 0 50px;
+      background: var(--card-bg);
+      color: var(--text-secondary);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+    }
+
+    .btn-reset:hover {
+      background: rgba(220, 38, 38, 0.2);
+      color: var(--text-primary);
+    }
+
+    .ranking-board {
+      flex: 1;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .ranking-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: rgba(220, 38, 38, 0.1);
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+
+    .rank-item.gold {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(251, 191, 36, 0.1));
+      border: 1px solid var(--gold);
+    }
+
+    .rank-item.silver {
+      background: linear-gradient(135deg, rgba(148, 163, 184, 0.3), rgba(148, 163, 184, 0.1));
+      border: 1px solid var(--silver);
+    }
+
+    .rank-item.bronze {
+      background: linear-gradient(135deg, rgba(217, 119, 6, 0.3), rgba(217, 119, 6, 0.1));
+      border: 1px solid var(--bronze);
+    }
+
+    .rank-num {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--dart-red);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .rank-item.gold .rank-num {
+      background: var(--gold);
+      color: #000;
+    }
+
+    .rank-item.silver .rank-num {
+      background: var(--silver);
+      color: #000;
+    }
+
+    .rank-item.bronze .rank-num {
+      background: var(--bronze);
+      color: #fff;
+    }
+
+    .rank-name {
+      flex: 1;
+      font-size: 0.85rem;
+    }
+
+    .rank-score {
+      font-size: 0.8rem;
+      font-weight: bold;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background: rgba(220, 38, 38, 0.2);
+      color: var(--dart-red);
+    }
+
+    .rank-item.gold .rank-score {
+      background: rgba(251, 191, 36, 0.2);
+      color: var(--gold);
+    }
+
+    .sidebar-footer {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(220, 38, 38, 0.2);
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--card-bg);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .icon-btn:hover {
+      background: rgba(220, 38, 38, 0.2);
+      color: var(--text-primary);
+      border-color: var(--dart-red);
+    }
+
+    .game-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      background: radial-gradient(ellipse at center, #1a2a1a 0%, var(--bg-dark) 70%);
+      overflow: hidden;
+    }
+
+    /* Wood texture background */
+    .game-area::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          transparent 0px,
+          transparent 40px,
+          rgba(139, 69, 19, 0.1) 40px,
+          rgba(139, 69, 19, 0.1) 42px
+        );
+      pointer-events: none;
+    }
+
+    .game-status {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.4rem;
+      color: var(--dart-red);
+      text-shadow: 0 0 10px rgba(220, 38, 38, 0.5), 2px 2px 4px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+    }
+
+    .board-container {
+      position: relative;
+      width: min(90vw, 600px);
+      height: min(90vw, 600px);
+      max-width: 600px;
+      max-height: 600px;
+    }
+
+    #gameCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 5;
+    }
+
+    .round-info {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.2rem;
+      color: var(--text-primary);
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px 25px;
+      border-radius: 25px;
+      border: 2px solid var(--dart-red);
+    }
+
+    .round-info span {
+      color: var(--gold);
+    }
+
+    .copyright {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .winner-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.5s;
+    }
+
+    .winner-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .winner-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 3rem;
+      color: var(--gold);
+      text-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+      margin-bottom: 30px;
+      animation: pulse 1s ease infinite;
+    }
+
+    .winner-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      max-width: 800px;
+    }
+
+    .winner-card {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.05));
+      border: 2px solid var(--gold);
+      border-radius: 16px;
+      padding: 20px 30px;
+      text-align: center;
+      animation: winnerPop 0.5s ease backwards;
+    }
+
+    .winner-card.silver-card {
+      background: linear-gradient(135deg, rgba(148, 163, 184, 0.2), rgba(148, 163, 184, 0.05));
+      border-color: var(--silver);
+    }
+
+    .winner-card.bronze-card {
+      background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(217, 119, 6, 0.05));
+      border-color: var(--bronze);
+    }
+
+    .winner-card .medal {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    .winner-card .name {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+    }
+
+    .winner-card.silver-card .name {
+      color: var(--silver);
+    }
+
+    .winner-card.bronze-card .name {
+      color: var(--bronze);
+    }
+
+    .winner-card .score {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      margin-top: 5px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes winnerPop {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    .throw-log {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 50;
+      pointer-events: none;
+      align-items: flex-end;
+      max-height: 40vh;
+      overflow: hidden;
+    }
+
+    .throw-log-item {
+      background: rgba(0, 0, 0, 0.7);
+      border-right: 4px solid var(--dart-red);
+      padding: 6px 12px;
+      border-radius: 4px;
+      color: #ddd;
+      font-size: 0.85rem;
+      animation: log-slide-in 0.3s ease-out forwards;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .throw-log-item.bullseye {
+      border-right-color: var(--gold);
+      background: rgba(251, 191, 36, 0.2);
+    }
+
+    @keyframes log-slide-in {
+      from { transform: translateX(30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: var(--sidebar-bg);
+      border: 2px solid var(--dart-red);
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal h2 {
+      font-family: 'Black Han Sans', sans-serif;
+      color: var(--dart-red);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .modal p {
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .modal ul {
+      color: var(--text-secondary);
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+
+    .modal li {
+      margin-bottom: 8px;
+    }
+
+    .modal-close {
+      width: 100%;
+      padding: 12px;
+      background: var(--dart-red);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--card-bg);
+      border: 1px solid var(--dart-red);
+      color: var(--text-primary);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      z-index: 300;
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .current-thrower {
+      position: absolute;
+      top: 60px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid var(--dart-red);
+      border-radius: 12px;
+      padding: 15px 20px;
+      z-index: 50;
+    }
+
+    .current-thrower .label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+
+    .current-thrower .name {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.3rem;
+      color: var(--dart-red);
+    }
+
+    .current-thrower .round-score {
+      font-size: 0.85rem;
+      color: var(--gold);
+      margin-top: 5px;
+    }
+
+    @media (max-width: 768px) {
+      body { overflow-y: auto; }
+      .container { flex-direction: column-reverse; height: auto; }
+      .sidebar {
+        width: 100%;
+        min-width: auto;
+        height: auto;
+        max-height: none;
+        border-right: none;
+        border-top: 3px solid var(--dart-red);
+        padding: 16px;
+      }
+      .ranking-board {
+        min-height: 150px;
+        max-height: 250px;
+      }
+      .game-area {
+        flex: none;
+        width: 100%;
+        height: 70vh;
+        min-height: 500px;
+        padding: 10px 0;
+      }
+      .board-container {
+        width: 95%;
+        height: 95%;
+      }
+      .game-status { font-size: 1.1rem; top: 10px; }
+      .winner-title { font-size: 2rem; }
+      .throw-log { top: 50px; right: 10px; }
+      .current-thrower { top: 50px; left: 10px; padding: 10px 15px; }
+      .current-thrower .name { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1><span class="title-emoji">🎯</span> <span class="title-text">다트 토너먼트</span></h1>
+        <div class="header-btns">
+          <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
+          <button class="help-btn" id="helpBtn" title="도움말">?</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="section-title">👥 참여자 명단</div>
+        <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+      </div>
+
+      <div class="settings-group">
+        <div class="section-title">⚙️ 게임 설정</div>
+        <div class="setting-item">
+          <label>🔄 라운드 수</label>
+          <select id="roundCount">
+            <option value="1">1 라운드</option>
+            <option value="2">2 라운드</option>
+            <option value="3" selected>3 라운드</option>
+            <option value="5">5 라운드</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>⚡ 던지기 속도</label>
+          <select id="throwSpeed">
+            <option value="slow">느림</option>
+            <option value="normal" selected>보통</option>
+            <option value="fast">빠름</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-start" id="startBtn">🎯 시작</button>
+        <button class="btn btn-reset" id="resetBtn">↺</button>
+      </div>
+
+      <div class="ranking-board">
+        <div class="section-title">🏆 실시간 랭킹</div>
+        <div class="ranking-list" id="rankingList">
+          <div style="text-align:center;color:var(--text-secondary);padding:20px;">
+            참여자들을 입력하고<br>게임을 시작하세요!
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </a>
+        <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </button>
+        <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+        </a>
+        <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
+        </a>
+      </div>
+    </aside>
+
+    <main class="game-area">
+      <div class="game-status" id="gameStatus">🎯 다트 준비 완료!</div>
+      <div class="current-thrower" id="currentThrower" style="display: none;">
+        <div class="label">현재 차례</div>
+        <div class="name" id="throwerName">-</div>
+        <div class="round-score" id="roundScore">이번 라운드: 0점</div>
+      </div>
+      <div class="throw-log" id="throwLog"></div>
+      <div class="board-container">
+        <canvas id="gameCanvas"></canvas>
+      </div>
+      <div class="round-info" id="roundInfo">라운드: <span>1</span> / 3</div>
+      <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
+    </main>
+  </div>
+
+  <div class="winner-overlay" id="winnerOverlay">
+    <div class="winner-title">🏆 토너먼트 결과!</div>
+    <div class="winner-list" id="winnerList"></div>
+  </div>
+
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal">
+      <h2>🎯 다트 토너먼트</h2>
+      <p>참여자들이 다트를 던져 점수를 겨루는 토너먼트 게임입니다!</p>
+      <ul>
+        <li>🎯 <strong>과녁 중심</strong>에 가까울수록 높은 점수</li>
+        <li>💯 <strong>불스아이(정중앙)</strong>: 100점</li>
+        <li>🔴 <strong>빨간 영역</strong>: 80점 / 60점</li>
+        <li>🟢 <strong>초록 영역</strong>: 40점 / 20점</li>
+        <li>⚪ <strong>외곽 영역</strong>: 10점</li>
+        <li>🔄 각 라운드마다 모든 참여자가 한 번씩 던집니다</li>
+        <li>🏆 총점이 가장 높은 참여자가 우승!</li>
+      </ul>
+      <button class="modal-close" id="closeHelp">확인</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">결과가 복사되었습니다!</div>
+
+  <script>
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.setupToggleButton();
+      }
+      setupToggleButton() {
+        const btn = document.getElementById('soundToggle');
+        if (btn) {
+          btn.onclick = () => {
+            this.enabled = !this.enabled;
+            btn.textContent = this.enabled ? '🔊' : '🔇';
+            if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
+              this.ctx.resume();
+            }
+          };
+        }
+      }
+      init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      playStart() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+      }
+      playThrow() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        // Whoosh sound
+        const noise = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        noise.type = 'sawtooth';
+        noise.frequency.setValueAtTime(200, this.ctx.currentTime);
+        noise.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+        noise.connect(gain); gain.connect(this.ctx.destination);
+        noise.start(); noise.stop(this.ctx.currentTime + 0.2);
+      }
+      playHit(score) {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const freq = score >= 100 ? 880 : score >= 60 ? 660 : score >= 40 ? 440 : 330;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
+      }
+      playBullseye() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const notes = [523, 659, 784, 1047];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.1 + 0.3);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.1);
+          osc.stop(this.ctx.currentTime + i * 0.1 + 0.3);
+        });
+      }
+      playWin() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const notes = [523, 587, 659, 784, 880, 1047];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.12);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.12);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.12 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.12 + 0.4);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.12);
+          osc.stop(this.ctx.currentTime + i * 0.12 + 0.4);
+        });
+      }
+    }
+
+    (function() {
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      const participantsInput = document.getElementById('participants');
+      const roundCountInput = document.getElementById('roundCount');
+      const throwSpeedSelect = document.getElementById('throwSpeed');
+      const startBtn = document.getElementById('startBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const copyResultBtn = document.getElementById('copyResultBtn');
+      const rankingList = document.getElementById('rankingList');
+      const gameStatus = document.getElementById('gameStatus');
+      const roundInfo = document.getElementById('roundInfo');
+      const winnerOverlay = document.getElementById('winnerOverlay');
+      const winnerList = document.getElementById('winnerList');
+      const helpBtn = document.getElementById('helpBtn');
+      const helpModal = document.getElementById('helpModal');
+      const closeHelp = document.getElementById('closeHelp');
+      const toast = document.getElementById('toast');
+      const currentThrowerEl = document.getElementById('currentThrower');
+      const throwerNameEl = document.getElementById('throwerName');
+      const roundScoreEl = document.getElementById('roundScore');
+
+      const STORAGE_KEY = 'dartTournament';
+      const DART_COLORS = ['#dc2626', '#16a34a', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
+
+      let participants = [];
+      let gameRunning = false;
+      let animationId = null;
+      let boardCenter = { x: 0, y: 0 };
+      let boardRadius = 0;
+      let currentRound = 1;
+      let totalRounds = 3;
+      let currentPlayerIndex = 0;
+      let gamePhase = 'IDLE'; // IDLE, THROWING, HIT, ROUND_END, GAME_END
+      let dart = null;
+      let landedDarts = [];
+      let textEffects = [];
+      const soundManager = new SoundManager();
+
+      // Score zones (percentage of radius from center)
+      const SCORE_ZONES = [
+        { maxRadius: 0.06, score: 100, name: '불스아이', color: '#fbbf24' },
+        { maxRadius: 0.15, score: 80, name: '인너불', color: '#dc2626' },
+        { maxRadius: 0.30, score: 60, name: '트리플', color: '#16a34a' },
+        { maxRadius: 0.50, score: 40, name: '더블', color: '#dc2626' },
+        { maxRadius: 0.75, score: 20, name: '싱글', color: '#16a34a' },
+        { maxRadius: 1.0, score: 10, name: '외곽', color: '#1a1a1a' }
+      ];
+
+      function resizeCanvas() {
+        const container = canvas.parentElement;
+        if (!container) return;
+
+        canvas.width = container.offsetWidth;
+        canvas.height = container.offsetHeight;
+
+        const minSize = Math.min(canvas.width, canvas.height);
+        boardRadius = minSize * 0.42;
+        boardCenter = {
+          x: canvas.width / 2,
+          y: canvas.height / 2
+        };
+
+        drawBoard();
+      }
+
+      function drawBoard() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Board backing (wood effect)
+        ctx.beginPath();
+        ctx.arc(boardCenter.x, boardCenter.y, boardRadius * 1.1, 0, Math.PI * 2);
+        const woodGrad = ctx.createRadialGradient(
+          boardCenter.x, boardCenter.y, 0,
+          boardCenter.x, boardCenter.y, boardRadius * 1.1
+        );
+        woodGrad.addColorStop(0, '#8b4513');
+        woodGrad.addColorStop(1, '#5d3a1a');
+        ctx.fillStyle = woodGrad;
+        ctx.fill();
+        ctx.strokeStyle = '#3d2314';
+        ctx.lineWidth = 8;
+        ctx.stroke();
+
+        // Draw score rings (outer to inner)
+        for (let i = SCORE_ZONES.length - 1; i >= 0; i--) {
+          const zone = SCORE_ZONES[i];
+          const radius = boardRadius * zone.maxRadius;
+
+          ctx.beginPath();
+          ctx.arc(boardCenter.x, boardCenter.y, radius, 0, Math.PI * 2);
+          ctx.fillStyle = zone.color;
+          ctx.fill();
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        // Draw radial lines for segments
+        const segments = 20;
+        for (let i = 0; i < segments; i++) {
+          const angle = (i / segments) * Math.PI * 2 - Math.PI / 2;
+          ctx.beginPath();
+          ctx.moveTo(boardCenter.x, boardCenter.y);
+          ctx.lineTo(
+            boardCenter.x + Math.cos(angle) * boardRadius,
+            boardCenter.y + Math.sin(angle) * boardRadius
+          );
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+
+        // Wire frame
+        ctx.beginPath();
+        ctx.arc(boardCenter.x, boardCenter.y, boardRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = '#888';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // Draw score numbers around the board
+        ctx.font = 'bold 16px Noto Sans KR';
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const numbers = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5];
+        numbers.forEach((num, i) => {
+          const angle = (i / 20) * Math.PI * 2 - Math.PI / 2;
+          const x = boardCenter.x + Math.cos(angle) * (boardRadius + 25);
+          const y = boardCenter.y + Math.sin(angle) * (boardRadius + 25);
+          ctx.fillText(num.toString(), x, y);
+        });
+
+        // Draw landed darts
+        landedDarts.forEach(d => {
+          drawDart(d.x, d.y, d.color, 1.0);
+        });
+
+        // Draw flying dart
+        if (dart && dart.flying) {
+          drawDart(dart.x, dart.y, dart.color, dart.scale);
+        }
+
+        // Draw text effects
+        textEffects = textEffects.filter(e => {
+          e.life--;
+          ctx.save();
+          ctx.globalAlpha = e.life / e.maxLife;
+          ctx.font = `bold ${24 * e.scale}px 'Black Han Sans'`;
+          ctx.fillStyle = e.color;
+          ctx.textAlign = 'center';
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = e.color;
+          ctx.fillText(e.text, e.x, e.y - (e.maxLife - e.life) * 0.8);
+          ctx.restore();
+          return e.life > 0;
+        });
+      }
+
+      function drawDart(x, y, color, scale = 1) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(scale, scale);
+
+        // Dart body
+        ctx.beginPath();
+        ctx.moveTo(0, -15);
+        ctx.lineTo(4, 10);
+        ctx.lineTo(-4, 10);
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Dart tip
+        ctx.beginPath();
+        ctx.moveTo(0, -15);
+        ctx.lineTo(2, -20);
+        ctx.lineTo(-2, -20);
+        ctx.closePath();
+        ctx.fillStyle = '#888';
+        ctx.fill();
+
+        // Dart flights
+        ctx.beginPath();
+        ctx.moveTo(-8, 10);
+        ctx.lineTo(0, 5);
+        ctx.lineTo(8, 10);
+        ctx.lineTo(0, 18);
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.7;
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function saveSettings() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          participants: participantsInput.value,
+          roundCount: roundCountInput.value,
+          throwSpeed: throwSpeedSelect.value
+        }));
+      }
+
+      function loadSettings() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (saved) {
+            participantsInput.value = saved.participants || participantsInput.value;
+            roundCountInput.value = saved.roundCount || 3;
+            throwSpeedSelect.value = saved.throwSpeed || 'normal';
+          }
+        } catch (e) {
+          console.error('Settings load error:', e);
+        }
+      }
+
+      function parseParticipants(text) {
+        const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
+        const result = [];
+        for (const name of names) {
+          const match = name.match(/^(.+)\*(\d+)$/);
+          if (match) {
+            const baseName = match[1].trim();
+            const count = parseInt(match[2]);
+            for (let i = 0; i < count; i++) result.push(baseName);
+          } else {
+            result.push(name);
+          }
+        }
+        return result;
+      }
+
+      function getSpeedMultiplier() {
+        const speed = throwSpeedSelect.value;
+        if (speed === 'slow') return 0.6;
+        if (speed === 'fast') return 1.8;
+        return 1;
+      }
+
+      function initGame() {
+        const names = parseParticipants(participantsInput.value);
+        if (names.length < 2) {
+          showToast('최소 2명 이상 입력하세요!');
+          return;
+        }
+
+        soundManager.init();
+        resizeCanvas();
+        document.getElementById('throwLog').innerHTML = '';
+
+        totalRounds = parseInt(roundCountInput.value) || 3;
+        currentRound = 1;
+        currentPlayerIndex = 0;
+        landedDarts = [];
+
+        participants = names.map((name, i) => ({
+          name: name,
+          color: DART_COLORS[i % DART_COLORS.length],
+          totalScore: 0,
+          roundScores: [],
+          currentRoundScore: 0
+        }));
+
+        gameRunning = true;
+        gamePhase = 'IDLE';
+        dart = null;
+        textEffects = [];
+        startBtn.disabled = true;
+
+        gameStatus.textContent = `라운드 ${currentRound} 시작!`;
+        updateRoundInfo();
+        updateRanking();
+        updateCurrentThrower();
+        soundManager.playStart();
+
+        setTimeout(() => throwDart(), 1000);
+        gameLoop();
+      }
+
+      function gameLoop() {
+        if (!gameRunning) return;
+        update();
+        drawBoard();
+        animationId = requestAnimationFrame(gameLoop);
+      }
+
+      function update() {
+        const speedMult = getSpeedMultiplier();
+
+        if (gamePhase === 'THROWING' && dart && dart.flying) {
+          // Move dart towards target
+          const dx = dart.targetX - dart.x;
+          const dy = dart.targetY - dart.y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist > 5) {
+            const speed = 15 * speedMult;
+            dart.x += (dx / dist) * speed;
+            dart.y += (dy / dist) * speed;
+            dart.scale = Math.min(1, dart.scale + 0.05);
+          } else {
+            // Dart has landed
+            dart.flying = false;
+            dart.x = dart.targetX;
+            dart.y = dart.targetY;
+            gamePhase = 'HIT';
+
+            const score = calculateScore(dart.x, dart.y);
+            const player = participants[currentPlayerIndex];
+            player.currentRoundScore += score;
+            player.totalScore += score;
+
+            landedDarts.push({
+              x: dart.x,
+              y: dart.y,
+              color: dart.color,
+              playerIndex: currentPlayerIndex
+            });
+
+            // Sound and effects
+            if (score >= 100) {
+              soundManager.playBullseye();
+              createTextEffect(dart.x, dart.y - 30, '불스아이! +100', '#fbbf24', 1.5);
+              addThrowLog(player.name, score, true);
+            } else {
+              soundManager.playHit(score);
+              createTextEffect(dart.x, dart.y - 30, `+${score}`, score >= 60 ? '#fbbf24' : '#fff', 1);
+              addThrowLog(player.name, score, false);
+            }
+
+            updateCurrentThrower();
+            updateRanking();
+
+            // Next player after delay
+            setTimeout(() => {
+              currentPlayerIndex++;
+              if (currentPlayerIndex >= participants.length) {
+                // End of round
+                currentPlayerIndex = 0;
+                participants.forEach(p => {
+                  p.roundScores.push(p.currentRoundScore);
+                  p.currentRoundScore = 0;
+                });
+                currentRound++;
+
+                if (currentRound > totalRounds) {
+                  endGame();
+                  return;
+                }
+
+                gameStatus.textContent = `라운드 ${currentRound} 시작!`;
+                updateRoundInfo();
+                landedDarts = [];
+              }
+
+              if (gameRunning) {
+                updateCurrentThrower();
+                setTimeout(() => throwDart(), 800 / speedMult);
+              }
+            }, 1200 / speedMult);
+          }
+        }
+      }
+
+      function throwDart() {
+        if (!gameRunning || gamePhase === 'GAME_END') return;
+
+        const player = participants[currentPlayerIndex];
+        gameStatus.textContent = `${player.name}의 차례!`;
+        gamePhase = 'THROWING';
+
+        soundManager.playThrow();
+
+        // Calculate target position with randomness
+        const angle = Math.random() * Math.PI * 2;
+        const maxDist = boardRadius * 0.95;
+        // More likely to hit middle-ish areas, but with variance
+        const distFactor = Math.pow(Math.random(), 0.7);
+        const distance = distFactor * maxDist;
+
+        dart = {
+          x: boardCenter.x + (Math.random() - 0.5) * 200,
+          y: canvas.height + 50,
+          targetX: boardCenter.x + Math.cos(angle) * distance,
+          targetY: boardCenter.y + Math.sin(angle) * distance,
+          color: player.color,
+          flying: true,
+          scale: 0.3
+        };
+      }
+
+      function calculateScore(x, y) {
+        const dx = x - boardCenter.x;
+        const dy = y - boardCenter.y;
+        const distance = Math.hypot(dx, dy);
+        const ratio = distance / boardRadius;
+
+        for (const zone of SCORE_ZONES) {
+          if (ratio <= zone.maxRadius) {
+            return zone.score;
+          }
+        }
+        return 0;
+      }
+
+      function createTextEffect(x, y, text, color, scale = 1) {
+        textEffects.push({ x, y, text, color, life: 60, maxLife: 60, scale });
+      }
+
+      function addThrowLog(name, score, isBullseye) {
+        const log = document.getElementById('throwLog');
+        const logItem = document.createElement('div');
+        logItem.className = 'throw-log-item' + (isBullseye ? ' bullseye' : '');
+        logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${name}</span>: ${isBullseye ? '🎯 불스아이!' : `${score}점`}`;
+        log.insertBefore(logItem, log.firstChild);
+
+        if (log.children.length > 8) log.removeChild(log.lastChild);
+      }
+
+      function updateCurrentThrower() {
+        if (!gameRunning || participants.length === 0) {
+          currentThrowerEl.style.display = 'none';
+          return;
+        }
+
+        currentThrowerEl.style.display = 'block';
+        const player = participants[currentPlayerIndex];
+        throwerNameEl.textContent = player.name;
+        throwerNameEl.style.color = player.color;
+        roundScoreEl.textContent = `이번 라운드: ${player.currentRoundScore}점`;
+      }
+
+      function updateRoundInfo() {
+        roundInfo.innerHTML = `라운드: <span>${currentRound}</span> / ${totalRounds}`;
+      }
+
+      function updateRanking() {
+        const sorted = [...participants].sort((a, b) => b.totalScore - a.totalScore);
+
+        let html = '';
+        sorted.forEach((p, i) => {
+          const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+          html += `<div class="rank-item ${rankClass}">
+            <span class="rank-num">${i + 1}</span>
+            <span class="rank-name" style="color:${p.color}">${p.name}</span>
+            <span class="rank-score">${p.totalScore}점</span>
+          </div>`;
+        });
+
+        rankingList.innerHTML = html || `<div style="text-align:center;color:var(--text-secondary);padding:20px;">
+          참여자들을 입력하고<br>게임을 시작하세요!
+        </div>`;
+      }
+
+      function endGame() {
+        gameRunning = false;
+        gamePhase = 'GAME_END';
+        cancelAnimationFrame(animationId);
+        currentThrowerEl.style.display = 'none';
+
+        const sorted = [...participants].sort((a, b) => b.totalScore - a.totalScore);
+        gameStatus.textContent = '🏆 토너먼트 종료!';
+        soundManager.playWin();
+
+        let html = '';
+        const medals = ['🥇', '🥈', '🥉'];
+        const cardClasses = ['', 'silver-card', 'bronze-card'];
+
+        sorted.slice(0, 3).forEach((p, i) => {
+          html += `<div class="winner-card ${cardClasses[i]}" style="animation-delay:${i * 0.15}s">
+            <div class="medal">${medals[i]}</div>
+            <div class="name">${p.name}</div>
+            <div class="score">${p.totalScore}점</div>
+          </div>`;
+        });
+
+        winnerList.innerHTML = html;
+        setTimeout(() => { winnerOverlay.classList.add('show'); createConfetti(); }, 500);
+        updateRanking();
+        startBtn.disabled = false;
+      }
+
+      function createConfetti() {
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.style.cssText = `position: fixed; width: 10px; height: 10px; left: ${Math.random() * 100}vw; top: -20px; background: ${['#dc2626', '#16a34a', '#fbbf24', '#fff', '#3b82f6'][Math.floor(Math.random() * 5)]}; z-index: 999; pointer-events: none; animation: confettiFall 3s linear forwards;`;
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 3000);
+          }, i * 30);
+        }
+      }
+
+      function resetGame() {
+        gameRunning = false;
+        gamePhase = 'IDLE';
+        cancelAnimationFrame(animationId);
+        participants = [];
+        dart = null;
+        landedDarts = [];
+        textEffects = [];
+        currentRound = 1;
+        currentPlayerIndex = 0;
+        document.getElementById('throwLog').innerHTML = '';
+        currentThrowerEl.style.display = 'none';
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBoard();
+
+        gameStatus.textContent = '🎯 다트 준비 완료!';
+        roundInfo.innerHTML = `라운드: <span>1</span> / 3`;
+        rankingList.innerHTML = `<div style="text-align:center;color:var(--text-secondary);padding:20px;">
+          참여자들을 입력하고<br>게임을 시작하세요!
+        </div>`;
+        winnerOverlay.classList.remove('show');
+        startBtn.disabled = false;
+      }
+
+      function copyResult() {
+        if (participants.length === 0) {
+          showToast('복사할 결과가 없습니다!');
+          return;
+        }
+
+        const sorted = [...participants].sort((a, b) => b.totalScore - a.totalScore);
+        let result = '🎯 다트 토너먼트 결과\n━━━━━━━━━━━━━━━━━━\n\n';
+        result += `📊 ${totalRounds}라운드 진행\n\n`;
+        result += '🏆 최종 순위:\n';
+
+        const medals = ['🥇', '🥈', '🥉'];
+        sorted.forEach((p, i) => {
+          const medal = i < 3 ? medals[i] : `${i + 1}위`;
+          result += `${medal} ${p.name}: ${p.totalScore}점\n`;
+          if (p.roundScores.length > 0) {
+            result += `   라운드별: ${p.roundScores.join(' / ')}\n`;
+          }
+        });
+
+        navigator.clipboard.writeText(result).then(() => { showToast('결과가 복사되었습니다!'); });
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      }
+
+      participantsInput.addEventListener('input', saveSettings);
+      roundCountInput.addEventListener('change', saveSettings);
+      throwSpeedSelect.addEventListener('change', saveSettings);
+      startBtn.addEventListener('click', () => { initGame(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      resetBtn.addEventListener('click', resetGame);
+      copyResultBtn.addEventListener('click', copyResult);
+      helpBtn.addEventListener('click', () => helpModal.classList.add('show'));
+      closeHelp.addEventListener('click', () => helpModal.classList.remove('show'));
+      helpModal.addEventListener('click', e => { if (e.target === helpModal) helpModal.classList.remove('show'); });
+      winnerOverlay.addEventListener('click', () => winnerOverlay.classList.remove('show'));
+      window.addEventListener('resize', () => { if (!gameRunning) resizeCanvas(); });
+
+      loadSettings();
+      resizeCanvas();
+    })();
+  </script>
+</body>
+</html>
