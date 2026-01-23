@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<!--
+@game-meta
+{
+  "id": "ufo-abduction",
+  "title": "UFO 납치",
+  "emoji": "🛸",
+  "category": "서바이벌",
+  "description": "외계인의 UFO가 사람들을 납치합니다! 빔을 피해 마지막까지 살아남으세요. 스릴 넘치는 외계인 생존 추첨 게임.",
+  "features": ["👽 외계인 빔", "🛸 UFO 추적"],
+  "color": "cyan",
+  "badge": "NEW",
+  "version": "1.0.0",
+  "updated": "2026-01-23",
+  "author": {
+    "name": "Euiyun Edwin Kim",
+    "email": "geniuskey@gmail.com",
+    "github": "geniuskey"
+  },
+  "urls": {
+    "service": "https://geniuskey.github.io/lottery/ufo-abduction/",
+    "repository": "https://github.com/geniuskey/lottery"
+  },
+  "license": "MIT",
+  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+}
+@end-game-meta
+-->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GFTNV73W8L');
+  </script>
+
+  <title>🛸 UFO 납치</title>
+
+  <!-- SEO 기본 -->
+  <meta name="description" content="외계인의 UFO가 사람들을 납치합니다! 빔을 피해 마지막까지 살아남으세요. 스릴 넘치는 외계인 생존 추첨 게임.">
+  <meta name="keywords" content="UFO 납치, 외계인 게임, 서바이벌 게임, 추첨 게임, 온라인 추첨, 랜덤 선택, 레크리에이션">
+  <meta name="author" content="Euiyun Edwin Kim">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="추첨 게임 포털">
+  <meta property="og:title" content="🛸 UFO 납치 - 외계인 생존 추첨">
+  <meta property="og:description" content="외계인의 UFO가 사람들을 납치합니다! 빔을 피해 마지막까지 살아남으세요.">
+  <meta property="og:url" content="https://geniuskey.github.io/lottery/ufo-abduction/">
+  <meta property="og:locale" content="ko_KR">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="🛸 UFO 납치 - 외계인 생존 추첨">
+  <meta name="twitter:description" content="외계인의 UFO가 사람들을 납치합니다! 빔을 피해 마지막까지 살아남으세요.">
+
+  <!-- Canonical & Favicon -->
+  <link rel="canonical" href="https://geniuskey.github.io/lottery/ufo-abduction/">
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛸</text></svg>">
+
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #020810;
+      --bg-space: #0a1628;
+      --beam-green: #00ff88;
+      --beam-glow: #00ffcc;
+      --ufo-purple: #8b5cf6;
+      --gold: #fbbf24;
+      --gold-dark: #b45309;
+      --abducted-red: #ef4444;
+      --survivor-green: #10b981;
+      --sidebar-bg: rgba(5, 15, 30, 0.95);
+      --card-bg: rgba(10, 30, 60, 0.9);
+      --text-primary: #fff;
+      --text-secondary: #94a3b8;
+      --accent: #00ffcc;
+      --pad-x: 100px;
+      --pad-y: 100px;
+      --ring-size: 600px;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 320px;
+      min-width: 320px;
+      background: var(--sidebar-bg);
+      border-right: 3px solid var(--beam-green);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 16px;
+      height: 100vh;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 255, 136, 0.3);
+      border-radius: 10px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--beam-green);
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .sidebar-header h1 {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      letter-spacing: -0.8px;
+      flex: 1;
+    }
+
+    .sidebar-header h1 .title-emoji {
+      filter: drop-shadow(0 0 8px rgba(0, 255, 204, 0.6));
+      -webkit-text-fill-color: initial;
+      background: none;
+    }
+
+    .sidebar-header h1 .title-text {
+      background: linear-gradient(
+        to right,
+        var(--beam-green) 0%,
+        #fff 45%,
+        #fff 55%,
+        var(--beam-glow) 100%
+      );
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 5s linear infinite;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+    }
+
+    @keyframes shine {
+      to { background-position: 200% center; }
+    }
+
+    .header-btns {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .help-btn, .sound-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(0, 255, 136, 0.15);
+      border: 1px solid var(--beam-green);
+      color: var(--beam-green);
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .help-btn:hover, .sound-btn:hover {
+      background: rgba(0, 255, 136, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .section-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--beam-green);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .input-group {
+      flex-shrink: 0;
+    }
+
+    .input-group textarea {
+      width: 100%;
+      height: 80px;
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      resize: none;
+    }
+
+    .input-group textarea:focus {
+      outline: none;
+      border-color: var(--beam-green);
+    }
+
+    .settings-group {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      flex-shrink: 0;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.15);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-item label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .setting-item input,
+    .setting-item select {
+      background: rgba(0, 20, 40, 0.9);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+    }
+
+    .setting-item select option {
+      background: #0a1628;
+      color: var(--text-primary);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, var(--beam-green), var(--ufo-purple));
+      color: #000;
+      box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+    }
+
+    .btn-start:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 255, 136, 0.5);
+    }
+
+    .btn-start:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-reset {
+      flex: 0 0 50px;
+      background: var(--card-bg);
+      color: var(--text-secondary);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    .btn-reset:hover {
+      background: rgba(0, 255, 136, 0.2);
+      color: var(--text-primary);
+    }
+
+    .ranking-board {
+      flex: 1;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .ranking-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: rgba(0, 255, 136, 0.1);
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+
+    .rank-item.eliminated {
+      opacity: 0.5;
+      background: rgba(100, 100, 100, 0.2);
+    }
+
+    .rank-item.winner {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.3), rgba(0, 255, 136, 0.1));
+      border: 1px solid var(--beam-green);
+    }
+
+    .rank-num {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--beam-green);
+      color: #000;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .rank-item.winner .rank-num {
+      background: var(--gold);
+      color: #000;
+    }
+
+    .rank-name {
+      flex: 1;
+      font-size: 0.85rem;
+    }
+
+    .rank-status {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--survivor-green);
+    }
+
+    .rank-item.eliminated .rank-status {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--abducted-red);
+    }
+
+    .sidebar-footer {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0, 255, 136, 0.2);
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .icon-btn:hover {
+      background: rgba(0, 255, 136, 0.2);
+      color: var(--text-primary);
+      border-color: var(--beam-green);
+    }
+
+    .game-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      background: radial-gradient(ellipse at center top, #1a2744 0%, var(--bg-dark) 70%);
+      overflow: hidden;
+    }
+
+    /* Stars background */
+    .game-area::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px, white, transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 90px 40px, white, transparent),
+        radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 160px 120px, white, transparent),
+        radial-gradient(2px 2px at 200px 50px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 250px 160px, white, transparent),
+        radial-gradient(2px 2px at 300px 100px, rgba(255,255,255,0.5), transparent);
+      background-size: 350px 200px;
+      animation: twinkle 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .game-status {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.4rem;
+      color: var(--beam-green);
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5), 2px 2px 4px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+    }
+
+    .ring-container {
+      position: relative;
+      width: min(90vw, 780px);
+      height: min(90vw, 780px);
+      max-width: 780px;
+      max-height: 780px;
+    }
+
+    .ground-area {
+      position: absolute;
+      left: var(--pad-x);
+      top: var(--pad-y);
+      width: var(--ring-size);
+      height: var(--ring-size);
+      background: linear-gradient(180deg,
+        transparent 0%,
+        rgba(0, 50, 30, 0.3) 60%,
+        rgba(0, 80, 50, 0.5) 100%
+      );
+      border-radius: 8px;
+      box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(0, 255, 136, 0.2);
+    }
+
+    #gameCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 5;
+    }
+
+    .alive-count {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.2rem;
+      color: var(--text-primary);
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px 25px;
+      border-radius: 25px;
+      border: 2px solid var(--beam-green);
+    }
+
+    .alive-count span {
+      color: var(--survivor-green);
+    }
+
+    .copyright {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .winner-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.5s;
+    }
+
+    .winner-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .winner-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 3rem;
+      color: var(--beam-green);
+      text-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+      margin-bottom: 30px;
+      animation: pulse 1s ease infinite;
+    }
+
+    .winner-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      max-width: 600px;
+    }
+
+    .winner-card {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.05));
+      border: 2px solid var(--beam-green);
+      border-radius: 16px;
+      padding: 20px 30px;
+      text-align: center;
+      animation: winnerPop 0.5s ease backwards;
+    }
+
+    .winner-card .emoji {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    .winner-card .name {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.5rem;
+      color: var(--beam-green);
+    }
+
+    .winner-card .rank {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-top: 5px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes winnerPop {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    .abduct-log {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 50;
+      pointer-events: none;
+      align-items: flex-end;
+      max-height: 40vh;
+      overflow: hidden;
+    }
+
+    .abduct-log-item {
+      background: rgba(0, 0, 0, 0.7);
+      border-right: 4px solid var(--beam-green);
+      padding: 6px 12px;
+      border-radius: 4px;
+      color: #ddd;
+      font-size: 0.85rem;
+      animation: log-slide-in 0.3s ease-out forwards;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    @keyframes log-slide-in {
+      from { transform: translateX(30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: var(--sidebar-bg);
+      border: 2px solid var(--beam-green);
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal h2 {
+      font-family: 'Black Han Sans', sans-serif;
+      color: var(--beam-green);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .modal p {
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .modal ul {
+      color: var(--text-secondary);
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+
+    .modal li {
+      margin-bottom: 8px;
+    }
+
+    .modal-close {
+      width: 100%;
+      padding: 12px;
+      background: var(--beam-green);
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--card-bg);
+      border: 1px solid var(--beam-green);
+      color: var(--text-primary);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      z-index: 300;
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      body { overflow-y: auto; }
+      .container { flex-direction: column-reverse; height: auto; }
+      .sidebar {
+        width: 100%;
+        min-width: auto;
+        height: auto;
+        max-height: none;
+        border-right: none;
+        border-top: 3px solid var(--beam-green);
+        padding: 16px;
+      }
+      .ranking-board {
+        min-height: 150px;
+        max-height: 250px;
+      }
+      .game-area {
+        flex: none;
+        width: 100%;
+        height: 70vh;
+        min-height: 500px;
+        padding: 10px 0;
+      }
+      .ring-container {
+        width: 100%;
+        height: 95%;
+      }
+      .game-status { font-size: 1.1rem; top: 10px; }
+      .winner-title { font-size: 2rem; }
+      .abduct-log { top: 50px; right: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1><span class="title-emoji">🛸</span> <span class="title-text">UFO 납치</span></h1>
+        <div class="header-btns">
+          <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
+          <button class="help-btn" id="helpBtn" title="도움말">?</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="section-title">👥 지구인 명단</div>
+        <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+      </div>
+
+      <div class="settings-group">
+        <div class="section-title">⚙️ 게임 설정</div>
+        <div class="setting-item">
+          <label>🏆 생존자 수</label>
+          <select id="winnerCount">
+            <option value="1" selected>1명</option>
+            <option value="2">2명</option>
+            <option value="3">3명</option>
+            <option value="4">4명</option>
+            <option value="5">5명</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>⚡ UFO 속도</label>
+          <select id="ufoSpeed">
+            <option value="slow">느림</option>
+            <option value="normal" selected>보통</option>
+            <option value="fast">빠름</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-start" id="startBtn">🛸 침공 시작</button>
+        <button class="btn btn-reset" id="resetBtn">↺</button>
+      </div>
+
+      <div class="ranking-board">
+        <div class="section-title">🏆 실시간 랭킹</div>
+        <div class="ranking-list" id="rankingList">
+          <div style="text-align:center;color:var(--text-secondary);padding:20px;">
+            지구인들을 입력하고<br>침공을 시작하세요!
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </a>
+        <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </button>
+        <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+        </a>
+        <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
+        </a>
+      </div>
+    </aside>
+
+    <main class="game-area">
+      <div class="game-status" id="gameStatus">🛸 UFO가 지구를 탐색 중...</div>
+      <div class="abduct-log" id="abductLog"></div>
+      <div class="ring-container">
+        <div class="ground-area"></div>
+        <canvas id="gameCanvas"></canvas>
+      </div>
+      <div class="alive-count" id="aliveCount">생존자: <span>0</span> / 0</div>
+      <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
+    </main>
+  </div>
+
+  <div class="winner-overlay" id="winnerOverlay">
+    <div class="winner-title">🏆 최후의 생존자!</div>
+    <div class="winner-list" id="winnerList"></div>
+  </div>
+
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal">
+      <h2>🛸 UFO 납치</h2>
+      <p>외계인의 UFO가 지구인들을 납치합니다! 빔을 피해 마지막까지 살아남으세요!</p>
+      <ul>
+        <li>🛸 <strong>UFO</strong>가 하늘에서 타겟을 선정합니다.</li>
+        <li>🎯 타겟이 선정되면 <strong>경고 표시</strong>가 나타납니다.</li>
+        <li>⚡ UFO가 타겟 위로 이동 후 <strong>빔을 발사</strong>합니다.</li>
+        <li>👽 빔에 닿으면 <strong>즉시 납치</strong>됩니다!</li>
+        <li>🏃 지구인들은 자동으로 도망다닙니다.</li>
+        <li>🏆 설정한 생존자 수만큼 남으면 게임이 끝납니다.</li>
+      </ul>
+      <button class="modal-close" id="closeHelp">확인</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">결과가 복사되었습니다!</div>
+
+  <script>
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.setupToggleButton();
+      }
+      setupToggleButton() {
+        const btn = document.getElementById('soundToggle');
+        if (btn) {
+          btn.onclick = () => {
+            this.enabled = !this.enabled;
+            btn.textContent = this.enabled ? '🔊' : '🔇';
+            if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
+              this.ctx.resume();
+            }
+          };
+        }
+      }
+      init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      playStart() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.3);
+        osc.frequency.exponentialRampToValueAtTime(400, this.ctx.currentTime + 0.6);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.6);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.6);
+      }
+      playHover() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(180, this.ctx.currentTime + 0.5);
+        osc.frequency.linearRampToValueAtTime(150, this.ctx.currentTime + 1.0);
+        gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.05, this.ctx.currentTime + 0.5);
+        gain.gain.linearRampToValueAtTime(0.03, this.ctx.currentTime + 1.0);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 1.0);
+      }
+      playWarning() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        [0, 0.2, 0.4].forEach(delay => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(600, this.ctx.currentTime + delay);
+          gain.gain.setValueAtTime(0.08, this.ctx.currentTime + delay);
+          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + delay + 0.15);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + delay);
+          osc.stop(this.ctx.currentTime + delay + 0.15);
+        });
+      }
+      playBeam() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(200, this.ctx.currentTime + 1.5);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.05, this.ctx.currentTime + 1.5);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 1.5);
+      }
+      playAbduct() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.5);
+      }
+      playWin() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        const notes = [400, 500, 600, 800];
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.15);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.15);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.15 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.15 + 0.5);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.15);
+          osc.stop(this.ctx.currentTime + i * 0.15 + 0.5);
+        });
+      }
+    }
+
+    (function() {
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      const participantsInput = document.getElementById('participants');
+      const winnerCountInput = document.getElementById('winnerCount');
+      const ufoSpeedSelect = document.getElementById('ufoSpeed');
+      const startBtn = document.getElementById('startBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const copyResultBtn = document.getElementById('copyResultBtn');
+      const rankingList = document.getElementById('rankingList');
+      const gameStatus = document.getElementById('gameStatus');
+      const aliveCount = document.getElementById('aliveCount');
+      const winnerOverlay = document.getElementById('winnerOverlay');
+      const winnerList = document.getElementById('winnerList');
+      const helpBtn = document.getElementById('helpBtn');
+      const helpModal = document.getElementById('helpModal');
+      const closeHelp = document.getElementById('closeHelp');
+      const toast = document.getElementById('toast');
+
+      const STORAGE_KEY = 'ufoAbduction';
+      const EMOJIS = ['😀','😃','😄','😁','😆','😊','🙂','😎','🤓','😇','🥳','😺','🐶','🐱','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐸','🐵','🐔','🐧','🐦','🐤','🦄','🐝','🦋','😎'];
+
+      let participants = [];
+      let ufo = null;
+      let gameRunning = false;
+      let animationId = null;
+      let groundBounds = { x: 0, y: 0, w: 0, h: 0 };
+      let eliminationOrder = [];
+      let survivors = [];
+      let textEffects = [];
+      let beamParticles = [];
+      const soundManager = new SoundManager();
+
+      function resizeCanvas() {
+        const container = canvas.parentElement;
+        if (!container) return;
+
+        canvas.width = container.offsetWidth;
+        canvas.height = container.offsetHeight;
+
+        const isMobile = window.innerWidth <= 768;
+        const minPadX = isMobile ? 15 : 80;
+        const minPadY = isMobile ? 80 : 100;
+
+        const availableW = canvas.width - minPadX * 2;
+        const availableH = canvas.height - minPadY * 2;
+
+        const side = Math.min(availableW, availableH);
+        const padX = (canvas.width - side) / 2;
+        const padY = (canvas.height - side) / 2;
+
+        document.documentElement.style.setProperty('--pad-x', padX + 'px');
+        document.documentElement.style.setProperty('--pad-y', padY + 'px');
+        document.documentElement.style.setProperty('--ring-size', side + 'px');
+
+        groundBounds = {
+          x: padX,
+          y: padY,
+          w: side,
+          h: side
+        };
+
+        drawGround();
+      }
+
+      function drawGround() {
+        ctx.strokeStyle = 'rgba(0, 255, 136, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(groundBounds.x, groundBounds.y, groundBounds.w, groundBounds.h);
+      }
+
+      function saveSettings() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          participants: participantsInput.value,
+          winnerCount: winnerCountInput.value,
+          ufoSpeed: ufoSpeedSelect.value
+        }));
+      }
+
+      function loadSettings() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (saved) {
+            participantsInput.value = saved.participants || participantsInput.value;
+            winnerCountInput.value = saved.winnerCount || 1;
+            ufoSpeedSelect.value = saved.ufoSpeed || 'normal';
+          }
+        } catch (e) {
+          console.error('Settings load error:', e);
+        }
+      }
+
+      function parseParticipants(text) {
+        const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
+        const result = [];
+        for (const name of names) {
+          const match = name.match(/^(.+)\*(\d+)$/);
+          if (match) {
+            const baseName = match[1].trim();
+            const count = parseInt(match[2]);
+            for (let i = 0; i < count; i++) result.push(baseName);
+          } else {
+            result.push(name);
+          }
+        }
+        return result;
+      }
+
+      function getSpeedMultiplier() {
+        const speed = ufoSpeedSelect.value;
+        if (speed === 'slow') return 0.6;
+        if (speed === 'fast') return 1.5;
+        return 1;
+      }
+
+      function initGame() {
+        const names = parseParticipants(participantsInput.value);
+        if (names.length < 2) {
+          showToast('최소 2명 이상 입력하세요!');
+          return;
+        }
+
+        const wc = Math.min(parseInt(winnerCountInput.value) || 1, names.length - 1);
+        winnerCountInput.value = wc;
+
+        soundManager.init();
+        resizeCanvas();
+        document.getElementById('abductLog').innerHTML = '';
+
+        const groundCenter = {
+          x: groundBounds.x + groundBounds.w / 2,
+          y: groundBounds.y + groundBounds.h / 2
+        };
+
+        participants = names.map((name, i) => {
+          const angle = Math.random() * Math.PI * 2;
+          const dist = Math.random() * Math.min(groundBounds.w, groundBounds.h) * 0.3 + 30;
+          return {
+            name: name,
+            emoji: EMOJIS[i % EMOJIS.length],
+            x: groundCenter.x + Math.cos(angle) * dist,
+            y: groundCenter.y + Math.sin(angle) * dist,
+            vx: 0,
+            vy: 0,
+            alive: true,
+            radius: 22,
+            panicLevel: 0,
+            wanderAngle: Math.random() * Math.PI * 2,
+            wanderTimer: Math.random() * 60,
+            beingAbducted: false,
+            abductProgress: 0
+          };
+        });
+
+        ufo = {
+          x: groundCenter.x,
+          y: groundBounds.y - 50,
+          targetX: groundCenter.x,
+          targetY: groundBounds.y + 80,
+          width: 80,
+          height: 40,
+          state: 'HOVERING',
+          stateTimer: 90,
+          target: null,
+          beamRadius: 0,
+          beamMaxRadius: 50,
+          wobble: 0
+        };
+
+        eliminationOrder = [];
+        survivors = [];
+        textEffects = [];
+        beamParticles = [];
+        gameRunning = true;
+        startBtn.disabled = true;
+        gameStatus.textContent = '🛸 UFO가 지구에 도착했습니다!';
+        soundManager.playStart();
+
+        updateAliveCount();
+        updateRanking();
+        gameLoop();
+      }
+
+      function gameLoop() {
+        if (!gameRunning) return;
+        update();
+        draw();
+        animationId = requestAnimationFrame(gameLoop);
+      }
+
+      function update() {
+        const alive = participants.filter(p => p.alive && !p.beingAbducted);
+        const speedMult = getSpeedMultiplier();
+
+        if (alive.length <= parseInt(winnerCountInput.value)) {
+          endGame();
+          return;
+        }
+
+        ufo.wobble += 0.1;
+        ufo.stateTimer--;
+
+        if (ufo.state === 'HOVERING') {
+          // Gentle hovering movement
+          ufo.x += Math.sin(ufo.wobble * 0.5) * 0.5;
+
+          if (ufo.stateTimer <= 0) {
+            // Select target
+            ufo.target = alive[Math.floor(Math.random() * alive.length)];
+            ufo.state = 'TARGETING';
+            ufo.stateTimer = Math.floor(60 / speedMult);
+            gameStatus.textContent = `🎯 타겟 발견: ${ufo.target.name}!`;
+            soundManager.playWarning();
+          }
+        }
+        else if (ufo.state === 'TARGETING') {
+          // Move towards target
+          ufo.targetX = ufo.target.x;
+          ufo.targetY = groundBounds.y + 60;
+
+          const dx = ufo.targetX - ufo.x;
+          const dy = ufo.targetY - ufo.y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist > 5) {
+            const moveSpeed = 4 * speedMult;
+            ufo.x += (dx / dist) * moveSpeed;
+            ufo.y += (dy / dist) * moveSpeed;
+          }
+
+          if (ufo.stateTimer <= 0 || dist <= 5) {
+            ufo.state = 'BEAMING';
+            ufo.stateTimer = Math.floor(120 / speedMult);
+            ufo.beamRadius = 0;
+            gameStatus.textContent = '⚡ 빔 발사!';
+            soundManager.playBeam();
+          }
+        }
+        else if (ufo.state === 'BEAMING') {
+          // Expand beam
+          if (ufo.beamRadius < ufo.beamMaxRadius) {
+            ufo.beamRadius += 2 * speedMult;
+          }
+
+          // Add beam particles
+          if (Math.random() < 0.3) {
+            beamParticles.push({
+              x: ufo.x + (Math.random() - 0.5) * ufo.beamRadius * 2,
+              y: ufo.y + ufo.height / 2 + Math.random() * (groundBounds.y + groundBounds.h - ufo.y - ufo.height / 2),
+              vy: -2 - Math.random() * 2,
+              life: 30,
+              size: 2 + Math.random() * 3
+            });
+          }
+
+          // Check for abductions
+          alive.forEach(p => {
+            const dx = p.x - ufo.x;
+            const dy = p.y - (ufo.y + ufo.height);
+            const withinBeam = Math.abs(dx) < ufo.beamRadius && dy > 0;
+
+            if (withinBeam && !p.beingAbducted) {
+              p.beingAbducted = true;
+              p.abductProgress = 0;
+              soundManager.playAbduct();
+            }
+          });
+
+          if (ufo.stateTimer <= 0) {
+            ufo.state = 'COOLDOWN';
+            ufo.stateTimer = Math.floor(60 / speedMult);
+            ufo.beamRadius = 0;
+            gameStatus.textContent = '🛸 UFO 재충전 중...';
+          }
+        }
+        else if (ufo.state === 'COOLDOWN') {
+          // Return to center-ish
+          const centerX = groundBounds.x + groundBounds.w / 2 + (Math.random() - 0.5) * 100;
+          const dx = centerX - ufo.x;
+          if (Math.abs(dx) > 5) {
+            ufo.x += Math.sign(dx) * 2;
+          }
+
+          if (ufo.stateTimer <= 0) {
+            ufo.state = 'HOVERING';
+            ufo.stateTimer = Math.floor(90 / speedMult);
+            gameStatus.textContent = '🛸 UFO가 다음 타겟을 찾는 중...';
+            soundManager.playHover();
+          }
+        }
+
+        // Update being abducted
+        participants.forEach(p => {
+          if (p.beingAbducted && p.alive) {
+            p.abductProgress += 0.02 * speedMult;
+            p.y -= 3 * speedMult;
+            p.x += (ufo.x - p.x) * 0.05;
+
+            if (p.abductProgress >= 1 || p.y < ufo.y + ufo.height) {
+              p.alive = false;
+              p.beingAbducted = false;
+              eliminationOrder.push(p);
+              createTextEffect(p.x, p.y, '납치됨! 👽', '#00ff88', true);
+
+              const messages = ["외계인과 함께! 🛸", "우주여행 떠남! 🚀", "납치 완료! 👽", "지구 탈출! 🌍", "안녕 지구! ✨"];
+              const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+              const log = document.getElementById('abductLog');
+              const logItem = document.createElement('div');
+              logItem.className = 'abduct-log-item';
+              logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${p.name}</span>: ${randomMsg}`;
+              log.insertBefore(logItem, log.firstChild);
+
+              if (log.children.length > 5) log.removeChild(log.lastChild);
+
+              updateAliveCount();
+              updateRanking();
+            }
+          }
+        });
+
+        // Participants AI - run away from UFO
+        participants.forEach(p => {
+          if (!p.alive || p.beingAbducted) return;
+
+          p.wanderTimer--;
+          if (p.wanderTimer <= 0) {
+            p.wanderAngle = Math.random() * Math.PI * 2;
+            p.wanderTimer = 30 + Math.random() * 60;
+          }
+
+          // Basic wandering
+          p.vx += Math.cos(p.wanderAngle) * 0.1;
+          p.vy += Math.sin(p.wanderAngle) * 0.1;
+
+          // Panic when UFO is targeting or beaming
+          if (ufo.state === 'TARGETING' || ufo.state === 'BEAMING') {
+            const dx = p.x - ufo.x;
+            const dy = p.y - ufo.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < 200) {
+              p.panicLevel = Math.min(1, p.panicLevel + 0.1);
+              const fleeAngle = Math.atan2(dy, dx);
+              p.vx += Math.cos(fleeAngle) * 0.8 * p.panicLevel;
+              p.vy += Math.sin(fleeAngle) * 0.5 * p.panicLevel;
+            }
+          } else {
+            p.panicLevel *= 0.95;
+          }
+
+          p.vx *= 0.92;
+          p.vy *= 0.92;
+
+          const maxSpeed = 2 + p.panicLevel * 2;
+          const curSpeed = Math.hypot(p.vx, p.vy);
+          if (curSpeed > maxSpeed) {
+            p.vx = (p.vx / curSpeed) * maxSpeed;
+            p.vy = (p.vy / curSpeed) * maxSpeed;
+          }
+
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // Wall bounce
+          const margin = 25;
+          if (p.x < groundBounds.x + margin) { p.x = groundBounds.x + margin; p.vx *= -0.5; }
+          if (p.x > groundBounds.x + groundBounds.w - margin) { p.x = groundBounds.x + groundBounds.w - margin; p.vx *= -0.5; }
+          if (p.y < groundBounds.y + margin) { p.y = groundBounds.y + margin; p.vy *= -0.5; }
+          if (p.y > groundBounds.y + groundBounds.h - margin) { p.y = groundBounds.y + groundBounds.h - margin; p.vy *= -0.5; }
+        });
+
+        // Collision between participants
+        for (let i = 0; i < participants.length; i++) {
+          const p1 = participants[i];
+          if (!p1.alive || p1.beingAbducted) continue;
+          for (let j = i + 1; j < participants.length; j++) {
+            const p2 = participants[j];
+            if (!p2.alive || p2.beingAbducted) continue;
+            const d = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+            const min = p1.radius + p2.radius;
+            if (d < min && d > 0) {
+              const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+              const push = (min - d) / 2;
+              p1.x -= Math.cos(angle) * push;
+              p1.y -= Math.sin(angle) * push;
+              p2.x += Math.cos(angle) * push;
+              p2.y += Math.sin(angle) * push;
+            }
+          }
+        }
+
+        // Update beam particles
+        beamParticles = beamParticles.filter(bp => {
+          bp.y += bp.vy;
+          bp.life--;
+          return bp.life > 0;
+        });
+      }
+
+      function createTextEffect(x, y, text, color, isAbduct = false) {
+        textEffects.push({ x, y, text, color, life: 60, maxLife: 60, isAbduct, scale: isAbduct ? 1.5 : 1 });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawGround();
+
+        // Draw beam
+        if (ufo && (ufo.state === 'BEAMING' || ufo.beamRadius > 0)) {
+          const gradient = ctx.createLinearGradient(ufo.x, ufo.y + ufo.height / 2, ufo.x, groundBounds.y + groundBounds.h);
+          gradient.addColorStop(0, 'rgba(0, 255, 136, 0.6)');
+          gradient.addColorStop(0.5, 'rgba(0, 255, 204, 0.3)');
+          gradient.addColorStop(1, 'rgba(0, 255, 136, 0.1)');
+
+          ctx.beginPath();
+          ctx.moveTo(ufo.x - ufo.beamRadius * 0.3, ufo.y + ufo.height / 2);
+          ctx.lineTo(ufo.x - ufo.beamRadius, groundBounds.y + groundBounds.h);
+          ctx.lineTo(ufo.x + ufo.beamRadius, groundBounds.y + groundBounds.h);
+          ctx.lineTo(ufo.x + ufo.beamRadius * 0.3, ufo.y + ufo.height / 2);
+          ctx.closePath();
+          ctx.fillStyle = gradient;
+          ctx.fill();
+
+          // Beam edge glow
+          ctx.strokeStyle = 'rgba(0, 255, 204, 0.5)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        // Draw beam particles
+        beamParticles.forEach(bp => {
+          ctx.beginPath();
+          ctx.arc(bp.x, bp.y, bp.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0, 255, 200, ${bp.life / 30})`;
+          ctx.fill();
+        });
+
+        // Draw targeting indicator
+        if (ufo && ufo.state === 'TARGETING' && ufo.target && ufo.target.alive) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(255, 100, 100, 0.8)';
+          ctx.lineWidth = 3;
+          ctx.setLineDash([10, 5]);
+          ctx.beginPath();
+          ctx.arc(ufo.target.x, ufo.target.y, 40 + Math.sin(Date.now() * 0.01) * 5, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Warning text
+          ctx.font = 'bold 14px Noto Sans KR';
+          ctx.fillStyle = '#ff6b6b';
+          ctx.textAlign = 'center';
+          ctx.fillText('⚠️ 타겟', ufo.target.x, ufo.target.y - 50);
+          ctx.restore();
+        }
+
+        // Draw Participants
+        participants.forEach(p => {
+          if (!p.alive) return;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+
+          if (p.beingAbducted) {
+            ctx.globalAlpha = 1 - p.abductProgress * 0.5;
+            ctx.scale(1 - p.abductProgress * 0.3, 1 + p.abductProgress * 0.5);
+          }
+
+          // Shadow
+          ctx.beginPath();
+          ctx.ellipse(0, p.radius + 5, p.radius * 0.8, 5, 0, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+          ctx.fill();
+
+          // Body circle
+          ctx.beginPath();
+          ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.beingAbducted ? 'rgba(0, 255, 136, 0.3)' : 'rgba(255, 255, 255, 0.1)';
+          ctx.fill();
+          ctx.strokeStyle = p.panicLevel > 0.5 ? '#ff6b6b' : '#00ff88';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Emoji
+          ctx.font = '28px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(p.emoji, 0, 0);
+
+          // Name
+          ctx.font = 'bold 14px Noto Sans KR';
+          ctx.fillStyle = '#fff';
+          ctx.shadowBlur = 4;
+          ctx.shadowColor = '#000';
+          ctx.fillText(p.name, 0, p.radius + 18);
+
+          ctx.restore();
+        });
+
+        // Draw UFO
+        if (ufo) {
+          ctx.save();
+          const wobbleY = Math.sin(ufo.wobble) * 3;
+          ctx.translate(ufo.x, ufo.y + wobbleY);
+
+          // UFO glow
+          const glowGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, ufo.width);
+          glowGrad.addColorStop(0, 'rgba(139, 92, 246, 0.3)');
+          glowGrad.addColorStop(1, 'rgba(139, 92, 246, 0)');
+          ctx.fillStyle = glowGrad;
+          ctx.beginPath();
+          ctx.arc(0, 0, ufo.width, 0, Math.PI * 2);
+          ctx.fill();
+
+          // UFO body (saucer shape)
+          ctx.beginPath();
+          ctx.ellipse(0, 0, ufo.width / 2, ufo.height / 3, 0, 0, Math.PI * 2);
+          const bodyGrad = ctx.createLinearGradient(0, -ufo.height / 3, 0, ufo.height / 3);
+          bodyGrad.addColorStop(0, '#8b5cf6');
+          bodyGrad.addColorStop(0.5, '#6366f1');
+          bodyGrad.addColorStop(1, '#4f46e5');
+          ctx.fillStyle = bodyGrad;
+          ctx.fill();
+          ctx.strokeStyle = '#a78bfa';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Dome
+          ctx.beginPath();
+          ctx.ellipse(0, -ufo.height / 4, ufo.width / 4, ufo.height / 3, 0, Math.PI, 0);
+          const domeGrad = ctx.createLinearGradient(0, -ufo.height / 2, 0, -ufo.height / 4);
+          domeGrad.addColorStop(0, 'rgba(200, 220, 255, 0.9)');
+          domeGrad.addColorStop(1, 'rgba(100, 150, 255, 0.7)');
+          ctx.fillStyle = domeGrad;
+          ctx.fill();
+
+          // Lights
+          const lightColors = ['#00ff88', '#ff6b6b', '#fbbf24', '#00ff88', '#ff6b6b'];
+          for (let i = 0; i < 5; i++) {
+            const angle = (i / 5) * Math.PI * 2 + Date.now() * 0.003;
+            const lx = Math.cos(angle) * (ufo.width / 2 - 10);
+            const ly = Math.sin(angle) * (ufo.height / 4 - 3);
+            ctx.beginPath();
+            ctx.arc(lx, ly, 4, 0, Math.PI * 2);
+            ctx.fillStyle = lightColors[i];
+            ctx.fill();
+          }
+
+          // State indicator
+          if (ufo.state === 'BEAMING') {
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('⚡', 0, -ufo.height);
+          } else if (ufo.state === 'TARGETING') {
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🎯', 0, -ufo.height);
+          }
+
+          ctx.restore();
+        }
+
+        // Draw text effects
+        textEffects = textEffects.filter(e => {
+          e.life--;
+          ctx.save();
+          ctx.globalAlpha = e.life / 60;
+          ctx.font = `bold ${18 * e.scale}px 'Black Han Sans'`;
+          ctx.fillStyle = e.color;
+          ctx.textAlign = 'center';
+          ctx.fillText(e.text, e.x, e.y - (60 - e.life) * 0.8);
+          ctx.restore();
+          return e.life > 0;
+        });
+      }
+
+      function updateAliveCount() {
+        const alive = participants.filter(p => p.alive && !p.beingAbducted).length;
+        aliveCount.innerHTML = `생존자: <span>${alive}</span> / ${participants.length}`;
+      }
+
+      function updateRanking() {
+        const alive = participants.filter(p => p.alive && !p.beingAbducted);
+        const dead = eliminationOrder.slice().reverse();
+
+        let html = '';
+        alive.forEach((p, i) => {
+          html += `<div class="rank-item">
+            <span class="rank-num">${i + 1}</span>
+            <span class="rank-name">${p.emoji} ${p.name}</span>
+            <span class="rank-status">생존</span>
+          </div>`;
+        });
+        dead.forEach((p, i) => {
+          html += `<div class="rank-item eliminated">
+            <span class="rank-num">${alive.length + i + 1}</span>
+            <span class="rank-name">👽 ${p.name}</span>
+            <span class="rank-status">납치됨</span>
+          </div>`;
+        });
+        rankingList.innerHTML = html || `<div style="text-align:center;color:var(--text-secondary);padding:20px;">
+            지구인들을 입력하고<br>침공을 시작하세요!
+          </div>`;
+      }
+
+      function endGame() {
+        gameRunning = false;
+        cancelAnimationFrame(animationId);
+        survivors = participants.filter(p => p.alive && !p.beingAbducted);
+        gameStatus.textContent = '🏆 침공 종료!';
+        soundManager.playWin();
+
+        let html = '';
+        survivors.forEach((p, i) => {
+          html += `<div class="winner-card" style="animation-delay:${i * 0.1}s">
+            <div class="emoji">${p.emoji}</div>
+            <div class="name">${p.name}</div>
+            <div class="rank">생존</div>
+          </div>`;
+        });
+        winnerList.innerHTML = html;
+        setTimeout(() => { winnerOverlay.classList.add('show'); createConfetti(); }, 500);
+        updateRanking();
+        startBtn.disabled = false;
+      }
+
+      function createConfetti() {
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.style.cssText = `position: fixed; width: 10px; height: 10px; left: ${Math.random() * 100}vw; top: -20px; background: ${['#00ff88', '#8b5cf6', '#00ffcc', '#fbbf24', '#fff'][Math.floor(Math.random() * 5)]}; z-index: 999; pointer-events: none; animation: confettiFall 3s linear forwards;`;
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 3000);
+          }, i * 30);
+        }
+      }
+
+      function resetGame() {
+        gameRunning = false;
+        cancelAnimationFrame(animationId);
+        participants = []; ufo = null; eliminationOrder = []; survivors = []; textEffects = []; beamParticles = [];
+        document.getElementById('abductLog').innerHTML = '';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawGround();
+        gameStatus.textContent = '🛸 UFO가 지구를 탐색 중...';
+        aliveCount.innerHTML = '생존자: <span>0</span> / 0';
+        rankingList.innerHTML = `<div style="text-align:center;color:var(--text-secondary);padding:20px;">
+            지구인들을 입력하고<br>침공을 시작하세요!
+          </div>`;
+        winnerOverlay.classList.remove('show');
+        startBtn.disabled = false;
+      }
+
+      function copyResult() {
+        if (survivors.length === 0 && eliminationOrder.length === 0) {
+          showToast('복사할 결과가 없습니다!');
+          return;
+        }
+        let result = '🛸 UFO 납치 결과\n━━━━━━━━━━━━━━━━━━\n\n🏆 생존자:\n';
+        survivors.forEach((p, i) => { result += `- ${p.name}\n`; });
+        result += '\n👽 납치 순서:\n';
+        eliminationOrder.forEach((p, i) => { result += `${survivors.length + i + 1}위: ${p.name}\n`; });
+        navigator.clipboard.writeText(result).then(() => { showToast('결과가 복사되었습니다!'); });
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      }
+
+      participantsInput.addEventListener('input', saveSettings);
+      winnerCountInput.addEventListener('change', saveSettings);
+      ufoSpeedSelect.addEventListener('change', saveSettings);
+      startBtn.addEventListener('click', () => { initGame(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      resetBtn.addEventListener('click', resetGame);
+      copyResultBtn.addEventListener('click', copyResult);
+      helpBtn.addEventListener('click', () => helpModal.classList.add('show'));
+      closeHelp.addEventListener('click', () => helpModal.classList.remove('show'));
+      helpModal.addEventListener('click', e => { if (e.target === helpModal) helpModal.classList.remove('show'); });
+      winnerOverlay.addEventListener('click', () => winnerOverlay.classList.remove('show'));
+      window.addEventListener('resize', () => { if (!gameRunning) resizeCanvas(); });
+
+      loadSettings();
+      resizeCanvas();
+    })();
+  </script>
+</body>
+</html>
