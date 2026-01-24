@@ -1603,37 +1603,68 @@
 
       async function spinSlotMachine(playerNum, reelCount) {
         const results = [];
-        const baseDelay = 1500 / getSpeedMultiplier();
+        const speedMult = getSpeedMultiplier();
+        const spinSpeed = 1200; // pixels per second
+        const baseDuration = 0.8 / speedMult; // Base spin duration in seconds
+        const stopInterval = 0.3 / speedMult; // Interval between stops
 
+        // Determine final symbols for all reels
+        for (let i = 0; i < reelCount; i++) {
+          results.push(SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
+        }
+
+        // Start all reels spinning simultaneously
+        const reelStates = [];
         for (let i = 0; i < reelCount; i++) {
           const reel = document.getElementById(`reel${playerNum}_${i}`);
-          const finalSymbol = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-          results.push(finalSymbol);
+          reelStates.push({
+            reel,
+            finalSymbol: results[i],
+            stopTime: baseDuration + i * stopInterval, // Staggered stop times
+            stopped: false,
+            offset: 0
+          });
+        }
 
-          // Animate spinning
-          const spinDuration = baseDelay + i * (300 / getSpeedMultiplier());
-          const startTime = Date.now();
+        return new Promise((resolve) => {
+          let lastTime = null;
+          let elapsedTime = 0;
 
-          const spin = () => {
-            const elapsed = Date.now() - startTime;
-            if (elapsed < spinDuration) {
-              const offset = (elapsed * 0.5) % (80 * 20);
-              reel.style.transform = `translateY(-${offset}px)`;
-              soundManager.playSpin();
-              requestAnimationFrame(spin);
+          const animate = (timestamp) => {
+            if (lastTime === null) lastTime = timestamp;
+            const deltaTime = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+            elapsedTime += deltaTime;
+
+            let allStopped = true;
+
+            reelStates.forEach((state, index) => {
+              if (!state.stopped) {
+                if (elapsedTime >= state.stopTime) {
+                  // Stop this reel with a "탕" sound
+                  state.reel.innerHTML = `<div class="slot-symbol">${state.finalSymbol}</div>`;
+                  state.reel.style.transform = 'translateY(0)';
+                  state.stopped = true;
+                  soundManager.playStop();
+                } else {
+                  // Keep spinning
+                  state.offset += spinSpeed * deltaTime;
+                  const offset = state.offset % (80 * 20);
+                  state.reel.style.transform = `translateY(-${offset}px)`;
+                  allStopped = false;
+                }
+              }
+            });
+
+            if (allStopped) {
+              resolve(results);
             } else {
-              // Stop at final position
-              reel.innerHTML = `<div class="slot-symbol">${finalSymbol}</div>`;
-              reel.style.transform = 'translateY(0)';
-              soundManager.playStop();
+              requestAnimationFrame(animate);
             }
           };
 
-          spin();
-          await delay(spinDuration);
-        }
-
-        return results;
+          requestAnimationFrame(animate);
+        });
       }
 
       function calculateScore(symbols) {

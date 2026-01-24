@@ -3,15 +3,15 @@
 @game-meta
 {
   "id": "skydiving",
-  "title": "스카이다이빙",
+  "title": "스카이다이빙 3D",
   "emoji": "🪂",
   "category": "레이싱",
-  "description": "하늘에서 낙하산을 타고 타겟에 착지하세요! 과녁 중심에 가장 가깝게 착지한 사람이 우승하는 스릴 넘치는 추첨 게임.",
-  "features": ["🎯 정밀 착지", "💨 바람 효과"],
+  "description": "3D 시점으로 하늘에서 타겟을 향해 낙하하세요! 위에서 아래를 내려다보며 과녁 중심에 착지하는 스릴 넘치는 추첨 게임.",
+  "features": ["🎯 3D 정밀 착지", "💨 바람 효과"],
   "color": "cyan",
   "badge": "NEW",
-  "version": "1.0.0",
-  "updated": "2026-01-23",
+  "version": "2.0.0",
+  "updated": "2026-01-24",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -40,26 +40,26 @@
     gtag('config', 'G-GFTNV73W8L');
   </script>
 
-  <title>🪂 스카이다이빙</title>
+  <title>🪂 스카이다이빙 3D</title>
 
   <!-- SEO 기본 -->
-  <meta name="description" content="하늘에서 낙하산을 타고 타겟에 착지하세요! 과녁 중심에 가장 가깝게 착지한 사람이 우승하는 스릴 넘치는 추첨 게임.">
-  <meta name="keywords" content="스카이다이빙, 낙하산, 추첨 게임, 타겟 착지, 온라인 추첨, 랜덤 선택, 레크리에이션">
+  <meta name="description" content="3D 시점으로 하늘에서 타겟을 향해 낙하하세요! 위에서 아래를 내려다보며 과녁 중심에 착지하는 스릴 넘치는 추첨 게임.">
+  <meta name="keywords" content="스카이다이빙, 3D 게임, 낙하산, 추첨 게임, 타겟 착지, 온라인 추첨, 랜덤 선택, 레크리에이션">
   <meta name="author" content="Euiyun Edwin Kim">
   <meta name="robots" content="index, follow">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="추첨 게임 포털">
-  <meta property="og:title" content="🪂 스카이다이빙 - 정밀 착지 추첨">
-  <meta property="og:description" content="하늘에서 낙하산을 타고 타겟에 착지하세요! 과녁 중심에 가장 가깝게 착지한 사람이 우승!">
+  <meta property="og:title" content="🪂 스카이다이빙 3D - 정밀 착지 추첨">
+  <meta property="og:description" content="3D 시점으로 하늘에서 타겟을 향해 낙하! 과녁 중심에 가장 가깝게 착지한 사람이 우승!">
   <meta property="og:url" content="https://geniuskey.github.io/lottery/skydiving/">
   <meta property="og:locale" content="ko_KR">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="🪂 스카이다이빙 - 정밀 착지 추첨">
-  <meta name="twitter:description" content="하늘에서 낙하산을 타고 타겟에 착지하세요! 과녁 중심에 가장 가깝게 착지한 사람이 우승!">
+  <meta name="twitter:title" content="🪂 스카이다이빙 3D - 정밀 착지 추첨">
+  <meta name="twitter:description" content="3D 시점으로 하늘에서 타겟을 향해 낙하! 과녁 중심에 가장 가깝게 착지한 사람이 우승!">
 
   <!-- Canonical & Favicon -->
   <link rel="canonical" href="https://geniuskey.github.io/lottery/skydiving/">
@@ -91,9 +91,6 @@
       --text-primary: #fff;
       --text-secondary: #94a3b8;
       --accent: #87ceeb;
-      --pad-x: 100px;
-      --pad-y: 100px;
-      --ring-size: 600px;
     }
 
     body {
@@ -458,36 +455,11 @@
       justify-content: center;
       padding: 20px;
       position: relative;
-      background: linear-gradient(180deg,
+      background: radial-gradient(circle at center,
         #1a4c7a 0%,
-        #4a90d9 30%,
-        #87ceeb 60%,
-        #8fbc8f 85%,
-        #228b22 100%
+        #0a2a4a 100%
       );
       overflow: hidden;
-    }
-
-    /* Clouds background */
-    .cloud {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 50%;
-      pointer-events: none;
-      animation: cloudFloat 20s linear infinite;
-    }
-
-    .cloud::before,
-    .cloud::after {
-      content: '';
-      position: absolute;
-      background: inherit;
-      border-radius: inherit;
-    }
-
-    @keyframes cloudFloat {
-      0% { transform: translateX(-100px); }
-      100% { transform: translateX(calc(100vw + 100px)); }
     }
 
     .game-status {
@@ -520,28 +492,27 @@
       border-radius: 20px;
     }
 
-    .ring-container {
-      position: relative;
-      width: min(90vw, 780px);
-      height: min(90vw, 780px);
-      max-width: 780px;
-      max-height: 780px;
+    .altitude-indicator {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.9rem;
+      color: #87ceeb;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 5px 15px;
+      border-radius: 20px;
     }
 
-    .ground-area {
-      position: absolute;
-      left: var(--pad-x);
-      top: var(--pad-y);
-      width: var(--ring-size);
-      height: var(--ring-size);
-      background: radial-gradient(circle at center bottom,
-        rgba(34, 139, 34, 0.4) 0%,
-        rgba(34, 139, 34, 0.2) 50%,
-        transparent 100%
-      );
-      border-radius: 8px;
-      box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
-      border: 2px solid rgba(135, 206, 235, 0.3);
+    .canvas-container {
+      position: relative;
+      width: min(85vw, 700px);
+      height: min(85vw, 700px);
+      max-width: 700px;
+      max-height: 700px;
     }
 
     #gameCanvas {
@@ -549,7 +520,10 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      z-index: 5;
+      border-radius: 50%;
+      box-shadow:
+        0 0 60px rgba(135, 206, 235, 0.3),
+        inset 0 0 100px rgba(0, 0, 0, 0.5);
     }
 
     .progress-count {
@@ -683,7 +657,7 @@
 
     .landing-log {
       position: absolute;
-      top: 100px;
+      top: 140px;
       right: 20px;
       display: flex;
       flex-direction: column;
@@ -691,7 +665,7 @@
       z-index: 50;
       pointer-events: none;
       align-items: flex-end;
-      max-height: 40vh;
+      max-height: 35vh;
       overflow: hidden;
     }
 
@@ -823,18 +797,19 @@
       .game-area {
         flex: none;
         width: 100%;
-        height: 70vh;
+        height: 75vh;
         min-height: 500px;
         padding: 10px 0;
       }
-      .ring-container {
-        width: 100%;
+      .canvas-container {
+        width: 95%;
         height: 95%;
       }
       .game-status { font-size: 1.1rem; top: 10px; }
       .wind-indicator { top: 45px; font-size: 0.85rem; }
+      .altitude-indicator { top: 80px; font-size: 0.8rem; }
       .winner-title { font-size: 2rem; }
-      .landing-log { top: 80px; right: 10px; }
+      .landing-log { top: 110px; right: 10px; }
     }
   </style>
 </head>
@@ -842,7 +817,7 @@
   <div class="container">
     <aside class="sidebar">
       <div class="sidebar-header">
-        <h1><span class="title-emoji">🪂</span> <span class="title-text">스카이다이빙</span></h1>
+        <h1><span class="title-emoji">🪂</span> <span class="title-text">스카이다이빙 3D</span></h1>
         <div class="header-btns">
           <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
           <button class="help-btn" id="helpBtn" title="도움말">?</button>
@@ -913,11 +888,11 @@
     </aside>
 
     <main class="game-area">
-      <div class="game-status" id="gameStatus">🪂 하늘에서 점프 준비!</div>
+      <div class="game-status" id="gameStatus">🪂 3D 스카이다이빙 준비!</div>
       <div class="wind-indicator" id="windIndicator">💨 바람: 대기 중</div>
+      <div class="altitude-indicator" id="altitudeIndicator">⬇️ 고도: 대기 중</div>
       <div class="landing-log" id="landingLog"></div>
-      <div class="ring-container">
-        <div class="ground-area"></div>
+      <div class="canvas-container">
         <canvas id="gameCanvas"></canvas>
       </div>
       <div class="progress-count" id="progressCount">착지: <span>0</span> / 0</div>
@@ -932,15 +907,15 @@
 
   <div class="modal-overlay" id="helpModal">
     <div class="modal">
-      <h2>🪂 스카이다이빙</h2>
-      <p>하늘에서 낙하산을 타고 타겟에 착지하세요! 과녁 중심에 가장 가깝게 착지한 사람이 우승합니다!</p>
+      <h2>🪂 스카이다이빙 3D</h2>
+      <p>3D 시점으로 하늘에서 타겟을 향해 낙하하세요! 위에서 아래를 내려다보며 과녁 중심에 가장 가깝게 착지한 사람이 우승합니다!</p>
       <ul>
-        <li>🛫 <strong>점프</strong>를 누르면 참여자들이 하늘에서 뛰어내립니다.</li>
-        <li>🪂 <strong>낙하산</strong>을 펴고 천천히 하강합니다.</li>
+        <li>🛫 <strong>점프</strong>를 누르면 참여자들이 높은 곳에서 뛰어내립니다.</li>
+        <li>👁️ <strong>위에서 아래</strong>를 내려다보는 3D 시점입니다.</li>
+        <li>🪂 가까워질수록 <strong>크게</strong> 보이는 원근 효과!</li>
         <li>💨 <strong>바람</strong>이 낙하 경로에 영향을 줍니다.</li>
         <li>🎯 <strong>타겟</strong> 중심에 가까울수록 높은 점수!</li>
         <li>🏆 가장 가까이 착지한 사람이 <strong>1등</strong>!</li>
-        <li>📊 거리(m)가 낮을수록 좋은 성적입니다.</li>
       </ul>
       <button class="modal-close" id="closeHelp">확인</button>
     </div>
@@ -1077,6 +1052,7 @@
       const rankingList = document.getElementById('rankingList');
       const gameStatus = document.getElementById('gameStatus');
       const windIndicator = document.getElementById('windIndicator');
+      const altitudeIndicator = document.getElementById('altitudeIndicator');
       const progressCount = document.getElementById('progressCount');
       const winnerOverlay = document.getElementById('winnerOverlay');
       const winnerList = document.getElementById('winnerList');
@@ -1085,56 +1061,60 @@
       const closeHelp = document.getElementById('closeHelp');
       const toast = document.getElementById('toast');
 
-      const STORAGE_KEY = 'skydiving';
+      const STORAGE_KEY = 'skydiving3d';
       const EMOJIS = ['😀','😃','😄','😁','😆','😊','🙂','😎','🤓','😇','🥳','😺','🐶','🐱','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐸','🐵','🐔','🐧','🐦','🐤','🦄','🐝','🦋','😎'];
-      const PARACHUTE_COLORS = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e91e63', '#00bcd4'];
+      const PARACHUTE_COLORS = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c', '#e91e63', '#00bcd4', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4'];
 
+      // 3D projection settings
+      const FOCAL_LENGTH = 400;
+      const MAX_ALTITUDE = 1000; // Starting altitude (z)
+      const TARGET_RADIUS = 120; // Target radius at ground level
+
+      let centerX, centerY;
       let participants = [];
       let gameRunning = false;
       let animationId = null;
-      let groundBounds = { x: 0, y: 0, w: 0, h: 0 };
-      let targetCenter = { x: 0, y: 0 };
+      let lastTime = 0;
       let landedParticipants = [];
       let wind = { x: 0, y: 0, display: '' };
-      let clouds = [];
       let textEffects = [];
+      let clouds = [];
+      let maxAltitude = MAX_ALTITUDE;
       const soundManager = new SoundManager();
+
+      // 3D Projection function
+      function project3D(x, y, z) {
+        const scale = FOCAL_LENGTH / (FOCAL_LENGTH + z);
+        const screenX = centerX + x * scale;
+        const screenY = centerY + y * scale;
+        return { x: screenX, y: screenY, scale };
+      }
 
       function resizeCanvas() {
         const container = canvas.parentElement;
         if (!container) return;
 
-        canvas.width = container.offsetWidth;
-        canvas.height = container.offsetHeight;
+        const size = Math.min(container.offsetWidth, container.offsetHeight);
+        canvas.width = size;
+        canvas.height = size;
+        centerX = size / 2;
+        centerY = size / 2;
 
-        const isMobile = window.innerWidth <= 768;
-        const minPadX = isMobile ? 15 : 80;
-        const minPadY = isMobile ? 80 : 100;
-
-        const availableW = canvas.width - minPadX * 2;
-        const availableH = canvas.height - minPadY * 2;
-
-        const side = Math.min(availableW, availableH);
-        const padX = (canvas.width - side) / 2;
-        const padY = (canvas.height - side) / 2;
-
-        document.documentElement.style.setProperty('--pad-x', padX + 'px');
-        document.documentElement.style.setProperty('--pad-y', padY + 'px');
-        document.documentElement.style.setProperty('--ring-size', side + 'px');
-
-        groundBounds = {
-          x: padX,
-          y: padY,
-          w: side,
-          h: side
-        };
-
-        targetCenter = {
-          x: groundBounds.x + groundBounds.w / 2,
-          y: groundBounds.y + groundBounds.h * 0.75
-        };
-
+        // Generate clouds
+        generateClouds();
         draw();
+      }
+
+      function generateClouds() {
+        clouds = [];
+        for (let i = 0; i < 15; i++) {
+          clouds.push({
+            x: (Math.random() - 0.5) * 600,
+            y: (Math.random() - 0.5) * 600,
+            z: 200 + Math.random() * 600,
+            size: 30 + Math.random() * 50
+          });
+        }
       }
 
       function saveSettings() {
@@ -1195,14 +1175,20 @@
         const angle = Math.random() * Math.PI * 2;
         const strength = (0.5 + Math.random() * 1.5) * mult;
         wind.x = Math.cos(angle) * strength;
-        wind.y = Math.sin(angle) * strength * 0.3;
+        wind.y = Math.sin(angle) * strength;
 
         let direction = '';
-        if (wind.x > 0.3) direction += '→';
-        else if (wind.x < -0.3) direction += '←';
-        if (wind.y > 0.1) direction += '↓';
-        else if (wind.y < -0.1) direction += '↑';
-        if (!direction) direction = '○';
+        if (Math.abs(wind.x) > Math.abs(wind.y)) {
+          direction = wind.x > 0 ? '→' : '←';
+        } else {
+          direction = wind.y > 0 ? '↓' : '↑';
+        }
+        if (Math.abs(wind.x) > 0.3 && Math.abs(wind.y) > 0.3) {
+          if (wind.x > 0 && wind.y > 0) direction = '↘';
+          else if (wind.x < 0 && wind.y > 0) direction = '↙';
+          else if (wind.x > 0 && wind.y < 0) direction = '↗';
+          else direction = '↖';
+        }
 
         const strengthText = strength < 0.8 ? '약함' : strength < 1.5 ? '보통' : '강함';
         wind.display = `${direction} ${strengthText}`;
@@ -1219,21 +1205,25 @@
         soundManager.init();
         resizeCanvas();
         generateWind();
+        generateClouds();
         document.getElementById('landingLog').innerHTML = '';
 
-        const startY = groundBounds.y - 50;
-        const spreadX = groundBounds.w * 0.6;
+        // Spread participants in a circle around center at high altitude
+        const spreadRadius = 150;
 
         participants = names.map((name, i) => {
-          const offsetX = (Math.random() - 0.5) * spreadX;
+          const angle = (i / names.length) * Math.PI * 2 + Math.random() * 0.5;
+          const radius = 50 + Math.random() * spreadRadius;
           return {
             name: name,
             emoji: EMOJIS[i % EMOJIS.length],
             parachuteColor: PARACHUTE_COLORS[i % PARACHUTE_COLORS.length],
-            x: targetCenter.x + offsetX,
-            y: startY - Math.random() * 100,
+            x: Math.cos(angle) * radius,
+            y: Math.sin(angle) * radius,
+            z: MAX_ALTITUDE + Math.random() * 200, // 3D altitude
             vx: 0,
             vy: 0,
+            vz: 0,
             landed: false,
             landingX: 0,
             landingY: 0,
@@ -1241,8 +1231,9 @@
             parachuteOpen: false,
             parachuteSize: 0,
             swayAngle: Math.random() * Math.PI * 2,
-            swaySpeed: 0.02 + Math.random() * 0.02,
-            fallDelay: i * 15 + Math.random() * 10,
+            swaySpeed: 1.5 + Math.random() * 1.5,
+            rotation: Math.random() * Math.PI * 2,
+            fallDelay: i * 0.3 + Math.random() * 0.2,
             started: false
           };
         });
@@ -1250,32 +1241,40 @@
         landedParticipants = [];
         textEffects = [];
         gameRunning = true;
+        lastTime = 0;
+        maxAltitude = MAX_ALTITUDE;
         startBtn.disabled = true;
         gameStatus.textContent = '🛫 점프!';
         soundManager.playJump();
 
         updateProgressCount();
         updateRanking();
-        gameLoop();
+        animationId = requestAnimationFrame(gameLoop);
       }
 
-      function gameLoop() {
+      function gameLoop(timestamp) {
         if (!gameRunning) return;
-        update();
+
+        if (lastTime === 0) lastTime = timestamp;
+        const deltaTime = Math.min((timestamp - lastTime) / 1000, 0.1);
+        lastTime = timestamp;
+
+        update(deltaTime);
         draw();
         animationId = requestAnimationFrame(gameLoop);
       }
 
-      function update() {
+      function update(deltaTime) {
         const speedMult = getFallSpeedMultiplier();
         let allLanded = true;
+        let currentMaxAlt = 0;
 
         participants.forEach((p, idx) => {
           if (p.landed) return;
 
           // Delay start
           if (!p.started) {
-            p.fallDelay--;
+            p.fallDelay -= deltaTime;
             if (p.fallDelay <= 0) {
               p.started = true;
               soundManager.playParachute();
@@ -1286,70 +1285,76 @@
           }
 
           allLanded = false;
+          currentMaxAlt = Math.max(currentMaxAlt, p.z);
 
           // Open parachute gradually
           if (!p.parachuteOpen) {
-            p.parachuteSize += 2;
-            if (p.parachuteSize >= 40) {
+            p.parachuteSize += 80 * deltaTime;
+            if (p.parachuteSize >= 35) {
               p.parachuteOpen = true;
             }
           }
 
-          // Apply gravity and wind
-          const baseGravity = 1.5 * speedMult;
-          const drag = p.parachuteOpen ? 0.95 : 0.99;
+          // Gravity and drag on z-axis (falling towards ground)
+          const baseGravity = 300 * speedMult;
+          const dragFactor = p.parachuteOpen ? 0.7 : 0.15;
 
-          p.vy += baseGravity * 0.1;
-          p.vy *= drag;
-          p.vy = Math.min(p.vy, p.parachuteOpen ? 3 * speedMult : 6 * speedMult);
+          p.vz += baseGravity * deltaTime;
+          p.vz *= Math.pow(1 - dragFactor, deltaTime);
+          p.vz = Math.min(p.vz, p.parachuteOpen ? 250 * speedMult : 500 * speedMult);
 
-          // Wind effect
-          const windEffect = p.parachuteOpen ? 1 : 0.3;
-          p.vx += wind.x * 0.1 * windEffect;
-          p.vx *= 0.98;
+          // Wind effect on x,y
+          const windEffect = p.parachuteOpen ? 1.2 : 0.4;
+          p.vx += wind.x * 30 * windEffect * deltaTime;
+          p.vy += wind.y * 30 * windEffect * deltaTime;
 
-          // Random sway
-          p.swayAngle += p.swaySpeed;
+          // Drag on horizontal movement
+          p.vx *= Math.pow(0.5, deltaTime);
+          p.vy *= Math.pow(0.5, deltaTime);
+
+          // Sway effect
+          p.swayAngle += p.swaySpeed * deltaTime;
           if (p.parachuteOpen) {
-            p.vx += Math.sin(p.swayAngle) * 0.1;
+            p.vx += Math.sin(p.swayAngle) * 15 * deltaTime;
+            p.vy += Math.cos(p.swayAngle * 0.7) * 10 * deltaTime;
           }
 
-          p.x += p.vx;
-          p.y += p.vy;
+          // Rotation
+          p.rotation += (p.vx * 0.01) * deltaTime;
 
-          // Keep in bounds horizontally
-          const margin = 30;
-          if (p.x < groundBounds.x + margin) {
-            p.x = groundBounds.x + margin;
-            p.vx *= -0.3;
-          }
-          if (p.x > groundBounds.x + groundBounds.w - margin) {
-            p.x = groundBounds.x + groundBounds.w - margin;
-            p.vx *= -0.3;
-          }
+          // Update position
+          p.x += p.vx * deltaTime;
+          p.y += p.vy * deltaTime;
+          p.z -= p.vz * deltaTime;
 
-          // Check landing
-          const landingY = groundBounds.y + groundBounds.h - 30;
-          if (p.y >= landingY) {
+          // Keep within bounds
+          const maxXY = 250;
+          if (p.x < -maxXY) { p.x = -maxXY; p.vx *= -0.3; }
+          if (p.x > maxXY) { p.x = maxXY; p.vx *= -0.3; }
+          if (p.y < -maxXY) { p.y = -maxXY; p.vy *= -0.3; }
+          if (p.y > maxXY) { p.y = maxXY; p.vy *= -0.3; }
+
+          // Check landing (z <= 0)
+          if (p.z <= 0) {
             p.landed = true;
+            p.z = 0;
             p.landingX = p.x;
-            p.landingY = landingY;
+            p.landingY = p.y;
 
-            // Calculate distance from target center
-            const dx = p.landingX - targetCenter.x;
-            const dy = p.landingY - targetCenter.y;
-            p.distance = Math.sqrt(dx * dx + dy * dy);
+            // Calculate distance from center (target)
+            p.distance = Math.sqrt(p.x * p.x + p.y * p.y);
 
             landedParticipants.push(p);
             landedParticipants.sort((a, b) => a.distance - b.distance);
 
             // Log landing
             const distanceM = (p.distance / 10).toFixed(1);
-            const isPerfect = p.distance < 20;
+            const isPerfect = p.distance < 15;
 
             if (isPerfect) {
               soundManager.playPerfect();
-              createTextEffect(p.landingX, p.landingY - 30, '완벽! 🎯', '#fbbf24');
+              const proj = project3D(p.x, p.y, 0);
+              createTextEffect(proj.x, proj.y - 30, '완벽! 🎯', '#fbbf24');
             } else {
               soundManager.playLanding();
             }
@@ -1366,200 +1371,326 @@
           }
         });
 
+        // Update altitude display
+        if (currentMaxAlt > 0) {
+          maxAltitude = currentMaxAlt;
+          altitudeIndicator.textContent = `⬇️ 고도: ${Math.round(currentMaxAlt)}m`;
+        }
+
         if (allLanded && participants.length > 0) {
           endGame();
         }
 
         // Update text effects
         textEffects = textEffects.filter(e => {
-          e.life--;
-          e.y -= 1;
+          e.life -= deltaTime;
+          e.y -= 40 * deltaTime;
           return e.life > 0;
+        });
+
+        // Move clouds slowly
+        clouds.forEach(c => {
+          c.x += wind.x * 5 * deltaTime;
+          c.y += wind.y * 5 * deltaTime;
         });
       }
 
       function createTextEffect(x, y, text, color) {
-        textEffects.push({ x, y, text, color, life: 60 });
+        textEffects.push({ x, y, text, color, life: 1.5 });
       }
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw target/bullseye
-        drawTarget();
+        // Draw sky gradient background
+        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, canvas.width / 2);
+        gradient.addColorStop(0, '#1a4c7a');
+        gradient.addColorStop(0.7, '#0d2840');
+        gradient.addColorStop(1, '#061420');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw clouds (decorative)
+        // Draw clouds (at their z-depth)
         drawClouds();
 
-        // Draw participants
-        participants.forEach(p => {
-          if (!p.started && !p.landed) return;
-          drawSkydiver(p);
+        // Draw target at ground level (z=0)
+        drawTarget();
+
+        // Collect all objects to render
+        const renderObjects = [];
+
+        // Add falling participants
+        participants.forEach((p, idx) => {
+          if (!p.started || p.landed) return;
+          renderObjects.push({ type: 'skydiver', data: p, z: p.z });
         });
 
-        // Draw landed markers
+        // Add landed participants
         landedParticipants.forEach((p, idx) => {
-          drawLandedMarker(p, idx);
+          renderObjects.push({ type: 'landed', data: p, z: 0, rank: idx });
         });
 
-        // Draw text effects
+        // Sort by z (render far objects first)
+        renderObjects.sort((a, b) => b.z - a.z);
+
+        // First pass: draw parachutes and bodies (not emojis)
+        renderObjects.forEach(obj => {
+          if (obj.type === 'skydiver') {
+            drawSkydiverBody(obj.data);
+          } else if (obj.type === 'landed') {
+            drawLandedMarkerBody(obj.data, obj.rank);
+          }
+        });
+
+        // Second pass: draw emojis on top
+        renderObjects.forEach(obj => {
+          if (obj.type === 'skydiver') {
+            drawSkydiverEmoji(obj.data);
+          } else if (obj.type === 'landed') {
+            drawLandedMarkerEmoji(obj.data, obj.rank);
+          }
+        });
+
+        // Draw text effects on top
         textEffects.forEach(e => {
           ctx.save();
-          ctx.globalAlpha = e.life / 60;
-          ctx.font = "bold 18px 'Black Han Sans'";
+          ctx.globalAlpha = e.life / 1.5;
+          ctx.font = "bold 20px 'Black Han Sans'";
           ctx.fillStyle = e.color;
           ctx.textAlign = 'center';
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = 'rgba(0,0,0,0.8)';
           ctx.fillText(e.text, e.x, e.y);
           ctx.restore();
         });
       }
 
+      function drawClouds() {
+        clouds.forEach(c => {
+          if (c.z < 50) return; // Don't draw clouds too close
+          const proj = project3D(c.x, c.y, c.z);
+          const size = c.size * proj.scale;
+
+          if (size < 5) return; // Too small
+
+          ctx.save();
+          ctx.globalAlpha = 0.3 * Math.min(1, c.z / 300);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+
+          ctx.beginPath();
+          ctx.arc(proj.x, proj.y, size * 0.6, 0, Math.PI * 2);
+          ctx.arc(proj.x - size * 0.4, proj.y, size * 0.4, 0, Math.PI * 2);
+          ctx.arc(proj.x + size * 0.4, proj.y, size * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+      }
+
       function drawTarget() {
+        // Draw target rings with perspective
         const rings = [
-          { radius: 120, color: '#fff' },
-          { radius: 100, color: '#e74c3c' },
-          { radius: 80, color: '#fff' },
-          { radius: 60, color: '#e74c3c' },
-          { radius: 40, color: '#fff' },
-          { radius: 20, color: '#e74c3c' }
+          { radius: TARGET_RADIUS, color: 'rgba(255, 255, 255, 0.9)' },
+          { radius: TARGET_RADIUS * 0.83, color: 'rgba(231, 76, 60, 0.9)' },
+          { radius: TARGET_RADIUS * 0.67, color: 'rgba(255, 255, 255, 0.9)' },
+          { radius: TARGET_RADIUS * 0.5, color: 'rgba(231, 76, 60, 0.9)' },
+          { radius: TARGET_RADIUS * 0.33, color: 'rgba(255, 255, 255, 0.9)' },
+          { radius: TARGET_RADIUS * 0.17, color: 'rgba(231, 76, 60, 0.9)' }
         ];
 
+        const proj = project3D(0, 0, 0);
+
         rings.forEach(ring => {
+          const scaledRadius = ring.radius * proj.scale;
           ctx.beginPath();
-          ctx.arc(targetCenter.x, targetCenter.y, ring.radius, 0, Math.PI * 2);
+          ctx.arc(proj.x, proj.y, scaledRadius, 0, Math.PI * 2);
           ctx.fillStyle = ring.color;
           ctx.fill();
-          ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+          ctx.lineWidth = 2 * proj.scale;
           ctx.stroke();
         });
 
         // Center dot
         ctx.beginPath();
-        ctx.arc(targetCenter.x, targetCenter.y, 5, 0, Math.PI * 2);
+        ctx.arc(proj.x, proj.y, 4 * proj.scale, 0, Math.PI * 2);
         ctx.fillStyle = '#000';
         ctx.fill();
+
+        // Outer glow
+        ctx.beginPath();
+        ctx.arc(proj.x, proj.y, TARGET_RADIUS * proj.scale + 5, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(135, 206, 235, 0.5)';
+        ctx.lineWidth = 3;
+        ctx.stroke();
       }
 
-      function drawClouds() {
-        // Simple decorative clouds
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+      function drawSkydiverBody(p) {
+        const proj = project3D(p.x, p.y, p.z);
+        const scale = proj.scale;
 
-        const cloudPositions = [
-          { x: groundBounds.x + 50, y: groundBounds.y + 100 },
-          { x: groundBounds.x + groundBounds.w - 80, y: groundBounds.y + 60 },
-          { x: groundBounds.x + groundBounds.w / 2, y: groundBounds.y + 40 }
-        ];
-
-        cloudPositions.forEach(pos => {
-          ctx.beginPath();
-          ctx.arc(pos.x, pos.y, 30, 0, Math.PI * 2);
-          ctx.arc(pos.x + 25, pos.y - 5, 25, 0, Math.PI * 2);
-          ctx.arc(pos.x + 50, pos.y, 30, 0, Math.PI * 2);
-          ctx.fill();
-        });
-      }
-
-      function drawSkydiver(p) {
         ctx.save();
-        ctx.translate(p.x, p.y);
+        ctx.translate(proj.x, proj.y);
 
-        // Parachute
+        // Parachute (if open)
         if (p.parachuteSize > 0) {
-          const size = p.parachuteSize;
-          const sway = Math.sin(p.swayAngle) * 5;
+          const parachuteScale = (p.parachuteSize / 35) * scale;
+          const size = p.parachuteSize * scale;
+          const sway = Math.sin(p.swayAngle) * 3 * scale;
 
-          // Parachute canopy
+          // Parachute canopy (dome shape from above)
           ctx.beginPath();
-          ctx.ellipse(sway, -size - 10, size, size * 0.6, 0, Math.PI, 0);
-          ctx.fillStyle = p.parachuteColor;
+          ctx.arc(sway, 0, size, 0, Math.PI * 2);
+
+          const gradient = ctx.createRadialGradient(sway, 0, 0, sway, 0, size);
+          gradient.addColorStop(0, p.parachuteColor);
+          gradient.addColorStop(0.7, p.parachuteColor);
+          gradient.addColorStop(1, shadeColor(p.parachuteColor, -30));
+          ctx.fillStyle = gradient;
           ctx.fill();
-          ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-          ctx.lineWidth = 2;
+
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+          ctx.lineWidth = Math.max(1, 2 * scale);
           ctx.stroke();
 
-          // Parachute lines
-          ctx.strokeStyle = 'rgba(100, 100, 100, 0.6)';
-          ctx.lineWidth = 1;
-          for (let i = -2; i <= 2; i++) {
+          // Parachute lines (visible from above as spokes)
+          ctx.strokeStyle = 'rgba(80, 80, 80, 0.6)';
+          ctx.lineWidth = Math.max(0.5, 1 * scale);
+          for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
             ctx.beginPath();
-            ctx.moveTo(sway + i * (size / 2.5), -size * 0.5 - 10);
-            ctx.lineTo(0, 0);
+            ctx.moveTo(sway, 0);
+            ctx.lineTo(sway + Math.cos(angle) * size * 0.9, Math.sin(angle) * size * 0.9);
+            ctx.stroke();
+          }
+
+          // Parachute segments
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+          for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            ctx.beginPath();
+            ctx.moveTo(sway, 0);
+            ctx.lineTo(sway + Math.cos(angle) * size, Math.sin(angle) * size);
             ctx.stroke();
           }
         }
 
-        // Person body
+        // Person body (small circle in center of parachute)
+        const bodySize = Math.max(8, 18 * scale);
         ctx.beginPath();
-        ctx.arc(0, 10, 15, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.arc(0, 0, bodySize, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
         ctx.fill();
         ctx.strokeStyle = p.parachuteColor;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = Math.max(1, 2 * scale);
         ctx.stroke();
-
-        // Emoji
-        ctx.font = '18px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(p.emoji, 0, 10);
-
-        // Name
-        ctx.font = 'bold 12px Noto Sans KR';
-        ctx.fillStyle = '#fff';
-        ctx.shadowBlur = 4;
-        ctx.shadowColor = '#000';
-        ctx.fillText(p.name, 0, 35);
 
         ctx.restore();
       }
 
-      function drawLandedMarker(p, rank) {
+      function drawSkydiverEmoji(p) {
+        const proj = project3D(p.x, p.y, p.z);
+        const scale = proj.scale;
+        const bodySize = Math.max(8, 18 * scale);
+
         ctx.save();
-        ctx.translate(p.landingX, p.landingY);
+        ctx.translate(proj.x, proj.y);
 
-        // Shadow
-        ctx.beginPath();
-        ctx.ellipse(0, 5, 15, 5, 0, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-        ctx.fill();
+        // Emoji (always on top)
+        const emojiSize = Math.max(12, 22 * scale);
+        ctx.font = `${emojiSize}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(p.emoji, 0, 0);
 
-        // Person
+        // Name below
+        const nameSize = Math.max(8, 12 * scale);
+        ctx.font = `bold ${nameSize}px Noto Sans KR`;
+        ctx.fillStyle = '#fff';
+        ctx.shadowBlur = 4;
+        ctx.shadowColor = '#000';
+        ctx.fillText(p.name, 0, bodySize + nameSize);
+
+        // Altitude indicator
+        const altText = `${Math.round(p.z)}m`;
+        ctx.font = `${Math.max(6, 9 * scale)}px Noto Sans KR`;
+        ctx.fillStyle = '#87ceeb';
+        ctx.fillText(altText, 0, bodySize + nameSize * 2.2);
+
+        ctx.restore();
+      }
+
+      function drawLandedMarkerBody(p, rank) {
+        const proj = project3D(p.landingX, p.landingY, 0);
+        const scale = proj.scale;
+
+        ctx.save();
+        ctx.translate(proj.x, proj.y);
+
+        // Landing mark / shadow
+        const markerSize = Math.max(10, 20 * scale);
+
         ctx.beginPath();
-        ctx.arc(0, -5, 12, 0, Math.PI * 2);
+        ctx.arc(0, 0, markerSize, 0, Math.PI * 2);
 
         if (rank === 0) {
-          ctx.fillStyle = 'rgba(251, 191, 36, 0.3)';
+          ctx.fillStyle = 'rgba(251, 191, 36, 0.4)';
           ctx.strokeStyle = '#fbbf24';
         } else if (rank === 1) {
-          ctx.fillStyle = 'rgba(192, 192, 192, 0.3)';
+          ctx.fillStyle = 'rgba(192, 192, 192, 0.4)';
           ctx.strokeStyle = '#c0c0c0';
         } else if (rank === 2) {
-          ctx.fillStyle = 'rgba(205, 127, 50, 0.3)';
+          ctx.fillStyle = 'rgba(205, 127, 50, 0.4)';
           ctx.strokeStyle = '#cd7f32';
         } else {
-          ctx.fillStyle = 'rgba(135, 206, 235, 0.2)';
+          ctx.fillStyle = 'rgba(135, 206, 235, 0.3)';
           ctx.strokeStyle = '#87ceeb';
         }
 
         ctx.fill();
-        ctx.lineWidth = 2;
+        ctx.lineWidth = Math.max(1, 2 * scale);
         ctx.stroke();
 
+        ctx.restore();
+      }
+
+      function drawLandedMarkerEmoji(p, rank) {
+        const proj = project3D(p.landingX, p.landingY, 0);
+        const scale = proj.scale;
+
+        ctx.save();
+        ctx.translate(proj.x, proj.y);
+
+        const markerSize = Math.max(10, 20 * scale);
+
         // Emoji
-        ctx.font = '14px Arial';
+        const emojiSize = Math.max(10, 16 * scale);
+        ctx.font = `${emojiSize}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(p.emoji, 0, -5);
+        ctx.fillText(p.emoji, 0, 0);
 
-        // Rank badge
+        // Medal for top 3
         if (rank < 3) {
           const medals = ['🥇', '🥈', '🥉'];
-          ctx.font = '16px Arial';
-          ctx.fillText(medals[rank], 0, -25);
+          const medalSize = Math.max(10, 18 * scale);
+          ctx.font = `${medalSize}px Arial`;
+          ctx.fillText(medals[rank], 0, -markerSize - 5);
         }
 
         ctx.restore();
+      }
+
+      function shadeColor(color, percent) {
+        const num = parseInt(color.replace('#', ''), 16);
+        const amt = Math.round(2.55 * percent);
+        const R = (num >> 16) + amt;
+        const G = (num >> 8 & 0x00FF) + amt;
+        const B = (num & 0x0000FF) + amt;
+        return '#' + (0x1000000 +
+          (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+          (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+          (B < 255 ? B < 1 ? 0 : B : 255)
+        ).toString(16).slice(1);
       }
 
       function updateProgressCount() {
@@ -1591,10 +1722,11 @@
 
         // Show falling participants
         falling.forEach(p => {
+          const alt = Math.round(p.z);
           html += `<div class="rank-item falling">
             <span class="rank-num">🪂</span>
             <span class="rank-name">${p.emoji} ${p.name}</span>
-            <span class="rank-distance">낙하 중...</span>
+            <span class="rank-distance">${alt}m ↓</span>
           </div>`;
         });
 
@@ -1607,6 +1739,7 @@
         gameRunning = false;
         cancelAnimationFrame(animationId);
         gameStatus.textContent = '🏆 착지 완료!';
+        altitudeIndicator.textContent = '⬇️ 고도: 착지 완료';
         soundManager.playWin();
 
         const displayCount = rankDisplaySelect.value === 'all' ?
@@ -1658,9 +1791,11 @@
         textEffects = [];
         document.getElementById('landingLog').innerHTML = '';
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        generateClouds();
         draw();
-        gameStatus.textContent = '🪂 하늘에서 점프 준비!';
+        gameStatus.textContent = '🪂 3D 스카이다이빙 준비!';
         windIndicator.textContent = '💨 바람: 대기 중';
+        altitudeIndicator.textContent = '⬇️ 고도: 대기 중';
         progressCount.innerHTML = '착지: <span>0</span> / 0';
         rankingList.innerHTML = `<div style="text-align:center;color:var(--text-secondary);padding:20px;">
             참여자를 입력하고<br>점프를 시작하세요!
@@ -1674,7 +1809,7 @@
           showToast('복사할 결과가 없습니다!');
           return;
         }
-        let result = '🪂 스카이다이빙 결과\n━━━━━━━━━━━━━━━━━━\n\n🏆 착지 순위:\n';
+        let result = '🪂 스카이다이빙 3D 결과\n━━━━━━━━━━━━━━━━━━\n\n🏆 착지 순위:\n';
         landedParticipants.forEach((p, i) => {
           const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}위`;
           const distanceM = (p.distance / 10).toFixed(1);

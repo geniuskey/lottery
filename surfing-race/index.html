@@ -865,13 +865,15 @@
   <div class="modal-overlay" id="helpModal">
     <div class="modal">
       <h2>🌊 서핑 레이스</h2>
-      <p>파도를 타고 결승선까지 레이스하세요! 가장 먼저 도착한 서퍼가 우승!</p>
+      <p>4000m의 긴 해변을 따라 파도를 타고 결승선까지 레이스! 가장 먼저 도착한 서퍼가 우승!</p>
       <ul>
-        <li>🏄 <strong>서퍼들</strong>이 왼쪽에서 출발합니다.</li>
+        <li>🏄 <strong>서퍼들</strong>이 왼쪽 시작선에서 출발합니다.</li>
         <li>🌊 <strong>파도</strong>가 주기적으로 밀려옵니다.</li>
         <li>⚡ 파도를 타면 <strong>속도가 증가</strong>합니다!</li>
         <li>🏁 오른쪽 <strong>결승선</strong>에 먼저 도착하면 승리!</li>
         <li>🎲 각 서퍼의 기본 속도에 <strong>랜덤 변동</strong>이 있습니다.</li>
+        <li>🗺️ 하단 <strong>미니맵</strong>에서 전체 진행 상황을 확인하세요.</li>
+        <li>👆 미니맵을 <strong>클릭/드래그</strong>하면 시점을 이동할 수 있습니다.</li>
         <li>🏆 모든 서퍼가 결승하면 최종 순위가 결정됩니다.</li>
       </ul>
       <button class="modal-close" id="closeHelp">확인</button>
@@ -1004,7 +1006,16 @@
       let finishOrder = [];
       let textEffects = [];
       let bubbles = [];
+      let lastTime = 0;
       const soundManager = new SoundManager();
+
+      // 긴 트랙 관련 변수
+      const raceLength = 4000;  // 전체 레이스 거리 (픽셀)
+      let cameraX = 0;          // 카메라 X 위치
+      let startX = 100;         // 시작선 위치
+      let finishX = startX + raceLength;  // 결승선 위치
+      let isAutoTracking = true;
+      let minimapRect = { x: 0, y: 0, w: 0, h: 40 };
 
       function resizeCanvas() {
         const container = canvas.parentElement;
@@ -1015,20 +1026,28 @@
 
         const isMobile = window.innerWidth <= 768;
         const padX = isMobile ? 20 : 60;
-        const padY = isMobile ? 50 : 60;
+        const padY = isMobile ? 50 : 80;
 
         trackBounds = {
           x: padX,
           y: padY,
           w: canvas.width - padX * 2,
-          h: canvas.height - padY * 2
+          h: canvas.height - padY * 2 - 50  // 미니맵 공간 확보
+        };
+
+        // 미니맵 위치 설정
+        minimapRect = {
+          x: padX,
+          y: canvas.height - 55,
+          w: canvas.width - padX * 2,
+          h: 35
         };
 
         drawBackground();
       }
 
       function drawBackground() {
-        // Ocean gradient
+        // Ocean gradient (화면 좌표계)
         const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
         grad.addColorStop(0, '#0c4a6e');
         grad.addColorStop(0.5, '#0369a1');
@@ -1036,48 +1055,70 @@
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Track area
+        // Track area 배경 (화면 좌표계)
         ctx.fillStyle = 'rgba(14, 165, 233, 0.2)';
-        ctx.fillRect(trackBounds.x, trackBounds.y, trackBounds.w, trackBounds.h);
+        ctx.fillRect(0, trackBounds.y, canvas.width, trackBounds.h);
+      }
 
-        // Lane lines
+      function drawWorldElements() {
+        // 월드 좌표계로 그려지는 요소들 (카메라 오프셋 적용 후 호출)
+
+        // Lane lines (월드 좌표계)
         const laneCount = surfers.length || 6;
         const laneHeight = trackBounds.h / Math.max(laneCount, 1);
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
         ctx.lineWidth = 1;
+        ctx.setLineDash([10, 10]);
         for (let i = 1; i < laneCount; i++) {
           const y = trackBounds.y + laneHeight * i;
-          ctx.setLineDash([10, 10]);
           ctx.beginPath();
-          ctx.moveTo(trackBounds.x, y);
-          ctx.lineTo(trackBounds.x + trackBounds.w, y);
+          ctx.moveTo(0, y);
+          ctx.lineTo(finishX + 200, y);
           ctx.stroke();
         }
         ctx.setLineDash([]);
 
-        // Start line
+        // 거리 마커 (500px마다)
+        ctx.font = '12px Noto Sans KR';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.textAlign = 'center';
+        for (let dist = 500; dist < finishX; dist += 500) {
+          ctx.fillText(`${dist}m`, dist, trackBounds.y - 5);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(dist, trackBounds.y);
+          ctx.lineTo(dist, trackBounds.y + trackBounds.h);
+          ctx.stroke();
+        }
+
+        // Start line (월드 좌표계)
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(trackBounds.x + 50, trackBounds.y);
-        ctx.lineTo(trackBounds.x + 50, trackBounds.y + trackBounds.h);
+        ctx.moveTo(startX, trackBounds.y);
+        ctx.lineTo(startX, trackBounds.y + trackBounds.h);
         ctx.stroke();
 
-        // Finish line
-        const finishX = trackBounds.x + trackBounds.w - 30;
+        // Start flag
+        ctx.font = '20px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('🏄', startX, trackBounds.y - 10);
+
+        // Finish line (월드 좌표계)
         ctx.fillStyle = '#22c55e';
         for (let i = 0; i < Math.ceil(trackBounds.h / 15); i++) {
           if (i % 2 === 0) {
-            ctx.fillRect(finishX, trackBounds.y + i * 15, 15, 15);
-            ctx.fillRect(finishX + 15, trackBounds.y + i * 15 + 15, 15, 15);
+            ctx.fillRect(finishX - 15, trackBounds.y + i * 15, 15, 15);
+            ctx.fillRect(finishX, trackBounds.y + i * 15 + 15, 15, 15);
           } else {
-            ctx.fillRect(finishX + 15, trackBounds.y + i * 15, 15, 15);
+            ctx.fillRect(finishX, trackBounds.y + i * 15, 15, 15);
           }
         }
 
         // Finish flag
         ctx.font = '24px Arial';
-        ctx.fillText('🏁', finishX + 5, trackBounds.y - 10);
+        ctx.fillText('🏁', finishX - 5, trackBounds.y - 10);
       }
 
       function saveSettings() {
@@ -1143,13 +1184,12 @@
         document.getElementById('raceLog').innerHTML = '';
 
         const laneHeight = trackBounds.h / names.length;
-        const startX = trackBounds.x + 60;
 
         surfers = names.map((name, i) => ({
           name: name,
           emoji: SURFER_EMOJIS[i % SURFER_EMOJIS.length],
           boardColor: BOARD_COLORS[i % BOARD_COLORS.length],
-          x: startX,
+          x: startX + 30,  // 시작선 바로 뒤에서 출발
           y: trackBounds.y + laneHeight * i + laneHeight / 2,
           lane: i,
           laneY: trackBounds.y + laneHeight * i + laneHeight / 2,
@@ -1168,13 +1208,16 @@
         finishOrder = [];
         textEffects = [];
         bubbles = [];
+        lastTime = 0;
+        cameraX = 0;  // 카메라 초기화
+        isAutoTracking = true;
         gameRunning = true;
         startBtn.disabled = true;
         gameStatus.textContent = '🏁 레이스 시작!';
         soundManager.playStart();
 
-        // Create initial waves
-        for (let i = 0; i < 3; i++) {
+        // Create initial waves (월드 좌표계)
+        for (let i = 0; i < 8; i++) {
           createWave();
         }
 
@@ -1185,8 +1228,10 @@
 
       function createWave() {
         const waveMult = getWaveMultiplier();
+        // 파도를 월드 좌표계에서 생성 (화면 오른쪽 바깥 + 현재 카메라 위치)
+        const waveX = cameraX + canvas.width + 50 + Math.random() * 200;
         waves.push({
-          x: canvas.width + 50,
+          x: waveX,
           y: trackBounds.y + Math.random() * trackBounds.h,
           width: 80 + Math.random() * 60,
           height: 30 + Math.random() * 40 * waveMult,
@@ -1196,17 +1241,31 @@
         });
       }
 
-      function gameLoop() {
+      function gameLoop(timestamp) {
         if (!gameRunning) return;
-        update();
+
+        // 첫 프레임 처리
+        if (lastTime === 0) {
+          lastTime = timestamp;
+        }
+
+        // deltaTime 계산 (초 단위)
+        const deltaTime = Math.min((timestamp - lastTime) / 1000, 0.1); // 최대 0.1초로 제한
+        lastTime = timestamp;
+
+        update(deltaTime);
         draw();
         animationId = requestAnimationFrame(gameLoop);
       }
 
-      function update() {
+      function clampCamera() {
+        const maxCamX = finishX - canvas.width * 0.7;
+        cameraX = Math.max(0, Math.min(cameraX, maxCamX));
+      }
+
+      function update(deltaTime) {
         const speedMult = getSpeedMultiplier();
         const waveMult = getWaveMultiplier();
-        const finishX = trackBounds.x + trackBounds.w - 50;
         const racing = surfers.filter(s => !s.finished);
 
         if (racing.length === 0) {
@@ -1214,15 +1273,20 @@
           return;
         }
 
-        // Update waves
+        // 프레임 독립적 보간 계수 (약 6/sec 기준)
+        const lerpFactor = 1 - Math.pow(0.9, 60 * deltaTime);
+
+        // Update waves (초당 60프레임 기준 속도 변환)
         waves.forEach(wave => {
-          wave.x -= wave.speed * speedMult;
-          wave.phase += 0.05;
+          wave.x -= wave.speed * speedMult * 60 * deltaTime;
+          wave.phase += 3 * deltaTime;
         });
 
-        // Remove off-screen waves and create new ones
-        waves = waves.filter(w => w.x + w.width > 0);
-        if (Math.random() < 0.02 * speedMult) {
+        // Remove waves that are too far behind the camera
+        waves = waves.filter(w => w.x + w.width > cameraX - 200);
+
+        // Create new waves ahead of camera view
+        if (Math.random() < 1.5 * speedMult * deltaTime) {
           createWave();
           if (Math.random() < 0.3) soundManager.playWave();
         }
@@ -1231,11 +1295,11 @@
         surfers.forEach(surfer => {
           if (surfer.finished) return;
 
-          surfer.wobble += 0.1;
+          surfer.wobble += 6 * deltaTime; // 0.1 * 60 = 6 rad/sec
 
-          // Base movement with randomness
-          let targetSpeed = surfer.baseSpeed * speedMult;
-          targetSpeed += (Math.random() - 0.5) * 0.3 * speedMult;
+          // Base movement with randomness (초당 속도로 변환)
+          let targetSpeed = surfer.baseSpeed * speedMult * 60; // pixels/sec
+          targetSpeed += (Math.random() - 0.5) * 0.3 * speedMult * 60;
 
           // Check wave interaction
           let waveBoost = 0;
@@ -1247,11 +1311,11 @@
 
             if (dx > -wave.width/2 && dx < wave.width && Math.abs(dy) < wave.height) {
               // Riding the wave!
-              waveBoost = Math.max(waveBoost, (1 - dist / (wave.width + wave.height)) * 2 * waveMult);
-              if (!surfer.boosted && waveBoost > 0.5) {
+              waveBoost = Math.max(waveBoost, (1 - dist / (wave.width + wave.height)) * 2 * waveMult * 60);
+              if (!surfer.boosted && waveBoost > 30) { // 0.5 * 60 = 30
                 surfer.boosted = true;
-                surfer.boostTimer = 30;
-                surfer.splashTimer = 15;
+                surfer.boostTimer = 0.5; // 30 frames = 0.5 sec
+                surfer.splashTimer = 0.25; // 15 frames = 0.25 sec
                 createTextEffect(surfer.x, surfer.y - 20, '파도 타기! 🌊', '#7dd3fc');
                 soundManager.playBoost();
 
@@ -1260,10 +1324,10 @@
                   bubbles.push({
                     x: surfer.x - 10 + Math.random() * 20,
                     y: surfer.y + Math.random() * 10,
-                    vx: -1 - Math.random() * 2,
-                    vy: -1 - Math.random() * 2,
+                    vx: (-1 - Math.random() * 2) * 60, // pixels/sec
+                    vy: (-1 - Math.random() * 2) * 60, // pixels/sec
                     size: 3 + Math.random() * 5,
-                    life: 20 + Math.random() * 20
+                    life: 0.33 + Math.random() * 0.33 // 20~40 frames = 0.33~0.67 sec
                   });
                 }
               }
@@ -1271,24 +1335,24 @@
           });
 
           if (surfer.boostTimer > 0) {
-            surfer.boostTimer--;
+            surfer.boostTimer -= deltaTime;
             if (surfer.boostTimer <= 0) surfer.boosted = false;
           }
 
           targetSpeed += waveBoost;
 
-          // Smooth speed transition
-          surfer.vx += (targetSpeed - surfer.vx) * 0.1;
-          surfer.x += surfer.vx;
+          // Smooth speed transition (프레임 독립적 보간)
+          surfer.vx += (targetSpeed - surfer.vx) * lerpFactor;
+          surfer.x += surfer.vx * deltaTime;
 
           // Lane wobble
           const targetY = surfer.laneY + Math.sin(surfer.wobble) * 5;
-          surfer.y += (targetY - surfer.y) * 0.1;
+          surfer.y += (targetY - surfer.y) * lerpFactor;
 
           // Splash timer
-          if (surfer.splashTimer > 0) surfer.splashTimer--;
+          if (surfer.splashTimer > 0) surfer.splashTimer -= deltaTime;
 
-          // Check finish
+          // Check finish (월드 좌표에서 finishX와 비교)
           if (surfer.x >= finishX) {
             surfer.finished = true;
             surfer.finishTime = Date.now();
@@ -1313,25 +1377,49 @@
           }
         });
 
+        // 카메라 자동 추적 (선두 서퍼 따라가기)
+        if (isAutoTracking) {
+          const activeSurfers = surfers.filter(s => !s.finished);
+          if (activeSurfers.length > 0) {
+            const maxX = Math.max(...activeSurfers.map(s => s.x));
+            const targetCameraX = Math.max(0, maxX - canvas.width * 0.35);
+            cameraX += (targetCameraX - cameraX) * 0.08;
+            clampCamera();
+          }
+        }
+
         // Update bubbles
         bubbles = bubbles.filter(b => {
-          b.x += b.vx;
-          b.y += b.vy;
-          b.vy -= 0.1;
-          b.life--;
+          b.x += b.vx * deltaTime;
+          b.y += b.vy * deltaTime;
+          b.vy -= 6 * 60 * deltaTime; // 0.1 * 60 = 6/sec * 60 = 360 pixels/sec^2 가속도
+          b.life -= deltaTime;
           return b.life > 0;
+        });
+
+        // Update text effects
+        textEffects = textEffects.filter(e => {
+          e.life -= deltaTime;
+          return e.life > 0;
         });
       }
 
       function createTextEffect(x, y, text, color) {
-        textEffects.push({ x, y, text, color, life: 50, maxLife: 50, scale: 1 });
+        textEffects.push({ x, y, text, color, life: 0.83, maxLife: 0.83, scale: 1 }); // 50 frames = ~0.83 sec
       }
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBackground();
 
-        // Draw waves
+        // 카메라 오프셋 적용 시작
+        ctx.save();
+        ctx.translate(-cameraX, 0);
+
+        // 월드 좌표계 요소 그리기 (레인, 시작/결승선 등)
+        drawWorldElements();
+
+        // Draw waves (월드 좌표계)
         waves.forEach(wave => {
           const waveY = wave.y + Math.sin(wave.phase) * wave.amplitude;
 
@@ -1369,15 +1457,15 @@
           ctx.restore();
         });
 
-        // Draw bubbles
+        // Draw bubbles (월드 좌표계)
         bubbles.forEach(b => {
           ctx.beginPath();
           ctx.arc(b.x, b.y, b.size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 255, 255, ${b.life / 40})`;
+          ctx.fillStyle = `rgba(255, 255, 255, ${b.life / 0.67})`;
           ctx.fill();
         });
 
-        // Draw surfers
+        // Draw surfers (월드 좌표계)
         const sortedSurfers = [...surfers].sort((a, b) => a.y - b.y);
         sortedSurfers.forEach(surfer => {
           ctx.save();
@@ -1388,11 +1476,11 @@
             ctx.beginPath();
             for (let i = 0; i < 5; i++) {
               const angle = (i / 5) * Math.PI - Math.PI / 2;
-              const dist = 20 + surfer.splashTimer;
+              const dist = 20 + surfer.splashTimer * 60;
               ctx.moveTo(0, 0);
               ctx.lineTo(Math.cos(angle) * dist, Math.sin(angle) * dist);
             }
-            ctx.strokeStyle = `rgba(255, 255, 255, ${surfer.splashTimer / 15})`;
+            ctx.strokeStyle = `rgba(255, 255, 255, ${surfer.splashTimer / 0.25})`;
             ctx.lineWidth = 2;
             ctx.stroke();
           }
@@ -1467,20 +1555,86 @@
           ctx.restore();
         });
 
-        // Draw text effects
-        textEffects = textEffects.filter(e => {
-          e.life--;
+        // Draw text effects (월드 좌표계)
+        textEffects.forEach(e => {
           ctx.save();
-          ctx.globalAlpha = e.life / e.maxLife;
+          ctx.globalAlpha = Math.max(0, e.life / e.maxLife);
           ctx.font = `bold ${16 * e.scale}px 'Black Han Sans'`;
           ctx.fillStyle = e.color;
           ctx.textAlign = 'center';
           ctx.shadowBlur = 4;
           ctx.shadowColor = '#000';
-          ctx.fillText(e.text, e.x, e.y - (e.maxLife - e.life) * 0.5);
+          ctx.fillText(e.text, e.x, e.y - (e.maxLife - e.life) * 30);
           ctx.restore();
-          return e.life > 0;
         });
+
+        // 카메라 오프셋 적용 종료
+        ctx.restore();
+
+        // 미니맵 그리기 (화면 좌표계)
+        drawMinimap();
+      }
+
+      function drawMinimap() {
+        const { x, y, w, h } = minimapRect;
+
+        // 미니맵 배경
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.strokeStyle = 'rgba(14, 165, 233, 0.4)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        // 트랙 라인
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x + 10, y + h / 2);
+        ctx.lineTo(x + w - 10, y + h / 2);
+        ctx.stroke();
+
+        // 결승선 표시
+        const finishPosX = x + ((finishX - startX) / raceLength) * (w - 20) + 10;
+        ctx.fillStyle = '#22c55e';
+        ctx.fillRect(finishPosX - 2, y + 5, 4, h - 10);
+
+        // 서퍼 위치 표시
+        surfers.forEach(surfer => {
+          const progress = Math.max(0, Math.min(1, (surfer.x - startX) / raceLength));
+          const px = x + 10 + progress * (w - 20);
+
+          ctx.fillStyle = surfer.finished ? '#22c55e' : surfer.boardColor;
+          ctx.beginPath();
+          ctx.arc(px, y + h / 2, 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // 1등 표시
+          if (surfer.rank === 1 && surfer.finished) {
+            ctx.font = '10px Arial';
+            ctx.fillText('🥇', px - 5, y + h / 2 - 8);
+          }
+        });
+
+        // 현재 뷰포트 표시
+        const viewStart = (cameraX / (finishX + 200)) * (w - 20);
+        const viewWidth = (canvas.width / (finishX + 200)) * (w - 20);
+        ctx.strokeStyle = 'rgba(14, 165, 233, 0.8)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x + 10 + viewStart, y + 2, viewWidth, h - 4);
+        ctx.fillStyle = 'rgba(14, 165, 233, 0.15)';
+        ctx.fillRect(x + 10 + viewStart, y + 2, viewWidth, h - 4);
+
+        // 진행률 텍스트
+        if (surfers.length > 0) {
+          const leader = [...surfers].sort((a, b) => b.x - a.x)[0];
+          const progress = Math.max(0, Math.min(100, ((leader.x - startX) / raceLength) * 100));
+          ctx.font = 'bold 10px Noto Sans KR';
+          ctx.fillStyle = '#fff';
+          ctx.textAlign = 'right';
+          ctx.fillText(`${Math.floor(progress)}%`, x + w - 5, y + h / 2 + 4);
+        }
       }
 
       function updateProgressInfo() {
@@ -1501,7 +1655,9 @@
         sorted.forEach((s, i) => {
           const isFirst = s.finished && s.rank === 1;
           const classes = s.finished ? (isFirst ? 'rank-item finished first' : 'rank-item finished') : 'rank-item racing';
-          const status = s.finished ? `${s.rank}위 완주` : '레이싱';
+          // 진행률 계산 (startX ~ finishX 기준)
+          const progress = Math.max(0, Math.min(100, ((s.x - startX) / raceLength) * 100));
+          const status = s.finished ? `${s.rank}위 완주` : `${Math.floor(progress)}%`;
           html += `<div class="${classes}">
             <span class="rank-num">${s.finished ? s.rank : i + 1}</span>
             <span class="rank-name">${s.emoji} ${s.name}</span>
@@ -1550,6 +1706,9 @@
         gameRunning = false;
         cancelAnimationFrame(animationId);
         surfers = []; waves = []; finishOrder = []; textEffects = []; bubbles = [];
+        lastTime = 0;
+        cameraX = 0;  // 카메라 위치 초기화
+        isAutoTracking = true;
         document.getElementById('raceLog').innerHTML = '';
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         resizeCanvas();
@@ -1592,6 +1751,36 @@
       helpModal.addEventListener('click', e => { if (e.target === helpModal) helpModal.classList.remove('show'); });
       winnerOverlay.addEventListener('click', () => winnerOverlay.classList.remove('show'));
       window.addEventListener('resize', () => { if (!gameRunning) resizeCanvas(); });
+
+      // 미니맵 클릭/드래그 이벤트
+      let isDraggingMinimap = false;
+
+      function handleMinimapClick(e) {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        if (y >= minimapRect.y && y <= minimapRect.y + minimapRect.h &&
+            x >= minimapRect.x && x <= minimapRect.x + minimapRect.w) {
+          isDraggingMinimap = true;
+          isAutoTracking = false;
+          const pct = (x - minimapRect.x - 10) / (minimapRect.w - 20);
+          cameraX = pct * (finishX + 200) - canvas.width / 2;
+          clampCamera();
+        }
+      }
+
+      canvas.addEventListener('pointerdown', handleMinimapClick);
+      canvas.addEventListener('pointermove', (e) => {
+        if (isDraggingMinimap) handleMinimapClick(e);
+      });
+      window.addEventListener('pointerup', () => {
+        if (isDraggingMinimap) {
+          isDraggingMinimap = false;
+          // 드래그 후 일정 시간 뒤 자동 추적 복귀
+          setTimeout(() => { isAutoTracking = true; }, 3000);
+        }
+      });
 
       loadSettings();
       resizeCanvas();

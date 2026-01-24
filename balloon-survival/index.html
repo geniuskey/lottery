@@ -1012,10 +1012,11 @@
       let popParticles = [];
       let textEffects = [];
       let popTimer = 0;
-      let popInterval = 120;
+      let popInterval = 2.0; // seconds
       let targetParticipant = null;
       let warningTimer = 0;
       let windOffset = 0;
+      let lastTime = 0;
       const soundManager = new SoundManager();
 
       function resizeCanvas() {
@@ -1151,6 +1152,7 @@
         targetParticipant = null;
         warningTimer = 0;
         windOffset = 0;
+        lastTime = 0;
         gameRunning = true;
         startBtn.disabled = true;
         gameStatus.textContent = '🎈 풍선들이 하늘을 떠다닙니다!';
@@ -1158,22 +1160,26 @@
 
         updateAliveCount();
         updateRanking();
-        gameLoop();
+        animationId = requestAnimationFrame(gameLoop);
       }
 
       function getPopInterval() {
         const windMult = getWindMultiplier();
-        return Math.floor(150 / windMult);
+        return 2.5 / windMult; // seconds
       }
 
-      function gameLoop() {
+      function gameLoop(currentTime) {
         if (!gameRunning) return;
-        update();
+
+        const deltaTime = lastTime ? (currentTime - lastTime) / 1000 : 0.016;
+        lastTime = currentTime;
+
+        update(deltaTime);
         draw();
         animationId = requestAnimationFrame(gameLoop);
       }
 
-      function update() {
+      function update(deltaTime) {
         const alive = participants.filter(p => p.alive && !p.falling && !p.popping);
         const windMult = getWindMultiplier();
 
@@ -1182,21 +1188,21 @@
           return;
         }
 
-        windOffset += 0.01 * windMult;
+        windOffset += 0.6 * deltaTime * windMult;
 
         // Pop timer logic
         if (targetParticipant === null) {
-          popTimer++;
+          popTimer += deltaTime;
           if (popTimer >= popInterval) {
             // Select random target
             targetParticipant = alive[Math.floor(Math.random() * alive.length)];
-            warningTimer = 60;
+            warningTimer = 1.0; // 1 second warning
             gameStatus.textContent = `⚠️ ${targetParticipant.name}의 풍선이 위험해요!`;
             soundManager.playWarning();
             popTimer = 0;
           }
         } else {
-          warningTimer--;
+          warningTimer -= deltaTime;
           if (warningTimer <= 0) {
             // Pop the balloon
             popBalloon(targetParticipant);
@@ -1211,9 +1217,9 @@
 
           if (p.falling) {
             // Falling animation
-            p.fallSpeed += 0.3;
-            p.y += p.fallSpeed;
-            p.x += Math.sin(p.y * 0.05) * 2;
+            p.fallSpeed += 18 * deltaTime;
+            p.y += p.fallSpeed * deltaTime * 60;
+            p.x += Math.sin(p.y * 0.05) * 2 * deltaTime * 60;
 
             if (p.y > skyBounds.y + skyBounds.h + 50) {
               p.alive = false;
@@ -1225,7 +1231,7 @@
           }
 
           if (p.popping) {
-            p.popProgress += 0.05;
+            p.popProgress += 3 * deltaTime;
             if (p.popProgress >= 1) {
               p.popping = false;
               p.falling = true;
@@ -1245,24 +1251,25 @@
           }
 
           // Float movement
-          p.floatPhase += p.floatSpeed;
-          p.swayPhase += 0.02;
+          p.floatPhase += p.floatSpeed * deltaTime * 60;
+          p.swayPhase += 1.2 * deltaTime;
 
           const floatY = Math.sin(p.floatPhase) * 3;
           const swayX = Math.sin(p.swayPhase + windOffset) * 5 * windMult;
 
-          p.vx += swayX * 0.01;
-          p.vy += floatY * 0.01;
+          p.vx += swayX * 0.01 * deltaTime * 60;
+          p.vy += floatY * 0.01 * deltaTime * 60;
 
           // Wind effect
-          p.vx += Math.sin(windOffset) * 0.02 * windMult;
+          p.vx += Math.sin(windOffset) * 0.02 * windMult * deltaTime * 60;
 
-          // Damping
-          p.vx *= 0.95;
-          p.vy *= 0.95;
+          // Damping (frame-rate independent)
+          const dampFactor = Math.pow(0.95, deltaTime * 60);
+          p.vx *= dampFactor;
+          p.vy *= dampFactor;
 
-          p.x += p.vx;
-          p.y += p.vy;
+          p.x += p.vx * deltaTime * 60;
+          p.y += p.vy * deltaTime * 60;
 
           // Boundaries
           const margin = 40;
@@ -1294,12 +1301,17 @@
 
         // Update pop particles
         popParticles = popParticles.filter(pp => {
-          pp.x += pp.vx;
-          pp.y += pp.vy;
-          pp.vy += 0.1;
-          pp.life--;
-          pp.size *= 0.98;
+          pp.x += pp.vx * deltaTime * 60;
+          pp.y += pp.vy * deltaTime * 60;
+          pp.vy += 6 * deltaTime;
+          pp.life -= deltaTime * 60;
+          pp.size *= Math.pow(0.98, deltaTime * 60);
           return pp.life > 0;
+        });
+
+        // Update text effects
+        textEffects.forEach(e => {
+          e.life -= deltaTime;
         });
       }
 
@@ -1327,7 +1339,7 @@
       }
 
       function createTextEffect(x, y, text, color, big = false) {
-        textEffects.push({ x, y, text, color, life: 60, maxLife: 60, scale: big ? 1.5 : 1 });
+        textEffects.push({ x, y, text, color, life: 1.0, maxLife: 1.0, scale: big ? 1.5 : 1 }); // 1 second duration
       }
 
       function draw() {
@@ -1455,15 +1467,14 @@
           ctx.fill();
         });
 
-        // Draw text effects
+        // Draw text effects (life is in seconds now)
         textEffects = textEffects.filter(e => {
-          e.life--;
           ctx.save();
           ctx.globalAlpha = e.life / e.maxLife;
           ctx.font = `bold ${18 * e.scale}px 'Black Han Sans'`;
           ctx.fillStyle = e.color;
           ctx.textAlign = 'center';
-          ctx.fillText(e.text, e.x, e.y - (e.maxLife - e.life) * 0.8);
+          ctx.fillText(e.text, e.x, e.y - (e.maxLife - e.life) * 48);
           ctx.restore();
           return e.life > 0;
         });

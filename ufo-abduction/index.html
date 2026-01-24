@@ -1010,6 +1010,7 @@
       let survivors = [];
       let textEffects = [];
       let beamParticles = [];
+      let lastTime = 0;
       const soundManager = new SoundManager();
 
       function resizeCanvas() {
@@ -1127,7 +1128,7 @@
             radius: 22,
             panicLevel: 0,
             wanderAngle: Math.random() * Math.PI * 2,
-            wanderTimer: Math.random() * 60,
+            wanderTimer: Math.random() * 1.0, // 0-60 frames / 60fps = 0-1 seconds
             beingAbducted: false,
             abductProgress: 0
           };
@@ -1141,7 +1142,7 @@
           width: 80,
           height: 40,
           state: 'HOVERING',
-          stateTimer: 90,
+          stateTimer: 1.5, // 90 frames / 60fps = 1.5 seconds
           target: null,
           beamRadius: 0,
           beamMaxRadius: 50,
@@ -1152,6 +1153,7 @@
         survivors = [];
         textEffects = [];
         beamParticles = [];
+        lastTime = 0;
         gameRunning = true;
         startBtn.disabled = true;
         gameStatus.textContent = '🛸 UFO가 지구에 도착했습니다!';
@@ -1159,37 +1161,42 @@
 
         updateAliveCount();
         updateRanking();
-        gameLoop();
+        requestAnimationFrame(gameLoop);
       }
 
-      function gameLoop() {
+      function gameLoop(currentTime) {
         if (!gameRunning) return;
-        update();
+
+        const deltaTime = lastTime ? (currentTime - lastTime) / 1000 : 0.016;
+        lastTime = currentTime;
+
+        update(deltaTime);
         draw();
         animationId = requestAnimationFrame(gameLoop);
       }
 
-      function update() {
+      function update(deltaTime) {
         const alive = participants.filter(p => p.alive && !p.beingAbducted);
         const speedMult = getSpeedMultiplier();
+        const dt60 = deltaTime * 60; // Normalize to 60fps
 
         if (alive.length <= parseInt(winnerCountInput.value)) {
           endGame();
           return;
         }
 
-        ufo.wobble += 0.1;
-        ufo.stateTimer--;
+        ufo.wobble += 0.1 * dt60;
+        ufo.stateTimer -= deltaTime;
 
         if (ufo.state === 'HOVERING') {
           // Gentle hovering movement
-          ufo.x += Math.sin(ufo.wobble * 0.5) * 0.5;
+          ufo.x += Math.sin(ufo.wobble * 0.5) * 0.5 * dt60;
 
           if (ufo.stateTimer <= 0) {
             // Select target
             ufo.target = alive[Math.floor(Math.random() * alive.length)];
             ufo.state = 'TARGETING';
-            ufo.stateTimer = Math.floor(60 / speedMult);
+            ufo.stateTimer = 1.0 / speedMult; // 60 frames / 60fps = 1 second
             gameStatus.textContent = `🎯 타겟 발견: ${ufo.target.name}!`;
             soundManager.playWarning();
           }
@@ -1204,14 +1211,14 @@
           const dist = Math.hypot(dx, dy);
 
           if (dist > 5) {
-            const moveSpeed = 4 * speedMult;
+            const moveSpeed = 4 * speedMult * dt60;
             ufo.x += (dx / dist) * moveSpeed;
             ufo.y += (dy / dist) * moveSpeed;
           }
 
           if (ufo.stateTimer <= 0 || dist <= 5) {
             ufo.state = 'BEAMING';
-            ufo.stateTimer = Math.floor(120 / speedMult);
+            ufo.stateTimer = 2.0 / speedMult; // 120 frames / 60fps = 2 seconds
             ufo.beamRadius = 0;
             gameStatus.textContent = '⚡ 빔 발사!';
             soundManager.playBeam();
@@ -1220,36 +1227,45 @@
         else if (ufo.state === 'BEAMING') {
           // Expand beam
           if (ufo.beamRadius < ufo.beamMaxRadius) {
-            ufo.beamRadius += 2 * speedMult;
+            ufo.beamRadius += 2 * speedMult * dt60;
           }
 
-          // Add beam particles
-          if (Math.random() < 0.3) {
+          // Add beam particles (probability adjusted for deltaTime)
+          if (Math.random() < 0.3 * dt60) {
             beamParticles.push({
               x: ufo.x + (Math.random() - 0.5) * ufo.beamRadius * 2,
               y: ufo.y + ufo.height / 2 + Math.random() * (groundBounds.y + groundBounds.h - ufo.y - ufo.height / 2),
               vy: -2 - Math.random() * 2,
-              life: 30,
+              life: 0.5, // 30 frames / 60fps = 0.5 seconds
               size: 2 + Math.random() * 3
             });
           }
 
-          // Check for abductions
-          alive.forEach(p => {
-            const dx = p.x - ufo.x;
-            const dy = p.y - (ufo.y + ufo.height);
-            const withinBeam = Math.abs(dx) < ufo.beamRadius && dy > 0;
+          // Check for abductions - only if we have more than winnerCount alive
+          const winnerCount = parseInt(winnerCountInput.value);
+          const currentAlive = participants.filter(p => p.alive && !p.beingAbducted).length;
 
-            if (withinBeam && !p.beingAbducted) {
-              p.beingAbducted = true;
-              p.abductProgress = 0;
-              soundManager.playAbduct();
-            }
-          });
+          if (currentAlive > winnerCount) {
+            alive.forEach(p => {
+              const dx = p.x - ufo.x;
+              const dy = p.y - (ufo.y + ufo.height);
+              const withinBeam = Math.abs(dx) < ufo.beamRadius && dy > 0;
+
+              if (withinBeam && !p.beingAbducted) {
+                // Check again before starting abduction
+                const stillAlive = participants.filter(pp => pp.alive && !pp.beingAbducted).length;
+                if (stillAlive > winnerCount) {
+                  p.beingAbducted = true;
+                  p.abductProgress = 0;
+                  soundManager.playAbduct();
+                }
+              }
+            });
+          }
 
           if (ufo.stateTimer <= 0) {
             ufo.state = 'COOLDOWN';
-            ufo.stateTimer = Math.floor(60 / speedMult);
+            ufo.stateTimer = 1.0 / speedMult; // 60 frames / 60fps = 1 second
             ufo.beamRadius = 0;
             gameStatus.textContent = '🛸 UFO 재충전 중...';
           }
@@ -1259,12 +1275,12 @@
           const centerX = groundBounds.x + groundBounds.w / 2 + (Math.random() - 0.5) * 100;
           const dx = centerX - ufo.x;
           if (Math.abs(dx) > 5) {
-            ufo.x += Math.sign(dx) * 2;
+            ufo.x += Math.sign(dx) * 2 * dt60;
           }
 
           if (ufo.stateTimer <= 0) {
             ufo.state = 'HOVERING';
-            ufo.stateTimer = Math.floor(90 / speedMult);
+            ufo.stateTimer = 1.5 / speedMult; // 90 frames / 60fps = 1.5 seconds
             gameStatus.textContent = '🛸 UFO가 다음 타겟을 찾는 중...';
             soundManager.playHover();
           }
@@ -1273,9 +1289,9 @@
         // Update being abducted
         participants.forEach(p => {
           if (p.beingAbducted && p.alive) {
-            p.abductProgress += 0.02 * speedMult;
-            p.y -= 3 * speedMult;
-            p.x += (ufo.x - p.x) * 0.05;
+            p.abductProgress += 0.02 * speedMult * dt60;
+            p.y -= 3 * speedMult * dt60;
+            p.x += (ufo.x - p.x) * 0.05 * dt60;
 
             if (p.abductProgress >= 1 || p.y < ufo.y + ufo.height) {
               p.alive = false;
@@ -1303,15 +1319,15 @@
         participants.forEach(p => {
           if (!p.alive || p.beingAbducted) return;
 
-          p.wanderTimer--;
+          p.wanderTimer -= deltaTime;
           if (p.wanderTimer <= 0) {
             p.wanderAngle = Math.random() * Math.PI * 2;
-            p.wanderTimer = 30 + Math.random() * 60;
+            p.wanderTimer = 0.5 + Math.random() * 1.0; // 30-90 frames / 60fps = 0.5-1.5 seconds
           }
 
           // Basic wandering
-          p.vx += Math.cos(p.wanderAngle) * 0.1;
-          p.vy += Math.sin(p.wanderAngle) * 0.1;
+          p.vx += Math.cos(p.wanderAngle) * 0.1 * dt60;
+          p.vy += Math.sin(p.wanderAngle) * 0.1 * dt60;
 
           // Panic when UFO is targeting or beaming
           if (ufo.state === 'TARGETING' || ufo.state === 'BEAMING') {
@@ -1320,17 +1336,19 @@
             const dist = Math.hypot(dx, dy);
 
             if (dist < 200) {
-              p.panicLevel = Math.min(1, p.panicLevel + 0.1);
+              p.panicLevel = Math.min(1, p.panicLevel + 0.1 * dt60);
               const fleeAngle = Math.atan2(dy, dx);
-              p.vx += Math.cos(fleeAngle) * 0.8 * p.panicLevel;
-              p.vy += Math.sin(fleeAngle) * 0.5 * p.panicLevel;
+              p.vx += Math.cos(fleeAngle) * 0.8 * p.panicLevel * dt60;
+              p.vy += Math.sin(fleeAngle) * 0.5 * p.panicLevel * dt60;
             }
           } else {
-            p.panicLevel *= 0.95;
+            p.panicLevel *= Math.pow(0.95, dt60);
           }
 
-          p.vx *= 0.92;
-          p.vy *= 0.92;
+          // Apply friction with deltaTime
+          const friction = Math.pow(0.92, dt60);
+          p.vx *= friction;
+          p.vy *= friction;
 
           const maxSpeed = 2 + p.panicLevel * 2;
           const curSpeed = Math.hypot(p.vx, p.vy);
@@ -1339,8 +1357,8 @@
             p.vy = (p.vy / curSpeed) * maxSpeed;
           }
 
-          p.x += p.vx;
-          p.y += p.vy;
+          p.x += p.vx * dt60;
+          p.y += p.vy * dt60;
 
           // Wall bounce
           const margin = 25;
@@ -1372,14 +1390,20 @@
 
         // Update beam particles
         beamParticles = beamParticles.filter(bp => {
-          bp.y += bp.vy;
-          bp.life--;
+          bp.y += bp.vy * dt60;
+          bp.life -= deltaTime;
           return bp.life > 0;
+        });
+
+        // Update text effects
+        textEffects = textEffects.filter(e => {
+          e.life -= deltaTime;
+          return e.life > 0;
         });
       }
 
       function createTextEffect(x, y, text, color, isAbduct = false) {
-        textEffects.push({ x, y, text, color, life: 60, maxLife: 60, isAbduct, scale: isAbduct ? 1.5 : 1 });
+        textEffects.push({ x, y, text, color, life: 1.0, maxLife: 1.0, isAbduct, scale: isAbduct ? 1.5 : 1 }); // 60 frames / 60fps = 1 second
       }
 
       function draw() {
@@ -1412,7 +1436,7 @@
         beamParticles.forEach(bp => {
           ctx.beginPath();
           ctx.arc(bp.x, bp.y, bp.size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(0, 255, 200, ${bp.life / 30})`;
+          ctx.fillStyle = `rgba(0, 255, 200, ${bp.life / 0.5})`; // 0.5 seconds max life
           ctx.fill();
         });
 
@@ -1461,6 +1485,9 @@
           ctx.strokeStyle = p.panicLevel > 0.5 ? '#ff6b6b' : '#00ff88';
           ctx.lineWidth = 2;
           ctx.stroke();
+
+          // Reset alpha for emoji and name to be fully visible
+          ctx.globalAlpha = 1;
 
           // Emoji
           ctx.font = '28px Arial';
@@ -1542,16 +1569,14 @@
         }
 
         // Draw text effects
-        textEffects = textEffects.filter(e => {
-          e.life--;
+        textEffects.forEach(e => {
           ctx.save();
-          ctx.globalAlpha = e.life / 60;
+          ctx.globalAlpha = e.life / e.maxLife;
           ctx.font = `bold ${18 * e.scale}px 'Black Han Sans'`;
           ctx.fillStyle = e.color;
           ctx.textAlign = 'center';
-          ctx.fillText(e.text, e.x, e.y - (60 - e.life) * 0.8);
+          ctx.fillText(e.text, e.x, e.y - (e.maxLife - e.life) * 48); // 48 pixels per second float up
           ctx.restore();
-          return e.life > 0;
         });
       }
 
