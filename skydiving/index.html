@@ -1082,9 +1082,12 @@
       let maxAltitude = MAX_ALTITUDE;
       const soundManager = new SoundManager();
 
-      // 3D Projection function
+      // 3D Projection function - 위에서 아래를 내려다보는 시점
+      // z가 클수록(높은 고도) 크게 보이고, z가 0(착지)일수록 작게 보임
       function project3D(x, y, z) {
-        const scale = FOCAL_LENGTH / (FOCAL_LENGTH + z);
+        // 높은 고도(z=MAX_ALTITUDE)에서 가깝고, 착지(z=0)에서 멀리 보임
+        const distanceFromViewer = MAX_ALTITUDE - z + 100; // 100은 최소 거리
+        const scale = FOCAL_LENGTH / distanceFromViewer;
         const screenX = centerX + x * scale;
         const screenY = centerY + y * scale;
         return { x: screenX, y: screenY, scale };
@@ -1107,12 +1110,13 @@
 
       function generateClouds() {
         clouds = [];
+        // 구름은 중간 고도에 배치 (다이버가 통과하는 레이어)
         for (let i = 0; i < 15; i++) {
           clouds.push({
-            x: (Math.random() - 0.5) * 600,
-            y: (Math.random() - 0.5) * 600,
-            z: 200 + Math.random() * 600,
-            size: 30 + Math.random() * 50
+            x: (Math.random() - 0.5) * 800,
+            y: (Math.random() - 0.5) * 800,
+            z: 300 + Math.random() * 400, // 중간 고도에 구름
+            size: 40 + Math.random() * 60
           });
         }
       }
@@ -1430,8 +1434,8 @@
           renderObjects.push({ type: 'landed', data: p, z: 0, rank: idx });
         });
 
-        // Sort by z (render far objects first)
-        renderObjects.sort((a, b) => b.z - a.z);
+        // Sort by z (위에서 보는 시점: z가 낮은 것 = 멀리 있음 = 먼저 그리기)
+        renderObjects.sort((a, b) => a.z - b.z);
 
         // First pass: draw parachutes and bodies (not emojis)
         renderObjects.forEach(obj => {
@@ -1466,16 +1470,18 @@
       }
 
       function drawClouds() {
-        clouds.forEach(c => {
-          if (c.z < 50) return; // Don't draw clouds too close
+        // 구름을 z순으로 정렬 (낮은 z = 멀리 = 먼저 그리기)
+        const sortedClouds = [...clouds].sort((a, b) => a.z - b.z);
+        sortedClouds.forEach(c => {
           const proj = project3D(c.x, c.y, c.z);
           const size = c.size * proj.scale;
 
-          if (size < 5) return; // Too small
+          if (size < 3) return; // Too small to render
 
           ctx.save();
-          ctx.globalAlpha = 0.3 * Math.min(1, c.z / 300);
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+          // 위에서 보는 시점: 높은 고도의 구름(큰 것)이 더 선명하게
+          ctx.globalAlpha = 0.4 * Math.min(1, proj.scale * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
 
           ctx.beginPath();
           ctx.arc(proj.x, proj.y, size * 0.6, 0, Math.PI * 2);
