@@ -1051,6 +1051,7 @@
       let dart = null;
       let landedDarts = [];
       let textEffects = [];
+      let lastTime = 0;
       const soundManager = new SoundManager();
 
       // Score zones (percentage of radius from center)
@@ -1080,7 +1081,7 @@
         drawBoard();
       }
 
-      function drawBoard() {
+      function drawBoard(deltaTime = 0) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // Board backing (wood effect)
@@ -1157,17 +1158,18 @@
           drawDart(dart.x, dart.y, dart.color, dart.scale);
         }
 
-        // Draw text effects
+        // Draw text effects (time-based)
         textEffects = textEffects.filter(e => {
-          e.life--;
+          e.life -= deltaTime; // 초 단위 감소
           ctx.save();
-          ctx.globalAlpha = e.life / e.maxLife;
+          ctx.globalAlpha = Math.max(0, e.life / e.maxLife);
           ctx.font = `bold ${24 * e.scale}px 'Black Han Sans'`;
           ctx.fillStyle = e.color;
           ctx.textAlign = 'center';
           ctx.shadowBlur = 10;
           ctx.shadowColor = e.color;
-          ctx.fillText(e.text, e.x, e.y - (e.maxLife - e.life) * 0.8);
+          const elapsed = e.maxLife - e.life; // 경과 시간 (초)
+          ctx.fillText(e.text, e.x, e.y - elapsed * 48); // 48px/sec 상승 속도
           ctx.restore();
           return e.life > 0;
         });
@@ -1294,17 +1296,23 @@
         soundManager.playStart();
 
         setTimeout(() => throwDart(), 1000);
-        gameLoop();
+        lastTime = 0;
+        requestAnimationFrame(gameLoop);
       }
 
-      function gameLoop() {
+      function gameLoop(timestamp) {
         if (!gameRunning) return;
-        update();
-        drawBoard();
+
+        if (lastTime === 0) lastTime = timestamp;
+        const deltaTime = (timestamp - lastTime) / 1000; // 초 단위
+        lastTime = timestamp;
+
+        update(deltaTime);
+        drawBoard(deltaTime);
         animationId = requestAnimationFrame(gameLoop);
       }
 
-      function update() {
+      function update(deltaTime) {
         const speedMult = getSpeedMultiplier();
 
         if (gamePhase === 'THROWING' && dart && dart.flying) {
@@ -1314,10 +1322,10 @@
           const dist = Math.hypot(dx, dy);
 
           if (dist > 5) {
-            const speed = 15 * speedMult;
+            const speed = 900 * speedMult * deltaTime; // 900 pixels/sec base speed
             dart.x += (dx / dist) * speed;
             dart.y += (dy / dist) * speed;
-            dart.scale = Math.min(1, dart.scale + 0.05);
+            dart.scale = Math.min(1, dart.scale + 3 * deltaTime); // 3/sec scale increase
           } else {
             // Dart has landed
             dart.flying = false;
@@ -1424,7 +1432,7 @@
       }
 
       function createTextEffect(x, y, text, color, scale = 1) {
-        textEffects.push({ x, y, text, color, life: 60, maxLife: 60, scale });
+        textEffects.push({ x, y, text, color, life: 1.0, maxLife: 1.0, scale }); // 1초 지속
       }
 
       function addThrowLog(name, score, isBullseye) {

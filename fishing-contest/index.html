@@ -1094,6 +1094,7 @@
       let splashes = [];
       let textEffects = [];
       let roundResults = [];
+      let lastTime = 0;
       const soundManager = new SoundManager();
 
       function resizeCanvas() {
@@ -1224,9 +1225,10 @@
         splashes = [];
         textEffects = [];
         roundResults = [];
+        lastTime = 0; // 델타 타임 초기화
         gameRunning = true;
         roundPhase = 'STARTING';
-        phaseTimer = 60;
+        phaseTimer = 1; // 1초 (기존 60프레임 / 60fps)
         startBtn.disabled = true;
         gameStatus.textContent = '🎣 낚시 대회 시작!';
         soundManager.playStart();
@@ -1236,45 +1238,50 @@
         gameLoop();
       }
 
-      function gameLoop() {
+      function gameLoop(timestamp) {
         if (!gameRunning) return;
-        update();
+
+        if (!lastTime) lastTime = timestamp;
+        const deltaTime = (timestamp - lastTime) / 1000; // 초 단위
+        lastTime = timestamp;
+
+        update(deltaTime);
         draw();
         animationId = requestAnimationFrame(gameLoop);
       }
 
-      function update() {
+      function update(deltaTime) {
         const speedMult = getSpeedMultiplier();
-        phaseTimer--;
+        phaseTimer -= deltaTime;
 
         // Update bubbles
         bubbles = bubbles.filter(b => {
-          b.y -= b.speed;
-          b.x += Math.sin(b.wobble) * 0.3;
-          b.wobble += 0.1;
-          b.life--;
+          b.y -= b.speed * deltaTime * 60;
+          b.x += Math.sin(b.wobble) * 0.3 * deltaTime * 60;
+          b.wobble += 0.1 * deltaTime * 60;
+          b.life -= deltaTime;
           return b.life > 0 && b.y > waterBounds.y;
         });
 
         // Add random bubbles
-        if (Math.random() < 0.05) {
+        if (Math.random() < 0.05 * deltaTime * 60) {
           bubbles.push({
             x: waterBounds.x + Math.random() * waterBounds.w,
             y: waterBounds.y + waterBounds.h - 10,
             radius: 2 + Math.random() * 4,
             speed: 0.5 + Math.random() * 1,
             wobble: Math.random() * Math.PI * 2,
-            life: 200
+            life: 3.33 // 약 3.33초 (기존 200프레임 / 60fps)
           });
         }
 
         // Update splashes
         splashes = splashes.filter(s => {
-          s.life--;
+          s.life -= deltaTime;
           s.particles = s.particles.filter(p => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.2;
+            p.x += p.vx * deltaTime * 60;
+            p.y += p.vy * deltaTime * 60;
+            p.vy += 0.2 * deltaTime * 60;
             return p.y < waterBounds.y + 50;
           });
           return s.life > 0 && s.particles.length > 0;
@@ -1283,9 +1290,9 @@
         // Update fishes
         fishes.forEach(f => {
           if (f.caught) return;
-          f.x += f.vx;
-          f.y += Math.sin(f.wobble) * 0.5;
-          f.wobble += 0.05;
+          f.x += f.vx * deltaTime * 60;
+          f.y += Math.sin(f.wobble) * 0.5 * deltaTime * 60;
+          f.wobble += 0.05 * deltaTime * 60;
 
           // Bounce off walls
           if (f.x < waterBounds.x + 20 || f.x > waterBounds.x + waterBounds.w - 20) {
@@ -1299,7 +1306,7 @@
 
         // Update fishers
         fishers.forEach(f => {
-          f.wobble += 0.05;
+          f.wobble += 0.05 * deltaTime * 60;
         });
 
         // Phase logic
@@ -1311,7 +1318,7 @@
               return;
             }
             roundPhase = 'CASTING';
-            phaseTimer = Math.floor(90 / speedMult);
+            phaseTimer = 1.5 / speedMult; // 1.5초 (기존 90프레임 / 60fps)
             gameStatus.textContent = `🎣 ${currentRound}라운드 - 낚싯대 던지기!`;
             updateRoundInfo();
 
@@ -1330,7 +1337,7 @@
           let allCast = true;
           fishers.forEach(f => {
             if (f.lineY < f.targetLineY) {
-              f.lineY += 5 * speedMult;
+              f.lineY += 5 * speedMult * deltaTime * 60;
               allCast = false;
             } else {
               f.lineY = f.targetLineY;
@@ -1344,7 +1351,7 @@
 
           if (allCast || phaseTimer <= 0) {
             roundPhase = 'FISHING';
-            phaseTimer = Math.floor(180 / speedMult);
+            phaseTimer = 3 / speedMult; // 3초 (기존 180프레임 / 60fps)
             gameStatus.textContent = `🐟 ${currentRound}라운드 - 물고기를 기다리는 중...`;
 
             // Spawn fishes
@@ -1378,7 +1385,7 @@
               return Math.hypot(dx, dy) < 40;
             });
 
-            if (nearbyFish.length > 0 && Math.random() < 0.02 * speedMult) {
+            if (nearbyFish.length > 0 && Math.random() < 0.02 * speedMult * deltaTime * 60) {
               // Fish bites!
               const fish = nearbyFish[Math.floor(Math.random() * nearbyFish.length)];
               f.state = 'CATCHING';
@@ -1391,8 +1398,8 @@
           // Reel in caught fish
           fishers.forEach(f => {
             if (f.state === 'CATCHING' && f.caughtFish) {
-              f.lineY -= 4 * speedMult;
-              f.caughtFish.x += (f.hookX - f.caughtFish.x) * 0.1;
+              f.lineY -= 4 * speedMult * deltaTime * 60;
+              f.caughtFish.x += (f.hookX - f.caughtFish.x) * 0.1 * deltaTime * 60;
               f.caughtFish.y = f.lineY;
 
               if (f.lineY <= waterBounds.y + 10) {
@@ -1423,7 +1430,7 @@
 
           if (phaseTimer <= 0) {
             roundPhase = 'ROUND_END';
-            phaseTimer = Math.floor(90 / speedMult);
+            phaseTimer = 1.5 / speedMult; // 1.5초 (기존 90프레임 / 60fps)
             gameStatus.textContent = `📊 ${currentRound}라운드 종료!`;
 
             // Clear remaining fish
@@ -1440,15 +1447,15 @@
         else if (roundPhase === 'ROUND_END') {
           if (phaseTimer <= 0) {
             roundPhase = 'STARTING';
-            phaseTimer = Math.floor(60 / speedMult);
+            phaseTimer = 1 / speedMult; // 1초 (기존 60프레임 / 60fps)
             gameStatus.textContent = '🎣 다음 라운드 준비 중...';
           }
         }
 
         // Update text effects
         textEffects = textEffects.filter(e => {
-          e.life--;
-          e.y -= 0.5;
+          e.life -= deltaTime;
+          e.y -= 0.5 * deltaTime * 60;
           return e.life > 0;
         });
       }
@@ -1457,7 +1464,7 @@
         const splash = {
           x: x,
           y: y,
-          life: 30,
+          life: 0.5, // 0.5초 (기존 30프레임 / 60fps)
           particles: []
         };
         for (let i = 0; i < 8; i++) {
@@ -1474,7 +1481,7 @@
       }
 
       function createTextEffect(x, y, text, color) {
-        textEffects.push({ x, y, text, color, life: 60 });
+        textEffects.push({ x, y, text, color, life: 1 }); // 1초 (기존 60프레임 / 60fps)
       }
 
       function addCatchLog(name, fish, isBig) {
@@ -1506,7 +1513,7 @@
         bubbles.forEach(b => {
           ctx.beginPath();
           ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 255, 255, ${b.life / 200 * 0.4})`;
+          ctx.fillStyle = `rgba(255, 255, 255, ${b.life / 3.33 * 0.4})`; // 3.33초 기준
           ctx.fill();
         });
 
@@ -1538,7 +1545,7 @@
           s.particles.forEach(p => {
             ctx.beginPath();
             ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(56, 189, 248, ${s.life / 30})`;
+            ctx.fillStyle = `rgba(56, 189, 248, ${s.life / 0.5})`; // 0.5초 기준
             ctx.fill();
           });
         });
@@ -1610,7 +1617,7 @@
         // Draw text effects
         textEffects.forEach(e => {
           ctx.save();
-          ctx.globalAlpha = e.life / 60;
+          ctx.globalAlpha = e.life / 1; // 1초 기준
           ctx.font = "bold 18px 'Black Han Sans'";
           ctx.fillStyle = e.color;
           ctx.textAlign = 'center';

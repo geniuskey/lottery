@@ -986,7 +986,15 @@
       let shockwaveTimer = 0;
       let shockwave = null;
       let crackLines = [];
+      let lastTime = 0;
       const soundManager = new SoundManager();
+
+      // Delta time based constants (per second)
+      const SHOCKWAVE_SPEED = 480; // pixels per second
+      const FALL_SPEED = 300; // pixels per second
+      const FALL_PROGRESS_SPEED = 1.8; // per second
+      const GRAVITY = 360; // pixels per second squared
+      const IMPULSE_CHANCE = 1.2; // checks per second
 
       function resizeCanvas() {
         const container = canvas.parentElement;
@@ -1186,8 +1194,9 @@
         survivors = [];
         textEffects = [];
         iceParticles = [];
-        shockwaveTimer = 180 + Math.floor(Math.random() * 120);
+        shockwaveTimer = 3 + Math.random() * 2; // 3-5 seconds
         shockwave = null;
+        lastTime = 0;
         gameRunning = true;
         startBtn.disabled = true;
         gameStatus.textContent = '🧊 빙판 위 생존 게임 시작!';
@@ -1198,33 +1207,43 @@
         gameLoop();
       }
 
-      function gameLoop() {
+      function gameLoop(timestamp) {
         if (!gameRunning) return;
-        update();
+
+        // Calculate delta time in seconds
+        if (lastTime === 0) lastTime = timestamp;
+        const deltaTime = Math.min((timestamp - lastTime) / 1000, 0.1); // Cap at 100ms to prevent large jumps
+        lastTime = timestamp;
+
+        update(deltaTime);
         draw();
         animationId = requestAnimationFrame(gameLoop);
       }
 
-      function update() {
+      function update(deltaTime) {
         const alive = participants.filter(p => p.alive && !p.falling);
         const friction = getFriction();
         const bounceForce = getBounceForce();
+
+        // Calculate frame-independent friction (convert per-frame to per-second)
+        // Original friction was applied 60 times per second
+        const frictionFactor = Math.pow(friction, deltaTime * 60);
 
         if (alive.length <= parseInt(winnerCountInput.value)) {
           endGame();
           return;
         }
 
-        // Shockwave timer
-        shockwaveTimer--;
+        // Shockwave timer (now in seconds)
+        shockwaveTimer -= deltaTime;
         if (shockwaveTimer <= 0) {
           triggerShockwave();
-          shockwaveTimer = 200 + Math.floor(Math.random() * 150);
+          shockwaveTimer = 3.3 + Math.random() * 2.5; // 3.3-5.8 seconds
         }
 
         // Update shockwave
         if (shockwave) {
-          shockwave.radius += 8;
+          shockwave.radius += SHOCKWAVE_SPEED * deltaTime;
           if (shockwave.radius > iceRadius + 50) {
             shockwave = null;
           }
@@ -1235,9 +1254,9 @@
           if (!p.alive) return;
 
           if (p.falling) {
-            p.fallProgress += 0.03;
-            p.y += 5;
-            p.x += p.vx * 0.5;
+            p.fallProgress += FALL_PROGRESS_SPEED * deltaTime;
+            p.y += FALL_SPEED * deltaTime;
+            p.x += p.vx * 0.5 * deltaTime * 60; // Maintain horizontal drift
             if (p.fallProgress >= 1) {
               p.alive = false;
               p.falling = false;
@@ -1261,8 +1280,8 @@
             return;
           }
 
-          // Random movement impulse
-          if (Math.random() < 0.02) {
+          // Random movement impulse (probability per second)
+          if (Math.random() < IMPULSE_CHANCE * deltaTime) {
             p.vx += (Math.random() - 0.5) * 1.5;
             p.vy += (Math.random() - 0.5) * 1.5;
           }
@@ -1274,19 +1293,27 @@
             const dist = Math.hypot(dx, dy);
             if (Math.abs(dist - shockwave.radius) < 30) {
               const angle = Math.atan2(dy, dx);
-              const force = 3 * bounceForce;
+              const force = 1.5 * bounceForce; // Reduced from 3 to 1.5
               p.vx += Math.cos(angle) * force;
               p.vy += Math.sin(angle) * force;
             }
           }
 
-          // Apply friction (ice is slippery!)
-          p.vx *= friction;
-          p.vy *= friction;
+          // Limit maximum velocity to prevent flying off instantly
+          const maxVel = 8;
+          const currentVel = Math.hypot(p.vx, p.vy);
+          if (currentVel > maxVel) {
+            p.vx = (p.vx / currentVel) * maxVel;
+            p.vy = (p.vy / currentVel) * maxVel;
+          }
 
-          // Update position
-          p.x += p.vx;
-          p.y += p.vy;
+          // Apply friction (ice is slippery!) - frame-independent
+          p.vx *= frictionFactor;
+          p.vy *= frictionFactor;
+
+          // Update position - multiply by deltaTime * 60 to match original 60fps behavior
+          p.x += p.vx * deltaTime * 60;
+          p.y += p.vy * deltaTime * 60;
 
           // Check if fallen off ice
           const distFromCenter = Math.hypot(p.x - iceCenter.x, p.y - iceCenter.y);
@@ -1357,13 +1384,19 @@
           }
         }
 
-        // Update ice particles
+        // Update ice particles with delta time
         iceParticles = iceParticles.filter(ip => {
-          ip.x += ip.vx;
-          ip.y += ip.vy;
-          ip.vy += 0.1;
-          ip.life--;
+          ip.x += ip.vx * deltaTime * 60;
+          ip.y += ip.vy * deltaTime * 60;
+          ip.vy += GRAVITY * deltaTime / 60; // Apply gravity per second
+          ip.life -= deltaTime * 60; // Convert to time-based
           return ip.life > 0;
+        });
+
+        // Update text effects with delta time
+        textEffects = textEffects.filter(e => {
+          e.life -= deltaTime;
+          return e.life > 0;
         });
       }
 
@@ -1396,7 +1429,7 @@
       }
 
       function createTextEffect(x, y, text, color, isElimination = false) {
-        textEffects.push({ x, y, text, color, life: 60, maxLife: 60, isElimination, scale: isElimination ? 1.5 : 1 });
+        textEffects.push({ x, y, text, color, life: 1.0, maxLife: 1.0, isElimination, scale: isElimination ? 1.5 : 1 }); // life in seconds
       }
 
       function draw() {
@@ -1496,17 +1529,16 @@
           ctx.restore();
         });
 
-        // Draw text effects
-        textEffects = textEffects.filter(e => {
-          e.life--;
+        // Draw text effects (life updates moved to update function)
+        textEffects.forEach(e => {
           ctx.save();
-          ctx.globalAlpha = e.life / 60;
+          ctx.globalAlpha = e.life / e.maxLife;
           ctx.font = `bold ${18 * e.scale}px 'Black Han Sans'`;
           ctx.fillStyle = e.color;
           ctx.textAlign = 'center';
-          ctx.fillText(e.text, e.x, e.y - (60 - e.life) * 0.8);
+          const progress = 1 - (e.life / e.maxLife);
+          ctx.fillText(e.text, e.x, e.y - progress * 48); // 48 pixels rise over lifetime
           ctx.restore();
-          return e.life > 0;
         });
       }
 
