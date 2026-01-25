@@ -1348,12 +1348,13 @@
 
         // ===== Ball =====
         class Ball {
-            constructor(x, y, radius, color, name, initialVelY = 0) {
+            constructor(x, y, radius, color, name, initialVelY = 0, scale = 1) {
                 this.pos = new Vector2(x, y);
-                this.vel = new Vector2((Math.random() - 0.5) * 50, initialVelY);  // 초기 Y 속도 + 약간의 X 랜덤
+                this.vel = new Vector2((Math.random() - 0.5) * 50 * scale, initialVelY);  // 초기 Y 속도 + 약간의 X 랜덤
                 this.radius = radius;
                 this.color = color;
                 this.name = name;
+                this.scale = scale;  // 스케일 저장
                 this.restitution = 0.75;
                 this.airResistance = 0.9995;
                 this.finished = false;
@@ -1389,55 +1390,55 @@
                     if (this.posHistory.length > 6) this.posHistory.shift();  // 최근 3초간 기록
                 }
                 
-                // 멈춤 감지 (속도가 매우 낮을 때)
+                // 멈춤 감지 (속도가 매우 낮을 때) - 스케일 적용
                 const speed = this.vel.length();
                 const moved = this.pos.sub(this.lastPos).length();
-                if (speed < 5 && moved < 1) {
+                if (speed < 5 * this.scale && moved < 1 * this.scale) {
                     this.stuckTime += dt;
                 } else {
                     this.stuckTime = 0;
                 }
                 this.lastPos = new Vector2(this.pos.x, this.pos.y);
             }
-            
+
             // 핑퐁 상태 감지 (좁은 영역에서 왔다갔다)
             isPingPonging() {
                 if (this.posHistory.length < 6) return false;
-                
+
                 // 최근 3초간의 위치들이 좁은 범위 내에 있는지 확인
                 let minX = Infinity, maxX = -Infinity;
                 let minY = Infinity, maxY = -Infinity;
-                
+
                 for (const p of this.posHistory) {
                     minX = Math.min(minX, p.x);
                     maxX = Math.max(maxX, p.x);
                     minY = Math.min(minY, p.y);
                     maxY = Math.max(maxY, p.y);
                 }
-                
+
                 const rangeX = maxX - minX;
                 const rangeY = maxY - minY;
-                
-                // X 범위가 좁고(100px 이내) Y방향 진행이 거의 없으면(50px 이내) 핑퐁
-                return rangeX < 100 && rangeY < 50;
+
+                // X 범위가 좁고(100px 이내) Y방향 진행이 거의 없으면(50px 이내) 핑퐁 - 스케일 적용
+                return rangeX < 100 * this.scale && rangeY < 50 * this.scale;
             }
-            
-            // 막혔을 때 랜덤 힘 적용
+
+            // 막혔을 때 랜덤 힘 적용 - 스케일 적용
             unstuck() {
                 const angle = Math.random() * Math.PI * 2;
-                const force = 150 + Math.random() * 100;
+                const force = (150 + Math.random() * 100) * this.scale;
                 this.vel.x += Math.cos(angle) * force;
-                this.vel.y += Math.sin(angle) * force - 50;  // 약간 위로
+                this.vel.y += Math.sin(angle) * force - 50 * this.scale;  // 약간 위로
                 this.stuckTime = 0;
                 this.posHistory = [];  // 히스토리 초기화
             }
-            
-            // 핑퐁 탈출 - 더 강하게 아래로
+
+            // 핑퐁 탈출 - 더 강하게 아래로 - 스케일 적용
             escapePingPong() {
                 const angle = -Math.PI/2 + (Math.random() - 0.5) * Math.PI * 0.5;  // 대략 아래 방향
-                const force = 300 + Math.random() * 150;
+                const force = (300 + Math.random() * 150) * this.scale;
                 this.vel.x = Math.cos(angle) * force;
-                this.vel.y = Math.sin(angle) * force + 200;  // 강하게 아래로
+                this.vel.y = Math.sin(angle) * force + 200 * this.scale;  // 강하게 아래로
                 this.posHistory = [];
             }
         }
@@ -1563,32 +1564,34 @@
                 this.width = width;
                 this.viewHeight = viewHeight;  // 보이는 화면 높이
                 this.height = viewHeight * 3;  // 실제 맵 높이 (3배)
-                // 중력 (10% 증가)
-                this.gravity = new Vector2(0, 352);
+                this.scale = width / 600;  // 기준 너비 600px 대비 스케일
+                // 중력 - 스케일에 비례
+                this.gravity = new Vector2(0, 352 * this.scale);
                 this.balls = [];
                 this.obstacles = [];
-                this.finishLine = this.height - 70;
+                this.finishLine = this.height - 70 * this.scale;
                 this.rankings = [];
                 this.time = 0;
                 this.cameraY = 0;  // 카메라 Y 위치
             }
 
             addBall(ball) { this.balls.push(ball); }
-            addObstacle(obs) { 
+            addObstacle(obs) {
                 // Auto-scale obstacles based on world width (base: 600px)
                 // Reduce by an additional 10% on mobile to prevent balls from getting stuck
                 const isMobile = window.innerWidth <= 768;
                 const s = (this.width / 600) * (isMobile ? 0.9 : 1.0);
-                
+
                 if (obs.radius) obs.radius *= s;
                 if (obs.length) obs.length *= s;
                 if (obs.thickness) obs.thickness *= s;
                 if (obs.size) obs.size *= s;
-                
+                if (obs.force) obs.force *= s;  // 부스터 힘도 스케일 적용
+
                 // Extra clearance for pegs on mobile
                 if (obs.type === 'peg') obs.radius = Math.max(obs.radius, 3 * s);
-                
-                this.obstacles.push(obs); 
+
+                this.obstacles.push(obs);
             }
             
             // 가장 앞서가는 공(아직 도착 안 한 공 중 가장 아래에 있는 공) 찾기
@@ -1863,11 +1866,11 @@
                 const avgY = totalY / activeBalls.length;
                 const spread = maxY - minY;
 
-                // Only apply if there's significant spread (balls are spread out)
-                if (spread < 100) return;
+                // Only apply if there's significant spread (balls are spread out) - 스케일 적용
+                if (spread < 100 * this.scale) return;
 
-                // Gentle force-based rubber band (dt-independent)
-                const pullStrength = 30; // pixels per second^2
+                // Gentle force-based rubber band - 스케일 적용
+                const pullStrength = 30 * this.scale; // pixels per second^2
 
                 for (const ball of activeBalls) {
                     const distFromAvg = ball.pos.y - avgY;
@@ -2342,9 +2345,9 @@
                 window.addEventListener('resize', () => this.resize());
             }
             
-            // 화면 크기에 따른 스케일 계산
+            // 화면 크기에 따른 스케일 계산 (기준: 600px)
             getScale() {
-                return Math.min(1, this.canvas.width / this.baseWidth);
+                return this.canvas.width / this.baseWidth;
             }
 
             resize() {
@@ -2444,13 +2447,13 @@
                 const ballRadius = baseBallRadius * adjustedScale;
                 const startArea = w * 0.6;
                 const startX = (w - startArea) / 2;
-                const initialVelY = 150 + Math.random() * 100;  // 초기 하향 속도
+                const initialVelY = (150 + Math.random() * 100) * scale;  // 초기 하향 속도 - 스케일 적용
 
                 this.participants.forEach((name, i) => {
                     const x = startX + Math.random() * startArea;
-                    const y = -20 - Math.random() * 80 - i * 8;
+                    const y = (-20 - Math.random() * 80 - i * 8) * scale;  // 시작 위치도 스케일 적용
                     const color = this.colors[i % this.colors.length];
-                    this.world.addBall(new Ball(x, y, ballRadius, color, name, initialVelY));
+                    this.world.addBall(new Ball(x, y, ballRadius, color, name, initialVelY, scale));
                 });
             }
 
@@ -2868,27 +2871,28 @@
                 ctx.save();
                 ctx.translate(0, -camY);
 
-                // Draw finish line (월드 좌표)
+                // Draw finish line (월드 좌표) - 스케일 적용
+                const scale = this.world.scale;
                 const finishLineY = this.world.finishLine;
-                const gradient = ctx.createLinearGradient(0, finishLineY, 0, finishLineY + 100);
+                const gradient = ctx.createLinearGradient(0, finishLineY, 0, finishLineY + 100 * scale);
                 gradient.addColorStop(0, 'rgba(255, 215, 0, 0.25)');
                 gradient.addColorStop(1, 'rgba(255, 215, 0, 0.08)');
                 ctx.fillStyle = gradient;
-                ctx.fillRect(0, finishLineY, w, 100);
+                ctx.fillRect(0, finishLineY, w, 100 * scale);
 
                 ctx.strokeStyle = '#ffd700';
-                ctx.lineWidth = 2;
-                ctx.setLineDash([8, 8]);
+                ctx.lineWidth = 2 * scale;
+                ctx.setLineDash([8 * scale, 8 * scale]);
                 ctx.beginPath();
                 ctx.moveTo(0, finishLineY);
                 ctx.lineTo(w, finishLineY);
                 ctx.stroke();
                 ctx.setLineDash([]);
 
-                ctx.font = 'bold 12px "Noto Sans KR"';
+                ctx.font = `bold ${Math.round(12 * scale)}px "Noto Sans KR"`;
                 ctx.fillStyle = '#ffd700';
                 ctx.textAlign = 'right';
-                ctx.fillText('🏆 GOAL', w - 15, finishLineY - 8);
+                ctx.fillText('🏆 GOAL', w - 15 * scale, finishLineY - 8 * scale);
 
                 // Draw obstacles
                 for (const obs of this.world.obstacles) {
@@ -2908,52 +2912,54 @@
             
             drawTimer() {
                 if (!this.world || !this.isRunning) return;
-                
+
                 const ctx = this.ctx;
                 const w = this.canvas.width;
-                
+                const s = this.world.scale;  // 스케일
+
                 // 경과 시간 계산
                 const elapsed = (performance.now() - this.gameStartTime) / 1000;
                 const minutes = Math.floor(elapsed / 60);
                 const seconds = Math.floor(elapsed % 60);
                 const ms = Math.floor((elapsed % 1) * 100);
-                
+
                 // 시간 포맷
-                const timeStr = minutes > 0 
+                const timeStr = minutes > 0
                     ? `${minutes}:${seconds.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`
                     : `${seconds}.${ms.toString().padStart(2, '0')}s`;
-                
-                // 배경 박스
+
+                // 배경 박스 - 스케일 적용
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
                 ctx.beginPath();
-                ctx.roundRect(w / 2 - 60, 8, 120, 28, 8);
+                ctx.roundRect(w / 2 - 60 * s, 8 * s, 120 * s, 28 * s, 8 * s);
                 ctx.fill();
-                
+
                 // 테두리
                 ctx.strokeStyle = elapsed >= 50 ? 'rgba(255, 107, 107, 0.5)' : 'rgba(255, 255, 255, 0.2)';
-                ctx.lineWidth = 1;
+                ctx.lineWidth = 1 * s;
                 ctx.beginPath();
-                ctx.roundRect(w / 2 - 60, 8, 120, 28, 8);
+                ctx.roundRect(w / 2 - 60 * s, 8 * s, 120 * s, 28 * s, 8 * s);
                 ctx.stroke();
-                
+
                 // 시간 텍스트
-                ctx.font = 'bold 16px monospace';
+                ctx.font = `bold ${Math.round(16 * s)}px monospace`;
                 ctx.fillStyle = elapsed >= 50 ? '#ff6b6b' : '#fff';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(`⏱ ${timeStr}`, w / 2, 22);
-                
+                ctx.fillText(`⏱ ${timeStr}`, w / 2, 22 * s);
+
                 // 50초 이후 경고
                 if (elapsed >= 50 && elapsed < 60) {
-                    ctx.font = 'bold 10px "Noto Sans KR"';
+                    ctx.font = `bold ${Math.round(10 * s)}px "Noto Sans KR"`;
                     ctx.fillStyle = '#ff6b6b';
-                    ctx.fillText(`${Math.ceil(60 - elapsed)}초 남음`, w / 2, 46);
+                    ctx.fillText(`${Math.ceil(60 - elapsed)}초 남음`, w / 2, 46 * s);
                 }
             }
 
             drawObstacle(obs) {
                 const ctx = this.ctx;
                 const time = this.world ? this.world.time : 0;
+                const s = this.world ? this.world.scale : 1;  // 스케일
 
                 if (obs.type === 'peg') {
                     ctx.fillStyle = obs.color;
@@ -2983,7 +2989,7 @@
                 } else if (obs.type === 'spinner') {
                     const ep = obs.getEndpoints();
                     ctx.strokeStyle = obs.color;
-                    ctx.lineWidth = 8;
+                    ctx.lineWidth = 8 * s;
                     ctx.lineCap = 'round';
                     ctx.beginPath();
                     ctx.moveTo(ep.x1, ep.y1);
@@ -2993,7 +2999,7 @@
                     // Center pivot
                     ctx.fillStyle = '#fff';
                     ctx.beginPath();
-                    ctx.arc(obs.x, obs.y, 6, 0, Math.PI * 2);
+                    ctx.arc(obs.x, obs.y, 6 * s, 0, Math.PI * 2);
                     ctx.fill();
                 } else if (obs.type === 'portal') {
                     // Draw both portal ends
@@ -3009,14 +3015,14 @@
                         ctx.fill();
 
                         ctx.strokeStyle = obs.color;
-                        ctx.lineWidth = 3;
+                        ctx.lineWidth = 3 * s;
                         ctx.beginPath();
                         ctx.arc(px, py, obs.radius * pulse, 0, Math.PI * 2);
                         ctx.stroke();
 
                         // Inner swirl
                         ctx.strokeStyle = '#fff';
-                        ctx.lineWidth = 2;
+                        ctx.lineWidth = 2 * s;
                         ctx.beginPath();
                         for (let a = 0; a < Math.PI * 2; a += 0.1) {
                             const r = obs.radius * 0.6 * (1 - a / (Math.PI * 2));
@@ -3111,16 +3117,17 @@
                 ctx.arc(ball.pos.x, ball.pos.y, ball.radius, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Name - 구슬 오른쪽에 왼쪽 정렬로 표시
-                ctx.font = `bold ${Math.max(12, ball.radius * 0.9)}px "Noto Sans KR"`;
+                // Name - 구슬 오른쪽에 왼쪽 정렬로 표시 - 스케일 적용
+                const s = ball.scale || 1;
+                ctx.font = `bold ${Math.max(12 * s, ball.radius * 0.9)}px "Noto Sans KR"`;
                 ctx.fillStyle = '#fff';
                 ctx.textAlign = 'left';
                 ctx.textBaseline = 'middle';
                 ctx.strokeStyle = 'rgba(0, 0, 0, 0.6)';
-                ctx.lineWidth = 4;
-                
+                ctx.lineWidth = 4 * s;
+
                 const shortName = ball.name.length > 6 ? ball.name.slice(0, 5) + '..' : ball.name;
-                const textX = ball.pos.x + ball.radius + 4;  // 구슬 오른쪽으로 약간 띄움
+                const textX = ball.pos.x + ball.radius + 4 * s;  // 구슬 오른쪽으로 약간 띄움
                 ctx.strokeText(shortName, textX, ball.pos.y);  // 외곽선 먼저
                 ctx.fillText(shortName, textX, ball.pos.y);
             }
