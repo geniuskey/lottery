@@ -1894,12 +1894,13 @@
             chaos(world, w, h) {
                 // h는 이제 실제 맵 높이 (viewHeight * 3)
                 
-                // ===== 포탈 5쌍 (색상별) =====
-                world.addObstacle(new Portal(w * 0.08, h * 0.08, w * 0.92, h * 0.22, PORTAL_COLORS[0]));  // 시안
-                world.addObstacle(new Portal(w * 0.15, h * 0.35, w * 0.85, h * 0.52, PORTAL_COLORS[1]));  // 핑크
-                world.addObstacle(new Portal(w * 0.1, h * 0.58, w * 0.5, h * 0.72, PORTAL_COLORS[2]));   // 보라
-                world.addObstacle(new Portal(w * 0.9, h * 0.75, w * 0.2, h * 0.88, PORTAL_COLORS[3]));   // 초록
-                world.addObstacle(new Portal(w * 0.5, h * 0.45, w * 0.5, h * 0.82, PORTAL_COLORS[4]));   // 노랑
+                // ===== 포탈 5쌍 (병목 구간 회피) =====
+                // 병목: 15%, 45%, 75%
+                world.addObstacle(new Portal(w * 0.08, h * 0.05, w * 0.92, h * 0.12, PORTAL_COLORS[0]));  // 시안: 0-15% 구간 내
+                world.addObstacle(new Portal(w * 0.15, h * 0.20, w * 0.85, h * 0.40, PORTAL_COLORS[1]));  // 핑크: 15-45% 구간 내
+                world.addObstacle(new Portal(w * 0.1, h * 0.50, w * 0.9, h * 0.70, PORTAL_COLORS[2]));   // 보라: 45-75% 구간 내
+                world.addObstacle(new Portal(w * 0.2, h * 0.80, w * 0.8, h * 0.90, PORTAL_COLORS[3]));   // 초록: 75-100% 구간 내
+                world.addObstacle(new Portal(w * 0.1, h * 0.25, w * 0.9, h * 0.35, PORTAL_COLORS[4]));   // 노랑: 15-45% 구간 내
                 
                 // ===== 섹션 1 (0% ~ 15%) - 시작 구간 =====
                 // 밀집 핀 필드
@@ -2037,12 +2038,13 @@
             },
 
             pinball(world, w, h) {
-                // ===== 포탈 5쌍 (색상별) =====
-                world.addObstacle(new Portal(w * 0.1, h * 0.05, w * 0.9, h * 0.18, PORTAL_COLORS[0]));   // 시안
-                world.addObstacle(new Portal(w * 0.08, h * 0.3, w * 0.5, h * 0.45, PORTAL_COLORS[1]));   // 핑크
-                world.addObstacle(new Portal(w * 0.92, h * 0.5, w * 0.15, h * 0.68, PORTAL_COLORS[2])); // 보라
-                world.addObstacle(new Portal(w * 0.3, h * 0.75, w * 0.7, h * 0.88, PORTAL_COLORS[3]));  // 초록
-                world.addObstacle(new Portal(w * 0.2, h * 0.62, w * 0.8, h * 0.38, PORTAL_COLORS[4]));  // 노랑
+                // ===== 포탈 5쌍 (병목 구간 회피) =====
+                // 병목: 12%, 45%, 78%
+                world.addObstacle(new Portal(w * 0.1, h * 0.03, w * 0.9, h * 0.09, PORTAL_COLORS[0]));   // 시안: 0-12% 구간 내
+                world.addObstacle(new Portal(w * 0.08, h * 0.18, w * 0.92, h * 0.40, PORTAL_COLORS[1])); // 핑크: 12-45% 구간 내
+                world.addObstacle(new Portal(w * 0.15, h * 0.50, w * 0.85, h * 0.72, PORTAL_COLORS[2])); // 보라: 45-78% 구간 내
+                world.addObstacle(new Portal(w * 0.2, h * 0.82, w * 0.8, h * 0.92, PORTAL_COLORS[3]));  // 초록: 78-100% 구간 내
+                world.addObstacle(new Portal(w * 0.1, h * 0.55, w * 0.9, h * 0.68, PORTAL_COLORS[4]));  // 노랑: 45-78% 구간 내
 
                 // ===== 섹션 1 (0% ~ 15%) - 상단 범퍼 클러스터 =====
                 world.addObstacle(new Bumper(w * 0.25, h * 0.03, 28));
@@ -2164,12 +2166,13 @@
             },
 
             funnel(world, w, h) {
-                // ===== 포탈 5쌍 (색상별) =====
-                world.addObstacle(new Portal(w * 0.08, h * 0.06, w * 0.92, h * 0.2, PORTAL_COLORS[0]));  // 시안
-                world.addObstacle(new Portal(w * 0.12, h * 0.32, w * 0.88, h * 0.48, PORTAL_COLORS[1])); // 핑크
-                world.addObstacle(new Portal(w * 0.1, h * 0.55, w * 0.5, h * 0.7, PORTAL_COLORS[2]));   // 보라
-                world.addObstacle(new Portal(w * 0.9, h * 0.72, w * 0.25, h * 0.88, PORTAL_COLORS[3])); // 초록
-                world.addObstacle(new Portal(w * 0.3, h * 0.42, w * 0.7, h * 0.78, PORTAL_COLORS[4])); // 노랑
+                // ===== 포탈 5쌍 (병목 구간 회피) =====
+                // 병목: 15%, 45%, 75%
+                world.addObstacle(new Portal(w * 0.08, h * 0.04, w * 0.92, h * 0.12, PORTAL_COLORS[0]));  // 시안: 0-15% 구간 내
+                world.addObstacle(new Portal(w * 0.12, h * 0.20, w * 0.88, h * 0.40, PORTAL_COLORS[1])); // 핑크: 15-45% 구간 내
+                world.addObstacle(new Portal(w * 0.1, h * 0.50, w * 0.9, h * 0.70, PORTAL_COLORS[2]));   // 보라: 45-75% 구간 내
+                world.addObstacle(new Portal(w * 0.15, h * 0.80, w * 0.85, h * 0.92, PORTAL_COLORS[3])); // 초록: 75-100% 구간 내
+                world.addObstacle(new Portal(w * 0.2, h * 0.55, w * 0.8, h * 0.68, PORTAL_COLORS[4])); // 노랑: 45-75% 구간 내
 
                 // ===== 레이어 1 (0% ~ 15%) - 상단 깔때기 + 밀집 핀 필드 =====
                 world.addObstacle(new Wall(5, h * 0.005, w * 0.18, h * 0.06, 6));
