@@ -1463,7 +1463,8 @@
             ctx.stroke();
           }
 
-          // Emoji (crying when falling)
+          // Emoji (crying when falling) - always 100% alpha
+          ctx.globalAlpha = 1;
           ctx.font = '38px Arial';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
