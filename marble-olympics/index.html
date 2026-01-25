@@ -1563,8 +1563,9 @@
             constructor(width, viewHeight) {
                 this.width = width;
                 this.viewHeight = viewHeight;  // 보이는 화면 높이
-                this.height = viewHeight * 3;  // 실제 맵 높이 (3배)
                 this.scale = width / 600;  // 기준 너비 600px 대비 스케일
+                // 맵 높이도 width 비율로 계산 (기준: 600px 너비일 때 2400px 높이)
+                this.height = 2400 * this.scale;
                 // 중력 - 스케일에 비례
                 this.gravity = new Vector2(0, 352 * this.scale);
                 this.balls = [];
@@ -1675,7 +1676,7 @@
             }
 
             collideWalls(ball) {
-                const margin = 5;
+                const margin = 5 * this.scale;
                 // 벽 충돌 시 에너지 보존율 높임
                 const wallRestitution = 0.85;
                 
