@@ -1370,7 +1370,7 @@
 
             // Balloon shadow/glow
             ctx.beginPath();
-            ctx.ellipse(0, balloonY, p.balloonSize * 0.8, p.balloonSize, 0, 0, Math.PI * 2);
+            ctx.ellipse(0, balloonY, p.balloonSize * 0.96, p.balloonSize, 0, 0, Math.PI * 2);
             const glowGrad = ctx.createRadialGradient(0, balloonY, 0, 0, balloonY, p.balloonSize);
             glowGrad.addColorStop(0, p.balloonColor + '40');
             glowGrad.addColorStop(1, 'transparent');
@@ -1379,7 +1379,7 @@
 
             // Balloon body
             ctx.beginPath();
-            ctx.ellipse(0, balloonY, p.balloonSize * 0.7, p.balloonSize, 0, 0, Math.PI * 2);
+            ctx.ellipse(0, balloonY, p.balloonSize * 0.84, p.balloonSize, 0, 0, Math.PI * 2);
             const balloonGrad = ctx.createRadialGradient(-p.balloonSize * 0.2, balloonY - p.balloonSize * 0.3, 0, 0, balloonY, p.balloonSize);
             balloonGrad.addColorStop(0, '#fff');
             balloonGrad.addColorStop(0.3, p.balloonColor);
