@@ -1491,8 +1491,8 @@
           ctx.save();
           ctx.translate(dart.x, dart.y);
 
-          // Calculate dart angle
-          const angle = Math.atan2(dart.targetY - dart.startY, dart.targetX - dart.startX);
+          // Calculate dart angle from velocity direction
+          const angle = Math.atan2(dart.vy, dart.vx);
           ctx.rotate(angle);
 
           // Dart body (silver metal)
