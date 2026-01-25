@@ -2051,90 +2051,108 @@
             pinball(world, baseW, baseH, scale) {
                 const w = baseW * scale;
                 const h = baseH * scale;
-                // ===== 진짜 핀볼 스타일 - 포탈 없음, 범퍼 중심 =====
+                // ===== 핀볼 테이블 스타일 - 범퍼/스피너/포탈/부스터 조합 =====
 
-                // ===== 상단 범퍼 클러스터 (0~15%) =====
-                world.addObstacle(new Bumper(w * 0.3, h * 0.02, 32));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.04, 35));
-                world.addObstacle(new Bumper(w * 0.7, h * 0.02, 32));
-                world.addObstacle(new Bumper(w * 0.2, h * 0.06, 28));
-                world.addObstacle(new Bumper(w * 0.4, h * 0.08, 30));
-                world.addObstacle(new Bumper(w * 0.6, h * 0.08, 30));
-                world.addObstacle(new Bumper(w * 0.8, h * 0.06, 28));
-                // 사이드 슬링샷
-                world.addObstacle(new Wall(0, h * 0.02, w * 0.08, h * 0.12, 10));
-                world.addObstacle(new Wall(w, h * 0.02, w * 0.92, h * 0.12, 10));
+                // ===== 상단 스피너 게이트 (0~8%) =====
+                world.addObstacle(new Wall(0, 0, w * 0.12, h * 0.05, 6));
+                world.addObstacle(new Wall(w, 0, w * 0.88, h * 0.05, 6));
+                world.addObstacle(new Spinner(w * 0.30, h * 0.03, 35 * scale, 0.15));
+                world.addObstacle(new Spinner(w * 0.70, h * 0.03, 35 * scale, 0.15));
+                world.addObstacle(new Triangle(w * 0.50, h * 0.05, 20 * scale));
 
-                // ===== 병목 1 (15%) =====
-                world.addObstacle(new Wall(0, h * 0.14, w * 0.35, h * 0.16, 8));
-                world.addObstacle(new Wall(w, h * 0.14, w * 0.65, h * 0.16, 8));
+                // ===== 범퍼 트라이앵글 존 (8~18%) =====
+                world.addObstacle(new Bumper(w * 0.35, h * 0.10, 28 * scale));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.08, 32 * scale));
+                world.addObstacle(new Bumper(w * 0.65, h * 0.10, 28 * scale));
+                world.addObstacle(new Bumper(w * 0.42, h * 0.15, 26 * scale));
+                world.addObstacle(new Bumper(w * 0.58, h * 0.15, 26 * scale));
+                // 램프 포탈
+                world.addPortal(new Portal(w * 0.08, h * 0.12, w * 0.20, h * 0.22, 15 * scale));
+                world.addPortal(new Portal(w * 0.92, h * 0.12, w * 0.80, h * 0.22, 15 * scale));
 
-                // ===== 중상단 범퍼 존 (15~35%) =====
-                world.addObstacle(new Bumper(w * 0.5, h * 0.18, 38));
-                world.addObstacle(new Bumper(w * 0.25, h * 0.22, 32));
-                world.addObstacle(new Bumper(w * 0.75, h * 0.22, 32));
-                world.addObstacle(new Bumper(w * 0.4, h * 0.26, 30));
-                world.addObstacle(new Bumper(w * 0.6, h * 0.26, 30));
-                world.addObstacle(new Bumper(w * 0.15, h * 0.30, 28));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.32, 35));
-                world.addObstacle(new Bumper(w * 0.85, h * 0.30, 28));
-                // 사이드 부스터 (볼 반환)
-                world.addObstacle(new Booster(w * 0.05, h * 0.25, -Math.PI / 3, 800));
-                world.addObstacle(new Booster(w * 0.95, h * 0.25, -Math.PI * 2 / 3, 800));
+                // ===== 병목 1 (18%) =====
+                world.addObstacle(new Wall(0, h * 0.17, w * 0.30, h * 0.19, 8));
+                world.addObstacle(new Wall(w, h * 0.17, w * 0.70, h * 0.19, 8));
 
-                // ===== 병목 2 (38%) =====
-                world.addObstacle(new Wall(0, h * 0.37, w * 0.32, h * 0.39, 8));
-                world.addObstacle(new Wall(w, h * 0.37, w * 0.68, h * 0.39, 8));
+                // ===== 루프 레인 (18~35%) =====
+                world.addObstacle(new Wall(w * 0.05, h * 0.20, w * 0.18, h * 0.30, 8));
+                world.addObstacle(new Wall(w * 0.95, h * 0.20, w * 0.82, h * 0.30, 8));
+                // 페그 필드
+                for (let row = 0; row < 4; row++) {
+                    const cols = row % 2 === 0 ? 5 : 4;
+                    const offsetX = row % 2 === 0 ? w * 0.25 : w * 0.30;
+                    for (let col = 0; col < cols; col++) {
+                        world.addObstacle(new Peg(offsetX + col * (w * 0.12), h * 0.22 + row * 30 * scale, 6 * scale));
+                    }
+                }
+                world.addObstacle(new Spinner(w * 0.50, h * 0.28, 40 * scale, 0.12));
+                // 슬링샷 부스터
+                world.addObstacle(new Booster(w * 0.12, h * 0.28, Math.PI / 6, 500 * scale));
+                world.addObstacle(new Booster(w * 0.88, h * 0.28, Math.PI * 5 / 6, 500 * scale));
 
-                // ===== 중앙 범퍼 존 (38~55%) =====
-                world.addObstacle(new Bumper(w * 0.3, h * 0.42, 34));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.40, 40));
-                world.addObstacle(new Bumper(w * 0.7, h * 0.42, 34));
-                world.addObstacle(new Bumper(w * 0.2, h * 0.48, 30));
-                world.addObstacle(new Bumper(w * 0.4, h * 0.50, 32));
-                world.addObstacle(new Bumper(w * 0.6, h * 0.50, 32));
-                world.addObstacle(new Bumper(w * 0.8, h * 0.48, 30));
-                // 슬링샷 벽
-                world.addObstacle(new Wall(0, h * 0.42, w * 0.1, h * 0.52, 8));
-                world.addObstacle(new Wall(w, h * 0.42, w * 0.9, h * 0.52, 8));
-                world.addObstacle(new Booster(w * 0.08, h * 0.50, -Math.PI / 4, 700));
-                world.addObstacle(new Booster(w * 0.92, h * 0.50, -Math.PI * 3 / 4, 700));
+                // ===== 병목 2 (35%) =====
+                world.addObstacle(new Wall(0, h * 0.34, w * 0.32, h * 0.36, 8));
+                world.addObstacle(new Wall(w, h * 0.34, w * 0.68, h * 0.36, 8));
 
-                // ===== 병목 3 (58%) =====
-                world.addObstacle(new Wall(0, h * 0.57, w * 0.30, h * 0.59, 8));
-                world.addObstacle(new Wall(w, h * 0.57, w * 0.70, h * 0.59, 8));
+                // ===== 멀티볼 존 (35~52%) =====
+                world.addObstacle(new Bumper(w * 0.25, h * 0.40, 35 * scale));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.38, 40 * scale));
+                world.addObstacle(new Bumper(w * 0.75, h * 0.40, 35 * scale));
+                world.addObstacle(new Triangle(w * 0.38, h * 0.45, 22 * scale));
+                world.addObstacle(new Triangle(w * 0.62, h * 0.45, 22 * scale));
+                // 롤오버 레인
+                for (let i = 0; i < 7; i++) {
+                    world.addObstacle(new Peg(w * 0.20 + i * (w * 0.10), h * 0.50, 5 * scale));
+                }
+                // 램프 포탈
+                world.addPortal(new Portal(w * 0.15, h * 0.42, w * 0.30, h * 0.55, 14 * scale));
+                world.addPortal(new Portal(w * 0.85, h * 0.42, w * 0.70, h * 0.55, 14 * scale));
 
-                // ===== 하단 범퍼 + 플리퍼 존 (58~80%) =====
-                world.addObstacle(new Bumper(w * 0.5, h * 0.62, 42));
-                world.addObstacle(new Bumper(w * 0.25, h * 0.66, 35));
-                world.addObstacle(new Bumper(w * 0.75, h * 0.66, 35));
-                world.addObstacle(new Bumper(w * 0.4, h * 0.72, 30));
-                world.addObstacle(new Bumper(w * 0.6, h * 0.72, 30));
-                // 플리퍼 모양 벽
-                world.addObstacle(new Wall(w * 0.05, h * 0.68, w * 0.25, h * 0.78, 10));
-                world.addObstacle(new Wall(w * 0.95, h * 0.68, w * 0.75, h * 0.78, 10));
-                world.addObstacle(new Triangle(w * 0.28, h * 0.76, 25, Math.PI / 6));
-                world.addObstacle(new Triangle(w * 0.72, h * 0.76, 25, -Math.PI / 6));
-                world.addObstacle(new Booster(w * 0.15, h * 0.76, -Math.PI / 3, 750));
-                world.addObstacle(new Booster(w * 0.85, h * 0.76, -Math.PI * 2 / 3, 750));
+                // ===== 병목 3 (52%) =====
+                world.addObstacle(new Wall(0, h * 0.51, w * 0.28, h * 0.53, 8));
+                world.addObstacle(new Wall(w, h * 0.51, w * 0.72, h * 0.53, 8));
 
-                // ===== 병목 4 (82%) =====
-                world.addObstacle(new Wall(0, h * 0.81, w * 0.35, h * 0.83, 8));
-                world.addObstacle(new Wall(w, h * 0.81, w * 0.65, h * 0.83, 8));
+                // ===== 플레이필드 중앙 (52~70%) =====
+                // 다이아몬드 범퍼
+                world.addObstacle(new Bumper(w * 0.50, h * 0.56, 30 * scale));
+                world.addObstacle(new Bumper(w * 0.35, h * 0.60, 25 * scale));
+                world.addObstacle(new Bumper(w * 0.65, h * 0.60, 25 * scale));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.65, 28 * scale));
+                // 스피너
+                world.addObstacle(new Spinner(w * 0.22, h * 0.58, 35 * scale, 0.10));
+                world.addObstacle(new Spinner(w * 0.78, h * 0.58, 35 * scale, 0.10));
+                // 인레인/아웃레인 벽
+                world.addObstacle(new Wall(w * 0.08, h * 0.62, w * 0.15, h * 0.70, 6));
+                world.addObstacle(new Wall(w * 0.92, h * 0.62, w * 0.85, h * 0.70, 6));
 
-                // ===== 최종 범퍼 존 (82~95%) =====
-                world.addObstacle(new Bumper(w * 0.3, h * 0.86, 32));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.84, 38));
-                world.addObstacle(new Bumper(w * 0.7, h * 0.86, 32));
-                world.addObstacle(new Bumper(w * 0.2, h * 0.90, 28));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.92, 30));
-                world.addObstacle(new Bumper(w * 0.8, h * 0.90, 28));
+                // ===== 병목 4 (70%) =====
+                world.addObstacle(new Wall(0, h * 0.69, w * 0.30, h * 0.71, 8));
+                world.addObstacle(new Wall(w, h * 0.69, w * 0.70, h * 0.71, 8));
 
-                // ===== 골 직전 - 강력한 위로 쏘는 부스터 =====
-                world.addObstacle(new Booster(w * 0.2, h * 0.96, -Math.PI / 2, 900));
-                world.addObstacle(new Booster(w * 0.4, h * 0.97, -Math.PI / 2, 950));
-                world.addObstacle(new Booster(w * 0.6, h * 0.97, -Math.PI / 2, 950));
-                world.addObstacle(new Booster(w * 0.8, h * 0.96, -Math.PI / 2, 900));
+                // ===== 플리퍼 존 (70~88%) =====
+                world.addObstacle(new Triangle(w * 0.20, h * 0.74, 25 * scale));
+                world.addObstacle(new Triangle(w * 0.80, h * 0.74, 25 * scale));
+                // 플리퍼 벽
+                world.addObstacle(new Wall(w * 0.08, h * 0.76, w * 0.30, h * 0.84, 10));
+                world.addObstacle(new Wall(w * 0.92, h * 0.76, w * 0.70, h * 0.84, 10));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.80, 35 * scale));
+                // 페그 가이드
+                for (let i = 0; i < 5; i++) {
+                    world.addObstacle(new Peg(w * 0.30 + i * (w * 0.10), h * 0.86, 6 * scale));
+                }
+
+                // ===== 병목 5 (88%) =====
+                world.addObstacle(new Wall(0, h * 0.87, w * 0.35, h * 0.89, 8));
+                world.addObstacle(new Wall(w, h * 0.87, w * 0.65, h * 0.89, 8));
+
+                // ===== 드레인 존 (88~98%) =====
+                world.addObstacle(new Wall(w * 0.05, h * 0.90, w * 0.12, h * 0.96, 6));
+                world.addObstacle(new Wall(w * 0.95, h * 0.90, w * 0.88, h * 0.96, 6));
+                world.addObstacle(new Bumper(w * 0.30, h * 0.92, 22 * scale));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.94, 25 * scale));
+                world.addObstacle(new Bumper(w * 0.70, h * 0.92, 22 * scale));
+                world.addObstacle(new Triangle(w * 0.40, h * 0.97, 18 * scale));
+                world.addObstacle(new Triangle(w * 0.60, h * 0.97, 18 * scale));
             },
 
             funnel(world, baseW, baseH, scale) {
