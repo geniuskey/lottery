@@ -1403,6 +1403,7 @@
           if (!p.alive && !p.falling) return;
 
           ctx.save();
+          ctx.globalAlpha = 1; // Always 100% opacity
           ctx.translate(p.x, p.y);
 
           
