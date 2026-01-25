@@ -1282,26 +1282,7 @@
             return;
           }
 
-          if (p.popping) {
-            p.popProgress += 3 * deltaTime;
-            if (p.popProgress >= 1) {
-              p.popping = false;
-              p.falling = true;
-              p.fallSpeed = 0;
-              soundManager.playFall();
-
-              const messages = ["펑! 💥", "터졌다! 💨", "안녕~! 👋", "바이바이! ✨", "아이고! 😱"];
-              const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-              const log = document.getElementById('popLog');
-              const logItem = document.createElement('div');
-              logItem.className = 'pop-log-item';
-              logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${p.name}</span>: ${randomMsg}`;
-              log.insertBefore(logItem, log.firstChild);
-              if (log.children.length > 5) log.removeChild(log.lastChild);
-            }
-            return;
-          }
-
+          
           // Float movement
           p.floatPhase += p.floatSpeed * deltaTime * 60;
           p.swayPhase += 1.2 * deltaTime;
@@ -1368,11 +1349,22 @@
       }
 
       function popBalloon(p) {
-        p.popping = true;
-        p.popProgress = 0;
+        p.falling = true;
+        p.fallSpeed = 0;
         soundManager.playPop();
+        soundManager.playFall();
         gameStatus.textContent = `💥 ${p.name}의 풍선이 터졌어요!`;
         createTextEffect(p.x, p.y - p.balloonSize, '펑! 💥', '#ff6b9d', true);
+
+        // Add to pop log
+        const messages = ["펑! 💥", "터졌다! 💨", "안녕~! 👋", "바이바이! ✨", "아이고! 😱"];
+        const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+        const log = document.getElementById('popLog');
+        const logItem = document.createElement('div');
+        logItem.className = 'pop-log-item';
+        logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${p.name}</span>: ${randomMsg}`;
+        log.insertBefore(logItem, log.firstChild);
+        if (log.children.length > 5) log.removeChild(log.lastChild);
 
         // Create pop particles
         for (let i = 0; i < 20; i++) {
@@ -1408,7 +1400,7 @@
 
           
           
-          if (!p.falling && !p.popping) {
+          if (!p.falling) {
             // Draw balloon
             const balloonY = -p.balloonSize - 15;
 
