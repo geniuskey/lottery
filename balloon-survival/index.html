@@ -1476,10 +1476,13 @@
 
         // Draw pop particles
         popParticles.forEach(pp => {
+          ctx.save();
+          ctx.globalAlpha = pp.life / 60;
           ctx.beginPath();
           ctx.arc(pp.x, pp.y, pp.size, 0, Math.PI * 2);
-          ctx.fillStyle = pp.color + Math.floor((pp.life / 60) * 255).toString(16).padStart(2, '0');
+          ctx.fillStyle = pp.color;
           ctx.fill();
+          ctx.restore();
         });
 
         // Draw flying dart
