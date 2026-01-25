@@ -1246,7 +1246,7 @@
             const targetY = targetParticipant.y - targetParticipant.balloonSize - 15;
             const distToTarget = Math.hypot(dart.x - targetX, dart.y - targetY);
 
-            if (distToTarget < 20) {
+            if (distToTarget < 35) {
               // Dart hit! Pop the balloon and continue flying
               popBalloon(targetParticipant);
               dart.hit = true;
@@ -1259,6 +1259,7 @@
           if (dart.x < skyBounds.x - 100 || dart.x > skyBounds.x + skyBounds.w + 100 ||
               dart.y < skyBounds.y - 100 || dart.y > skyBounds.y + skyBounds.h + 100) {
             dart = null;
+            targetParticipant = null; // Reset target so new dart can be launched
           }
         }
 
