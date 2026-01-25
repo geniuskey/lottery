@@ -1240,17 +1240,40 @@
           dart.x += dart.vx * deltaTime;
           dart.y += dart.vy * deltaTime;
 
-          // Check if dart hit the target balloon
-          if (!dart.hit && targetParticipant) {
-            const targetX = targetParticipant.x;
-            const targetY = targetParticipant.y - targetParticipant.balloonSize - 15;
-            const distToTarget = Math.hypot(dart.x - targetX, dart.y - targetY);
+          // Count alive participants
+          const aliveCount = participants.filter(p => p.alive && !p.falling).length;
 
-            if (distToTarget < 35) {
-              // Dart hit! Pop the balloon and continue flying
-              popBalloon(targetParticipant);
-              dart.hit = true;
-              targetParticipant = null;
+          if (aliveCount <= 5) {
+            // Precision mode: only hit the target
+            if (!dart.hit && targetParticipant) {
+              const targetX = targetParticipant.x;
+              const targetY = targetParticipant.y - targetParticipant.balloonSize - 15;
+              const distToTarget = Math.hypot(dart.x - targetX, dart.y - targetY);
+
+              if (distToTarget < 35) {
+                popBalloon(targetParticipant);
+                dart.hit = true;
+                targetParticipant = null;
+                popInterval = getPopInterval();
+              }
+            }
+          } else {
+            // Sweep mode: pop ALL balloons in dart's path
+            participants.forEach(p => {
+              if (!p.alive || p.falling) return;
+              const balloonX = p.x;
+              const balloonY = p.y - p.balloonSize - 15;
+              const distToBalloon = Math.hypot(dart.x - balloonX, dart.y - balloonY);
+
+              if (distToBalloon < 40) {
+                popBalloon(p);
+                dart.hit = true;
+                if (p === targetParticipant) {
+                  targetParticipant = null;
+                }
+              }
+            });
+            if (dart.hit) {
               popInterval = getPopInterval();
             }
           }
