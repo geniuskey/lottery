@@ -1014,7 +1014,7 @@
       let popTimer = 0;
       let popInterval = 2.0; // seconds
       let targetParticipant = null;
-      let warningTimer = 0;
+      let dart = null; // Flying dart object
       let windOffset = 0;
       let lastTime = 0;
       const soundManager = new SoundManager();
@@ -1150,7 +1150,7 @@
         popTimer = 0;
         popInterval = getPopInterval();
         targetParticipant = null;
-        warningTimer = 0;
+        dart = null;
         windOffset = 0;
         lastTime = 0;
         gameRunning = true;
@@ -1190,22 +1190,64 @@
 
         windOffset += 0.6 * deltaTime * windMult;
 
-        // Pop timer logic
-        if (targetParticipant === null) {
+        // Pop timer logic - dart throws
+        if (dart === null && targetParticipant === null) {
           popTimer += deltaTime;
           if (popTimer >= popInterval) {
-            // Select random target
+            // Select random target and launch dart
             targetParticipant = alive[Math.floor(Math.random() * alive.length)];
-            warningTimer = 1.0; // 1 second warning
-            gameStatus.textContent = `⚠️ ${targetParticipant.name}의 풍선이 위험해요!`;
+
+            // Dart starts from random edge of screen
+            const side = Math.floor(Math.random() * 4);
+            let startX, startY;
+            if (side === 0) { // top
+              startX = skyBounds.x + Math.random() * skyBounds.w;
+              startY = skyBounds.y - 50;
+            } else if (side === 1) { // right
+              startX = skyBounds.x + skyBounds.w + 50;
+              startY = skyBounds.y + Math.random() * skyBounds.h;
+            } else if (side === 2) { // bottom
+              startX = skyBounds.x + Math.random() * skyBounds.w;
+              startY = skyBounds.y + skyBounds.h + 50;
+            } else { // left
+              startX = skyBounds.x - 50;
+              startY = skyBounds.y + Math.random() * skyBounds.h;
+            }
+
+            const targetX = targetParticipant.x;
+            const targetY = targetParticipant.y - targetParticipant.balloonSize - 15;
+
+            dart = {
+              x: startX,
+              y: startY,
+              targetX: targetX,
+              targetY: targetY,
+              progress: 0,
+              startX: startX,
+              startY: startY
+            };
+
+            gameStatus.textContent = `🎯 다트가 날아갑니다!`;
             soundManager.playWarning();
             popTimer = 0;
           }
-        } else {
-          warningTimer -= deltaTime;
-          if (warningTimer <= 0) {
-            // Pop the balloon
+        } else if (dart !== null) {
+          // Update dart position
+          dart.progress += deltaTime * 1.5; // dart speed
+
+          // Update target position (balloon moves)
+          dart.targetX = targetParticipant.x;
+          dart.targetY = targetParticipant.y - targetParticipant.balloonSize - 15;
+
+          // Interpolate dart position
+          const easeOut = 1 - Math.pow(1 - dart.progress, 2);
+          dart.x = dart.startX + (dart.targetX - dart.startX) * easeOut;
+          dart.y = dart.startY + (dart.targetY - dart.startY) * easeOut;
+
+          if (dart.progress >= 1) {
+            // Dart hit! Pop the balloon
             popBalloon(targetParticipant);
+            dart = null;
             targetParticipant = null;
             popInterval = getPopInterval();
           }
@@ -1413,23 +1455,18 @@
             ctx.lineWidth = 1.5;
             ctx.stroke();
 
-            // Warning indicator
-            if (targetParticipant === p && warningTimer > 0) {
+            // Target indicator (dart is coming!)
+            if (targetParticipant === p && dart !== null) {
               ctx.save();
               const pulse = Math.sin(Date.now() * 0.02) * 0.3 + 1;
               ctx.scale(pulse, pulse);
               ctx.beginPath();
               ctx.arc(0, balloonY, p.balloonSize + 15, 0, Math.PI * 2);
-              ctx.strokeStyle = `rgba(255, 100, 100, ${warningTimer / 60})`;
-              ctx.lineWidth = 4;
-              ctx.setLineDash([10, 5]);
+              ctx.strokeStyle = `rgba(255, 100, 100, 0.7)`;
+              ctx.lineWidth = 3;
+              ctx.setLineDash([8, 4]);
               ctx.stroke();
               ctx.setLineDash([]);
-
-              ctx.font = 'bold 16px Noto Sans KR';
-              ctx.fillStyle = '#ff6b6b';
-              ctx.textAlign = 'center';
-              ctx.fillText('⚠️', 0, balloonY - p.balloonSize - 10);
               ctx.restore();
             }
           }
@@ -1464,6 +1501,62 @@
           ctx.fillStyle = pp.color + Math.floor((pp.life / 60) * 255).toString(16).padStart(2, '0');
           ctx.fill();
         });
+
+        // Draw flying dart
+        if (dart !== null) {
+          ctx.save();
+          ctx.translate(dart.x, dart.y);
+
+          // Calculate dart angle
+          const angle = Math.atan2(dart.targetY - dart.startY, dart.targetX - dart.startX);
+          ctx.rotate(angle);
+
+          // Dart body (silver metal)
+          ctx.beginPath();
+          ctx.moveTo(25, 0);
+          ctx.lineTo(-15, -3);
+          ctx.lineTo(-15, 3);
+          ctx.closePath();
+          const bodyGrad = ctx.createLinearGradient(-15, -3, 25, 0);
+          bodyGrad.addColorStop(0, '#888');
+          bodyGrad.addColorStop(0.5, '#ddd');
+          bodyGrad.addColorStop(1, '#999');
+          ctx.fillStyle = bodyGrad;
+          ctx.fill();
+          ctx.strokeStyle = '#555';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          // Dart tip (sharp point)
+          ctx.beginPath();
+          ctx.moveTo(25, 0);
+          ctx.lineTo(35, 0);
+          ctx.strokeStyle = '#333';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Dart flights (fins - 4 fins in back view style)
+          const finColors = ['#ff6b6b', '#ff9eb5', '#ff6b6b', '#ff9eb5'];
+          for (let i = 0; i < 4; i++) {
+            ctx.save();
+            ctx.translate(-15, 0);
+            ctx.rotate((i * Math.PI / 2) + Math.PI / 4);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-12, -6);
+            ctx.lineTo(-12, 6);
+            ctx.closePath();
+            ctx.fillStyle = finColors[i];
+            ctx.globalAlpha = 0.9;
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.restore();
+          }
+
+          ctx.restore();
+        }
 
         // Draw text effects (life is in seconds now)
         textEffects = textEffects.filter(e => {
@@ -1553,7 +1646,7 @@
         cancelAnimationFrame(animationId);
         participants = []; eliminationOrder = []; survivors = []; popParticles = []; textEffects = [];
         targetParticipant = null;
-        warningTimer = 0;
+        dart = null;
         document.getElementById('popLog').innerHTML = '';
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawSky();
