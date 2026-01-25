@@ -1205,9 +1205,10 @@
           drawDartBackView(d.x, d.y, d.color, 0.5, d.name);
         });
 
-        // Draw aiming or flying dart
+        // Draw aiming or flying dart with player name
         if (dart && (dart.flying || gamePhase === 'AIMING')) {
-          drawDartBackView(dart.x, dart.y, dart.color, dart.scale, null);
+          const playerName = participants[currentPlayerIndex]?.name || null;
+          drawDartBackView(dart.x, dart.y, dart.color, dart.scale, playerName);
         }
 
         // Draw text effects (time-based)
@@ -1261,9 +1262,11 @@
         // Dart flights (4 fins in X pattern - back view)
         const finSize = 18;
         ctx.fillStyle = color;
+        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+        ctx.lineWidth = 1;
         ctx.globalAlpha = 0.9;
 
-        // Draw 4 triangular fins
+        // Draw 4 triangular fins with border
         for (let i = 0; i < 4; i++) {
           ctx.save();
           ctx.rotate((i * Math.PI) / 2);
@@ -1273,6 +1276,7 @@
           ctx.lineTo(finSize * 0.6, -finSize);
           ctx.closePath();
           ctx.fill();
+          ctx.stroke();
           ctx.restore();
         }
 
@@ -1299,16 +1303,16 @@
 
         ctx.restore();
 
-        // Draw player name above the dart (1.5x larger)
+        // Draw player name above the dart
         if (name) {
           ctx.save();
-          ctx.font = `bold ${Math.max(14, 18)}px 'Noto Sans KR'`;
+          ctx.font = `bold 14px 'Noto Sans KR'`;
           ctx.fillStyle = color;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'bottom';
           ctx.shadowColor = 'rgba(0,0,0,0.9)';
-          ctx.shadowBlur = 4;
-          ctx.shadowOffsetX = 2;
+          ctx.shadowBlur = 3;
+          ctx.shadowOffsetX = 1;
           ctx.shadowOffsetY = 2;
           // Add white stroke for better visibility
           ctx.strokeStyle = 'rgba(0,0,0,0.7)';
@@ -1428,7 +1432,7 @@
           dart.y = dart.startY + Math.sin(dart.aimTime * 6) * 2;
           dart.scale = 1.8 + Math.sin(dart.aimTime * 4) * 0.05;
 
-          if (dart.aimTime >= 0.8) {
+          if (dart.aimTime >= 0.4) {
             gamePhase = 'THROWING';
             dart.flying = true;
             soundManager.playThrow();
@@ -1436,8 +1440,8 @@
         }
 
         if (gamePhase === 'THROWING' && dart && dart.flying) {
-          // Slower flight for more tension (0.7 instead of 1.2)
-          dart.progress += deltaTime * speedMult * 0.7;
+          // Flight speed (1.0 for balanced pace)
+          dart.progress += deltaTime * speedMult * 1.0;
 
           if (dart.progress < 1) {
             const t = dart.progress;
@@ -1606,10 +1610,13 @@
 
       function addThrowLog(name, score, isHighScore, label) {
         const log = document.getElementById('throwLog');
+        const player = participants.find(p => p.name === name);
+        const roundScore = player ? player.currentRoundScore : score;
+
         const logItem = document.createElement('div');
         logItem.className = 'throw-log-item' + (isHighScore ? ' bullseye' : '');
-        const displayText = score === 50 ? '🎯 불스아이!' : `${label} (${score}점)`;
-        logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${name}</span>: ${displayText}`;
+        // Show round total score
+        logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${name}</span>: 라운드 ${roundScore}점`;
         log.insertBefore(logItem, log.firstChild);
 
         if (log.children.length > 8) log.removeChild(log.lastChild);
