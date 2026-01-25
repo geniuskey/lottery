@@ -1893,10 +1893,12 @@
         }
 
         // ===== Map Generators =====
-        // 맵은 viewHeight의 3배 높이로 생성됨
+        // 기준 좌표계: 600x2400, scale로 실제 크기 계산
         const MapGenerators = {
-            chaos(world, w, h) {
-                // h는 이제 실제 맵 높이 (viewHeight * 3)
+            chaos(world, baseW, baseH, scale) {
+                // X, Y 모두 동일한 scale 적용
+                const w = baseW * scale;
+                const h = baseH * scale;
                 
                 // ===== 포탈 5쌍 (병목 구간 회피) =====
                 // 병목: 15%, 45%, 75%
@@ -1913,7 +1915,7 @@
                     const baseOffsetX = row % 2 === 0 ? w / 18 : w / 18 + w / 18;
                     for (let col = 0; col < cols; col++) {
                         const x = baseOffsetX + col * (w / 9);
-                        const y = 60 + row * 42;
+                        const y = (60 + row * 42) * scale;
                         world.addObstacle(new Peg(x, y, 6));
                     }
                 }
@@ -1955,7 +1957,7 @@
                     const baseOffsetX = row % 2 === 0 ? w / 14 : w / 14 + w / 14;
                     for (let col = 0; col < cols; col++) {
                         const x = baseOffsetX + col * (w / 7);
-                        const y = h * 0.38 + row * 38;
+                        const y = h * 0.38 + row * 38 * scale;
                         world.addObstacle(new Peg(x, y, 5));
                     }
                 }
@@ -1985,7 +1987,7 @@
                     const baseOffsetX = row % 2 === 0 ? w / 20 : w / 20 + w / 20;
                     for (let col = 0; col < cols; col++) {
                         const x = baseOffsetX + col * (w / 10);
-                        const y = h * 0.63 + row * 35;
+                        const y = h * 0.63 + row * 35 * scale;
                         world.addObstacle(new Peg(x, y, 5));
                     }
                 }
@@ -2018,7 +2020,7 @@
                     const baseOffsetX = row % 2 === 0 ? w / 14 : w / 14 + w / 14;
                     for (let col = 0; col < cols; col++) {
                         const x = baseOffsetX + col * (w / 7);
-                        const y = h * 0.82 + row * 28;
+                        const y = h * 0.82 + row * 28 * scale;
                         world.addObstacle(new Peg(x, y, 5));
                     }
                 }
@@ -2041,7 +2043,9 @@
                 world.addObstacle(new Triangle(w * 0.75, h * 0.96, 18));
             },
 
-            pinball(world, w, h) {
+            pinball(world, baseW, baseH, scale) {
+                const w = baseW * scale;
+                const h = baseH * scale;
                 // ===== 포탈 5쌍 (병목 구간 회피) =====
                 // 병목: 12%, 45%, 78%
                 world.addObstacle(new Portal(w * 0.1, h * 0.03, w * 0.9, h * 0.09, PORTAL_COLORS[0]));   // 시안: 0-12% 구간 내
@@ -2071,7 +2075,7 @@
                     const baseOffsetX = row % 2 === 0 ? w / 16 : w / 16 + w / 16;
                     for (let col = 0; col < cols; col++) {
                         const x = baseOffsetX + col * (w / 8);
-                        const y = h * 0.12 + row * 38;
+                        const y = h * 0.12 + row * 38 * scale;
                         world.addObstacle(new Peg(x, y, 5));
                     }
                 }
@@ -2113,7 +2117,7 @@
                     const baseOffsetX = row % 2 === 0 ? w / 12 : w / 12 + w / 12;
                     for (let col = 0; col < cols; col++) {
                         const x = baseOffsetX + col * (w / 6);
-                        const y = h * 0.54 + row * 35;
+                        const y = h * 0.54 + row * 35 * scale;
                         world.addObstacle(new Peg(x, y, 5));
                     }
                 }
@@ -2132,7 +2136,7 @@
                     const baseOffsetX = row % 2 === 0 ? w / 14 : w / 14 + w / 14;
                     for (let col = 0; col < cols; col++) {
                         const x = baseOffsetX + col * (w / 7);
-                        const y = h * 0.65 + row * 35;
+                        const y = h * 0.65 + row * 35 * scale;
                         world.addObstacle(new Peg(x, y, 5));
                     }
                 }
@@ -2169,7 +2173,9 @@
                 world.addObstacle(new Triangle(w * 0.85, h * 0.96, 20, -Math.PI / 4));
             },
 
-            funnel(world, w, h) {
+            funnel(world, baseW, baseH, scale) {
+                const w = baseW * scale;
+                const h = baseH * scale;
                 // ===== 포탈 5쌍 (병목 구간 회피) =====
                 // 병목: 15%, 45%, 75%
                 world.addObstacle(new Portal(w * 0.08, h * 0.04, w * 0.92, h * 0.12, PORTAL_COLORS[0]));  // 시안: 0-15% 구간 내
@@ -2189,7 +2195,7 @@
                     const baseOffsetX = row % 2 === 0 ? w / 16 : w / 16 + w / 16;
                     for (let col = 0; col < cols; col++) {
                         const x = baseOffsetX + col * (w / 8);
-                        const y = h * 0.045 + row * 28;
+                        const y = h * 0.045 + row * 28 * scale;
                         world.addObstacle(new Peg(x, y, 5));
                     }
                 }
@@ -2247,7 +2253,7 @@
                     const baseOffsetX = row % 2 === 0 ? w / 14 : w / 14 + w / 14;
                     for (let col = 0; col < cols; col++) {
                         const x = baseOffsetX + col * (w / 7);
-                        const y = h * 0.46 + row * 26;
+                        const y = h * 0.46 + row * 26 * scale;
                         world.addObstacle(new Peg(x, y, 5));
                     }
                 }
@@ -2271,7 +2277,7 @@
                     const baseOffsetX = row % 2 === 0 ? w / 18 : w / 18 + w / 18;
                     for (let col = 0; col < cols; col++) {
                         const x = baseOffsetX + col * (w / 9);
-                        const y = h * 0.64 + row * 30;
+                        const y = h * 0.64 + row * 30 * scale;
                         world.addObstacle(new Peg(x, y, 5));
                     }
                 }
@@ -2398,9 +2404,9 @@
 
                 this.world = new PhysicsWorld(w, viewH);
 
-                // Apply selected map (world.height는 viewH * 3)
+                // Apply selected map - 기준 좌표계(600x2400)와 scale 전달
                 if (MapGenerators[this.mapType]) {
-                    MapGenerators[this.mapType](this.world, w, this.world.height);
+                    MapGenerators[this.mapType](this.world, 600, 2400, scale);
                 }
                 
                 // 핀 위치 수집
