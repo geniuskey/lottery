@@ -1066,6 +1066,7 @@
       let currentPlayerIndex = 0;
       let currentDartInTurn = 0;
       const DARTS_PER_TURN = 3;
+      let currentTurnThrows = []; // Store labels for current turn's 3 darts
       let gamePhase = 'IDLE'; // IDLE, THROWING, HIT, ROUND_END, GAME_END
       let dart = null;
       let landedDarts = [];
@@ -1382,6 +1383,7 @@
         currentRound = 1;
         currentPlayerIndex = 0;
         currentDartInTurn = 0;
+        currentTurnThrows = [];
         landedDarts = [];
 
         participants = names.map((name, i) => ({
@@ -1485,16 +1487,16 @@
             if (scoreResult.score === 50) {
               soundManager.playBullseye();
               createTextEffect(dart.x, dart.y - 30, '불스아이! +50', '#fbbf24', 1.5);
-              addThrowLog(player.name, scoreResult.score, true, scoreResult.label);
             } else if (scoreResult.score >= 40) {
               soundManager.playBullseye();
               createTextEffect(dart.x, dart.y - 30, `${scoreResult.label} +${scoreResult.score}`, '#fbbf24', 1.3);
-              addThrowLog(player.name, scoreResult.score, true, scoreResult.label);
             } else {
               soundManager.playHit(scoreResult.score);
               createTextEffect(dart.x, dart.y - 30, `${scoreResult.label} +${scoreResult.score}`, scoreResult.score >= 20 ? '#fbbf24' : '#fff', 1);
-              addThrowLog(player.name, scoreResult.score, false, scoreResult.label);
             }
+
+            // Accumulate throw label for this turn
+            currentTurnThrows.push({ label: scoreResult.label, score: scoreResult.score });
 
             updateCurrentThrower();
             updateRanking();
@@ -1504,7 +1506,14 @@
               currentDartInTurn++;
 
               if (currentDartInTurn >= DARTS_PER_TURN) {
-                // This player finished their 3 darts, move to next player
+                // This player finished their 3 darts - log all throws in one line
+                const throwLabels = currentTurnThrows.map(t => t.label).join(', ');
+                const totalScore = currentTurnThrows.reduce((sum, t) => sum + t.score, 0);
+                const hasHighScore = currentTurnThrows.some(t => t.score >= 40);
+                addThrowLog(player.name, throwLabels, totalScore, hasHighScore);
+                currentTurnThrows = [];
+
+                // Move to next player
                 currentDartInTurn = 0;
                 currentPlayerIndex++;
 
@@ -1608,15 +1617,13 @@
         textEffects.push({ x, y, text, color, life: 1.0, maxLife: 1.0, scale }); // 1초 지속
       }
 
-      function addThrowLog(name, score, isHighScore, label) {
+      function addThrowLog(name, throwLabels, totalScore, isHighScore) {
         const log = document.getElementById('throwLog');
-        const player = participants.find(p => p.name === name);
-        const roundScore = player ? player.currentRoundScore : score;
 
         const logItem = document.createElement('div');
         logItem.className = 'throw-log-item' + (isHighScore ? ' bullseye' : '');
-        // Show round total score
-        logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${name}</span>: 라운드 ${roundScore}점`;
+        // Show all 3 dart labels and total score in one line
+        logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${name}</span>: ${throwLabels} (${totalScore}점)`;
         log.insertBefore(logItem, log.firstChild);
 
         if (log.children.length > 8) log.removeChild(log.lastChild);
@@ -1707,6 +1714,7 @@
         currentRound = 1;
         currentPlayerIndex = 0;
         currentDartInTurn = 0;
+        currentTurnThrows = [];
         document.getElementById('throwLog').innerHTML = '';
         currentThrowerEl.style.display = 'none';
 
