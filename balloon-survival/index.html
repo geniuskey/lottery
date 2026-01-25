@@ -1217,21 +1217,17 @@
             const targetX = targetParticipant.x;
             const targetY = targetParticipant.y - targetParticipant.balloonSize - 15;
 
-            // Calculate direction vector
+            // Calculate direction vector for constant speed
             const dx = targetX - startX;
             const dy = targetY - startY;
             const dist = Math.hypot(dx, dy);
+            const speed = 600; // constant speed
 
             dart = {
               x: startX,
               y: startY,
-              targetX: targetX,
-              targetY: targetY,
-              progress: 0,
-              startX: startX,
-              startY: startY,
-              vx: (dx / dist) * 400, // velocity for pass-through
-              vy: (dy / dist) * 400,
+              vx: (dx / dist) * speed,
+              vy: (dy / dist) * speed,
               hit: false
             };
 
@@ -1240,42 +1236,29 @@
             popTimer = 0;
           }
         } else if (dart !== null) {
-          if (!dart.hit) {
-            // Update dart position towards target
-            dart.progress += deltaTime * 1.5; // dart speed
+          // Dart flies at constant speed
+          dart.x += dart.vx * deltaTime;
+          dart.y += dart.vy * deltaTime;
 
-            // Update target position (balloon moves)
-            dart.targetX = targetParticipant.x;
-            dart.targetY = targetParticipant.y - targetParticipant.balloonSize - 15;
+          // Check if dart hit the target balloon
+          if (!dart.hit && targetParticipant) {
+            const targetX = targetParticipant.x;
+            const targetY = targetParticipant.y - targetParticipant.balloonSize - 15;
+            const distToTarget = Math.hypot(dart.x - targetX, dart.y - targetY);
 
-            // Interpolate dart position
-            const easeOut = 1 - Math.pow(1 - dart.progress, 2);
-            dart.x = dart.startX + (dart.targetX - dart.startX) * easeOut;
-            dart.y = dart.startY + (dart.targetY - dart.startY) * easeOut;
-
-            if (dart.progress >= 1) {
+            if (distToTarget < 20) {
               // Dart hit! Pop the balloon and continue flying
               popBalloon(targetParticipant);
               dart.hit = true;
-              // Update velocity direction based on final trajectory
-              const dx = dart.targetX - dart.startX;
-              const dy = dart.targetY - dart.startY;
-              const dist = Math.hypot(dx, dy);
-              dart.vx = (dx / dist) * 500;
-              dart.vy = (dy / dist) * 500;
               targetParticipant = null;
               popInterval = getPopInterval();
             }
-          } else {
-            // Dart continues flying through
-            dart.x += dart.vx * deltaTime;
-            dart.y += dart.vy * deltaTime;
+          }
 
-            // Remove dart when it exits the screen
-            if (dart.x < skyBounds.x - 100 || dart.x > skyBounds.x + skyBounds.w + 100 ||
-                dart.y < skyBounds.y - 100 || dart.y > skyBounds.y + skyBounds.h + 100) {
-              dart = null;
-            }
+          // Remove dart when it exits the screen
+          if (dart.x < skyBounds.x - 100 || dart.x > skyBounds.x + skyBounds.w + 100 ||
+              dart.y < skyBounds.y - 100 || dart.y > skyBounds.y + skyBounds.h + 100) {
+            dart = null;
           }
         }
 
