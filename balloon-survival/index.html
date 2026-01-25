@@ -1405,13 +1405,7 @@
           ctx.save();
           ctx.translate(p.x, p.y);
 
-          if (p.popping) {
-            // Popping animation
-            const scale = 1 + p.popProgress * 0.5;
-            ctx.globalAlpha = 1 - p.popProgress;
-            ctx.scale(scale, scale);
-          }
-
+          
           
           if (!p.falling && !p.popping) {
             // Draw balloon
@@ -1463,8 +1457,7 @@
             ctx.stroke();
           }
 
-          // Emoji (crying when falling) - always 100% alpha
-          ctx.globalAlpha = 1;
+          // Emoji (crying when falling)
           ctx.font = '38px Arial';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
