@@ -1402,10 +1402,7 @@
             ctx.scale(scale, scale);
           }
 
-          if (p.falling) {
-            ctx.globalAlpha = Math.max(0, 1 - (p.y - skyBounds.y - skyBounds.h) / 100);
-          }
-
+          
           if (!p.falling && !p.popping) {
             // Draw balloon
             const balloonY = -p.balloonSize - 15;
@@ -1454,28 +1451,13 @@
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
             ctx.lineWidth = 1.5;
             ctx.stroke();
-
-            // Target indicator (dart is coming!)
-            if (targetParticipant === p && dart !== null) {
-              ctx.save();
-              const pulse = Math.sin(Date.now() * 0.02) * 0.3 + 1;
-              ctx.scale(pulse, pulse);
-              ctx.beginPath();
-              ctx.arc(0, balloonY, p.balloonSize + 15, 0, Math.PI * 2);
-              ctx.strokeStyle = `rgba(255, 100, 100, 0.7)`;
-              ctx.lineWidth = 3;
-              ctx.setLineDash([8, 4]);
-              ctx.stroke();
-              ctx.setLineDash([]);
-              ctx.restore();
-            }
           }
 
-          // Emoji
+          // Emoji (crying when falling)
           ctx.font = '38px Arial';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText(p.emoji, 0, 0);
+          ctx.fillText(p.falling ? '😢' : p.emoji, 0, 0);
 
           // Name
           ctx.font = 'bold 12px Noto Sans KR';
