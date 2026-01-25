@@ -908,7 +908,8 @@
         <li>❌3 <strong>트리플 링</strong>: 해당 숫자 × 3</li>
         <li>❌2 <strong>더블 링</strong> (외곽): 해당 숫자 × 2</li>
         <li>⚪ <strong>싱글 영역</strong>: 해당 숫자 점수</li>
-        <li>🔄 각 라운드마다 모든 참여자가 한 번씩 던집니다</li>
+        <li>🎲 각 차례마다 <strong>3개의 다트</strong>를 던집니다</li>
+        <li>🔄 각 라운드마다 모든 참여자가 한 차례씩 던집니다</li>
         <li>🏆 총점이 가장 높은 참여자가 우승!</li>
       </ul>
       <button class="modal-close" id="closeHelp">확인</button>
@@ -1048,6 +1049,8 @@
       let currentRound = 1;
       let totalRounds = 3;
       let currentPlayerIndex = 0;
+      let currentDartInTurn = 0;
+      const DARTS_PER_TURN = 3;
       let gamePhase = 'IDLE'; // IDLE, THROWING, HIT, ROUND_END, GAME_END
       let dart = null;
       let landedDarts = [];
@@ -1355,6 +1358,7 @@
         totalRounds = parseInt(roundCountInput.value) || 3;
         currentRound = 1;
         currentPlayerIndex = 0;
+        currentDartInTurn = 0;
         landedDarts = [];
 
         participants = names.map((name, i) => ({
@@ -1454,33 +1458,40 @@
             updateCurrentThrower();
             updateRanking();
 
-            // Next player after delay
+            // Next dart or player after delay
             setTimeout(() => {
-              currentPlayerIndex++;
-              if (currentPlayerIndex >= participants.length) {
-                // End of round
-                currentPlayerIndex = 0;
-                participants.forEach(p => {
-                  p.roundScores.push(p.currentRoundScore);
-                  p.currentRoundScore = 0;
-                });
-                currentRound++;
+              currentDartInTurn++;
 
-                if (currentRound > totalRounds) {
-                  endGame();
-                  return;
+              if (currentDartInTurn >= DARTS_PER_TURN) {
+                // This player finished their 3 darts, move to next player
+                currentDartInTurn = 0;
+                currentPlayerIndex++;
+
+                if (currentPlayerIndex >= participants.length) {
+                  // End of round
+                  currentPlayerIndex = 0;
+                  participants.forEach(p => {
+                    p.roundScores.push(p.currentRoundScore);
+                    p.currentRoundScore = 0;
+                  });
+                  currentRound++;
+
+                  if (currentRound > totalRounds) {
+                    endGame();
+                    return;
+                  }
+
+                  gameStatus.textContent = `라운드 ${currentRound} 시작!`;
+                  updateRoundInfo();
+                  landedDarts = [];
                 }
-
-                gameStatus.textContent = `라운드 ${currentRound} 시작!`;
-                updateRoundInfo();
-                landedDarts = [];
               }
 
               if (gameRunning) {
                 updateCurrentThrower();
-                setTimeout(() => throwDart(), 800 / speedMult);
+                setTimeout(() => throwDart(), 600 / speedMult);
               }
-            }, 1200 / speedMult);
+            }, 1000 / speedMult);
           }
         }
       }
@@ -1489,7 +1500,7 @@
         if (!gameRunning || gamePhase === 'GAME_END') return;
 
         const player = participants[currentPlayerIndex];
-        gameStatus.textContent = `${player.name}의 차례!`;
+        gameStatus.textContent = `${player.name}의 차례! (${currentDartInTurn + 1}/${DARTS_PER_TURN})`;
         gamePhase = 'THROWING';
 
         soundManager.playThrow();
@@ -1501,9 +1512,9 @@
         const distFactor = Math.pow(Math.random(), 0.6);
         const distance = distFactor * maxDist;
 
-        // Start position (bottom center, slightly randomized)
-        const startX = boardCenter.x + (Math.random() - 0.5) * 100;
-        const startY = canvas.height + 30;
+        // Start position (from board center height, slightly below and randomized X)
+        const startX = boardCenter.x + (Math.random() - 0.5) * 80;
+        const startY = boardCenter.y + boardRadius * 1.5;
 
         dart = {
           startX: startX,
@@ -1574,7 +1585,7 @@
 
         currentThrowerEl.style.display = 'block';
         const player = participants[currentPlayerIndex];
-        throwerNameEl.textContent = player.name;
+        throwerNameEl.textContent = `${player.name} (${currentDartInTurn + 1}/${DARTS_PER_TURN})`;
         throwerNameEl.style.color = player.color;
         roundScoreEl.textContent = `이번 라운드: ${player.currentRoundScore}점`;
       }
@@ -1650,6 +1661,7 @@
         textEffects = [];
         currentRound = 1;
         currentPlayerIndex = 0;
+        currentDartInTurn = 0;
         document.getElementById('throwLog').innerHTML = '';
         currentThrowerEl.style.display = 'none';
 
