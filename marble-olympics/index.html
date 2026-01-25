@@ -1654,6 +1654,9 @@
                     }
                 }
 
+                // Rubber band effect - keep the race close
+                this.applyRubberBand();
+
                 // Ball-ball collision
                 for (let i = 0; i < this.balls.length; i++) {
                     for (let j = i + 1; j < this.balls.length; j++) {
@@ -1837,6 +1840,46 @@
                         b.vel.x += impulse * nx;
                         b.vel.y += impulse * ny;
                         sound.playHit(Math.abs(impulse) * 0.002);
+                    }
+                }
+            }
+
+            applyRubberBand() {
+                // Get active (non-finished) balls
+                const activeBalls = this.balls.filter(b => !b.finished);
+                if (activeBalls.length < 2) return;
+
+                // Find leader (highest Y = most progress) and average Y
+                let maxY = -Infinity;
+                let minY = Infinity;
+                let totalY = 0;
+
+                for (const ball of activeBalls) {
+                    if (ball.pos.y > maxY) maxY = ball.pos.y;
+                    if (ball.pos.y < minY) minY = ball.pos.y;
+                    totalY += ball.pos.y;
+                }
+
+                const avgY = totalY / activeBalls.length;
+                const spread = maxY - minY;
+
+                // Only apply if there's significant spread (balls are spread out)
+                if (spread < 50) return;
+
+                for (const ball of activeBalls) {
+                    const distFromAvg = ball.pos.y - avgY;
+                    const normalizedDist = distFromAvg / spread; // -0.5 to +0.5
+
+                    if (normalizedDist > 0.1) {
+                        // Leader: apply slight drag (slow down)
+                        const dragFactor = 1 - (normalizedDist * 0.15);
+                        ball.vel.y *= dragFactor;
+                    } else if (normalizedDist < -0.1) {
+                        // Behind: apply boost
+                        const boostFactor = 1 + (Math.abs(normalizedDist) * 0.2);
+                        ball.vel.y *= boostFactor;
+                        // Also add slight downward force
+                        ball.vel.y += Math.abs(normalizedDist) * 15;
                     }
                 }
             }
