@@ -3109,12 +3109,12 @@
                 ctx.fill();
 
                 // Name - 구슬 오른쪽에 왼쪽 정렬로 표시
-                ctx.font = `bold ${Math.max(9, ball.radius * 0.7)}px "Noto Sans KR"`;
+                ctx.font = `bold ${Math.max(12, ball.radius * 0.9)}px "Noto Sans KR"`;
                 ctx.fillStyle = '#fff';
                 ctx.textAlign = 'left';
                 ctx.textBaseline = 'middle';
                 ctx.strokeStyle = 'rgba(0, 0, 0, 0.6)';
-                ctx.lineWidth = 3;
+                ctx.lineWidth = 4;
                 
                 const shortName = ball.name.length > 6 ? ball.name.slice(0, 5) + '..' : ball.name;
                 const textX = ball.pos.x + ball.radius + 4;  // 구슬 오른쪽으로 약간 띄움
