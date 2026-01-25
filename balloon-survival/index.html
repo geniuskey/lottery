@@ -1217,6 +1217,11 @@
             const targetX = targetParticipant.x;
             const targetY = targetParticipant.y - targetParticipant.balloonSize - 15;
 
+            // Calculate direction vector
+            const dx = targetX - startX;
+            const dy = targetY - startY;
+            const dist = Math.hypot(dx, dy);
+
             dart = {
               x: startX,
               y: startY,
@@ -1224,7 +1229,10 @@
               targetY: targetY,
               progress: 0,
               startX: startX,
-              startY: startY
+              startY: startY,
+              vx: (dx / dist) * 400, // velocity for pass-through
+              vy: (dy / dist) * 400,
+              hit: false
             };
 
             gameStatus.textContent = `🎯 다트가 날아갑니다!`;
@@ -1232,24 +1240,42 @@
             popTimer = 0;
           }
         } else if (dart !== null) {
-          // Update dart position
-          dart.progress += deltaTime * 1.5; // dart speed
+          if (!dart.hit) {
+            // Update dart position towards target
+            dart.progress += deltaTime * 1.5; // dart speed
 
-          // Update target position (balloon moves)
-          dart.targetX = targetParticipant.x;
-          dart.targetY = targetParticipant.y - targetParticipant.balloonSize - 15;
+            // Update target position (balloon moves)
+            dart.targetX = targetParticipant.x;
+            dart.targetY = targetParticipant.y - targetParticipant.balloonSize - 15;
 
-          // Interpolate dart position
-          const easeOut = 1 - Math.pow(1 - dart.progress, 2);
-          dart.x = dart.startX + (dart.targetX - dart.startX) * easeOut;
-          dart.y = dart.startY + (dart.targetY - dart.startY) * easeOut;
+            // Interpolate dart position
+            const easeOut = 1 - Math.pow(1 - dart.progress, 2);
+            dart.x = dart.startX + (dart.targetX - dart.startX) * easeOut;
+            dart.y = dart.startY + (dart.targetY - dart.startY) * easeOut;
 
-          if (dart.progress >= 1) {
-            // Dart hit! Pop the balloon
-            popBalloon(targetParticipant);
-            dart = null;
-            targetParticipant = null;
-            popInterval = getPopInterval();
+            if (dart.progress >= 1) {
+              // Dart hit! Pop the balloon and continue flying
+              popBalloon(targetParticipant);
+              dart.hit = true;
+              // Update velocity direction based on final trajectory
+              const dx = dart.targetX - dart.startX;
+              const dy = dart.targetY - dart.startY;
+              const dist = Math.hypot(dx, dy);
+              dart.vx = (dx / dist) * 500;
+              dart.vy = (dy / dist) * 500;
+              targetParticipant = null;
+              popInterval = getPopInterval();
+            }
+          } else {
+            // Dart continues flying through
+            dart.x += dart.vx * deltaTime;
+            dart.y += dart.vy * deltaTime;
+
+            // Remove dart when it exits the screen
+            if (dart.x < skyBounds.x - 100 || dart.x > skyBounds.x + skyBounds.w + 100 ||
+                dart.y < skyBounds.y - 100 || dart.y > skyBounds.y + skyBounds.h + 100) {
+              dart = null;
+            }
           }
         }
 
