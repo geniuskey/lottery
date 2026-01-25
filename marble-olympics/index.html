@@ -1655,7 +1655,7 @@
                 }
 
                 // Rubber band effect - keep the race close
-                this.applyRubberBand();
+                this.applyRubberBand(dt);
 
                 // Ball-ball collision
                 for (let i = 0; i < this.balls.length; i++) {
@@ -1844,7 +1844,7 @@
                 }
             }
 
-            applyRubberBand() {
+            applyRubberBand(dt) {
                 // Get active (non-finished) balls
                 const activeBalls = this.balls.filter(b => !b.finished);
                 if (activeBalls.length < 2) return;
@@ -1864,22 +1864,21 @@
                 const spread = maxY - minY;
 
                 // Only apply if there's significant spread (balls are spread out)
-                if (spread < 50) return;
+                if (spread < 100) return;
+
+                // Gentle force-based rubber band (dt-independent)
+                const pullStrength = 30; // pixels per second^2
 
                 for (const ball of activeBalls) {
                     const distFromAvg = ball.pos.y - avgY;
                     const normalizedDist = distFromAvg / spread; // -0.5 to +0.5
 
-                    if (normalizedDist > 0.1) {
-                        // Leader: apply slight drag (slow down)
-                        const dragFactor = 1 - (normalizedDist * 0.15);
-                        ball.vel.y *= dragFactor;
-                    } else if (normalizedDist < -0.1) {
-                        // Behind: apply boost
-                        const boostFactor = 1 + (Math.abs(normalizedDist) * 0.2);
-                        ball.vel.y *= boostFactor;
-                        // Also add slight downward force
-                        ball.vel.y += Math.abs(normalizedDist) * 15;
+                    if (normalizedDist > 0.15) {
+                        // Leader: gentle drag force
+                        ball.vel.y -= normalizedDist * pullStrength * dt;
+                    } else if (normalizedDist < -0.15) {
+                        // Behind: gentle boost force
+                        ball.vel.y += Math.abs(normalizedDist) * pullStrength * dt;
                     }
                 }
             }
