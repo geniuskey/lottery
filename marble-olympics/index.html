@@ -3133,14 +3133,12 @@
             
             // localStorage 키
             const STORAGE_KEY_PARTICIPANTS = 'marble-olympics-participants';
-            const STORAGE_KEY_MAP = 'marble-olympics-map';
             const STORAGE_KEY_FIRST_WINS = 'marble-olympics-first-wins';
             
             // 저장된 값 불러오기
             function loadSavedData() {
                 try {
                     const savedParticipants = localStorage.getItem(STORAGE_KEY_PARTICIPANTS);
-                    const savedMap = localStorage.getItem(STORAGE_KEY_MAP);
                     const savedFirstWins = localStorage.getItem(STORAGE_KEY_FIRST_WINS);
                     
                     if (savedParticipants) {
@@ -3149,11 +3147,6 @@
                     
                     // 항상 현재 textarea 값으로 게임 데이터 업데이트
                     updateGame();
-                    
-                    if (savedMap && ['chaos', 'pinball', 'funnel'].includes(savedMap)) {
-                        mapSelect.value = savedMap;
-                        game.setMap(savedMap);
-                    }
                     
                     if (savedFirstWins !== null) {
                         const firstWins = savedFirstWins === 'true';
@@ -3177,15 +3170,6 @@
                 }
             }
             
-            // 맵 선택 저장
-            function saveMap() {
-                try {
-                    localStorage.setItem(STORAGE_KEY_MAP, mapSelect.value);
-                } catch (e) {
-                    console.warn('localStorage 저장 실패:', e);
-                }
-            }
-            
             // firstWins 저장
             function saveFirstWins() {
                 try {
@@ -3203,7 +3187,6 @@
             // 맵 선택 드롭다운
             mapSelect.addEventListener('change', () => {
                 game.setMap(mapSelect.value);
-                saveMap();
             });
             
             // firstWins 토글 텍스트 업데이트 함수
