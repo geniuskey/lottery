@@ -1483,16 +1483,16 @@
               name: player.name
             });
 
-            // Sound and effects
+            // Sound and effects - show only +score (no duplicate label)
             if (scoreResult.score === 50) {
               soundManager.playBullseye();
-              createTextEffect(dart.x, dart.y - 30, '불스아이! +50', '#fbbf24', 1.5);
+              createTextEffect(dart.x, dart.y - 30, '+50', '#fbbf24', 1.5);
             } else if (scoreResult.score >= 40) {
               soundManager.playBullseye();
-              createTextEffect(dart.x, dart.y - 30, `${scoreResult.label} +${scoreResult.score}`, '#fbbf24', 1.3);
+              createTextEffect(dart.x, dart.y - 30, `+${scoreResult.score}`, '#fbbf24', 1.3);
             } else {
               soundManager.playHit(scoreResult.score);
-              createTextEffect(dart.x, dart.y - 30, `${scoreResult.label} +${scoreResult.score}`, scoreResult.score >= 20 ? '#fbbf24' : '#fff', 1);
+              createTextEffect(dart.x, dart.y - 30, `+${scoreResult.score}`, scoreResult.score >= 20 ? '#fbbf24' : '#fff', 1);
             }
 
             // Accumulate throw label for this turn
