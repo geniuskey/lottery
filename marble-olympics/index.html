@@ -2051,280 +2051,199 @@
             pinball(world, baseW, baseH, scale) {
                 const w = baseW * scale;
                 const h = baseH * scale;
-                // ===== 포탈 5쌍 (병목 구간 회피) =====
-                // 병목: 12%, 45%, 78%
-                world.addObstacle(new Portal(w * 0.1, h * 0.03, w * 0.9, h * 0.09, PORTAL_COLORS[0]));   // 시안: 0-12% 구간 내
-                world.addObstacle(new Portal(w * 0.08, h * 0.18, w * 0.92, h * 0.40, PORTAL_COLORS[1])); // 핑크: 12-45% 구간 내
-                world.addObstacle(new Portal(w * 0.15, h * 0.50, w * 0.85, h * 0.72, PORTAL_COLORS[2])); // 보라: 45-78% 구간 내
-                world.addObstacle(new Portal(w * 0.2, h * 0.82, w * 0.8, h * 0.92, PORTAL_COLORS[3]));  // 초록: 78-100% 구간 내
-                world.addObstacle(new Portal(w * 0.1, h * 0.55, w * 0.9, h * 0.68, PORTAL_COLORS[4]));  // 노랑: 45-78% 구간 내
+                // ===== 진짜 핀볼 스타일 - 포탈 없음, 범퍼 중심 =====
 
-                // ===== 섹션 1 (0% ~ 15%) - 상단 범퍼 클러스터 =====
-                world.addObstacle(new Bumper(w * 0.25, h * 0.03, 28));
-                world.addObstacle(new Bumper(w * 0.4, h * 0.05, 24));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.02, 26));
-                world.addObstacle(new Bumper(w * 0.6, h * 0.05, 24));
-                world.addObstacle(new Bumper(w * 0.75, h * 0.03, 28));
-                world.addObstacle(new Wall(5, h * 0.01, w * 0.12, h * 0.1, 8));
-                world.addObstacle(new Wall(w - 5, h * 0.01, w * 0.88, h * 0.1, 8));
-                world.addObstacle(new Spinner(w * 0.35, h * 0.08, 50, -3));
-                world.addObstacle(new Spinner(w * 0.65, h * 0.08, 50, 3));
+                // ===== 상단 범퍼 클러스터 (0~15%) =====
+                world.addObstacle(new Bumper(w * 0.3, h * 0.02, 32));
+                world.addObstacle(new Bumper(w * 0.5, h * 0.04, 35));
+                world.addObstacle(new Bumper(w * 0.7, h * 0.02, 32));
+                world.addObstacle(new Bumper(w * 0.2, h * 0.06, 28));
+                world.addObstacle(new Bumper(w * 0.4, h * 0.08, 30));
+                world.addObstacle(new Bumper(w * 0.6, h * 0.08, 30));
+                world.addObstacle(new Bumper(w * 0.8, h * 0.06, 28));
+                // 사이드 슬링샷
+                world.addObstacle(new Wall(0, h * 0.02, w * 0.08, h * 0.12, 10));
+                world.addObstacle(new Wall(w, h * 0.02, w * 0.92, h * 0.12, 10));
 
-                // ===== 병목 구간 1 (12%) =====
-                world.addObstacle(new Wall(0, h * 0.11, w * 0.38, h * 0.13, 8));
-                world.addObstacle(new Wall(w, h * 0.11, w * 0.62, h * 0.13, 8));
+                // ===== 병목 1 (15%) =====
+                world.addObstacle(new Wall(0, h * 0.14, w * 0.35, h * 0.16, 8));
+                world.addObstacle(new Wall(w, h * 0.14, w * 0.65, h * 0.16, 8));
 
-                // ===== 섹션 2 (15% ~ 30%) - 핀 + 스피너 =====
-                for (let row = 0; row < 8; row++) {
-                    const cols = row % 2 === 0 ? 8 : 7;
-                    const baseOffsetX = row % 2 === 0 ? w / 16 : w / 16 + w / 16;
-                    for (let col = 0; col < cols; col++) {
-                        const x = baseOffsetX + col * (w / 8);
-                        const y = h * 0.12 + row * 38 * scale;
-                        world.addObstacle(new Peg(x, y, 5));
-                    }
-                }
-                world.addObstacle(new Spinner(w * 0.2, h * 0.18, 60, 2.5));
-                world.addObstacle(new Spinner(w * 0.5, h * 0.16, 75, -3));
-                world.addObstacle(new Spinner(w * 0.8, h * 0.18, 60, 2.5));
-                world.addObstacle(new Bumper(w * 0.35, h * 0.22, 22));
-                world.addObstacle(new Bumper(w * 0.65, h * 0.22, 22));
+                // ===== 중상단 범퍼 존 (15~35%) =====
+                world.addObstacle(new Bumper(w * 0.5, h * 0.18, 38));
+                world.addObstacle(new Bumper(w * 0.25, h * 0.22, 32));
+                world.addObstacle(new Bumper(w * 0.75, h * 0.22, 32));
+                world.addObstacle(new Bumper(w * 0.4, h * 0.26, 30));
+                world.addObstacle(new Bumper(w * 0.6, h * 0.26, 30));
+                world.addObstacle(new Bumper(w * 0.15, h * 0.30, 28));
+                world.addObstacle(new Bumper(w * 0.5, h * 0.32, 35));
+                world.addObstacle(new Bumper(w * 0.85, h * 0.30, 28));
+                // 사이드 부스터 (볼 반환)
+                world.addObstacle(new Booster(w * 0.05, h * 0.25, -Math.PI / 3, 800));
+                world.addObstacle(new Booster(w * 0.95, h * 0.25, -Math.PI * 2 / 3, 800));
 
-                // ===== 섹션 3 (30% ~ 45%) - 사이드 벽 + 범퍼 =====
-                world.addObstacle(new Wall(5, h * 0.25, w * 0.15, h * 0.4, 8));
-                world.addObstacle(new Wall(w - 5, h * 0.25, w * 0.85, h * 0.4, 8));
-                world.addObstacle(new Bumper(w * 0.2, h * 0.28, 30));
-                world.addObstacle(new Bumper(w * 0.4, h * 0.32, 26));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.28, 32));
-                world.addObstacle(new Bumper(w * 0.6, h * 0.32, 26));
-                world.addObstacle(new Bumper(w * 0.8, h * 0.28, 30));
-                world.addObstacle(new Booster(w * 0.12, h * 0.35, -Math.PI / 4, 750));
-                world.addObstacle(new Booster(w * 0.88, h * 0.35, -Math.PI * 3 / 4, 750));
-                world.addObstacle(new Spinner(w * 0.5, h * 0.38, 85, 3));
-                world.addObstacle(new Triangle(w * 0.3, h * 0.42, 28));
-                world.addObstacle(new Triangle(w * 0.7, h * 0.42, 28));
+                // ===== 병목 2 (38%) =====
+                world.addObstacle(new Wall(0, h * 0.37, w * 0.32, h * 0.39, 8));
+                world.addObstacle(new Wall(w, h * 0.37, w * 0.68, h * 0.39, 8));
 
-                // ===== 병목 구간 2 (45%) =====
-                world.addObstacle(new Wall(0, h * 0.45, w * 0.35, h * 0.47, 8));
-                world.addObstacle(new Wall(w, h * 0.45, w * 0.65, h * 0.47, 8));
+                // ===== 중앙 범퍼 존 (38~55%) =====
+                world.addObstacle(new Bumper(w * 0.3, h * 0.42, 34));
+                world.addObstacle(new Bumper(w * 0.5, h * 0.40, 40));
+                world.addObstacle(new Bumper(w * 0.7, h * 0.42, 34));
+                world.addObstacle(new Bumper(w * 0.2, h * 0.48, 30));
+                world.addObstacle(new Bumper(w * 0.4, h * 0.50, 32));
+                world.addObstacle(new Bumper(w * 0.6, h * 0.50, 32));
+                world.addObstacle(new Bumper(w * 0.8, h * 0.48, 30));
+                // 슬링샷 벽
+                world.addObstacle(new Wall(0, h * 0.42, w * 0.1, h * 0.52, 8));
+                world.addObstacle(new Wall(w, h * 0.42, w * 0.9, h * 0.52, 8));
+                world.addObstacle(new Booster(w * 0.08, h * 0.50, -Math.PI / 4, 700));
+                world.addObstacle(new Booster(w * 0.92, h * 0.50, -Math.PI * 3 / 4, 700));
 
-                // ===== 섹션 4 (45% ~ 60%) - 스피너 미로 =====
-                world.addObstacle(new Spinner(w * 0.15, h * 0.48, 55, -2.5));
-                world.addObstacle(new Spinner(w * 0.3, h * 0.52, 60, 3));
-                world.addObstacle(new Spinner(w * 0.5, h * 0.48, 70, -2.5));
-                world.addObstacle(new Spinner(w * 0.7, h * 0.52, 60, 3));
-                world.addObstacle(new Spinner(w * 0.85, h * 0.48, 55, -2.5));
-                // 중간 부스터
-                world.addObstacle(new Booster(w * 0.1, h * 0.52, -Math.PI / 4, 650));
-                world.addObstacle(new Booster(w * 0.9, h * 0.52, -Math.PI * 3 / 4, 650));
-                for (let row = 0; row < 5; row++) {
-                    const cols = row % 2 === 0 ? 6 : 5;
-                    const baseOffsetX = row % 2 === 0 ? w / 12 : w / 12 + w / 12;
-                    for (let col = 0; col < cols; col++) {
-                        const x = baseOffsetX + col * (w / 6);
-                        const y = h * 0.54 + row * 35 * scale;
-                        world.addObstacle(new Peg(x, y, 5));
-                    }
-                }
-                world.addObstacle(new Bumper(w * 0.25, h * 0.58, 24));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.56, 28));
-                world.addObstacle(new Bumper(w * 0.75, h * 0.58, 24));
-                world.addObstacle(new Booster(w * 0.5, h * 0.60, -Math.PI / 2, 550));
+                // ===== 병목 3 (58%) =====
+                world.addObstacle(new Wall(0, h * 0.57, w * 0.30, h * 0.59, 8));
+                world.addObstacle(new Wall(w, h * 0.57, w * 0.70, h * 0.59, 8));
 
-                // ===== 섹션 5 (60% ~ 75%) - 핀볼 플리퍼 존 =====
-                world.addObstacle(new Wall(w * 0.1, h * 0.62, w * 0.25, h * 0.72, 6));
-                world.addObstacle(new Wall(w * 0.9, h * 0.62, w * 0.75, h * 0.72, 6));
-                world.addObstacle(new Triangle(w * 0.28, h * 0.68, 32, Math.PI / 6));
-                world.addObstacle(new Triangle(w * 0.72, h * 0.68, 32, -Math.PI / 6));
-                for (let row = 0; row < 6; row++) {
-                    const cols = row % 2 === 0 ? 7 : 6;
-                    const baseOffsetX = row % 2 === 0 ? w / 14 : w / 14 + w / 14;
-                    for (let col = 0; col < cols; col++) {
-                        const x = baseOffsetX + col * (w / 7);
-                        const y = h * 0.65 + row * 35 * scale;
-                        world.addObstacle(new Peg(x, y, 5));
-                    }
-                }
-                world.addObstacle(new Bumper(w * 0.4, h * 0.72, 24));
-                world.addObstacle(new Bumper(w * 0.6, h * 0.72, 24));
-                world.addObstacle(new Spinner(w * 0.5, h * 0.75, 70, -3));
+                // ===== 하단 범퍼 + 플리퍼 존 (58~80%) =====
+                world.addObstacle(new Bumper(w * 0.5, h * 0.62, 42));
+                world.addObstacle(new Bumper(w * 0.25, h * 0.66, 35));
+                world.addObstacle(new Bumper(w * 0.75, h * 0.66, 35));
+                world.addObstacle(new Bumper(w * 0.4, h * 0.72, 30));
+                world.addObstacle(new Bumper(w * 0.6, h * 0.72, 30));
+                // 플리퍼 모양 벽
+                world.addObstacle(new Wall(w * 0.05, h * 0.68, w * 0.25, h * 0.78, 10));
+                world.addObstacle(new Wall(w * 0.95, h * 0.68, w * 0.75, h * 0.78, 10));
+                world.addObstacle(new Triangle(w * 0.28, h * 0.76, 25, Math.PI / 6));
+                world.addObstacle(new Triangle(w * 0.72, h * 0.76, 25, -Math.PI / 6));
+                world.addObstacle(new Booster(w * 0.15, h * 0.76, -Math.PI / 3, 750));
+                world.addObstacle(new Booster(w * 0.85, h * 0.76, -Math.PI * 2 / 3, 750));
 
-                // ===== 병목 구간 3 (78%) - 최종 병목 =====
-                world.addObstacle(new Wall(0, h * 0.77, w * 0.38, h * 0.79, 8));
-                world.addObstacle(new Wall(w, h * 0.77, w * 0.62, h * 0.79, 8));
+                // ===== 병목 4 (82%) =====
+                world.addObstacle(new Wall(0, h * 0.81, w * 0.35, h * 0.83, 8));
+                world.addObstacle(new Wall(w, h * 0.81, w * 0.65, h * 0.83, 8));
 
-                // ===== 섹션 6 (75% ~ 90%) - 최종 구간 =====
-                world.addObstacle(new Bumper(w * 0.2, h * 0.8, 26));
-                world.addObstacle(new Bumper(w * 0.35, h * 0.82, 22));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.78, 30));
-                world.addObstacle(new Bumper(w * 0.65, h * 0.82, 22));
-                world.addObstacle(new Bumper(w * 0.8, h * 0.8, 26));
-                world.addObstacle(new Spinner(w * 0.25, h * 0.86, 50, 3));
-                world.addObstacle(new Spinner(w * 0.75, h * 0.86, 50, -3));
-                
-                // 중간 부스터
-                world.addObstacle(new Booster(w * 0.12, h * 0.84, -Math.PI / 3, 600));
-                world.addObstacle(new Booster(w * 0.88, h * 0.84, -Math.PI * 2 / 3, 600));
-                
-                // 골 직전 부스터 라인 (위로 쏘는 부스터들!)
-                world.addObstacle(new Booster(w * 0.15, h * 0.91, -Math.PI / 2, 600));
-                world.addObstacle(new Booster(w * 0.3, h * 0.93, -Math.PI / 2, 700));
-                world.addObstacle(new Booster(w * 0.5, h * 0.92, -Math.PI / 2, 750));
-                world.addObstacle(new Booster(w * 0.7, h * 0.93, -Math.PI / 2, 700));
-                world.addObstacle(new Booster(w * 0.85, h * 0.91, -Math.PI / 2, 600));
-                
-                world.addObstacle(new Triangle(w * 0.15, h * 0.96, 20, Math.PI / 4));
-                world.addObstacle(new Triangle(w * 0.5, h * 0.97, 22));
-                world.addObstacle(new Triangle(w * 0.85, h * 0.96, 20, -Math.PI / 4));
+                // ===== 최종 범퍼 존 (82~95%) =====
+                world.addObstacle(new Bumper(w * 0.3, h * 0.86, 32));
+                world.addObstacle(new Bumper(w * 0.5, h * 0.84, 38));
+                world.addObstacle(new Bumper(w * 0.7, h * 0.86, 32));
+                world.addObstacle(new Bumper(w * 0.2, h * 0.90, 28));
+                world.addObstacle(new Bumper(w * 0.5, h * 0.92, 30));
+                world.addObstacle(new Bumper(w * 0.8, h * 0.90, 28));
+
+                // ===== 골 직전 - 강력한 위로 쏘는 부스터 =====
+                world.addObstacle(new Booster(w * 0.2, h * 0.96, -Math.PI / 2, 900));
+                world.addObstacle(new Booster(w * 0.4, h * 0.97, -Math.PI / 2, 950));
+                world.addObstacle(new Booster(w * 0.6, h * 0.97, -Math.PI / 2, 950));
+                world.addObstacle(new Booster(w * 0.8, h * 0.96, -Math.PI / 2, 900));
             },
 
             funnel(world, baseW, baseH, scale) {
                 const w = baseW * scale;
                 const h = baseH * scale;
-                // ===== 포탈 5쌍 (병목 구간 회피) =====
-                // 병목: 15%, 45%, 75%
-                world.addObstacle(new Portal(w * 0.08, h * 0.04, w * 0.92, h * 0.12, PORTAL_COLORS[0]));  // 시안: 0-15% 구간 내
-                world.addObstacle(new Portal(w * 0.12, h * 0.20, w * 0.88, h * 0.40, PORTAL_COLORS[1])); // 핑크: 15-45% 구간 내
-                world.addObstacle(new Portal(w * 0.1, h * 0.50, w * 0.9, h * 0.70, PORTAL_COLORS[2]));   // 보라: 45-75% 구간 내
-                world.addObstacle(new Portal(w * 0.15, h * 0.80, w * 0.85, h * 0.92, PORTAL_COLORS[3])); // 초록: 75-100% 구간 내
-                world.addObstacle(new Portal(w * 0.2, h * 0.55, w * 0.8, h * 0.68, PORTAL_COLORS[4])); // 노랑: 45-75% 구간 내
+                // ===== 깔때기/미로 스타일 - 포탈/스피너/부스터 없음, 중력 흐름 =====
 
-                // ===== 레이어 1 (0% ~ 15%) - 상단 깔때기 + 밀집 핀 필드 =====
-                world.addObstacle(new Wall(5, h * 0.005, w * 0.18, h * 0.06, 6));
-                world.addObstacle(new Wall(w - 5, h * 0.005, w * 0.82, h * 0.06, 6));
-                world.addObstacle(new Spinner(w * 0.5, h * 0.03, 50, 3));
-                
-                // 첫 번째 핀 필드 - 8행으로 확장 (더 넓고 밀집)
-                for (let row = 0; row < 8; row++) {
-                    const cols = row % 2 === 0 ? 8 : 7;
-                    const baseOffsetX = row % 2 === 0 ? w / 16 : w / 16 + w / 16;
-                    for (let col = 0; col < cols; col++) {
-                        const x = baseOffsetX + col * (w / 8);
-                        const y = h * 0.045 + row * 28 * scale;
-                        world.addObstacle(new Peg(x, y, 5));
-                    }
-                }
-                
-                // 범퍼는 핀 필드 아래에 배치
-                world.addObstacle(new Bumper(w * 0.25, h * 0.14, 18));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.13, 20));
-                world.addObstacle(new Bumper(w * 0.75, h * 0.14, 18));
-
-                // ===== 병목 구간 1 (15%) =====
-                world.addObstacle(new Wall(0, h * 0.145, w * 0.36, h * 0.165, 8));
-                world.addObstacle(new Wall(w, h * 0.145, w * 0.64, h * 0.165, 8));
-
-                // ===== 레이어 2 (15% ~ 26%) - 두 번째 깔때기 =====
-                world.addObstacle(new Wall(w * 0.08, h * 0.15, w * 0.28, h * 0.22, 6));
-                world.addObstacle(new Wall(w * 0.92, h * 0.15, w * 0.72, h * 0.22, 6));
-                world.addObstacle(new Spinner(w * 0.25, h * 0.19, 50, -2.5));
-                world.addObstacle(new Spinner(w * 0.75, h * 0.19, 50, 2.5));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.21, 22));
-                world.addObstacle(new Triangle(w * 0.35, h * 0.24, 20));
-                world.addObstacle(new Triangle(w * 0.65, h * 0.24, 20));
-
-                // ===== 레이어 3 (26% ~ 38%) - 3갈래 분기 =====
-                world.addObstacle(new Wall(w * 0.15, h * 0.26, w * 0.3, h * 0.36, 6));
-                world.addObstacle(new Wall(w * 0.85, h * 0.26, w * 0.7, h * 0.36, 6));
-                world.addObstacle(new Wall(w * 0.42, h * 0.28, w * 0.42, h * 0.35, 5));
-                world.addObstacle(new Wall(w * 0.58, h * 0.28, w * 0.58, h * 0.35, 5));
-                world.addObstacle(new Bumper(w * 0.28, h * 0.32, 16));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.30, 18));
-                world.addObstacle(new Bumper(w * 0.72, h * 0.32, 16));
-                world.addObstacle(new Spinner(w * 0.28, h * 0.37, 40, 3));
-                world.addObstacle(new Spinner(w * 0.5, h * 0.38, 45, -2.5));
-                world.addObstacle(new Spinner(w * 0.72, h * 0.37, 40, 3));
-                // 분기점 부스터
-                world.addObstacle(new Booster(w * 0.2, h * 0.36, -Math.PI / 3, 550));
-                world.addObstacle(new Booster(w * 0.8, h * 0.36, -Math.PI * 2 / 3, 550));
-
-                // ===== 레이어 4 (38% ~ 50%) - 범퍼 필드 + 핀 =====
-                world.addObstacle(new Bumper(w * 0.15, h * 0.42, 18));
-                world.addObstacle(new Bumper(w * 0.35, h * 0.44, 16));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.42, 20));
-                world.addObstacle(new Bumper(w * 0.65, h * 0.44, 16));
-                world.addObstacle(new Bumper(w * 0.85, h * 0.42, 18));
-                world.addObstacle(new Booster(w * 0.1, h * 0.48, -Math.PI / 4, 700));
-                world.addObstacle(new Booster(w * 0.5, h * 0.45, -Math.PI / 2, 600));
-                world.addObstacle(new Booster(w * 0.9, h * 0.48, -Math.PI * 3 / 4, 700));
-
-                // ===== 병목 구간 2 (45%) =====
-                world.addObstacle(new Wall(0, h * 0.44, w * 0.34, h * 0.46, 8));
-                world.addObstacle(new Wall(w, h * 0.44, w * 0.66, h * 0.46, 8));
-
-                // 핀 필드 - 6행으로 확장
+                // ===== 1단계 깔때기 (0~12%) =====
+                world.addObstacle(new Wall(0, 0, w * 0.15, h * 0.08, 8));
+                world.addObstacle(new Wall(w, 0, w * 0.85, h * 0.08, 8));
+                // 핀 필드
                 for (let row = 0; row < 6; row++) {
                     const cols = row % 2 === 0 ? 7 : 6;
                     const baseOffsetX = row % 2 === 0 ? w / 14 : w / 14 + w / 14;
                     for (let col = 0; col < cols; col++) {
                         const x = baseOffsetX + col * (w / 7);
-                        const y = h * 0.46 + row * 26 * scale;
-                        world.addObstacle(new Peg(x, y, 5));
+                        const y = h * 0.02 + row * 25 * scale;
+                        world.addObstacle(new Peg(x, y, 6));
                     }
                 }
 
-                // ===== 레이어 5 (50% ~ 62%) - 스피너 존 =====
-                world.addObstacle(new Spinner(w * 0.15, h * 0.54, 50, 3));
-                world.addObstacle(new Spinner(w * 0.35, h * 0.57, 55, -2.5));
-                world.addObstacle(new Spinner(w * 0.5, h * 0.54, 60, 3));
-                world.addObstacle(new Spinner(w * 0.65, h * 0.57, 55, -2.5));
-                world.addObstacle(new Spinner(w * 0.85, h * 0.54, 50, 3));
-                world.addObstacle(new Booster(w * 0.25, h * 0.56, -Math.PI / 2, 500));
-                world.addObstacle(new Booster(w * 0.75, h * 0.56, -Math.PI / 2, 500));
-                world.addObstacle(new Wall(5, h * 0.58, w * 0.2, h * 0.64, 6));
-                world.addObstacle(new Wall(w - 5, h * 0.58, w * 0.8, h * 0.64, 6));
-                world.addObstacle(new Bumper(w * 0.35, h * 0.62, 16));
-                world.addObstacle(new Bumper(w * 0.65, h * 0.62, 16));
+                // ===== 좁아지는 통로 1 (12~20%) =====
+                world.addObstacle(new Wall(0, h * 0.11, w * 0.30, h * 0.18, 8));
+                world.addObstacle(new Wall(w, h * 0.11, w * 0.70, h * 0.18, 8));
+                world.addObstacle(new Triangle(w * 0.35, h * 0.16, 18));
+                world.addObstacle(new Triangle(w * 0.65, h * 0.16, 18));
 
-                // ===== 레이어 6 (62% ~ 74%) - 핀 밀집 구간 =====
+                // ===== 2단계 - 3갈래 분기 (20~35%) =====
+                world.addObstacle(new Wall(w * 0.10, h * 0.20, w * 0.25, h * 0.32, 6));
+                world.addObstacle(new Wall(w * 0.90, h * 0.20, w * 0.75, h * 0.32, 6));
+                world.addObstacle(new Wall(w * 0.40, h * 0.22, w * 0.40, h * 0.30, 5));
+                world.addObstacle(new Wall(w * 0.60, h * 0.22, w * 0.60, h * 0.30, 5));
+                // 각 통로에 핀
+                for (let row = 0; row < 4; row++) {
+                    // 좌측 통로
+                    world.addObstacle(new Peg(w * 0.18, h * 0.24 + row * 22 * scale, 5));
+                    // 중앙 통로
+                    world.addObstacle(new Peg(w * 0.50, h * 0.24 + row * 22 * scale, 5));
+                    // 우측 통로
+                    world.addObstacle(new Peg(w * 0.82, h * 0.24 + row * 22 * scale, 5));
+                }
+
+                // ===== 합류 지점 + 핀 필드 (35~50%) =====
+                world.addObstacle(new Wall(0, h * 0.34, w * 0.20, h * 0.42, 8));
+                world.addObstacle(new Wall(w, h * 0.34, w * 0.80, h * 0.42, 8));
                 for (let row = 0; row < 8; row++) {
-                    const cols = row % 2 === 0 ? 9 : 8;
-                    const baseOffsetX = row % 2 === 0 ? w / 18 : w / 18 + w / 18;
+                    const cols = row % 2 === 0 ? 8 : 7;
+                    const baseOffsetX = row % 2 === 0 ? w / 16 : w / 16 + w / 16;
                     for (let col = 0; col < cols; col++) {
-                        const x = baseOffsetX + col * (w / 9);
-                        const y = h * 0.64 + row * 30 * scale;
+                        const x = baseOffsetX + col * (w / 8);
+                        const y = h * 0.36 + row * 24 * scale;
                         world.addObstacle(new Peg(x, y, 5));
                     }
                 }
-                world.addObstacle(new Spinner(w * 0.25, h * 0.70, 45, -2));
-                world.addObstacle(new Spinner(w * 0.5, h * 0.68, 50, 2.5));
-                world.addObstacle(new Spinner(w * 0.75, h * 0.70, 45, -2));
-                // 레이어 6 하단 부스터
-                world.addObstacle(new Booster(w * 0.15, h * 0.73, -Math.PI / 3, 600));
-                world.addObstacle(new Booster(w * 0.85, h * 0.73, -Math.PI * 2 / 3, 600));
 
-                // ===== 병목 구간 3 (75%) - 최종 병목 =====
-                world.addObstacle(new Wall(0, h * 0.745, w * 0.38, h * 0.765, 8));
-                world.addObstacle(new Wall(w, h * 0.745, w * 0.62, h * 0.765, 8));
+                // ===== 좁아지는 통로 2 (50~58%) =====
+                world.addObstacle(new Wall(0, h * 0.50, w * 0.35, h * 0.56, 8));
+                world.addObstacle(new Wall(w, h * 0.50, w * 0.65, h * 0.56, 8));
+                world.addObstacle(new Triangle(w * 0.40, h * 0.54, 20));
+                world.addObstacle(new Triangle(w * 0.60, h * 0.54, 20));
 
-                // ===== 레이어 7 (74% ~ 86%) - 최종 깔때기 =====
-                world.addObstacle(new Wall(w * 0.08, h * 0.76, w * 0.28, h * 0.84, 6));
-                world.addObstacle(new Wall(w * 0.92, h * 0.76, w * 0.72, h * 0.84, 6));
-                world.addObstacle(new Triangle(w * 0.32, h * 0.80, 20));
-                world.addObstacle(new Triangle(w * 0.68, h * 0.80, 20));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.78, 20));
-                world.addObstacle(new Spinner(w * 0.4, h * 0.84, 45, 2.5));
-                world.addObstacle(new Spinner(w * 0.6, h * 0.84, 45, -2.5));
-                // 중앙 부스터
-                world.addObstacle(new Booster(w * 0.5, h * 0.82, -Math.PI / 2, 500));
+                // ===== 지그재그 구간 (58~72%) =====
+                world.addObstacle(new Wall(0, h * 0.58, w * 0.45, h * 0.62, 6));
+                world.addObstacle(new Wall(w, h * 0.64, w * 0.55, h * 0.68, 6));
+                world.addObstacle(new Wall(0, h * 0.70, w * 0.45, h * 0.74, 6));
+                // 핀
+                for (let row = 0; row < 6; row++) {
+                    const cols = 5;
+                    for (let col = 0; col < cols; col++) {
+                        const x = w * 0.25 + col * (w * 0.12);
+                        const y = h * 0.60 + row * 28 * scale;
+                        world.addObstacle(new Peg(x, y, 5));
+                    }
+                }
 
-                // ===== 레이어 8 (86% ~ 95%) - 최하단 =====
-                world.addObstacle(new Bumper(w * 0.2, h * 0.88, 18));
-                world.addObstacle(new Bumper(w * 0.35, h * 0.90, 16));
-                world.addObstacle(new Bumper(w * 0.5, h * 0.87, 20));
-                world.addObstacle(new Bumper(w * 0.65, h * 0.90, 16));
-                world.addObstacle(new Bumper(w * 0.8, h * 0.88, 18));
-                
-                // 골 직전 부스터 라인 (위로 쏘는 부스터들!)
-                world.addObstacle(new Booster(w * 0.12, h * 0.92, -Math.PI / 2, 600));
-                world.addObstacle(new Booster(w * 0.28, h * 0.94, -Math.PI / 2, 700));
-                world.addObstacle(new Booster(w * 0.5, h * 0.95, -Math.PI / 2, 750));
-                world.addObstacle(new Booster(w * 0.72, h * 0.94, -Math.PI / 2, 700));
-                world.addObstacle(new Booster(w * 0.88, h * 0.92, -Math.PI / 2, 600));
-                
-                world.addObstacle(new Spinner(w * 0.15, h * 0.96, 30, 3));
-                world.addObstacle(new Spinner(w * 0.85, h * 0.96, 30, -3));
+                // ===== 최종 깔때기 (72~85%) =====
+                world.addObstacle(new Wall(0, h * 0.74, w * 0.28, h * 0.82, 8));
+                world.addObstacle(new Wall(w, h * 0.74, w * 0.72, h * 0.82, 8));
+                world.addObstacle(new Triangle(w * 0.35, h * 0.78, 22));
+                world.addObstacle(new Triangle(w * 0.65, h * 0.78, 22));
+                // 밀집 핀 필드
+                for (let row = 0; row < 5; row++) {
+                    const cols = row % 2 === 0 ? 6 : 5;
+                    const baseOffsetX = row % 2 === 0 ? w / 12 + w * 0.15 : w / 12 + w / 12 + w * 0.15;
+                    for (let col = 0; col < cols; col++) {
+                        const x = baseOffsetX + col * (w / 8);
+                        const y = h * 0.76 + row * 22 * scale;
+                        world.addObstacle(new Peg(x, y, 5));
+                    }
+                }
+
+                // ===== 최종 좁은 통로 (85~92%) =====
+                world.addObstacle(new Wall(0, h * 0.85, w * 0.38, h * 0.90, 8));
+                world.addObstacle(new Wall(w, h * 0.85, w * 0.62, h * 0.90, 8));
+                world.addObstacle(new Triangle(w * 0.42, h * 0.88, 18));
+                world.addObstacle(new Triangle(w * 0.58, h * 0.88, 18));
+
+                // ===== 골 직전 핀 (92~98%) =====
+                for (let row = 0; row < 3; row++) {
+                    const cols = row % 2 === 0 ? 5 : 4;
+                    const baseOffsetX = row % 2 === 0 ? w / 10 + w * 0.2 : w / 10 + w / 10 + w * 0.2;
+                    for (let col = 0; col < cols; col++) {
+                        const x = baseOffsetX + col * (w / 7);
+                        const y = h * 0.92 + row * 25 * scale;
+                        world.addObstacle(new Peg(x, y, 6));
+                    }
+                }
                 world.addObstacle(new Triangle(w * 0.35, h * 0.97, 16));
+                world.addObstacle(new Triangle(w * 0.50, h * 0.96, 18));
                 world.addObstacle(new Triangle(w * 0.65, h * 0.97, 16));
             }
         };
