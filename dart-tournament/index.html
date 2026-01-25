@@ -954,19 +954,34 @@
         osc.connect(gain); gain.connect(this.ctx.destination);
         osc.start(); osc.stop(this.ctx.currentTime + 0.3);
       }
+      playAim() {
+        if (!this.enabled || !this.ctx) return;
+        this.init();
+        // Tension building sound - rising tone
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(300, this.ctx.currentTime + 0.6);
+        gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.08, this.ctx.currentTime + 0.5);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.7);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + 0.7);
+      }
       playThrow() {
         if (!this.enabled || !this.ctx) return;
         this.init();
-        // Whoosh sound
+        // Whoosh sound - more dramatic
         const noise = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         noise.type = 'sawtooth';
-        noise.frequency.setValueAtTime(200, this.ctx.currentTime);
-        noise.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.2);
-        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+        noise.frequency.setValueAtTime(300, this.ctx.currentTime);
+        noise.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.35);
+        gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.35);
         noise.connect(gain); gain.connect(this.ctx.destination);
-        noise.start(); noise.stop(this.ctx.currentTime + 0.2);
+        noise.start(); noise.stop(this.ctx.currentTime + 0.35);
       }
       playHit(score) {
         if (!this.enabled || !this.ctx) return;
@@ -1190,8 +1205,8 @@
           drawDartBackView(d.x, d.y, d.color, 0.5, d.name);
         });
 
-        // Draw flying dart
-        if (dart && dart.flying) {
+        // Draw aiming or flying dart
+        if (dart && (dart.flying || gamePhase === 'AIMING')) {
           drawDartBackView(dart.x, dart.y, dart.color, dart.scale, null);
         }
 
@@ -1284,18 +1299,22 @@
 
         ctx.restore();
 
-        // Draw player name above the dart
+        // Draw player name above the dart (1.5x larger)
         if (name) {
           ctx.save();
-          ctx.font = `bold ${Math.max(10, 12 * scale)}px 'Noto Sans KR'`;
+          ctx.font = `bold ${Math.max(14, 18)}px 'Noto Sans KR'`;
           ctx.fillStyle = color;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'bottom';
-          ctx.shadowColor = 'rgba(0,0,0,0.8)';
-          ctx.shadowBlur = 3;
-          ctx.shadowOffsetX = 1;
-          ctx.shadowOffsetY = 1;
-          ctx.fillText(name, x, y - 15 * scale);
+          ctx.shadowColor = 'rgba(0,0,0,0.9)';
+          ctx.shadowBlur = 4;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          // Add white stroke for better visibility
+          ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+          ctx.lineWidth = 3;
+          ctx.strokeText(name, x, y - 20);
+          ctx.fillText(name, x, y - 20);
           ctx.restore();
         }
       }
@@ -1401,24 +1420,42 @@
       function update(deltaTime) {
         const speedMult = getSpeedMultiplier();
 
+        // Aiming phase - dart hovers before throwing
+        if (gamePhase === 'AIMING' && dart) {
+          dart.aimTime += deltaTime;
+          // Wobble effect while aiming
+          dart.x = dart.startX + Math.sin(dart.aimTime * 8) * 3;
+          dart.y = dart.startY + Math.sin(dart.aimTime * 6) * 2;
+          dart.scale = 1.8 + Math.sin(dart.aimTime * 4) * 0.05;
+
+          if (dart.aimTime >= 0.8) {
+            gamePhase = 'THROWING';
+            dart.flying = true;
+            soundManager.playThrow();
+          }
+        }
+
         if (gamePhase === 'THROWING' && dart && dart.flying) {
-          // Update flight progress (0 to 1)
-          dart.progress += deltaTime * speedMult * 1.2;
+          // Slower flight for more tension (0.7 instead of 1.2)
+          dart.progress += deltaTime * speedMult * 0.7;
 
           if (dart.progress < 1) {
             const t = dart.progress;
+            // Ease out for dramatic slow-down at the end
+            const easeT = 1 - Math.pow(1 - t, 2);
 
-            // X: linear interpolation
-            dart.x = dart.startX + (dart.targetX - dart.startX) * t;
+            // X: with slight wobble
+            const wobble = Math.sin(t * 20) * (1 - t) * 5;
+            dart.x = dart.startX + (dart.targetX - dart.startX) * easeT + wobble;
 
             // Y: parabolic trajectory (rises then falls with gravity)
-            const yLinear = dart.startY + (dart.targetY - dart.startY) * t;
-            const peakHeight = 60;
+            const yLinear = dart.startY + (dart.targetY - dart.startY) * easeT;
+            const peakHeight = 50;
             const yOffset = peakHeight * Math.sin(t * Math.PI) * (1 - t * 0.3);
             dart.y = yLinear - yOffset;
 
             // Scale: starts large (1.8), ends small (0.5) - perspective effect
-            dart.scale = 1.8 - (1.8 - 0.5) * t;
+            dart.scale = 1.8 - (1.8 - 0.5) * easeT;
           } else {
             // Dart has landed
             dart.flying = false;
@@ -1500,10 +1537,10 @@
         if (!gameRunning || gamePhase === 'GAME_END') return;
 
         const player = participants[currentPlayerIndex];
-        gameStatus.textContent = `${player.name}의 차례! (${currentDartInTurn + 1}/${DARTS_PER_TURN})`;
-        gamePhase = 'THROWING';
+        gameStatus.textContent = `${player.name} 조준 중... (${currentDartInTurn + 1}/${DARTS_PER_TURN})`;
+        gamePhase = 'AIMING';
 
-        soundManager.playThrow();
+        soundManager.playAim();
 
         // Calculate target position with randomness
         const angle = Math.random() * Math.PI * 2;
@@ -1524,9 +1561,10 @@
           targetX: boardCenter.x + Math.cos(angle) * distance,
           targetY: boardCenter.y + Math.sin(angle) * distance,
           color: player.color,
-          flying: true,
+          flying: false,
           scale: 1.8,
-          progress: 0
+          progress: 0,
+          aimTime: 0
         };
       }
 
