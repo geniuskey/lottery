@@ -149,7 +149,7 @@
       gap: 8px;
     }
 
-    .help-btn {
+    .help-btn, .sound-btn {
       width: 32px;
       height: 32px;
       border-radius: 8px;
@@ -164,7 +164,7 @@
       transition: all 0.3s;
     }
 
-    .help-btn:hover {
+    .help-btn:hover, .sound-btn:hover {
       background: rgba(139, 92, 246, 0.4);
       transform: translateY(-2px);
     }
@@ -609,6 +609,7 @@
       <div class="sidebar-header">
         <h1><span class="emoji">🚀</span> <span class="title-text">우주 경주</span></h1>
         <div class="header-btns">
+          <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
           <button class="help-btn" id="helpBtn">?</button>
         </div>
       </div>
@@ -710,6 +711,7 @@
     let audioCtx = null;
     let bgmOsc = null;
     let bgmGain = null;
+    let soundEnabled = true;
 
     function initAudio() {
       if (!audioCtx) {
@@ -720,8 +722,21 @@
       }
     }
 
+    function setupSoundToggle() {
+      const btn = document.getElementById('soundToggle');
+      if (btn) {
+        btn.onclick = () => {
+          soundEnabled = !soundEnabled;
+          btn.textContent = soundEnabled ? '🔊' : '🔇';
+          if (!soundEnabled) {
+            stopBGM();
+          }
+        };
+      }
+    }
+
     function playEngineSound() {
-      if (!audioCtx) return;
+      if (!audioCtx || !soundEnabled) return;
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = 'sawtooth';
@@ -736,7 +751,7 @@
     }
 
     function playCollisionSound() {
-      if (!audioCtx) return;
+      if (!audioCtx || !soundEnabled) return;
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = 'square';
@@ -751,7 +766,7 @@
     }
 
     function playBoosterSound() {
-      if (!audioCtx) return;
+      if (!audioCtx || !soundEnabled) return;
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = 'sine';
@@ -767,7 +782,7 @@
     }
 
     function playFinishSound() {
-      if (!audioCtx) return;
+      if (!audioCtx || !soundEnabled) return;
       const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
       notes.forEach((freq, i) => {
         const osc = audioCtx.createOscillator();
@@ -785,7 +800,7 @@
     }
 
     function playVictorySound() {
-      if (!audioCtx) return;
+      if (!audioCtx || !soundEnabled) return;
       const melody = [523, 659, 784, 659, 784, 1047];
       melody.forEach((freq, i) => {
         const osc = audioCtx.createOscillator();
@@ -803,7 +818,7 @@
     }
 
     function startBGM() {
-      if (!audioCtx) return;
+      if (!audioCtx || !soundEnabled) return;
       stopBGM();
       bgmOsc = audioCtx.createOscillator();
       bgmGain = audioCtx.createGain();
@@ -1445,6 +1460,7 @@
 
     // Init
     loadSettings();
+    setupSoundToggle();
     resize();
     draw();
   </script>

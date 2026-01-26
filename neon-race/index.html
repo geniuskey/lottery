@@ -616,6 +616,12 @@
                     '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐻‍❄️','🐨','🐯','🦁','🐮','🐷','🐵','🐔','🐧','🐦','🐤','🐣','🦉','🐺'
                 ];
                 this.colors = ['#ff007f', '#00f2ff', '#bc13fe', '#ffdd00', '#39ff14', '#ff4d00'];
+
+                // Background elements
+                this.stars = [];
+                this.buildings = [];
+                this.gridOffset = 0;
+                this.initBackground();
                 this.items = [
                     { id: 'nitro', icon: '🚀', chance: 0.4 },
                     { id: 'shield', icon: '🛡️', chance: 0.3 },
@@ -631,16 +637,69 @@
                 const wrapper = this.canvas.parentElement;
                 this.canvas.width = wrapper.clientWidth;
                 this.canvas.height = wrapper.clientHeight;
-                
+
                 // 축하용 캔버스 크기 (전체 화면)
                 this.celebCanvas.width = window.innerWidth;
                 this.celebCanvas.height = window.innerHeight;
-                
+
                 const padding = 50;
                 this.minimapRect = {
                     x: padding, y: this.canvas.height - 60,
                     w: this.canvas.width - padding * 2, h: 40
                 };
+
+                // Reinitialize background on resize
+                this.initBackground();
+            }
+
+            initBackground() {
+                // Generate stars
+                this.stars = [];
+                for (let i = 0; i < 60; i++) {
+                    this.stars.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * (this.canvas.height * 0.18),
+                        size: Math.random() * 2 + 0.5,
+                        brightness: Math.random(),
+                        twinkleSpeed: 0.02 + Math.random() * 0.03
+                    });
+                }
+
+                // Generate buildings for cityscape
+                this.buildings = [];
+                const buildingCount = 25;
+                for (let i = 0; i < buildingCount; i++) {
+                    const baseWidth = 40 + Math.random() * 80;
+                    const height = 50 + Math.random() * 120;
+                    const windowCols = Math.floor(Math.random() * 6) + 3;
+                    const windowRows = Math.floor(height / 20);
+
+                    // 창문 상태를 미리 생성 (켜짐/꺼짐)
+                    const windowStates = [];
+                    for (let row = 0; row < windowRows; row++) {
+                        windowStates[row] = [];
+                        for (let col = 0; col < windowCols; col++) {
+                            windowStates[row][col] = {
+                                on: Math.random() > 0.3,
+                                nextToggle: Math.random() * 300 + 100, // 100-400 프레임 후 토글
+                                color: Math.random() > 0.7 ? 'neon' : 'warm'
+                            };
+                        }
+                    }
+
+                    this.buildings.push({
+                        x: (i / buildingCount) * this.canvas.width * 1.2,
+                        width: baseWidth,
+                        height: height,
+                        color: this.colors[Math.floor(Math.random() * this.colors.length)],
+                        windowCols: windowCols,
+                        windowRows: windowRows,
+                        windowStates: windowStates,
+                        parallax: 0.1 + Math.random() * 0.2
+                    });
+                }
+
+                this.frameCount = 0;
             }
 
             bindEvents() {
@@ -674,32 +733,39 @@
                 this.isCelebrating = false; // 축하 애니메이션 중단
                 this.raceLength = raceLength;
                 this.obstacleDensity = density;
-                const laneHeight = (this.canvas.height - 100) / (names.length + 1);
-                
+
+                // 트랙 영역 계산 (빌딩 라인 아래)
+                const trackTop = this.canvas.height * 0.22 + 15; // 빌딩 라인 + 여유
+                const trackBottom = this.canvas.height - 75; // 미니맵 위
+                const trackHeight = trackBottom - trackTop;
+                const laneHeight = trackHeight / (names.length + 1);
+
                 // 순서 셔플 로직
                 const displayNames = shouldShuffle ? [...names].sort(() => Math.random() - 0.5) : names;
 
                 this.players = displayNames.map((name, i) => ({
-                    name, 
+                    name,
                     emoji: this.emojis[Math.floor(Math.random() * this.emojis.length)],
                     color: this.colors[i % this.colors.length],
-                    x: 100, y: laneHeight * (i + 1) + 20,
-                    baseY: laneHeight * (i + 1) + 20,
+                    x: 100, y: trackTop + laneHeight * (i + 0.5),
+                    baseY: trackTop + laneHeight * (i + 0.5),
                     vx: 0, vy: 0,
                     speed: 4 + Math.random() * 3,
                     accel: 0.15 + Math.random() * 0.15,
                     trail: [], finished: false, finishTime: 0, rank: 0,
                     collisionTimer: 0, item: null, itemTimer: 0,
-                    isGhost: false, hasShield: false
+                    isGhost: false, hasShield: false,
+                    trackTop: trackTop,
+                    trackBottom: trackBottom
                 }));
 
                 this.obstacles = [];
                 const obstacleCount = Math.floor(density * (raceLength / 6000) * 0.8);
-                const yBucketSize = (this.canvas.height - 120) / obstacleCount;
+                const yBucketSize = trackHeight / obstacleCount;
                 for (let i = 0; i < obstacleCount; i++) {
                     this.obstacles.push({
                         x: 800 + Math.random() * (this.raceLength - 1500),
-                        y: 40 + (i * yBucketSize) + Math.random() * yBucketSize,
+                        y: trackTop + (i * yBucketSize) + Math.random() * yBucketSize,
                         type: Math.random() > 0.6 ? 'boost' : 'slow',
                         size: 50 + Math.random() * 30,
                         angle: Math.random() * Math.PI * 2,
@@ -712,10 +778,14 @@
                 for (let i = 0; i < boxCount; i++) {
                     this.itemBoxes.push({
                         x: 1500 + (i * 1200) + (Math.random() * 400),
-                        y: Math.random() * (this.canvas.height - 120) + 40,
+                        y: trackTop + Math.random() * trackHeight,
                         size: 40, angle: 0, active: true
                     });
                 }
+
+                // 트랙 영역 저장
+                this.trackTop = trackTop;
+                this.trackBottom = trackBottom;
 
                 this.particles = [];
                 const confettiContainer = document.getElementById('confettiContainer');
@@ -843,19 +913,19 @@
                     p.y += p.vy * dtScale;
                     // ---------------------------------------
 
-                    // 탄성 높은 노란 Bar 충돌 (상하)
-                    const barH = 8;
-                    const bounceMargin = 15; // 캐릭터 반경 대략값
-                    if (p.y < barH + bounceMargin) { 
-                        p.y = barH + bounceMargin; 
-                        p.vy = Math.abs(p.vy) + 15; // 탕! 하고 튕김
-                        this.shake = 5;
-                        this.addParticles(p.x, p.y, '#ffd700', 5);
+                    // 탄성 높은 Bar 충돌 (트랙 상하 경계)
+                    const bounceMargin = 18; // 캐릭터 반경
+                    const topBound = p.trackTop + bounceMargin;
+                    const bottomBound = p.trackBottom - bounceMargin;
+
+                    if (p.y < topBound) {
+                        p.y = topBound;
+                        p.vy = Math.abs(p.vy) + 12; // 탕! 하고 튕김
+                        this.addParticles(p.x, p.y, '#ff007f', 5);
                     }
-                    if (p.y > this.canvas.height - 80 - barH - bounceMargin) { 
-                        p.y = this.canvas.height - 80 - barH - bounceMargin; 
-                        p.vy = -(Math.abs(p.vy) + 15); // 탕! 하고 튕김
-                        this.shake = 5;
+                    if (p.y > bottomBound) {
+                        p.y = bottomBound;
+                        p.vy = -(Math.abs(p.vy) + 12); // 탕! 하고 튕김
                         this.addParticles(p.x, p.y, '#ffd700', 5);
                     }
 
@@ -899,7 +969,7 @@
                         if (dist < obs.size / 2 && p.collisionTimer <= 0 && !p.isGhost) {
                             const nx = dx / dist; const ny = dy / dist; const tx = -ny; const ty = nx;
                             const surfaceSpeed = (obs.size / 2) * obs.rotSpeed * 15;
-                            if (obs.type === 'boost') { p.vx += nx * 15 + tx * surfaceSpeed; p.vy += ny * 15 + ty * surfaceSpeed; this.shake = 10; this.addParticles(p.x, p.y, '#00f2ff', 8); this.sound.playBoost(); }
+                            if (obs.type === 'boost') { p.vx += nx * 15 + tx * surfaceSpeed; p.vy += ny * 15 + ty * surfaceSpeed; this.addParticles(p.x, p.y, '#00f2ff', 8); this.sound.playBoost(); }
                             else if (!p.hasShield) {
                                 p.vx = nx * 5 + tx * surfaceSpeed * 0.5;
                                 const vDir = Math.abs(ny) < 0.1 ? (Math.random() > 0.5 ? 1 : -1) : Math.sign(ny);
@@ -919,6 +989,53 @@
                         this.updateRankingUI();
                     }
                 });
+
+                // 참여자 간 충돌 처리
+                for (let i = 0; i < this.players.length; i++) {
+                    const p1 = this.players[i];
+                    if (p1.finished) continue;
+
+                    for (let j = i + 1; j < this.players.length; j++) {
+                        const p2 = this.players[j];
+                        if (p2.finished) continue;
+
+                        const dx = p2.x - p1.x;
+                        const dy = p2.y - p1.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        const minDist = 35; // 충돌 거리
+
+                        if (dist < minDist && dist > 0) {
+                            // 충돌! 서로 밀어내기
+                            const nx = dx / dist;
+                            const ny = dy / dist;
+                            const overlap = minDist - dist;
+
+                            // 위치 보정
+                            p1.x -= nx * overlap * 0.5;
+                            p1.y -= ny * overlap * 0.5;
+                            p2.x += nx * overlap * 0.5;
+                            p2.y += ny * overlap * 0.5;
+
+                            // 속도 교환 (탄성 충돌)
+                            const relVx = p1.vx - p2.vx;
+                            const relVy = p1.vy - p2.vy;
+                            const impactSpeed = relVx * nx + relVy * ny;
+
+                            if (impactSpeed > 0) {
+                                const bounce = 0.8;
+                                p1.vx -= impactSpeed * nx * bounce;
+                                p1.vy -= impactSpeed * ny * bounce + (Math.random() - 0.5) * 8;
+                                p2.vx += impactSpeed * nx * bounce;
+                                p2.vy += impactSpeed * ny * bounce + (Math.random() - 0.5) * 8;
+
+                                // 파티클 이펙트
+                                const midX = (p1.x + p2.x) / 2;
+                                const midY = (p1.y + p2.y) / 2;
+                                this.addParticles(midX, midY, '#ffffff', 5);
+                            }
+                        }
+                    }
+                }
 
                 if (this.isAutoTracking && !this.isDraggingMinimap) {
                     const activePlayers = this.players.filter(p => !p.finished);
@@ -1076,33 +1193,158 @@
             draw() {
                 const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
                 const cctx = this.celebCtx;
-                
-                // 메인 게임 캔버스 초기화
-                ctx.fillStyle = '#020617'; ctx.fillRect(0, 0, w, h);
-                
+
+                // 메인 게임 캔버스 초기화 - 그라데이션 배경
+                const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+                bgGrad.addColorStop(0, '#0a0015');
+                bgGrad.addColorStop(0.3, '#020617');
+                bgGrad.addColorStop(1, '#0d0d2b');
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, w, h);
+
                 // 축하용 캔버스 초기화
                 cctx.clearRect(0, 0, this.celebCanvas.width, this.celebCanvas.height);
 
+                // ===== 배경 요소 그리기 =====
+                // 1. 별 그리기
+                this.stars.forEach(star => {
+                    star.brightness += star.twinkleSpeed;
+                    const alpha = 0.3 + Math.abs(Math.sin(star.brightness)) * 0.7;
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                    ctx.fill();
+                });
+
+                // 2. 네온 그리드 (트랙 하단, 미니맵 위)
+                this.gridOffset += 0.5;
+                const gridY = h - 70;
+                const gridH = 25;
+                const gridGrad = ctx.createLinearGradient(0, gridY, 0, gridY + gridH);
+                gridGrad.addColorStop(0, 'rgba(188, 19, 254, 0.25)');
+                gridGrad.addColorStop(1, 'rgba(188, 19, 254, 0)');
+                ctx.fillStyle = gridGrad;
+                ctx.fillRect(0, gridY, w, gridH);
+
+                // 그리드 라인
+                ctx.strokeStyle = 'rgba(0, 242, 255, 0.12)';
+                ctx.lineWidth = 1;
+                const gridSpacing = 40;
+                for (let x = -this.gridOffset % gridSpacing; x < w; x += gridSpacing) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, gridY);
+                    ctx.lineTo(x + 15, gridY + gridH);
+                    ctx.stroke();
+                }
+
+                // 3. 빌딩 스카이라인 (패럴랙스) - 트랙 위쪽에 배치
+                this.trackTopY = h * 0.22; // 트랙 시작 Y 좌표 (더 높게)
+                const buildingBaseY = this.trackTopY;
+
+                this.frameCount = (this.frameCount || 0) + 1;
+
+                this.buildings.forEach(b => {
+                    const parallaxX = (b.x - (this.cameraX * b.parallax)) % (w * 1.2);
+                    const bx = parallaxX < -b.width ? parallaxX + w * 1.2 : parallaxX;
+
+                    // 빌딩 본체
+                    ctx.fillStyle = 'rgba(10, 10, 30, 0.95)';
+                    ctx.fillRect(bx, buildingBaseY - b.height, b.width, b.height);
+
+                    // 빌딩 테두리 네온
+                    ctx.strokeStyle = b.color;
+                    ctx.lineWidth = 1;
+                    ctx.globalAlpha = 0.4;
+                    ctx.strokeRect(bx, buildingBaseY - b.height, b.width, b.height);
+                    ctx.globalAlpha = 1;
+
+                    // 창문 (천천히 블링킹)
+                    const winW = (b.width - 10) / b.windowCols;
+                    const winH = 8;
+                    for (let row = 0; row < b.windowRows; row++) {
+                        for (let col = 0; col < b.windowCols; col++) {
+                            const ws = b.windowStates[row][col];
+
+                            // 천천히 토글
+                            ws.nextToggle--;
+                            if (ws.nextToggle <= 0) {
+                                ws.on = !ws.on;
+                                ws.nextToggle = Math.random() * 400 + 150; // 150-550 프레임
+                            }
+
+                            if (ws.on) {
+                                const wx = bx + 5 + col * winW;
+                                const wy = buildingBaseY - b.height + 10 + row * 18;
+                                const winColor = ws.color === 'neon' ? b.color : 'rgba(255, 220, 150, 0.7)';
+                                ctx.fillStyle = winColor;
+                                ctx.fillRect(wx, wy, winW - 3, winH);
+                            }
+                        }
+                    }
+
+                    // 옥상 안테나/네온사인 (고정, 랜덤 아님)
+                    if (b.height > 80) {
+                        ctx.strokeStyle = b.color;
+                        ctx.lineWidth = 2;
+                        ctx.shadowBlur = 10;
+                        ctx.shadowColor = b.color;
+                        ctx.beginPath();
+                        ctx.moveTo(bx + b.width / 2, buildingBaseY - b.height);
+                        ctx.lineTo(bx + b.width / 2, buildingBaseY - b.height - 15);
+                        ctx.stroke();
+                        ctx.shadowBlur = 0;
+                    }
+                });
+
+                // 4. 수평선 네온 라인 (트랙 상단 경계)
+                ctx.strokeStyle = '#ff007f';
+                ctx.lineWidth = 3;
+                ctx.shadowBlur = 25;
+                ctx.shadowColor = '#ff007f';
+                ctx.beginPath();
+                ctx.moveTo(0, buildingBaseY);
+                ctx.lineTo(w, buildingBaseY);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                // 트랙 영역 배경 (빌딩 라인 아래)
+                const trackGrad = ctx.createLinearGradient(0, buildingBaseY, 0, h);
+                trackGrad.addColorStop(0, 'rgba(2, 6, 23, 0.95)');
+                trackGrad.addColorStop(1, 'rgba(13, 13, 43, 0.9)');
+                ctx.fillStyle = trackGrad;
+                ctx.fillRect(0, buildingBaseY, w, h - buildingBaseY);
+
+                // ===== 게임 요소 그리기 =====
                 ctx.save();
                 if (this.shake > 0.1) ctx.translate((Math.random()-0.5)*this.shake, (Math.random()-0.5)*this.shake);
-                
+
                 // 게임 요소는 카메라 좌표계 사용
                 ctx.save();
                 ctx.translate(-this.cameraX, 0);
-                
-                // 상하 탄성 Bar 그리기
-                ctx.fillStyle = '#ffd700';
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = '#ffd700';
-                ctx.fillRect(this.cameraX, 0, this.canvas.width, 8);
-                ctx.fillRect(this.cameraX, h - 88, this.canvas.width, 8);
+
+                // 트랙 상하 경계 바 그리기
+                const trackTop = this.trackTop || h * 0.38 + 15;
+                const trackBottom = this.trackBottom || h - 75;
+
+                // 상단 바 (핑크 네온 - 빌딩 라인과 일치)
+                ctx.fillStyle = '#ff007f';
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = '#ff007f';
+                ctx.fillRect(this.cameraX, trackTop - 5, this.canvas.width, 5);
                 ctx.shadowBlur = 0;
 
-                // 가이드 라인
+                // 하단 바 (골드)
+                ctx.fillStyle = '#ffd700';
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = '#ffd700';
+                ctx.fillRect(this.cameraX, trackBottom, this.canvas.width, 5);
+                ctx.shadowBlur = 0;
+
+                // 가이드 라인 (트랙 영역 내)
                 ctx.strokeStyle = 'rgba(0, 242, 255, 0.05)';
                 ctx.lineWidth = 1;
                 for (let i = 0; i < this.raceLength + 2000; i += 200) {
-                    ctx.beginPath(); ctx.moveTo(i, 8); ctx.lineTo(i, h - 88); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(i, trackTop); ctx.lineTo(i, trackBottom); ctx.stroke();
                 }
                 this.obstacles.forEach(obs => {
                     const isBoost = obs.type === 'boost';
@@ -1130,7 +1372,7 @@
                 const finishX = this.raceLength;
                 const grad = ctx.createLinearGradient(finishX - 50, 0, finishX + 50, 0);
                 grad.addColorStop(0, 'transparent'); grad.addColorStop(0.5, '#ff007f'); grad.addColorStop(1, 'transparent');
-                ctx.fillStyle = grad; ctx.fillRect(finishX - 50, 8, 100, h - 96);
+                ctx.fillStyle = grad; ctx.fillRect(finishX - 50, trackTop, 100, trackBottom - trackTop);
                 this.players.forEach(p => {
                     if (p.trail.length > 1) {
                         ctx.save(); ctx.shadowBlur = 15; ctx.shadowColor = p.color; ctx.strokeStyle = p.color; ctx.lineWidth = 4; ctx.lineCap = 'round';
