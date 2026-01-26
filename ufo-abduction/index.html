@@ -1369,17 +1369,36 @@
           if (p.y > groundBounds.y + groundBounds.h - margin) { p.y = groundBounds.y + groundBounds.h - margin; p.vy *= -0.5; }
         });
 
-        // Collision between participants
+        // Repulsion between participants (like gas molecules)
+        const repulsionStrength = 800;
+        const repulsionRange = 150;
         for (let i = 0; i < participants.length; i++) {
           const p1 = participants[i];
           if (!p1.alive || p1.beingAbducted) continue;
           for (let j = i + 1; j < participants.length; j++) {
             const p2 = participants[j];
             if (!p2.alive || p2.beingAbducted) continue;
-            const d = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const d = Math.hypot(dx, dy);
+
+            if (d < repulsionRange && d > 1) {
+              // Inverse square repulsion force
+              const force = repulsionStrength / (d * d) * dt60;
+              const angle = Math.atan2(dy, dx);
+              const fx = Math.cos(angle) * force;
+              const fy = Math.sin(angle) * force;
+
+              p1.vx -= fx;
+              p1.vy -= fy;
+              p2.vx += fx;
+              p2.vy += fy;
+            }
+
+            // Hard collision (prevent overlap)
             const min = p1.radius + p2.radius;
             if (d < min && d > 0) {
-              const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+              const angle = Math.atan2(dy, dx);
               const push = (min - d) / 2;
               p1.x -= Math.cos(angle) * push;
               p1.y -= Math.sin(angle) * push;
