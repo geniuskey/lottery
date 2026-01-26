@@ -705,6 +705,137 @@
     const winnerModal = document.getElementById('winnerModal');
     const winnerCards = document.getElementById('winnerCards');
 
+    // ===== Sound System =====
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+    let bgmOsc = null;
+    let bgmGain = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playEngineSound() {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(80, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.2);
+    }
+
+    function playCollisionSound() {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.3);
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.3);
+    }
+
+    function playBoosterSound() {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.15);
+      osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.3);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.3);
+    }
+
+    function playFinishSound() {
+      if (!audioCtx) return;
+      const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+      notes.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, audioCtx.currentTime + i * 0.1);
+        gain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + i * 0.1 + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.1 + 0.4);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + i * 0.1);
+        osc.stop(audioCtx.currentTime + i * 0.1 + 0.4);
+      });
+    }
+
+    function playVictorySound() {
+      if (!audioCtx) return;
+      const melody = [523, 659, 784, 659, 784, 1047];
+      melody.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, audioCtx.currentTime + i * 0.15);
+        gain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + i * 0.15 + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.15 + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + i * 0.15);
+        osc.stop(audioCtx.currentTime + i * 0.15 + 0.3);
+      });
+    }
+
+    function startBGM() {
+      if (!audioCtx) return;
+      stopBGM();
+      bgmOsc = audioCtx.createOscillator();
+      bgmGain = audioCtx.createGain();
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+
+      bgmOsc.type = 'sine';
+      bgmOsc.frequency.value = 60;
+      lfo.type = 'sine';
+      lfo.frequency.value = 0.5;
+      lfoGain.gain.value = 20;
+
+      lfo.connect(lfoGain);
+      lfoGain.connect(bgmOsc.frequency);
+      bgmOsc.connect(bgmGain);
+      bgmGain.connect(audioCtx.destination);
+      bgmGain.gain.value = 0.03;
+
+      bgmOsc.start();
+      lfo.start();
+    }
+
+    function stopBGM() {
+      if (bgmOsc) {
+        try { bgmOsc.stop(); } catch(e) {}
+        bgmOsc = null;
+      }
+      if (bgmGain) {
+        bgmGain = null;
+      }
+    }
+
     const STORAGE_KEY = 'space-race-settings';
     const SHIP_EMOJIS = ['🚀', '🛸', '🚁', '✈️', '🛩️', '🚂', '🏎️', '🏍️', '⛵', '🚤', '🛶', '🎈', '🪁', '🛷', '🦅', '🦋', '🐝', '🐦', '🦜', '🦢'];
 
@@ -883,6 +1014,7 @@
           ship.finishTime = Date.now();
           finishOrder.push(ship);
           createParticles(ship.x, ship.y, ship.color, 20);
+          playFinishSound();
         }
 
         // Check asteroid collision
@@ -893,6 +1025,7 @@
             ship.x -= 30;
             if (ship.x < 50) ship.x = 50;
             createParticles(ship.x, ship.y, '#ff6b6b', 10);
+            playCollisionSound();
           }
         });
 
@@ -902,6 +1035,7 @@
           if (dist < 25) {
             ship.boostTimer = 1.5;
             createParticles(b.x, b.y, '#fbbf24', 15);
+            playBoosterSound();
             return false;
           }
           return true;
@@ -1177,10 +1311,13 @@
       if (gameRunning) return;
       if (!initGame()) return;
 
+      initAudio();
       gameRunning = true;
       lastTime = 0;
       startBtn.disabled = true;
       gameStatus.textContent = '🚀 레이스 시작!';
+      startBGM();
+      playEngineSound();
 
       if (!animationId) {
         animationId = requestAnimationFrame(gameLoop);
@@ -1191,6 +1328,8 @@
       gameRunning = false;
       startBtn.disabled = false;
       gameStatus.textContent = '🏆 레이스 완료!';
+      stopBGM();
+      playVictorySound();
 
       // Show winners
       winnerCards.innerHTML = finishOrder.slice(0, 3).map((ship, i) => `
@@ -1228,6 +1367,7 @@
 
     function resetGame() {
       gameRunning = false;
+      stopBGM();
       cancelAnimationFrame(animationId);
       animationId = null;
       ships = [];
