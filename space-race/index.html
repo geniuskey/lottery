@@ -1,0 +1,1312 @@
+<!--
+@game-meta
+{
+  "id": "space-race",
+  "title": "우주 경주",
+  "emoji": "🚀",
+  "category": "레이싱",
+  "description": "소행성을 피하며 우주를 가로지르는 스릴 넘치는 우주선 레이스! 누가 먼저 결승선에 도착할까요?",
+  "features": ["🌠 소행성 회피", "🏁 실시간 레이싱"],
+  "color": "purple",
+  "badge": "NEW",
+  "version": "1.0.0",
+  "updated": "2025-01-26",
+  "author": {
+    "name": "Euiyun Edwin Kim",
+    "email": "geniuskey@gmail.com",
+    "github": "geniuskey"
+  },
+  "urls": {
+    "service": "https://geniuskey.github.io/lottery/space-race/",
+    "repository": "https://github.com/geniuskey/lottery"
+  },
+  "license": "MIT",
+  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+}
+@end-game-meta
+-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GFTNV73W8L');
+  </script>
+
+  <title>🚀 우주 경주</title>
+
+  <!-- SEO 기본 -->
+  <meta name="description" content="소행성을 피하며 우주를 가로지르는 스릴 넘치는 우주선 레이스! 누가 먼저 결승선에 도착할까요?">
+  <meta name="author" content="Euiyun Edwin Kim">
+  <meta name="keywords" content="우주 경주, 추첨, 게임, lottery, 레이싱, 우주선, 소행성">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="추첨 게임 포탈">
+  <meta property="og:title" content="🚀 우주 경주">
+  <meta property="og:description" content="소행성을 피하며 우주를 가로지르는 스릴 넘치는 우주선 레이스!">
+  <meta property="og:url" content="https://geniuskey.github.io/lottery/space-race/">
+  <meta property="og:locale" content="ko_KR">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="🚀 우주 경주">
+  <meta name="twitter:description" content="소행성을 피하며 우주를 가로지르는 스릴 넘치는 우주선 레이스!">
+
+  <!-- 추가 SEO -->
+  <link rel="canonical" href="https://geniuskey.github.io/lottery/space-race/">
+  <meta name="robots" content="index, follow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #0a0a1a;
+      --sidebar-bg: rgba(15, 15, 35, 0.95);
+      --card-bg: rgba(30, 30, 60, 0.8);
+      --accent: #8b5cf6;
+      --accent-glow: #a78bfa;
+      --star-yellow: #fbbf24;
+      --danger-red: #ef4444;
+      --success-green: #10b981;
+      --text-primary: #fff;
+      --text-secondary: #a0a0c0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .sidebar {
+      width: 320px;
+      min-width: 320px;
+      background: var(--sidebar-bg);
+      border-right: 3px solid var(--accent);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-header h1 {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-header h1 .emoji {
+      font-size: 1.8rem;
+    }
+
+    .title-text {
+      background: linear-gradient(to right, var(--accent), #fff, var(--accent-glow));
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 4s linear infinite;
+    }
+
+    @keyframes shine {
+      to { background-position: 200% center; }
+    }
+
+    .header-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .help-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .help-btn:hover {
+      background: rgba(139, 92, 246, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .section-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1rem;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .input-group textarea {
+      width: 100%;
+      height: 80px;
+      background: var(--card-bg);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      resize: none;
+    }
+
+    .input-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .settings-group {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .setting-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .setting-item label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .setting-item select,
+    .setting-item input {
+      background: rgba(10, 10, 30, 0.9);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+    }
+
+    .setting-item select option {
+      background: #0a1628;
+      color: var(--text-primary);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-start:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+    }
+
+    .btn-start:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-reset {
+      flex: 0 0 50px;
+      background: var(--card-bg);
+      color: var(--text-secondary);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-reset:hover {
+      background: rgba(139, 92, 246, 0.2);
+      color: var(--text-primary);
+    }
+
+    .ranking-board {
+      flex: 1;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: rgba(139, 92, 246, 0.1);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: all 0.3s;
+    }
+
+    .rank-item.finished {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.1));
+      border: 1px solid var(--success-green);
+    }
+
+    .rank-item.crashed {
+      opacity: 0.5;
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .rank-num {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .rank-item.finished .rank-num {
+      background: var(--star-yellow);
+      color: #000;
+    }
+
+    .rank-emoji {
+      font-size: 1.2rem;
+    }
+
+    .rank-name {
+      flex: 1;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rank-status {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background: rgba(139, 92, 246, 0.2);
+      color: var(--accent);
+    }
+
+    .rank-item.finished .rank-status {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success-green);
+    }
+
+    .sidebar-footer {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--card-bg);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .icon-btn:hover {
+      background: rgba(139, 92, 246, 0.2);
+      color: var(--text-primary);
+      border-color: var(--accent);
+    }
+
+    .game-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: radial-gradient(ellipse at center, #1a1a3a 0%, var(--bg-dark) 70%);
+      overflow: hidden;
+    }
+
+    /* Stars background */
+    .game-area::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px, white, transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 90px 40px, white, transparent),
+        radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 160px 120px, white, transparent),
+        radial-gradient(2px 2px at 200px 50px, rgba(255,255,255,0.7), transparent);
+      background-size: 250px 150px;
+      animation: stars 20s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes stars {
+      from { transform: translateX(0); }
+      to { transform: translateX(-250px); }
+    }
+
+    .game-status {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.5rem;
+      color: var(--accent);
+      text-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+      z-index: 10;
+    }
+
+    #gameCanvas {
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+    }
+
+    .copyright {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Winner Modal */
+    .winner-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .winner-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .winner-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 2.5rem;
+      color: var(--star-yellow);
+      margin-bottom: 30px;
+      text-shadow: 0 0 30px rgba(251, 191, 36, 0.8);
+    }
+
+    .winner-cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 90%;
+    }
+
+    .winner-card {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.1));
+      border: 2px solid var(--accent);
+      border-radius: 16px;
+      padding: 20px 30px;
+      text-align: center;
+      animation: pop 0.5s ease backwards;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .winner-card .emoji {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+
+    .winner-card .name {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.3rem;
+      color: var(--text-primary);
+    }
+
+    .winner-card .rank {
+      font-size: 0.9rem;
+      color: var(--star-yellow);
+      margin-top: 5px;
+    }
+
+    /* Help Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: var(--sidebar-bg);
+      border: 2px solid var(--accent);
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal h2 {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.5rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .modal p {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+
+    .modal-close {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--card-bg);
+      border: 1px solid var(--accent);
+      color: var(--text-primary);
+      padding: 12px 24px;
+      border-radius: 10px;
+      z-index: 300;
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        min-width: auto;
+        max-height: 45vh;
+        border-right: none;
+        border-bottom: 3px solid var(--accent);
+      }
+      .game-area {
+        min-height: 55vh;
+      }
+      .game-status {
+        font-size: 1.1rem;
+        top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1><span class="emoji">🚀</span> <span class="title-text">우주 경주</span></h1>
+        <div class="header-btns">
+          <button class="help-btn" id="helpBtn">?</button>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <div class="section-title">👨‍🚀 우주 비행사</div>
+        <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+      </div>
+
+      <div class="settings-group">
+        <div class="section-title">⚙️ 게임 설정</div>
+        <div class="setting-item">
+          <label>소행성 밀도</label>
+          <select id="asteroidDensity">
+            <option value="low">적음</option>
+            <option value="medium" selected>보통</option>
+            <option value="high">많음</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>게임 속도</label>
+          <select id="gameSpeed">
+            <option value="slow">느림</option>
+            <option value="normal" selected>보통</option>
+            <option value="fast">빠름</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-start" id="startBtn">🚀 발사!</button>
+        <button class="btn btn-reset" id="resetBtn">↺</button>
+      </div>
+
+      <div class="ranking-board">
+        <div class="section-title">🏆 순위</div>
+        <div id="rankingList"></div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="https://geniuskey.github.io/lottery/" class="icon-btn" title="추첨 포탈 홈">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </a>
+        <button class="icon-btn" id="copyResultBtn" title="결과 복사">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </button>
+        <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        </a>
+        <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" title="커피 사주기">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"/></svg>
+        </a>
+      </div>
+    </aside>
+
+    <main class="game-area">
+      <div class="game-status" id="gameStatus">🚀 발사 준비!</div>
+      <canvas id="gameCanvas"></canvas>
+      <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
+    </main>
+  </div>
+
+  <!-- Winner Modal -->
+  <div class="winner-modal" id="winnerModal">
+    <div class="winner-title">🏆 레이스 완료!</div>
+    <div class="winner-cards" id="winnerCards"></div>
+  </div>
+
+  <!-- Help Modal -->
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal">
+      <h2>🚀 우주 경주 도움말</h2>
+      <p>🌠 <strong>게임 방법</strong><br>우주 비행사들이 우주선을 타고 결승선까지 레이스를 펼칩니다. 소행성을 피하면서 먼저 도착하면 승리!</p>
+      <p>☄️ <strong>소행성</strong><br>소행성에 부딪히면 속도가 느려지고 잠시 멈춥니다. 너무 많이 부딪히면 뒤처질 수 있어요.</p>
+      <p>⚡ <strong>부스터</strong><br>가끔 나타나는 부스터를 획득하면 일시적으로 빨라집니다!</p>
+      <p>🏁 <strong>결승선</strong><br>먼저 오른쪽 결승선에 도착하는 순서대로 순위가 결정됩니다.</p>
+      <button class="modal-close" id="closeHelp">확인</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const participantsInput = document.getElementById('participants');
+    const asteroidDensitySelect = document.getElementById('asteroidDensity');
+    const gameSpeedSelect = document.getElementById('gameSpeed');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const gameStatus = document.getElementById('gameStatus');
+    const rankingList = document.getElementById('rankingList');
+    const winnerModal = document.getElementById('winnerModal');
+    const winnerCards = document.getElementById('winnerCards');
+
+    const STORAGE_KEY = 'space-race-settings';
+    const SHIP_EMOJIS = ['🚀', '🛸', '🚁', '✈️', '🛩️', '🚂', '🏎️', '🏍️', '⛵', '🚤', '🛶', '🎈', '🪁', '🛷', '🦅', '🦋', '🐝', '🐦', '🦜', '🦢'];
+
+    let ships = [];
+    let asteroids = [];
+    let boosters = [];
+    let particles = [];
+    let gameRunning = false;
+    let animationId = null;
+    let finishOrder = [];
+    let lastTime = 0;
+    let raceDistance = 0;
+
+    function parseParticipants(input) {
+      const names = input.split(/[,\n]/).map(n => n.trim()).filter(n => n);
+      const result = [];
+      for (const name of names) {
+        const match = name.match(/^(.+)\*(\d+)$/);
+        if (match) {
+          const baseName = match[1].trim();
+          const count = parseInt(match[2]);
+          for (let i = 0; i < count; i++) {
+            result.push(baseName);
+          }
+        } else {
+          result.push(name);
+        }
+      }
+      return result;
+    }
+
+    function resize() {
+      const wrapper = canvas.parentElement;
+      const maxW = wrapper.clientWidth - 40;
+      const maxH = wrapper.clientHeight - 100;
+      const ratio = 16 / 9;
+
+      let w = maxW;
+      let h = w / ratio;
+      if (h > maxH) {
+        h = maxH;
+        w = h * ratio;
+      }
+
+      canvas.width = Math.floor(w);
+      canvas.height = Math.floor(h);
+      raceDistance = canvas.width - 100;
+    }
+
+    function saveSettings() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        participants: participantsInput.value,
+        asteroidDensity: asteroidDensitySelect.value,
+        gameSpeed: gameSpeedSelect.value
+      }));
+    }
+
+    function loadSettings() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (saved) {
+          participantsInput.value = saved.participants || participantsInput.value;
+          asteroidDensitySelect.value = saved.asteroidDensity || 'medium';
+          gameSpeedSelect.value = saved.gameSpeed || 'normal';
+        }
+      } catch (e) {}
+    }
+
+    function getSpeedMultiplier() {
+      const speed = gameSpeedSelect.value;
+      return speed === 'slow' ? 0.7 : speed === 'fast' ? 1.4 : 1;
+    }
+
+    function getAsteroidRate() {
+      const density = asteroidDensitySelect.value;
+      return density === 'low' ? 0.015 : density === 'high' ? 0.06 : 0.035;
+    }
+
+    function initGame() {
+      const names = parseParticipants(participantsInput.value);
+      if (names.length < 2) {
+        showToast('최소 2명 이상 입력하세요!');
+        return false;
+      }
+
+      ships = [];
+      asteroids = [];
+      boosters = [];
+      particles = [];
+      finishOrder = [];
+
+      const laneHeight = (canvas.height - 60) / names.length;
+      const colors = ['#ff6b6b', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f472b6', '#fb923c', '#4ade80', '#38bdf8', '#e879f9'];
+
+      names.forEach((name, i) => {
+        ships.push({
+          name: name,
+          emoji: SHIP_EMOJIS[i % SHIP_EMOJIS.length],
+          x: 50,
+          y: 40 + laneHeight * i + laneHeight / 2,
+          baseSpeed: 1.5 + Math.random() * 1,
+          speed: 0,
+          color: colors[i % colors.length],
+          finished: false,
+          finishTime: 0,
+          stunTimer: 0,
+          boostTimer: 0,
+          trail: []
+        });
+      });
+
+      return true;
+    }
+
+    function spawnAsteroid() {
+      const size = 15 + Math.random() * 25;
+      asteroids.push({
+        x: canvas.width + size,
+        y: 30 + Math.random() * (canvas.height - 60),
+        size: size,
+        speed: 2 + Math.random() * 3,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.1
+      });
+    }
+
+    function spawnBooster() {
+      boosters.push({
+        x: canvas.width,
+        y: 50 + Math.random() * (canvas.height - 100),
+        speed: 1.5,
+        pulse: 0
+      });
+    }
+
+    function update(deltaTime) {
+      const speedMult = getSpeedMultiplier();
+      const dt = deltaTime * speedMult;
+
+      // Spawn asteroids
+      if (Math.random() < getAsteroidRate() * speedMult) {
+        spawnAsteroid();
+      }
+
+      // Spawn boosters (rare)
+      if (Math.random() < 0.003 * speedMult) {
+        spawnBooster();
+      }
+
+      // Update ships
+      ships.forEach(ship => {
+        if (ship.finished) return;
+
+        // Update timers
+        if (ship.stunTimer > 0) {
+          ship.stunTimer -= deltaTime;
+          ship.speed = 0;
+        } else if (ship.boostTimer > 0) {
+          ship.boostTimer -= deltaTime;
+          ship.speed = ship.baseSpeed * 2.5;
+        } else {
+          // Random speed variation
+          ship.speed = ship.baseSpeed * (0.8 + Math.random() * 0.4);
+        }
+
+        // Move
+        ship.x += ship.speed * dt * 60;
+
+        // Trail
+        ship.trail.push({ x: ship.x - 20, y: ship.y, alpha: 1 });
+        if (ship.trail.length > 15) ship.trail.shift();
+
+        // Check finish
+        if (ship.x >= raceDistance + 50) {
+          ship.finished = true;
+          ship.finishTime = Date.now();
+          finishOrder.push(ship);
+          createParticles(ship.x, ship.y, ship.color, 20);
+        }
+
+        // Check asteroid collision
+        asteroids.forEach(ast => {
+          const dist = Math.hypot(ship.x - ast.x, ship.y - ast.y);
+          if (dist < ast.size + 15 && ship.stunTimer <= 0) {
+            ship.stunTimer = 0.8;
+            ship.x -= 30;
+            if (ship.x < 50) ship.x = 50;
+            createParticles(ship.x, ship.y, '#ff6b6b', 10);
+          }
+        });
+
+        // Check booster collision
+        boosters = boosters.filter(b => {
+          const dist = Math.hypot(ship.x - b.x, ship.y - b.y);
+          if (dist < 25) {
+            ship.boostTimer = 1.5;
+            createParticles(b.x, b.y, '#fbbf24', 15);
+            return false;
+          }
+          return true;
+        });
+      });
+
+      // Update asteroids
+      asteroids = asteroids.filter(ast => {
+        ast.x -= ast.speed * dt * 60;
+        ast.rotation += ast.rotSpeed;
+        return ast.x > -ast.size;
+      });
+
+      // Update boosters
+      boosters = boosters.filter(b => {
+        b.x -= b.speed * dt * 60;
+        b.pulse += deltaTime * 5;
+        return b.x > -20;
+      });
+
+      // Update particles
+      particles = particles.filter(p => {
+        p.x += p.vx * dt * 60;
+        p.y += p.vy * dt * 60;
+        p.life -= deltaTime;
+        return p.life > 0;
+      });
+
+      // Update trails
+      ships.forEach(ship => {
+        ship.trail.forEach(t => t.alpha -= 0.05);
+        ship.trail = ship.trail.filter(t => t.alpha > 0);
+      });
+
+      // Update ranking
+      updateRanking();
+
+      // Check game end
+      if (ships.every(s => s.finished)) {
+        endGame();
+      }
+    }
+
+    function createParticles(x, y, color, count) {
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 1 + Math.random() * 3;
+        particles.push({
+          x, y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          color,
+          size: 2 + Math.random() * 3,
+          life: 0.5 + Math.random() * 0.5
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Background gradient
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
+      grad.addColorStop(0, '#0a0a1a');
+      grad.addColorStop(1, '#1a1a3a');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Lanes
+      const laneHeight = (canvas.height - 60) / ships.length;
+      ships.forEach((ship, i) => {
+        const y = 40 + laneHeight * i;
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(139, 92, 246, 0.05)' : 'rgba(139, 92, 246, 0.1)';
+        ctx.fillRect(0, y, canvas.width, laneHeight);
+
+        // Lane line
+        ctx.strokeStyle = 'rgba(139, 92, 246, 0.2)';
+        ctx.beginPath();
+        ctx.moveTo(0, y + laneHeight);
+        ctx.lineTo(canvas.width, y + laneHeight);
+        ctx.stroke();
+      });
+
+      // Finish line
+      ctx.fillStyle = 'rgba(251, 191, 36, 0.3)';
+      ctx.fillRect(raceDistance + 30, 0, 50, canvas.height);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([10, 10]);
+      ctx.beginPath();
+      ctx.moveTo(raceDistance + 50, 0);
+      ctx.lineTo(raceDistance + 50, canvas.height);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Finish text
+      ctx.save();
+      ctx.translate(raceDistance + 55, canvas.height / 2);
+      ctx.rotate(Math.PI / 2);
+      ctx.font = 'bold 16px Noto Sans KR';
+      ctx.fillStyle = '#fbbf24';
+      ctx.textAlign = 'center';
+      ctx.fillText('🏁 FINISH', 0, 0);
+      ctx.restore();
+
+      // Draw trails
+      ships.forEach(ship => {
+        ship.trail.forEach(t => {
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(139, 92, 246, ${t.alpha * 0.5})`;
+          ctx.fill();
+        });
+      });
+
+      // Draw asteroids
+      asteroids.forEach(ast => {
+        ctx.save();
+        ctx.translate(ast.x, ast.y);
+        ctx.rotate(ast.rotation);
+
+        // Asteroid shape
+        ctx.beginPath();
+        const points = 8;
+        for (let i = 0; i < points; i++) {
+          const angle = (i / points) * Math.PI * 2;
+          const r = ast.size * (0.7 + Math.random() * 0.3);
+          const x = Math.cos(angle) * r;
+          const y = Math.sin(angle) * r;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = '#4a4a5a';
+        ctx.fill();
+        ctx.strokeStyle = '#6a6a7a';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Craters
+        ctx.fillStyle = '#3a3a4a';
+        ctx.beginPath();
+        ctx.arc(-ast.size * 0.2, -ast.size * 0.1, ast.size * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(ast.size * 0.2, ast.size * 0.2, ast.size * 0.15, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      });
+
+      // Draw boosters
+      boosters.forEach(b => {
+        const pulse = Math.sin(b.pulse) * 5;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, 15 + pulse, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(251, 191, 36, 0.3)';
+        ctx.fill();
+
+        ctx.font = '24px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('⚡', b.x, b.y);
+      });
+
+      // Draw particles
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+
+      // Draw ships
+      ships.forEach((ship, i) => {
+        ctx.save();
+        ctx.translate(ship.x, ship.y);
+
+        // Boost effect
+        if (ship.boostTimer > 0) {
+          ctx.beginPath();
+          ctx.arc(0, 0, 25, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(251, 191, 36, 0.3)';
+          ctx.fill();
+        }
+
+        // Stun effect
+        if (ship.stunTimer > 0) {
+          ctx.beginPath();
+          ctx.arc(0, 0, 20, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
+          ctx.fill();
+        }
+
+        // Ship emoji
+        ctx.font = '32px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(ship.emoji, 0, 0);
+
+        // Name
+        ctx.font = 'bold 12px Noto Sans KR';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(ship.name, 0, 25);
+
+        // Progress bar
+        const progress = Math.min((ship.x - 50) / raceDistance, 1);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(-25, -30, 50, 6);
+        ctx.fillStyle = ship.finished ? '#10b981' : ship.color;
+        ctx.fillRect(-25, -30, 50 * progress, 6);
+
+        ctx.restore();
+      });
+
+      // Leader indicator
+      const activeShips = ships.filter(s => !s.finished);
+      if (activeShips.length > 0) {
+        const leader = activeShips.reduce((a, b) => a.x > b.x ? a : b);
+        ctx.font = 'bold 14px Noto Sans KR';
+        ctx.fillStyle = '#fbbf24';
+        ctx.textAlign = 'center';
+        ctx.fillText('👑', leader.x, leader.y - 45);
+      }
+    }
+
+    function updateRanking() {
+      const sorted = [...ships].sort((a, b) => {
+        if (a.finished && b.finished) return a.finishTime - b.finishTime;
+        if (a.finished) return -1;
+        if (b.finished) return 1;
+        return b.x - a.x;
+      });
+
+      rankingList.innerHTML = sorted.map((ship, i) => {
+        const rank = ship.finished ? finishOrder.indexOf(ship) + 1 : i + 1;
+        const statusClass = ship.finished ? 'finished' : (ship.stunTimer > 0 ? 'crashed' : '');
+        const status = ship.finished ? `${rank}등 🏁` : (ship.stunTimer > 0 ? '💥' : '레이싱');
+
+        return `
+          <div class="rank-item ${statusClass}">
+            <span class="rank-num">${rank}</span>
+            <span class="rank-emoji">${ship.emoji}</span>
+            <span class="rank-name">${ship.name}</span>
+            <span class="rank-status">${status}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function gameLoop(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const deltaTime = (timestamp - lastTime) / 1000;
+      lastTime = timestamp;
+
+      if (gameRunning) {
+        update(deltaTime);
+        draw();
+
+        const finished = finishOrder.length;
+        const total = ships.length;
+        if (finished > 0 && finished < total) {
+          gameStatus.textContent = `🏁 ${finished}/${total} 완주!`;
+        }
+      }
+
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      if (gameRunning) return;
+      if (!initGame()) return;
+
+      gameRunning = true;
+      lastTime = 0;
+      startBtn.disabled = true;
+      gameStatus.textContent = '🚀 레이스 시작!';
+
+      if (!animationId) {
+        animationId = requestAnimationFrame(gameLoop);
+      }
+    }
+
+    function endGame() {
+      gameRunning = false;
+      startBtn.disabled = false;
+      gameStatus.textContent = '🏆 레이스 완료!';
+
+      // Show winners
+      winnerCards.innerHTML = finishOrder.slice(0, 3).map((ship, i) => `
+        <div class="winner-card" style="animation-delay: ${i * 0.2}s">
+          <div class="emoji">${ship.emoji}</div>
+          <div class="name">${ship.name}</div>
+          <div class="rank">${i + 1}등 ${i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}</div>
+        </div>
+      `).join('');
+
+      setTimeout(() => {
+        winnerModal.classList.add('show');
+      }, 500);
+
+      // Confetti
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.style.cssText = `
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            left: ${Math.random() * 100}vw;
+            top: -20px;
+            background: ${['#8b5cf6', '#fbbf24', '#34d399', '#f472b6', '#60a5fa'][Math.floor(Math.random() * 5)]};
+            z-index: 999;
+            pointer-events: none;
+            animation: confettiFall 3s linear forwards;
+          `;
+          document.body.appendChild(confetti);
+          setTimeout(() => confetti.remove(), 3000);
+        }, i * 30);
+      }
+    }
+
+    function resetGame() {
+      gameRunning = false;
+      cancelAnimationFrame(animationId);
+      animationId = null;
+      ships = [];
+      asteroids = [];
+      boosters = [];
+      particles = [];
+      finishOrder = [];
+      startBtn.disabled = false;
+      gameStatus.textContent = '🚀 발사 준비!';
+      rankingList.innerHTML = '';
+      winnerModal.classList.remove('show');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function copyResult() {
+      if (finishOrder.length === 0) {
+        showToast('결과가 없습니다!');
+        return;
+      }
+
+      const result = finishOrder.map((ship, i) => `${i + 1}등: ${ship.emoji} ${ship.name}`).join('\n');
+      const text = `🚀 우주 경주 결과\n\n${result}\n\n🎮 https://geniuskey.github.io/lottery/space-race/`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('결과가 복사되었습니다!');
+      }).catch(() => {
+        showToast('복사 실패');
+      });
+    }
+
+    // Add confetti animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes confettiFall {
+        to {
+          transform: translateY(100vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Event listeners
+    startBtn.addEventListener('click', startGame);
+    resetBtn.addEventListener('click', resetGame);
+    participantsInput.addEventListener('input', saveSettings);
+    asteroidDensitySelect.addEventListener('change', saveSettings);
+    gameSpeedSelect.addEventListener('change', saveSettings);
+    document.getElementById('copyResultBtn').addEventListener('click', copyResult);
+
+    document.getElementById('helpBtn').addEventListener('click', () => {
+      document.getElementById('helpModal').classList.add('show');
+    });
+    document.getElementById('closeHelp').addEventListener('click', () => {
+      document.getElementById('helpModal').classList.remove('show');
+    });
+    document.getElementById('helpModal').addEventListener('click', (e) => {
+      if (e.target.id === 'helpModal') {
+        document.getElementById('helpModal').classList.remove('show');
+      }
+    });
+
+    winnerModal.addEventListener('click', () => {
+      winnerModal.classList.remove('show');
+    });
+
+    window.addEventListener('resize', resize);
+
+    // Init
+    loadSettings();
+    resize();
+    draw();
+  </script>
+</body>
+</html>
