@@ -1478,12 +1478,10 @@
           ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
           ctx.fill();
 
-          // Body circle
+          // Body circle (stroke only, no fill)
           ctx.beginPath();
           ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
-          ctx.fillStyle = p.beingAbducted ? 'rgba(0, 255, 136, 0.3)' : 'rgba(255, 255, 255, 0.1)';
-          ctx.fill();
-          ctx.strokeStyle = p.panicLevel > 0.5 ? '#ff6b6b' : '#00ff88';
+          ctx.strokeStyle = p.beingAbducted ? 'rgba(0, 255, 136, 0.8)' : (p.panicLevel > 0.5 ? '#ff6b6b' : '#00ff88');
           ctx.lineWidth = 2;
           ctx.stroke();
 
@@ -1491,7 +1489,7 @@
           ctx.globalAlpha = 1;
 
           // Emoji
-          ctx.font = '28px Arial';
+          ctx.font = '36px Arial';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(p.emoji, 0, 0);
