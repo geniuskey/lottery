@@ -2051,81 +2051,113 @@
             pinball(world, baseW, baseH, scale) {
                 const w = baseW * scale;
                 const h = baseH * scale;
-                // ===== 핀볼 스타일 - 엇갈린 범퍼로 직선 낙하 차단 =====
+                // ===== 핀볼 스타일 - 범퍼 + 핀 필드 =====
 
-                // ===== 1층 범퍼 (0~10%) =====
-                // 홀수 행: 좌-중-우
-                world.addObstacle(new Bumper(w * 0.20, h * 0.03, 32 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.03, 35 * scale));
-                world.addObstacle(new Bumper(w * 0.80, h * 0.03, 32 * scale));
-                // 짝수 행: 좌중-우중 (엇갈림)
-                world.addObstacle(new Bumper(w * 0.35, h * 0.08, 34 * scale));
-                world.addObstacle(new Bumper(w * 0.65, h * 0.08, 34 * scale));
+                // ===== 1층 (0~11%) =====
+                world.addObstacle(new Bumper(w * 0.25, h * 0.02, 30 * scale));
+                world.addObstacle(new Bumper(w * 0.75, h * 0.02, 30 * scale));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.06, 35 * scale));
+                // 핀 필드
+                for (let row = 0; row < 4; row++) {
+                    const cols = row % 2 === 0 ? 9 : 8;
+                    const offsetX = row % 2 === 0 ? w / 18 : w / 18 + w / 18;
+                    for (let col = 0; col < cols; col++) {
+                        world.addObstacle(new Peg(offsetX + col * (w / 9), h * 0.015 + row * 28 * scale, 5 * scale));
+                    }
+                }
 
                 // ===== 병목 1 (12%) =====
                 world.addObstacle(new Wall(0, h * 0.11, w * 0.30, h * 0.13, 8));
                 world.addObstacle(new Wall(w, h * 0.11, w * 0.70, h * 0.13, 8));
 
-                // ===== 2층 범퍼 (13~25%) =====
-                world.addObstacle(new Bumper(w * 0.15, h * 0.15, 30 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.15, 38 * scale));
-                world.addObstacle(new Bumper(w * 0.85, h * 0.15, 30 * scale));
-                world.addObstacle(new Bumper(w * 0.32, h * 0.20, 32 * scale));
-                world.addObstacle(new Bumper(w * 0.68, h * 0.20, 32 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.24, 36 * scale));
+                // ===== 2층 (13~26%) =====
+                world.addObstacle(new Bumper(w * 0.20, h * 0.16, 32 * scale));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.14, 36 * scale));
+                world.addObstacle(new Bumper(w * 0.80, h * 0.16, 32 * scale));
+                // 핀 필드
+                for (let row = 0; row < 5; row++) {
+                    const cols = row % 2 === 0 ? 8 : 7;
+                    const offsetX = row % 2 === 0 ? w / 16 : w / 16 + w / 16;
+                    for (let col = 0; col < cols; col++) {
+                        world.addObstacle(new Peg(offsetX + col * (w / 8), h * 0.15 + row * 26 * scale, 5 * scale));
+                    }
+                }
 
                 // ===== 병목 2 (27%) =====
                 world.addObstacle(new Wall(0, h * 0.26, w * 0.32, h * 0.28, 8));
                 world.addObstacle(new Wall(w, h * 0.26, w * 0.68, h * 0.28, 8));
 
-                // ===== 3층 지그재그 범퍼 (28~42%) =====
-                world.addObstacle(new Bumper(w * 0.22, h * 0.30, 30 * scale));
-                world.addObstacle(new Bumper(w * 0.78, h * 0.30, 30 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.34, 40 * scale));
-                world.addObstacle(new Bumper(w * 0.15, h * 0.38, 28 * scale));
-                world.addObstacle(new Bumper(w * 0.40, h * 0.38, 32 * scale));
-                world.addObstacle(new Bumper(w * 0.60, h * 0.38, 32 * scale));
-                world.addObstacle(new Bumper(w * 0.85, h * 0.38, 28 * scale));
+                // ===== 3층 (28~42%) =====
+                world.addObstacle(new Bumper(w * 0.30, h * 0.31, 34 * scale));
+                world.addObstacle(new Bumper(w * 0.70, h * 0.31, 34 * scale));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.36, 38 * scale));
+                // 핀 필드
+                for (let row = 0; row < 6; row++) {
+                    const cols = row % 2 === 0 ? 9 : 8;
+                    const offsetX = row % 2 === 0 ? w / 18 : w / 18 + w / 18;
+                    for (let col = 0; col < cols; col++) {
+                        world.addObstacle(new Peg(offsetX + col * (w / 9), h * 0.29 + row * 25 * scale, 5 * scale));
+                    }
+                }
 
                 // ===== 병목 3 (43%) =====
                 world.addObstacle(new Wall(0, h * 0.42, w * 0.28, h * 0.44, 8));
                 world.addObstacle(new Wall(w, h * 0.42, w * 0.72, h * 0.44, 8));
 
-                // ===== 4층 밀집 범퍼 (44~58%) =====
-                world.addObstacle(new Bumper(w * 0.30, h * 0.47, 34 * scale));
-                world.addObstacle(new Bumper(w * 0.70, h * 0.47, 34 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.51, 38 * scale));
-                world.addObstacle(new Bumper(w * 0.20, h * 0.54, 30 * scale));
-                world.addObstacle(new Bumper(w * 0.80, h * 0.54, 30 * scale));
-                world.addObstacle(new Bumper(w * 0.35, h * 0.57, 32 * scale));
-                world.addObstacle(new Bumper(w * 0.65, h * 0.57, 32 * scale));
+                // ===== 4층 (44~58%) =====
+                world.addObstacle(new Bumper(w * 0.25, h * 0.47, 32 * scale));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.50, 40 * scale));
+                world.addObstacle(new Bumper(w * 0.75, h * 0.47, 32 * scale));
+                // 핀 필드
+                for (let row = 0; row < 6; row++) {
+                    const cols = row % 2 === 0 ? 8 : 7;
+                    const offsetX = row % 2 === 0 ? w / 16 : w / 16 + w / 16;
+                    for (let col = 0; col < cols; col++) {
+                        world.addObstacle(new Peg(offsetX + col * (w / 8), h * 0.45 + row * 24 * scale, 5 * scale));
+                    }
+                }
 
-                // ===== 병목 4 (60%) =====
-                world.addObstacle(new Wall(0, h * 0.59, w * 0.30, h * 0.61, 8));
-                world.addObstacle(new Wall(w, h * 0.59, w * 0.70, h * 0.61, 8));
+                // ===== 병목 4 (59%) =====
+                world.addObstacle(new Wall(0, h * 0.58, w * 0.30, h * 0.60, 8));
+                world.addObstacle(new Wall(w, h * 0.58, w * 0.70, h * 0.60, 8));
 
-                // ===== 5층 대형 범퍼 (61~75%) =====
-                world.addObstacle(new Bumper(w * 0.50, h * 0.64, 42 * scale));
-                world.addObstacle(new Bumper(w * 0.25, h * 0.68, 35 * scale));
-                world.addObstacle(new Bumper(w * 0.75, h * 0.68, 35 * scale));
-                world.addObstacle(new Bumper(w * 0.40, h * 0.73, 32 * scale));
-                world.addObstacle(new Bumper(w * 0.60, h * 0.73, 32 * scale));
+                // ===== 5층 (60~75%) =====
+                world.addObstacle(new Bumper(w * 0.50, h * 0.63, 42 * scale));
+                world.addObstacle(new Bumper(w * 0.20, h * 0.68, 30 * scale));
+                world.addObstacle(new Bumper(w * 0.80, h * 0.68, 30 * scale));
+                // 핀 필드
+                for (let row = 0; row < 6; row++) {
+                    const cols = row % 2 === 0 ? 9 : 8;
+                    const offsetX = row % 2 === 0 ? w / 18 : w / 18 + w / 18;
+                    for (let col = 0; col < cols; col++) {
+                        world.addObstacle(new Peg(offsetX + col * (w / 9), h * 0.61 + row * 26 * scale, 5 * scale));
+                    }
+                }
 
-                // ===== 병목 5 (77%) =====
-                world.addObstacle(new Wall(0, h * 0.76, w * 0.32, h * 0.78, 8));
-                world.addObstacle(new Wall(w, h * 0.76, w * 0.68, h * 0.78, 8));
+                // ===== 병목 5 (76%) =====
+                world.addObstacle(new Wall(0, h * 0.75, w * 0.32, h * 0.77, 8));
+                world.addObstacle(new Wall(w, h * 0.75, w * 0.68, h * 0.77, 8));
 
-                // ===== 6층 최종 범퍼 (78~92%) =====
-                world.addObstacle(new Bumper(w * 0.20, h * 0.81, 30 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.80, 38 * scale));
-                world.addObstacle(new Bumper(w * 0.80, h * 0.81, 30 * scale));
-                world.addObstacle(new Bumper(w * 0.35, h * 0.86, 34 * scale));
-                world.addObstacle(new Bumper(w * 0.65, h * 0.86, 34 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.91, 36 * scale));
+                // ===== 6층 (77~92%) =====
+                world.addObstacle(new Bumper(w * 0.35, h * 0.80, 34 * scale));
+                world.addObstacle(new Bumper(w * 0.65, h * 0.80, 34 * scale));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.86, 38 * scale));
+                // 핀 필드
+                for (let row = 0; row < 6; row++) {
+                    const cols = row % 2 === 0 ? 8 : 7;
+                    const offsetX = row % 2 === 0 ? w / 16 : w / 16 + w / 16;
+                    for (let col = 0; col < cols; col++) {
+                        world.addObstacle(new Peg(offsetX + col * (w / 8), h * 0.78 + row * 26 * scale, 5 * scale));
+                    }
+                }
 
-                // ===== 골 직전 범퍼 (93~98%) =====
+                // ===== 골 직전 (93~98%) =====
                 world.addObstacle(new Bumper(w * 0.30, h * 0.95, 28 * scale));
                 world.addObstacle(new Bumper(w * 0.70, h * 0.95, 28 * scale));
+                // 마지막 핀
+                for (let col = 0; col < 7; col++) {
+                    world.addObstacle(new Peg(w * 0.15 + col * (w / 8), h * 0.97, 5 * scale));
+                }
             },
 
             funnel(world, baseW, baseH, scale) {
