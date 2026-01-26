@@ -1478,12 +1478,6 @@
           ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
           ctx.fill();
 
-          // Body circle (stroke only, no fill)
-          ctx.beginPath();
-          ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
-          ctx.strokeStyle = p.beingAbducted ? 'rgba(0, 255, 136, 0.8)' : (p.panicLevel > 0.5 ? '#ff6b6b' : '#00ff88');
-          ctx.lineWidth = 2;
-          ctx.stroke();
 
           // Reset alpha for emoji and name to be fully visible
           ctx.globalAlpha = 1;
