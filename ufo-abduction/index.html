@@ -1472,13 +1472,6 @@
             ctx.scale(1 - p.abductProgress * 0.3, 1 + p.abductProgress * 0.5);
           }
 
-          // Shadow
-          ctx.beginPath();
-          ctx.ellipse(0, p.radius + 5, p.radius * 0.8, 5, 0, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-          ctx.fill();
-
-
           // Reset alpha for emoji and name to be fully visible
           ctx.globalAlpha = 1;
 
@@ -1489,12 +1482,10 @@
           ctx.textBaseline = 'middle';
           ctx.fillText(p.emoji, 0, 0);
 
-          // Name
+          // Name (간격: 이모지 폰트의 40% = 약 14px)
           ctx.font = 'bold 14px Noto Sans KR';
           ctx.fillStyle = '#fff';
-          ctx.shadowBlur = 4;
-          ctx.shadowColor = '#000';
-          ctx.fillText(p.name, 0, p.radius + 18);
+          ctx.fillText(p.name, 0, 32);
 
           ctx.restore();
         });
