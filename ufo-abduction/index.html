@@ -1137,9 +1137,9 @@
 
         ufo = {
           x: groundCenter.x,
-          y: groundBounds.y - 50,
+          y: groundBounds.y - 20,
           targetX: groundCenter.x,
-          targetY: groundBounds.y + 80,
+          targetY: groundBounds.y - 20,
           width: 80,
           height: 40,
           state: 'HOVERING',
@@ -1203,9 +1203,9 @@
           }
         }
         else if (ufo.state === 'TARGETING') {
-          // Move towards target
+          // Move towards target (항상 영역 밖 위에서)
           ufo.targetX = ufo.target.x;
-          ufo.targetY = groundBounds.y + 60;
+          ufo.targetY = groundBounds.y - 20;
 
           const dx = ufo.targetX - ufo.x;
           const dy = ufo.targetY - ufo.y;
@@ -1272,11 +1272,16 @@
           }
         }
         else if (ufo.state === 'COOLDOWN') {
-          // Return to center-ish
+          // Return to center-ish (영역 밖 위로)
           const centerX = groundBounds.x + groundBounds.w / 2 + (Math.random() - 0.5) * 100;
+          const hoverY = groundBounds.y - 20;
           const dx = centerX - ufo.x;
+          const dy = hoverY - ufo.y;
           if (Math.abs(dx) > 5) {
             ufo.x += Math.sign(dx) * 2 * dt60;
+          }
+          if (Math.abs(dy) > 5) {
+            ufo.y += Math.sign(dy) * 2 * dt60;
           }
 
           if (ufo.stateTimer <= 0) {
