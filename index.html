@@ -74,33 +74,38 @@
       background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
       overflow: hidden;
       pointer-events: none;
+      contain: strict; /* 배경 애니메이션이 페이지 레이아웃/페인트에 영향 주지 않도록 격리 */
     }
 
+    /* blur() 필터 대신 미리 부드럽게 퍼지는 radial-gradient 사용 (GPU 블러 비용 제거) */
     .glow-orb {
       position: absolute;
       border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.3;
-      will-change: transform;
+      opacity: 0.55;
     }
-    .orb-1 { width: 400px; height: 400px; background: var(--accent); top: -100px; right: -50px; }
-    .orb-2 { width: 350px; height: 350px; background: var(--purple); bottom: 10%; left: -50px; }
-    .orb-3 { width: 300px; height: 300px; background: var(--pink); top: 30%; right: 10%; }
+    .orb-1 { width: 600px; height: 600px; top: -200px; right: -150px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, rgba(56, 189, 248, 0.1) 45%, transparent 70%); }
+    .orb-2 { width: 550px; height: 550px; bottom: 5%; left: -150px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0.1) 45%, transparent 70%); }
+    .orb-3 { width: 500px; height: 500px; top: 25%; right: 5%;
+      background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, rgba(236, 72, 153, 0.08) 45%, transparent 70%); }
 
     .mouse-glow {
       position: fixed;
-      width: 1000px; height: 1000px; /* 더 크게 확장 */
+      top: 0; left: 0;
+      width: 1000px; height: 1000px;
       background: radial-gradient(
-        circle, 
-        rgba(56, 189, 248, 0.07) 0%, 
-        rgba(56, 189, 248, 0.02) 40%, 
-        transparent 80% /* 경계선을 아주 옅게 처리 */
+        circle,
+        rgba(56, 189, 248, 0.07) 0%,
+        rgba(56, 189, 248, 0.02) 40%,
+        transparent 80%
       );
       border-radius: 50%;
       pointer-events: none;
-      transform: translate(-50%, -50%);
+      /* left/top 대신 transform으로만 이동 → 컴포지터에서 처리, 리플로우 없음 */
+      transform: translate3d(-50%, -50%, 0);
+      will-change: transform;
       z-index: 1;
-      mix-blend-mode: screen; /* 더 부드러운 혼합 모드 */
     }
 
     .floating-emoji {
@@ -110,6 +115,8 @@
       animation: float-down linear forwards;
       pointer-events: none;
       z-index: 2;
+      /* 컴포지터 레이어로 승격해 주변 배경 리페인트 방지 */
+      will-change: transform, opacity;
     }
 
     @keyframes float-down {
@@ -186,13 +193,18 @@
     }
 
     .card {
-      background: rgba(30, 41, 59, 0.45);
-      backdrop-filter: blur(12px);
+      /* backdrop-filter 제거: 뒤에서 이모지가 떨어질 때마다 카드 전체가 매 프레임
+         재블러링되어 FPS를 크게 떨어뜨림 → 반투명 배경으로 유리 느낌 유지 */
+      background: rgba(30, 41, 59, 0.72);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 16px;
       display: flex;
       flex-direction: column;
-      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      /* transition: all → 필요한 속성만 (스타일 재계산 범위 최소화) */
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+                  border-color 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+                  background-color 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+                  box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1);
       text-decoration: none;
       color: inherit;
       overflow: hidden;
@@ -203,7 +215,7 @@
     .card:hover {
       transform: translateY(-8px) scale(1.02);
       border-color: var(--card-accent, var(--accent));
-      background: rgba(30, 41, 59, 0.7); /* 배경을 더 선명하게 */
+      background: rgba(30, 41, 59, 0.9); /* 배경을 더 선명하게 */
       /* 조이스틱 커서 적용 */
       cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' style='font-size:60px'><text y='60'>🕹️</text></svg>") 30 30, pointer;
       /* 주변에 퍼지는 네온 효과 및 내부 광채 추가 */
@@ -255,6 +267,7 @@
     }
 
     /* Card Colors */
+    .card.pinball { --card-accent: #22d3ee; --card-bg: rgba(34, 211, 238, 0.25); }
     .card.neon { --card-accent: #f472b6; --card-bg: rgba(244, 114, 182, 0.25); }
     .card.marble { --card-accent: #38bdf8; --card-bg: rgba(56, 189, 248, 0.25); }
     .card.zombie { --card-accent: #22c55e; --card-bg: rgba(34, 197, 94, 0.25); }
@@ -319,6 +332,11 @@
   <main>
     <h2 class="section-title">🕹️ 게임 선택</h2>
     <section class="grid">
+      <a href="./pinball/" class="card pinball">
+        <div class="card-header"><div class="card-icon">🎱</div><h3>핀볼 서바이벌</h3></div>
+        <div class="card-body"><p>참여자 수만큼 공이 핀볼 머신에! 범퍼와 플리퍼 사이에서 최후까지 살아남으세요.</p></div>
+      </a>
+
       <a href="./neon-race/" class="card neon">
         <div class="card-header"><div class="card-icon">🌌</div><h3>네온 레이스</h3></div>
         <div class="card-body"><p>사이버펑크 도시를 가로지르는 화려한 레이싱! 네온 질주를 즐겨보세요.</p></div>
@@ -435,36 +453,49 @@
     const bgContainer = document.querySelector('.bg-container');
     const emojis = ['🎲', '🎯', '🏆', '⭐', '🎮', '🎪', '✨', '🌟', '💫', '🎉', '🥏', '🥊', '🪑', '🎳', '👊', '🪜'];
 
+    // mousemove마다 스타일을 직접 바꾸면 이벤트 빈도(최대 수백Hz)만큼 스타일 갱신이 발생.
+    // 좌표만 저장하고 프레임당 1회, transform으로만 이동시킨다 (리플로우/리페인트 없음).
+    let mouseX = -2000, mouseY = -2000, glowDirty = false;
     document.addEventListener('mousemove', (e) => {
-      glow.style.left = e.clientX + 'px';
-      glow.style.top = e.clientY + 'px';
-    });
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!glowDirty) {
+        glowDirty = true;
+        requestAnimationFrame(() => {
+          glow.style.transform = `translate3d(${mouseX - 500}px, ${mouseY - 500}px, 0)`;
+          glowDirty = false;
+        });
+      }
+    }, { passive: true });
 
     function createFloatingEmoji(isInitial = false) {
       const emoji = document.createElement('div');
       emoji.className = 'floating-emoji';
       emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      
+
       const z = Math.random();
       const size = 15 + (z * 35);
       const opacity = 0.1 + (z * 0.2);
       const duration = 10 + ((1 - z) * 15);
-      
+
       emoji.style.left = Math.random() * 100 + '%';
       emoji.style.fontSize = size + 'px';
       emoji.style.setProperty('--base-opacity', opacity);
       emoji.style.animationDuration = duration + 's';
-      
+
       if (isInitial) {
         emoji.style.animationDelay = -(Math.random() * duration) + 's';
       }
-      
+
       bgContainer.appendChild(emoji);
       setTimeout(() => emoji.remove(), duration * 1000);
     }
 
     for (let i = 0; i < 15; i++) createFloatingEmoji(true);
-    setInterval(() => createFloatingEmoji(false), 2500);
+    setInterval(() => {
+      // 백그라운드 탭에서는 애니메이션이 멈춰 이모지가 쌓이기만 하므로 생성 중단
+      if (!document.hidden) createFloatingEmoji(false);
+    }, 2500);
   </script>
 </body>
 </html>

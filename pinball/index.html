@@ -1,0 +1,1646 @@
+<!--
+@game-meta
+{
+  "id": "pinball",
+  "title": "핀볼 서바이벌",
+  "emoji": "🎱",
+  "category": "서바이벌",
+  "description": "참여자 수만큼 공이 핀볼 머신에 떨어진다! 범퍼와 플리퍼 사이에서 최후까지 살아남는 공이 승리!",
+  "features": ["🎱 물리 핀볼", "⚡ 자동 플리퍼"],
+  "color": "cyan",
+  "badge": "NEW",
+  "version": "1.0.0",
+  "updated": "2026-07-11",
+  "author": {
+    "name": "Euiyun Edwin Kim",
+    "email": "geniuskey@gmail.com",
+    "github": "geniuskey"
+  },
+  "urls": {
+    "service": "https://geniuskey.github.io/lottery/pinball/",
+    "repository": "https://github.com/geniuskey/lottery"
+  },
+  "license": "MIT",
+  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+}
+@end-game-meta
+-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GFTNV73W8L');
+  </script>
+
+  <title>🎱 핀볼 서바이벌 - 추첨 게임 포털</title>
+
+  <!-- SEO 기본 -->
+  <meta name="description" content="참여자 수만큼 공이 핀볼 머신에 떨어진다! 범퍼와 플리퍼 사이에서 최후까지 살아남는 공이 승리!">
+  <meta name="author" content="Euiyun Edwin Kim">
+  <meta name="keywords" content="핀볼 서바이벌, 추첨, 게임, lottery, 서바이벌, 핀볼, 온라인 추첨, 랜덤 선택, 복불복">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="추첨 게임 포탈">
+  <meta property="og:title" content="🎱 핀볼 서바이벌">
+  <meta property="og:description" content="참여자 수만큼 공이 핀볼 머신에 떨어진다! 범퍼와 플리퍼 사이에서 최후까지 살아남는 공이 승리!">
+  <meta property="og:url" content="https://geniuskey.github.io/lottery/pinball/">
+  <meta property="og:locale" content="ko_KR">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="🎱 핀볼 서바이벌">
+  <meta name="twitter:description" content="참여자 수만큼 공이 핀볼 머신에 떨어진다! 범퍼와 플리퍼 사이에서 최후까지 살아남는 공이 승리!">
+
+  <!-- 추가 SEO -->
+  <link rel="canonical" href="https://geniuskey.github.io/lottery/pinball/">
+  <meta name="robots" content="index, follow">
+
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎱</text></svg>">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --sidebar-width: 320px;
+      --bg-dark: #0a0a0f;
+      --accent: #06b6d4;
+      --accent-light: #67e8f9;
+      --accent-gold: #ffd700;
+      --accent-pink: #ff6b9d;
+      --accent-cyan: #00d4ff;
+      --glass: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --text-muted: #9e9e9e;
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg-dark);
+      overflow-x: hidden;
+      height: 100vh;
+      color: #fff;
+    }
+
+    .container { display: flex; width: 100%; height: 100vh; overflow: hidden; }
+
+    @media (max-width: 768px) {
+      body { overflow-y: auto; height: auto; touch-action: manipulation; }
+      .container { display: flex !important; flex-direction: column !important; height: auto; }
+      .sidebar {
+        order: 2;
+        width: 100% !important; min-width: 100% !important; height: auto !important;
+        border-right: none !important; border-top: 1px solid var(--glass-border) !important;
+        border-radius: 0 !important; padding: 20px !important;
+      }
+      .game-area {
+        order: 1;
+        flex: none !important; width: 100% !important; height: 75vh !important; min-height: 450px !important;
+      }
+      .rankings { min-height: 250px; max-height: 400px; }
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      min-width: var(--sidebar-width);
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid var(--glass-border);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 100vh;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      white-space: nowrap;
+      background: linear-gradient(to right, var(--accent-light) 0%, #fff 45%, #fff 55%, var(--accent-light) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 5s linear infinite;
+      letter-spacing: -0.8px;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+    }
+
+    @keyframes shine { to { background-position: 200% center; } }
+
+    .sidebar-header h1 .logo-emoji {
+      filter: drop-shadow(0 0 5px rgba(103, 232, 249, 0.5));
+      -webkit-text-fill-color: initial;
+    }
+
+    .header-btns { display: flex; gap: 8px; flex-shrink: 0; }
+
+    .help-btn, .sound-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--accent-cyan);
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+    }
+
+    .help-btn:hover, .sound-btn:hover {
+      background: rgba(0, 212, 255, 0.1);
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+    }
+
+    .sidebar-top { display: flex; flex-direction: column; gap: 20px; flex-shrink: 0; }
+    .input-group { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+
+    .sidebar label {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .sidebar textarea {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      resize: none;
+      min-height: 80px;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .sidebar textarea:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+      background: rgba(0, 212, 255, 0.1);
+    }
+
+    .settings-group {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 15px;
+      border: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .slider-container { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+
+    .slider-container input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      height: 6px;
+      border-radius: 3px;
+    }
+
+    .slider-container input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+    }
+
+    .slider-value {
+      background: rgba(0, 212, 255, 0.2);
+      color: var(--accent-cyan);
+      padding: 2px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      min-width: 42px;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    .button-group { display: flex; gap: 6px; flex-shrink: 0; width: 100%; }
+
+    .btn {
+      padding: 12px 8px;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      flex: 1;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0891b2, #22d3ee);
+      color: white;
+      flex: 1.5;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(34, 211, 238, 0.4);
+    }
+
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-reset {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--accent-pink);
+      border: 1px solid rgba(255, 107, 157, 0.2);
+    }
+
+    .sidebar-bottom { flex: 1; display: flex; flex-direction: column; min-height: 0; margin-top: 5px; }
+
+    /* Rankings */
+    .rankings {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .rankings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .section-title { font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); font-weight: 700; }
+
+    .rankings-list {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .rankings-list::-webkit-scrollbar { width: 4px; }
+    .rankings-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
+    .rankings-list::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
+
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      font-size: 0.85rem;
+    }
+
+    .ranking-item.alive { background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.15); }
+    .ranking-item.dead { background: rgba(255, 107, 107, 0.05); opacity: 0.6; }
+    .ranking-item.winner {
+      background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), transparent);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      animation: winner-glow 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes winner-glow {
+      from { box-shadow: 0 0 5px rgba(255, 215, 0, 0.2); }
+      to { box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+    }
+
+    .status-icon { width: 20px; font-weight: 900; }
+    .ball-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 6px rgba(255,255,255,0.2); }
+    .ranking-name { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .death-time { font-size: 0.75rem; color: var(--accent-cyan); font-family: monospace; }
+
+    /* Sidebar Footer */
+    .sidebar-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding-top: 15px;
+      border-top: 1px solid var(--glass-border);
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      flex: 1;
+      height: 38px;
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+      text-decoration: none;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    /* Game Area */
+    .game-area {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #05060e;
+    }
+
+    #gameCanvas { width: 100%; height: 100%; display: block; }
+
+    .game-timer {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      color: var(--accent-gold);
+      padding: 8px 24px;
+      border-radius: 30px;
+      font-family: monospace;
+      font-size: 1.5rem;
+      font-weight: 900;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      z-index: 20;
+      pointer-events: none;
+      display: none;
+    }
+
+    .danger-ui {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 107, 107, 0.9);
+      color: white;
+      padding: 10px 25px;
+      border-radius: 30px;
+      font-weight: 900;
+      font-size: 1.1rem;
+      display: none;
+      animation: pulse 0.5s infinite alternate;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      from { transform: translateX(-50%) scale(1); }
+      to { transform: translateX(-50%) scale(1.05); }
+    }
+
+    /* Death Info Logs */
+    .death-info-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .death-info-item {
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-right: 4px solid var(--accent-pink);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      white-space: nowrap;
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOutUp { to { transform: translateY(-20px); opacity: 0; } }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal-overlay.show { display: flex; }
+
+    .modal {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 450px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal h2 {
+      color: var(--accent-light);
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px; right: 20px;
+      width: 32px; height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .help-section { margin-bottom: 20px; }
+    .help-section h3 { color: var(--accent-cyan); font-size: 1rem; margin-bottom: 8px; }
+    .help-section p { color: #aaa; font-size: 0.9rem; line-height: 1.6; }
+
+    /* Game Over */
+    .game-over-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .game-over-overlay.show { display: flex; }
+
+    .game-over-content { text-align: center; color: white; padding: 20px; }
+    .game-over-content h2 { font-size: 2.5rem; margin-bottom: 20px; color: var(--accent-gold); }
+    .winners-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 30px; }
+    .winner-name { background: var(--accent-gold); color: #000; padding: 10px 25px; border-radius: 30px; font-weight: 700; font-size: 1.2rem; }
+    .btn-confirm { background: white; color: black; border: none; padding: 12px 40px; border-radius: 30px; font-weight: 700; cursor: pointer; }
+
+    .copyright {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-header">
+          <h1><span class="logo-emoji">🎱</span> <span class="logo-text">핀볼 서바이벌</span></h1>
+          <div class="header-btns">
+            <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
+            <button class="help-btn" id="helpBtn" title="도움말">?</button>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>참여자 입력</label>
+          <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)
+예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+        </div>
+
+        <div class="settings-group">
+          <div>
+            <label>최종 생존자 수</label>
+            <div class="slider-container">
+              <input type="range" id="survivorCount" min="1" max="10" value="1">
+              <span class="slider-value" id="survivorValue">1</span>
+            </div>
+          </div>
+          <div>
+            <label>게임 속도</label>
+            <div class="slider-container">
+              <input type="range" id="gameSpeed" min="5" max="20" value="10">
+              <span class="slider-value" id="speedValue">1.0x</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn btn-primary" id="startBtn">🎮 시작!</button>
+          <button class="btn btn-reset" id="resetBtn">↺ 초기화</button>
+        </div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="rankings">
+          <div class="rankings-header">
+            <div class="section-title">📊 실시간 현황</div>
+          </div>
+          <div class="rankings-list" id="rankingsList"></div>
+        </div>
+
+        <div class="sidebar-footer">
+          <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          </a>
+          <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+          <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+          </a>
+          <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <main class="game-area">
+      <div class="game-timer" id="gameTimer">0.000s</div>
+      <div class="danger-ui" id="dangerUI">⚠️ 위험! 가속 모드 ⚠️</div>
+      <div class="death-info-container" id="deathInfoContainer"></div>
+      <canvas id="gameCanvas"></canvas>
+      <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
+      <div class="game-over-overlay" id="gameOverOverlay">
+        <div class="game-over-content">
+          <h2>🎉 생존자 발표!</h2>
+          <div class="winners-list" id="winnersList"></div>
+          <button class="btn-confirm" id="confirmBtn">확인</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Help Modal -->
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal">
+      <button class="modal-close" id="modalClose">×</button>
+      <h2>🎱 게임 방법</h2>
+
+      <div class="help-section">
+        <h3>🎯 게임 목표</h3>
+        <p>참여자 수만큼 공이 핀볼 머신 위에서 떨어집니다. 핀과 범퍼에 튕기며 내려오는 공을 하단의 자동 플리퍼가 쳐 올려주지만, 가운데 배수구에 빠지면 탈락! 마지막까지 살아남는 공이 승리합니다.</p>
+      </div>
+
+      <div class="help-section">
+        <h3>👥 참여자 설정</h3>
+        <p>쉼표(,) 또는 줄바꿈으로 구분하여 참여자 이름을 입력하세요. <b>이름*3</b> 형식으로 같은 이름을 여러 개 만들 수 있습니다. 최소 2명 이상 필요합니다.</p>
+      </div>
+
+      <div class="help-section">
+        <h3>🏆 최종 생존자 수</h3>
+        <p>슬라이더로 최종 생존자 수를 설정합니다. 해당 인원만 남으면 게임이 종료됩니다.</p>
+      </div>
+
+      <div class="help-section">
+        <h3>⚡ 게임 진행</h3>
+        <p>시간이 지날수록 중력이 강해지고 플리퍼가 점점 게을러집니다. 30초가 넘으면 서든데스! 플리퍼가 멈춰 승부가 빠르게 결정됩니다.</p>
+      </div>
+
+      <div class="help-section">
+        <h3>📋 결과 복사</h3>
+        <p>게임 종료 후 하단의 복사 버튼으로 결과를 클립보드에 복사할 수 있습니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
+
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.lastPing = 0;
+        this.setupToggleButton();
+      }
+      setupToggleButton() {
+        const btn = document.getElementById('soundToggle');
+        btn.onclick = () => {
+          this.enabled = !this.enabled;
+          btn.textContent = this.enabled ? '🔊' : '🔇';
+          if (this.enabled && this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+        };
+      }
+      init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      tone(type, freq, freqEnd, dur, vol) {
+        if (!this.enabled || !this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        if (freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, this.ctx.currentTime + dur);
+        gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(); osc.stop(this.ctx.currentTime + dur);
+      }
+      playStart() { this.init(); this.tone('square', 440, 880, 0.15, 0.1); }
+      // 핀 충돌음은 너무 잦으면 시끄러우니 40ms 스로틀
+      playPing() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        if (now - this.lastPing < 0.04) return;
+        this.lastPing = now;
+        this.tone('sine', 700 + Math.random() * 400, null, 0.05, 0.02);
+      }
+      playBumper() { this.tone('square', 220, 440, 0.1, 0.06); }
+      playFlipper() { this.tone('triangle', 180, 90, 0.08, 0.05); }
+      playDrain() { this.tone('sawtooth', 200, 40, 0.35, 0.1); }
+      playWin() {
+        if (!this.enabled) return;
+        this.init();
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.15);
+          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.15);
+          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.15 + 0.05);
+          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.15 + 0.5);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.15);
+          osc.stop(this.ctx.currentTime + i * 0.15 + 0.5);
+        });
+      }
+    }
+
+    const sound = new SoundManager();
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // ===== 게임 상태 =====
+    let gameRunning = false;
+    let participants = [];
+    let balls = [];
+    let pegs = [];
+    let bumpers = [];
+    let flippers = [];
+    let walls = [];         // 벽/경사면 선분 {x1,y1,x2,y2, nx,ny}
+    let particles = [];
+    let spinner = null;
+    let targetSurvivors = 1;
+    let speedMultiplier = 1.0;
+    let gameTimeSeconds = 0;
+    let animationId = null;
+    let lastTimestamp = 0;
+    let pendingSpawns = [];  // 순차 투입 대기열
+    let spawnTimer = 0;
+    let drainY = 0;
+    let suddenDeath = false;
+
+    const SUDDEN_DEATH_TIME = 30;   // 서든데스 시작(초)
+    const RESTITUTION = 0.82;
+    const BALL_FRICTION = 0.999;
+
+    // 배경(핀볼 보드) 캐시 캔버스 — 매 프레임 정적 요소를 다시 그리지 않는다
+    const boardCanvas = document.createElement('canvas');
+    const boardCtx = boardCanvas.getContext('2d');
+
+    // ===== 보드 구성 =====
+    function buildBoard() {
+      const W = canvas.width, H = canvas.height;
+      pegs = [];
+      bumpers = [];
+      flippers = [];
+      walls = [];
+
+      const sideMargin = Math.max(20, W * 0.03);
+      const funnelTop = H - Math.min(230, H * 0.3);   // 경사면 시작 높이
+      const gap = Math.min(220, Math.max(175, W * 0.17)); // 플리퍼 구간 폭
+      const cx = W / 2;
+      drainY = H - 26;
+
+      // 좌우 수직 벽
+      walls.push(seg(sideMargin, 0, sideMargin, funnelTop));
+      walls.push(seg(W - sideMargin, 0, W - sideMargin, funnelTop));
+      // 깔때기 경사면
+      const pivotY = H - 90;
+      const leftPivotX = cx - gap / 2;
+      const rightPivotX = cx + gap / 2;
+      walls.push(seg(sideMargin, funnelTop, leftPivotX, pivotY));
+      walls.push(seg(W - sideMargin, funnelTop, rightPivotX, pivotY));
+
+      // 핀(peg) — 지그재그 격자
+      const pegAreaTop = Math.max(110, H * 0.16);
+      const pegAreaBottom = funnelTop - 60;
+      const cols = Math.max(5, Math.floor((W - sideMargin * 2) / 90));
+      const rows = Math.max(4, Math.floor((pegAreaBottom - pegAreaTop) / 80));
+      for (let r = 0; r < rows; r++) {
+        const y = pegAreaTop + (r + 0.5) * ((pegAreaBottom - pegAreaTop) / rows);
+        const offset = (r % 2 === 0) ? 0 : 0.5;
+        for (let c = 0; c < cols; c++) {
+          const x = sideMargin + 30 + (c + offset) * ((W - sideMargin * 2 - 60) / (cols - 0.5));
+          if (x < sideMargin + 20 || x > W - sideMargin - 20) continue;
+          pegs.push({ x, y, r: 6, flash: 0 });
+        }
+      }
+
+      // 범퍼 3개 — 핀 영역 중간에 배치, 겹치는 핀 제거
+      const bumperY = pegAreaTop + (pegAreaBottom - pegAreaTop) * 0.5;
+      const bumperXs = [cx - W * 0.22, cx, cx + W * 0.22];
+      bumperXs.forEach((bx, i) => {
+        const by = bumperY + (i === 1 ? -60 : 30);
+        bumpers.push({ x: bx, y: by, r: 26, flash: 0 });
+      });
+      pegs = pegs.filter(p => bumpers.every(b => dist(p.x, p.y, b.x, b.y) > b.r + 30));
+
+      // 플리퍼 (자동) — 팁 사이에 공이 빠질 수 있는 배수구 간격을 남긴다
+      // (캡슐 두께만큼 유효 간격이 줄어드는 것을 감안해 짧게)
+      const flipLen = gap * 0.33;
+      flippers.push(makeFlipper(leftPivotX, pivotY, flipLen, 1));    // 왼쪽: 오른쪽으로 뻗음
+      flippers.push(makeFlipper(rightPivotX, pivotY, flipLen, -1));  // 오른쪽: 왼쪽으로 뻗음
+
+      // 중앙 회전 스피너 (변수 요소)
+      spinner = {
+        x: cx,
+        y: pegAreaTop + (pegAreaBottom - pegAreaTop) * 0.82,
+        len: Math.min(90, W * 0.09),
+        angle: 0,
+        speed: 1.6
+      };
+      pegs = pegs.filter(p => dist(p.x, p.y, spinner.x, spinner.y) > spinner.len + 24);
+
+      renderBoardCache();
+    }
+
+    function seg(x1, y1, x2, y2) {
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.hypot(dx, dy);
+      return { x1, y1, x2, y2, len, ux: dx / len, uy: dy / len };
+    }
+
+    function makeFlipper(px, py, len, dir) {
+      // 좌표 파라미터화: tip = (px + cos(angle)*len*dir, py + sin(angle)*len)
+      // → 양쪽 플리퍼 모두 angle이 양수면 팁이 아래로 처지고, 음수면 위로 올라간다
+      return {
+        px, py, len, dir,               // dir: 1 왼쪽(오른쪽으로 뻗음), -1 오른쪽(왼쪽으로 뻗음)
+        restAngle: 0.42,                // 휴식: 팁이 중앙 아래로 처짐
+        flipAngle: -0.62,               // 작동: 팁이 위로
+        angle: 0.42,
+        angVel: 0,
+        state: 'rest',                  // rest | flipping | returning
+        cooldown: 0,
+        thickness: 11
+      };
+    }
+
+    function dist(x1, y1, x2, y2) { return Math.hypot(x2 - x1, y2 - y1); }
+
+    // ===== 보드 배경 캐시 =====
+    function renderBoardCache() {
+      const W = canvas.width, H = canvas.height;
+      boardCanvas.width = W;
+      boardCanvas.height = H;
+      const b = boardCtx;
+
+      // 배경 그라데이션
+      const bg = b.createLinearGradient(0, 0, 0, H);
+      bg.addColorStop(0, '#0d1230');
+      bg.addColorStop(0.6, '#131a3f');
+      bg.addColorStop(1, '#1a1030');
+      b.fillStyle = bg;
+      b.fillRect(0, 0, W, H);
+
+      // 은은한 네온 아치
+      b.strokeStyle = 'rgba(34, 211, 238, 0.08)';
+      b.lineWidth = 40;
+      b.beginPath();
+      b.arc(W / 2, H * 0.05, W * 0.42, 0, Math.PI);
+      b.stroke();
+
+      // 벽/경사면
+      b.strokeStyle = '#22d3ee';
+      b.lineWidth = 5;
+      b.lineCap = 'round';
+      b.shadowColor = '#22d3ee';
+      b.shadowBlur = 12;
+      walls.forEach(w => {
+        b.beginPath();
+        b.moveTo(w.x1, w.y1);
+        b.lineTo(w.x2, w.y2);
+        b.stroke();
+      });
+      b.shadowBlur = 0;
+
+      // 핀
+      pegs.forEach(p => {
+        const g = b.createRadialGradient(p.x - 2, p.y - 2, 1, p.x, p.y, p.r);
+        g.addColorStop(0, '#ffffff');
+        g.addColorStop(1, '#8b9cf5');
+        b.fillStyle = g;
+        b.beginPath();
+        b.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        b.fill();
+      });
+
+      // 배수구 표시
+      const cx = W / 2;
+      b.fillStyle = 'rgba(255, 60, 90, 0.15)';
+      b.fillRect(flippers[0].px, H - 90, flippers[1].px - flippers[0].px, 90);
+      b.font = '900 16px "Noto Sans KR"';
+      b.textAlign = 'center';
+      b.fillStyle = 'rgba(255, 107, 157, 0.5)';
+      b.fillText('DRAIN', cx, H - 40);
+    }
+
+    // ===== 캔버스 리사이즈 =====
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+      if (!gameRunning) {
+        buildBoard();
+        draw();
+      } else {
+        // 진행 중에는 보드만 다시 캐시 (좌표계 유지 위해 재구성은 피함)
+        renderBoardCache();
+      }
+    }
+
+    // ===== 공 생성 =====
+    const faceEmojis = ['😀', '😎', '🤩', '😆', '🥳', '😜', '🤪', '😇', '🥰', '🤠'];
+    const hurtEmojis = ['😵', '😵‍💫', '🥴', '😭', '🤕', '💀'];
+
+    function initBalls() {
+      const n = participants.length;
+      const r = Math.max(9, Math.min(16, 22 - n * 0.35));
+      balls = [];
+      pendingSpawns = [];
+      participants.forEach((name, i) => {
+        const hue = Math.round((i * 360) / n);
+        pendingSpawns.push({
+          name,
+          color: `hsl(${hue}, 85%, 60%)`,
+          colorDark: `hsl(${hue}, 85%, 38%)`,
+          r,
+          emoji: faceEmojis[i % faceEmojis.length]
+        });
+      });
+      // 투입 순서 셔플
+      for (let i = pendingSpawns.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pendingSpawns[i], pendingSpawns[j]] = [pendingSpawns[j], pendingSpawns[i]];
+      }
+      spawnTimer = 0;
+    }
+
+    function spawnBall(spec) {
+      const W = canvas.width;
+      balls.push({
+        ...spec,
+        x: W * 0.2 + Math.random() * W * 0.6,
+        y: -20 - Math.random() * 40,
+        vx: (Math.random() - 0.5) * 260,
+        vy: 60 + Math.random() * 60,
+        alive: true,
+        deathTimeSeconds: null,
+        flash: 0
+      });
+    }
+
+    // ===== 물리 =====
+    function reflectBall(ball, nx, ny, boost, restitution) {
+      const dot = ball.vx * nx + ball.vy * ny;
+      if (dot >= 0) return false;
+      ball.vx -= (1 + restitution) * dot * nx;
+      ball.vy -= (1 + restitution) * dot * ny;
+      if (boost) {
+        ball.vx += nx * boost;
+        ball.vy += ny * boost;
+      }
+      return true;
+    }
+
+    function collideCircle(ball, cx, cy, cr, boost, restitution) {
+      const dx = ball.x - cx, dy = ball.y - cy;
+      const d = Math.hypot(dx, dy);
+      const minD = ball.r + cr;
+      if (d >= minD || d === 0) return false;
+      const nx = dx / d, ny = dy / d;
+      ball.x = cx + nx * minD;
+      ball.y = cy + ny * minD;
+      reflectBall(ball, nx, ny, boost, restitution);
+      return true;
+    }
+
+    // 선분(두께 포함)과 공 충돌
+    function collideSegment(ball, x1, y1, x2, y2, thickness, segVelFn, restitution) {
+      const dx = x2 - x1, dy = y2 - y1;
+      const lenSq = dx * dx + dy * dy;
+      let t = ((ball.x - x1) * dx + (ball.y - y1) * dy) / lenSq;
+      t = Math.max(0, Math.min(1, t));
+      const px = x1 + dx * t, py = y1 + dy * t;
+      const ddx = ball.x - px, ddy = ball.y - py;
+      const d = Math.hypot(ddx, ddy);
+      const minD = ball.r + thickness;
+      if (d >= minD || d === 0) return false;
+      const nx = ddx / d, ny = ddy / d;
+      ball.x = px + nx * minD;
+      ball.y = py + ny * minD;
+      // 접촉점의 표면 속도(플리퍼 회전) 반영
+      let svx = 0, svy = 0;
+      if (segVelFn) { const v = segVelFn(px, py); svx = v.x; svy = v.y; }
+      ball.vx -= svx; ball.vy -= svy;
+      reflectBall(ball, nx, ny, 0, restitution);
+      ball.vx += svx; ball.vy += svy;
+      return true;
+    }
+
+    function flipperTip(f) {
+      return {
+        x: f.px + Math.cos(f.angle) * f.len * f.dir,
+        y: f.py + Math.sin(f.angle) * f.len
+      };
+    }
+
+    function updateFlipper(f, dt) {
+      if (f.cooldown > 0) f.cooldown -= dt;
+
+      // 서든데스: 플리퍼가 아래로 축 처져 공을 모두 배수구로 흘려보낸다
+      if (suddenDeath) {
+        const droop = 1.15;
+        if (f.angle < droop) {
+          f.angVel = 2.5;
+          f.angle = Math.min(droop, f.angle + f.angVel * dt);
+        } else {
+          f.angVel = 0;
+        }
+        f.state = 'rest';
+        return;
+      }
+
+      // 자동 발동: 근처에 공이 있으면(낙하 중이든 플리퍼 위에 얹혀 있든) 확률적으로 플립
+      if (f.state === 'rest' && f.cooldown <= 0) {
+        // 시간이 지날수록 플리퍼가 게을러진다 (탈락 페이스 보장)
+        const laziness = Math.min(0.55, gameTimeSeconds * 0.012);
+        for (const ball of balls) {
+          if (!ball.alive || ball.vy < -20) continue; // 위로 튀어오르는 공은 무시
+          const tip = flipperTip(f);
+          const zoneX = Math.min(f.px, tip.x) - 20, zoneW = Math.abs(tip.x - f.px) + 40;
+          if (ball.x > zoneX && ball.x < zoneX + zoneW &&
+              ball.y > f.py - 110 && ball.y < f.py + 45) {
+            if (Math.random() > laziness) {
+              f.state = 'flipping';
+              sound.playFlipper();
+            } else {
+              f.cooldown = 0.35; // 이번엔 놓친다
+            }
+            break;
+          }
+        }
+      }
+
+      const FLIP_SPEED = 14;
+      if (f.state === 'flipping') {
+        f.angVel = -FLIP_SPEED;
+        f.angle += f.angVel * dt;
+        if (f.angle <= f.flipAngle) {
+          f.angle = f.flipAngle;
+          f.state = 'returning';
+        }
+      } else if (f.state === 'returning') {
+        f.angVel = FLIP_SPEED * 0.4;
+        f.angle += f.angVel * dt;
+        if (f.angle >= f.restAngle) {
+          f.angle = f.restAngle;
+          f.angVel = 0;
+          f.state = 'rest';
+          f.cooldown = 0.15 + Math.random() * 0.25;
+        }
+      } else {
+        f.angVel = 0;
+      }
+    }
+
+    function update(dt) {
+      gameTimeSeconds += dt;
+      document.getElementById('gameTimer').textContent = gameTimeSeconds.toFixed(3) + 's';
+
+      // 순차 투입
+      if (pendingSpawns.length > 0) {
+        spawnTimer -= dt;
+        if (spawnTimer <= 0) {
+          spawnBall(pendingSpawns.pop());
+          spawnTimer = 0.12;
+          updateRankings();
+        }
+      }
+
+      // 난이도: 시간이 갈수록 중력 증가 (속도 배율은 stepDt에만 적용)
+      const gravityScale = 1 + Math.min(1.2, Math.max(0, gameTimeSeconds - 8) * 0.05);
+      const gravity = 900 * gravityScale;
+      const simDt = dt * speedMultiplier;
+
+      // 서든데스
+      const dangerUI = document.getElementById('dangerUI');
+      if (gameTimeSeconds > SUDDEN_DEATH_TIME) {
+        if (!suddenDeath) suddenDeath = true;
+        dangerUI.style.display = 'block';
+        dangerUI.textContent = '🔥 서든데스! 플리퍼 정지!! 🔥';
+        dangerUI.style.background = 'rgba(255, 0, 0, 0.9)';
+      } else if (gameTimeSeconds > 15) {
+        dangerUI.style.display = 'block';
+        dangerUI.textContent = '⚠️ 위험! 가속 모드 ⚠️';
+        dangerUI.style.background = 'rgba(255, 107, 107, 0.9)';
+      } else {
+        dangerUI.style.display = 'none';
+      }
+
+      // 스피너 회전 (시간에 따라 빨라짐)
+      spinner.angle += spinner.speed * (1 + gameTimeSeconds * 0.02) * simDt;
+
+      // 플리퍼
+      flippers.forEach(f => updateFlipper(f, simDt));
+
+      const W = canvas.width;
+
+      // 공 업데이트 (서브스텝으로 터널링 방지)
+      const steps = 3;
+      const stepDt = simDt / steps;
+      for (let s = 0; s < steps; s++) {
+        for (const ball of balls) {
+          if (!ball.alive) continue;
+
+          ball.vy += gravity * stepDt;
+          ball.vx *= BALL_FRICTION;
+          ball.vy *= BALL_FRICTION;
+
+          // 속도 상한 (안정성)
+          const spd = Math.hypot(ball.vx, ball.vy);
+          if (spd > 1400) { ball.vx *= 1400 / spd; ball.vy *= 1400 / spd; }
+
+          ball.x += ball.vx * stepDt;
+          ball.y += ball.vy * stepDt;
+
+          // 천장
+          if (ball.y < ball.r && ball.vy < 0) { ball.y = ball.r; ball.vy *= -RESTITUTION; }
+          // 화면 밖 좌우 (스폰 직후 보호)
+          if (ball.x < ball.r) { ball.x = ball.r; ball.vx = Math.abs(ball.vx); }
+          if (ball.x > W - ball.r) { ball.x = W - ball.r; ball.vx = -Math.abs(ball.vx); }
+
+          // 벽/경사면
+          for (const w of walls) {
+            collideSegment(ball, w.x1, w.y1, w.x2, w.y2, 2.5, null, RESTITUTION);
+          }
+
+          // 핀
+          for (const p of pegs) {
+            if (Math.abs(ball.x - p.x) > 30 || Math.abs(ball.y - p.y) > 30) continue;
+            if (collideCircle(ball, p.x, p.y, p.r, 20 + Math.random() * 40, RESTITUTION)) {
+              p.flash = 1;
+              sound.playPing();
+            }
+          }
+
+          // 범퍼 — 강한 반발
+          for (const b of bumpers) {
+            if (Math.abs(ball.x - b.x) > 60 || Math.abs(ball.y - b.y) > 60) continue;
+            if (collideCircle(ball, b.x, b.y, b.r, 380 + Math.random() * 160, 1.0)) {
+              b.flash = 1;
+              ball.flash = 1;
+              sound.playBumper();
+              spawnParticles(ball.x, ball.y, ball.color, 6);
+            }
+          }
+
+          // 스피너
+          {
+            const c = Math.cos(spinner.angle), sn = Math.sin(spinner.angle);
+            const x1 = spinner.x - c * spinner.len, y1 = spinner.y - sn * spinner.len;
+            const x2 = spinner.x + c * spinner.len, y2 = spinner.y + sn * spinner.len;
+            collideSegment(ball, x1, y1, x2, y2, 5, (px, py) => {
+              // 회전 표면 속도: ω × r
+              const rx = px - spinner.x, ry = py - spinner.y;
+              const w = spinner.speed * (1 + gameTimeSeconds * 0.02);
+              return { x: -ry * w, y: rx * w };
+            }, 0.9);
+          }
+
+          // 플리퍼
+          for (const f of flippers) {
+            const tip = flipperTip(f);
+            collideSegment(ball, f.px, f.py, tip.x, tip.y, f.thickness, (px, py) => {
+              // tip = (px + cos·len·dir, py + sin·len) 파라미터화의 표면 속도
+              const rx = px - f.px, ry = py - f.py;
+              return { x: -ry * f.angVel * f.dir, y: rx * f.angVel * f.dir };
+            }, 0.75);
+          }
+
+          // 탈락 판정
+          if (ball.y > drainY + ball.r) {
+            killBall(ball);
+          }
+        }
+
+        // 공끼리 충돌 (탄성)
+        for (let i = 0; i < balls.length; i++) {
+          const a = balls[i];
+          if (!a.alive) continue;
+          for (let j = i + 1; j < balls.length; j++) {
+            const b2 = balls[j];
+            if (!b2.alive) continue;
+            const dx = b2.x - a.x, dy = b2.y - a.y;
+            const d = Math.hypot(dx, dy);
+            const minD = a.r + b2.r;
+            if (d < minD && d > 0) {
+              const nx = dx / d, ny = dy / d;
+              const overlap = (minD - d) / 2;
+              a.x -= nx * overlap; a.y -= ny * overlap;
+              b2.x += nx * overlap; b2.y += ny * overlap;
+              const rvx = b2.vx - a.vx, rvy = b2.vy - a.vy;
+              const rel = rvx * nx + rvy * ny;
+              if (rel < 0) {
+                const imp = -(1 + 0.9) * rel / 2;
+                a.vx -= imp * nx; a.vy -= imp * ny;
+                b2.vx += imp * nx; b2.vy += imp * ny;
+              }
+            }
+          }
+        }
+      }
+
+      // 이펙트 감쇠
+      pegs.forEach(p => { if (p.flash > 0) p.flash = Math.max(0, p.flash - dt * 4); });
+      bumpers.forEach(b => { if (b.flash > 0) b.flash = Math.max(0, b.flash - dt * 5); });
+      balls.forEach(b => { if (b.flash > 0) b.flash = Math.max(0, b.flash - dt * 5); });
+
+      // 파티클
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const pt = particles[i];
+        pt.x += pt.vx * dt;
+        pt.y += pt.vy * dt;
+        pt.vy += 500 * dt;
+        pt.life -= dt;
+        if (pt.life <= 0) particles.splice(i, 1);
+      }
+
+      // 종료 판정 (모든 공이 투입된 후에만)
+      if (pendingSpawns.length === 0) {
+        const alive = balls.filter(b => b.alive);
+        if (alive.length <= targetSurvivors) endGame();
+      }
+    }
+
+    function killBall(ball) {
+      ball.alive = false;
+      ball.deathTimeSeconds = gameTimeSeconds;
+      sound.playDrain();
+      spawnParticles(ball.x, drainY, ball.color, 14);
+      showDeathInfo(ball.name);
+      updateRankings();
+    }
+
+    function spawnParticles(x, y, color, count) {
+      if (particles.length > 150) return;
+      for (let i = 0; i < count; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const sp = 80 + Math.random() * 220;
+        particles.push({
+          x, y,
+          vx: Math.cos(a) * sp,
+          vy: Math.sin(a) * sp - 120,
+          life: 0.4 + Math.random() * 0.4,
+          maxLife: 0.8,
+          color,
+          size: 2 + Math.random() * 3
+        });
+      }
+    }
+
+    const deathMessages = [
+      '{name}, 배수구로 퐁당! 🕳️',
+      '{name}의 공이 굴러떨어졌어요 😭',
+      '플리퍼가 {name}를 외면했습니다 🙈',
+      '{name}, 핀볼 머신의 제물이 되다 💀',
+      'GAME OVER... {name} 🎱'
+    ];
+
+    function showDeathInfo(name) {
+      const container = document.getElementById('deathInfoContainer');
+      const template = deathMessages[Math.floor(Math.random() * deathMessages.length)];
+      const item = document.createElement('div');
+      item.className = 'death-info-item';
+      item.textContent = template.replace('{name}', name);
+      container.prepend(item);
+      if (container.children.length > 5) container.removeChild(container.lastChild);
+      setTimeout(() => {
+        item.style.animation = 'fadeOutUp 0.5s ease-in forwards';
+        setTimeout(() => { if (item.parentNode === container) container.removeChild(item); }, 500);
+      }, 3000);
+    }
+
+    // ===== 렌더링 =====
+    function draw() {
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+      ctx.drawImage(boardCanvas, 0, 0);
+
+      // 핀 플래시
+      for (const p of pegs) {
+        if (p.flash <= 0) continue;
+        ctx.fillStyle = `rgba(255, 255, 200, ${p.flash * 0.9})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r + 4 * p.flash, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 범퍼
+      for (const b of bumpers) {
+        const grad = ctx.createRadialGradient(b.x, b.y, 4, b.x, b.y, b.r);
+        grad.addColorStop(0, b.flash > 0 ? '#fff7cc' : '#f472b6');
+        grad.addColorStop(1, b.flash > 0 ? '#fbbf24' : '#9d174d');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r + b.flash * 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.5 + b.flash * 0.5})`;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.font = '900 12px "Noto Sans KR"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('+', b.x, b.y);
+      }
+
+      // 스피너
+      {
+        const c = Math.cos(spinner.angle), sn = Math.sin(spinner.angle);
+        ctx.strokeStyle = '#a78bfa';
+        ctx.lineWidth = 9;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(spinner.x - c * spinner.len, spinner.y - sn * spinner.len);
+        ctx.lineTo(spinner.x + c * spinner.len, spinner.y + sn * spinner.len);
+        ctx.stroke();
+        ctx.fillStyle = '#7c3aed';
+        ctx.beginPath();
+        ctx.arc(spinner.x, spinner.y, 8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 플리퍼
+      for (const f of flippers) {
+        const tip = flipperTip(f);
+        const active = f.state === 'flipping';
+        ctx.strokeStyle = suddenDeath ? '#64748b' : (active ? '#fde047' : '#22d3ee');
+        ctx.lineWidth = f.thickness * 2;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(f.px, f.py);
+        ctx.lineTo(tip.x, tip.y);
+        ctx.stroke();
+        ctx.fillStyle = '#0e7490';
+        ctx.beginPath();
+        ctx.arc(f.px, f.py, f.thickness + 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 파티클
+      for (const pt of particles) {
+        ctx.globalAlpha = Math.max(0, pt.life / pt.maxLife);
+        ctx.fillStyle = pt.color;
+        ctx.fillRect(pt.x - pt.size / 2, pt.y - pt.size / 2, pt.size, pt.size);
+      }
+      ctx.globalAlpha = 1;
+
+      // 공
+      ctx.textAlign = 'center';
+      for (const ball of balls) {
+        if (!ball.alive) continue;
+        // 본체
+        const g = ctx.createRadialGradient(ball.x - ball.r * 0.35, ball.y - ball.r * 0.35, ball.r * 0.15, ball.x, ball.y, ball.r);
+        g.addColorStop(0, '#ffffff');
+        g.addColorStop(0.25, ball.color);
+        g.addColorStop(1, ball.colorDark);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.r + ball.flash * 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 이름표
+        ctx.font = '700 11px "Noto Sans KR"';
+        const tw = ctx.measureText(ball.name).width + 10;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+        ctx.beginPath();
+        ctx.roundRect(ball.x - tw / 2, ball.y - ball.r - 20, tw, 16, 5);
+        ctx.fill();
+        ctx.fillStyle = ball.color;
+        ctx.textBaseline = 'middle';
+        ctx.fillText(ball.name, ball.x, ball.y - ball.r - 12);
+      }
+    }
+
+    // ===== 게임 루프 =====
+    function gameLoop(timestamp) {
+      if (!gameRunning) return;
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const dt = Math.min((timestamp - lastTimestamp) / 1000, 0.05);
+      lastTimestamp = timestamp;
+      update(dt);
+      draw();
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    // ===== 랭킹 =====
+    function updateRankings() {
+      const list = document.getElementById('rankingsList');
+      const sorted = [...balls].sort((a, b) => {
+        if (a.alive !== b.alive) return b.alive - a.alive;
+        if (!a.alive && !b.alive) return b.deathTimeSeconds - a.deathTimeSeconds;
+        return a.name.localeCompare(b.name);
+      });
+      const frag = document.createDocumentFragment();
+      sorted.forEach(ball => {
+        const item = document.createElement('div');
+        item.className = `ranking-item ${ball.alive ? 'alive' : 'dead'}`;
+        let timeInfo = '';
+        if (!ball.alive && ball.deathTimeSeconds != null) {
+          timeInfo = `<span class="death-time">${ball.deathTimeSeconds.toFixed(3)}s</span>`;
+        }
+        item.innerHTML = `
+          <span class="status-icon">${ball.alive ? '✓' : '✗'}</span>
+          <span class="ball-dot" style="background:${ball.color}"></span>
+          <span class="ranking-name">${ball.name}</span>
+          ${timeInfo}
+        `;
+        frag.appendChild(item);
+      });
+      list.innerHTML = '';
+      list.appendChild(frag);
+    }
+
+    // ===== 종료 =====
+    function endGame() {
+      gameRunning = false;
+      cancelAnimationFrame(animationId);
+      sound.playWin();
+
+      const winners = balls.filter(b => b.alive);
+      const finalTime = gameTimeSeconds.toFixed(3) + 's';
+
+      updateRankings();
+      const list = document.getElementById('rankingsList');
+      list.querySelectorAll('.ranking-item.alive').forEach(item => {
+        item.classList.add('winner');
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'death-time';
+        timeSpan.textContent = finalTime;
+        item.appendChild(timeSpan);
+      });
+
+      const overlay = document.getElementById('gameOverOverlay');
+      const winnersList = document.getElementById('winnersList');
+      winnersList.innerHTML = `
+        <div style="margin-bottom: 15px; font-size: 1.2rem; color: #aaa; width: 100%;">생존 시간: ${finalTime}</div>
+        ${winners.map(w => `<span class="winner-name">🎱 ${w.name}</span>`).join('')}
+      `;
+      overlay.classList.add('show');
+      createConfetti();
+      document.getElementById('startBtn').disabled = false;
+    }
+
+    function createConfetti() {
+      const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#aa96da'];
+      const gameArea = document.querySelector('.game-area');
+      for (let i = 0; i < 80; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.style.cssText = `position:absolute;width:10px;height:10px;z-index:1001;pointer-events:none;
+            left:${Math.random() * 100}%;top:-10px;
+            background:${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius:${Math.random() > 0.5 ? '50%' : '0'};`;
+          gameArea.appendChild(confetti);
+          const duration = 2000 + Math.random() * 2000;
+          const startX = parseFloat(confetti.style.left);
+          const drift = (Math.random() - 0.5) * 20;
+          confetti.animate([
+            { top: '-10px', left: startX + '%', opacity: 1 },
+            { top: '100%', left: (startX + drift) + '%', opacity: 0 }
+          ], { duration, easing: 'ease-out' }).onfinish = () => confetti.remove();
+        }, i * 30);
+      }
+    }
+
+    // ===== 참여자 파싱 =====
+    function parseParticipants(input) {
+      const names = input.split(/[,\n]/).map(n => n.trim()).filter(n => n);
+      const result = [];
+      for (const name of names) {
+        const match = name.match(/^(.+)\*(\d+)$/);
+        if (match) {
+          const baseName = match[1].trim();
+          const count = parseInt(match[2]);
+          for (let i = 0; i < count; i++) result.push(baseName);
+        } else {
+          result.push(name);
+        }
+      }
+      return result;
+    }
+
+    // ===== 시작/리셋 =====
+    function startGame() {
+      const input = document.getElementById('participants').value;
+      participants = parseParticipants(input);
+
+      if (participants.length < 2) {
+        alert('최소 2명의 참여자가 필요합니다.');
+        return;
+      }
+
+      targetSurvivors = parseInt(document.getElementById('survivorCount').value);
+      if (targetSurvivors >= participants.length) {
+        alert('생존자 수는 참여자 수보다 적어야 합니다.');
+        return;
+      }
+      speedMultiplier = parseInt(document.getElementById('gameSpeed').value) / 10;
+
+      saveSettings();
+
+      document.getElementById('gameOverOverlay').classList.remove('show');
+      document.getElementById('dangerUI').style.display = 'none';
+      document.getElementById('gameTimer').style.display = 'block';
+
+      gameTimeSeconds = 0;
+      lastTimestamp = 0;
+      suddenDeath = false;
+      particles = [];
+      sound.init();
+      sound.playStart();
+
+      buildBoard();
+      initBalls();
+      updateRankings();
+
+      gameRunning = true;
+      document.getElementById('startBtn').disabled = true;
+      requestAnimationFrame(gameLoop);
+    }
+
+    function resetGame() {
+      gameRunning = false;
+      cancelAnimationFrame(animationId);
+      balls = [];
+      pendingSpawns = [];
+      particles = [];
+      suddenDeath = false;
+      document.getElementById('rankingsList').innerHTML = '';
+      document.getElementById('gameOverOverlay').classList.remove('show');
+      document.getElementById('dangerUI').style.display = 'none';
+      document.getElementById('gameTimer').style.display = 'none';
+      document.getElementById('startBtn').disabled = false;
+      buildBoard();
+      draw();
+    }
+
+    // ===== 결과 복사 =====
+    function copyResults() {
+      const winners = balls.filter(b => b.alive);
+      const losers = [...balls.filter(b => !b.alive)].sort((a, b) => b.deathTimeSeconds - a.deathTimeSeconds);
+
+      let result = '🎱 핀볼 서바이벌 결과\n\n';
+      result += '🏆 생존자:\n';
+      winners.forEach(w => result += `  ${w.name}\n`);
+      result += '\n💀 탈락자:\n';
+      losers.forEach(l => result += `  ${l.name} (${l.deathTimeSeconds.toFixed(3)}s)\n`);
+
+      navigator.clipboard.writeText(result).then(() => {
+        const btn = document.getElementById('copyResultBtn');
+        btn.dataset.tooltip = '복사됨!';
+        setTimeout(() => btn.dataset.tooltip = '결과 복사', 2000);
+      });
+    }
+
+    // ===== 설정 저장/복원 =====
+    function saveSettings() {
+      try {
+        localStorage.setItem('pinball_participants', document.getElementById('participants').value);
+        localStorage.setItem('pinball_survivors', document.getElementById('survivorCount').value);
+        localStorage.setItem('pinball_speed', document.getElementById('gameSpeed').value);
+      } catch (e) { /* localStorage 비활성 환경 무시 */ }
+    }
+
+    function loadSettings() {
+      try {
+        const p = localStorage.getItem('pinball_participants');
+        const s = localStorage.getItem('pinball_survivors');
+        const sp = localStorage.getItem('pinball_speed');
+        if (p) document.getElementById('participants').value = p;
+        if (s) {
+          document.getElementById('survivorCount').value = s;
+          document.getElementById('survivorValue').textContent = s;
+        }
+        if (sp) {
+          document.getElementById('gameSpeed').value = sp;
+          document.getElementById('speedValue').textContent = (parseInt(sp) / 10).toFixed(1) + 'x';
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    // ===== 이벤트 =====
+    document.getElementById('startBtn').addEventListener('click', () => {
+      startGame();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    document.getElementById('resetBtn').addEventListener('click', resetGame);
+    document.getElementById('copyResultBtn').addEventListener('click', copyResults);
+    document.getElementById('confirmBtn').addEventListener('click', () => {
+      document.getElementById('gameOverOverlay').classList.remove('show');
+    });
+
+    document.getElementById('helpBtn').addEventListener('click', () => {
+      document.getElementById('helpModal').classList.add('show');
+    });
+    document.getElementById('modalClose').addEventListener('click', () => {
+      document.getElementById('helpModal').classList.remove('show');
+    });
+    document.getElementById('helpModal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) document.getElementById('helpModal').classList.remove('show');
+    });
+
+    document.getElementById('survivorCount').addEventListener('input', (e) => {
+      document.getElementById('survivorValue').textContent = e.target.value;
+    });
+    document.getElementById('gameSpeed').addEventListener('input', (e) => {
+      document.getElementById('speedValue').textContent = (parseInt(e.target.value) / 10).toFixed(1) + 'x';
+    });
+
+    // ===== 초기화 =====
+    window.addEventListener('resize', resizeCanvas);
+    loadSettings();
+    resizeCanvas();
+  </script>
+</body>
+</html>
