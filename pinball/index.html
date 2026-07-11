@@ -6,10 +6,10 @@
   "emoji": "🎱",
   "category": "서바이벌",
   "description": "참여자 수만큼 공이 핀볼 머신에 떨어진다! 범퍼와 플리퍼 사이에서 최후까지 살아남는 공이 승리!",
-  "features": ["🎱 물리 핀볼", "⚡ 자동 플리퍼"],
+  "features": ["🎱 물리 핀볼", "⌨️ 플리퍼 수동 조작"],
   "color": "cyan",
   "badge": "NEW",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-07-11",
   "author": {
     "name": "Euiyun Edwin Kim",
@@ -546,6 +546,35 @@
     .winner-name { background: var(--accent-gold); color: #000; padding: 10px 25px; border-radius: 30px; font-weight: 700; font-size: 1.2rem; }
     .btn-confirm { background: white; color: black; border: none; padding: 12px 40px; border-radius: 30px; font-weight: 700; cursor: pointer; }
 
+    .control-hint {
+      position: absolute;
+      bottom: 12px;
+      left: 15px;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid var(--glass-border);
+      color: rgba(255, 255, 255, 0.75);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      z-index: 20;
+      pointer-events: none;
+      display: none;
+    }
+    .control-hint kbd {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: inherit;
+      font-weight: 700;
+      color: var(--accent-light);
+    }
+    @media (max-width: 768px) {
+      .control-hint .desktop-hint { display: none; }
+    }
+    @media (min-width: 769px) {
+      .control-hint .mobile-hint { display: none; }
+    }
+
     .copyright {
       position: absolute;
       bottom: 10px;
@@ -629,6 +658,10 @@
       <div class="danger-ui" id="dangerUI">⚠️ 위험! 가속 모드 ⚠️</div>
       <div class="death-info-container" id="deathInfoContainer"></div>
       <canvas id="gameCanvas"></canvas>
+      <div class="control-hint" id="controlHint">
+        <span class="desktop-hint">⌨️ <kbd>←</kbd>/<kbd>Z</kbd> 왼쪽 · <kbd>→</kbd>/<kbd>X</kbd> 오른쪽 플리퍼</span>
+        <span class="mobile-hint">👆 화면 좌/우를 눌러 플리퍼 조작</span>
+      </div>
       <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
       <div class="game-over-overlay" id="gameOverOverlay">
         <div class="game-over-content">
@@ -664,6 +697,11 @@
       <div class="help-section">
         <h3>⚡ 게임 진행</h3>
         <p>시간이 지날수록 중력이 강해지고 플리퍼가 점점 게을러집니다. 30초가 넘으면 서든데스! 플리퍼가 멈춰 승부가 빠르게 결정됩니다.</p>
+      </div>
+
+      <div class="help-section">
+        <h3>🕹️ 플리퍼 조작</h3>
+        <p>플리퍼는 기본적으로 자동으로 움직이지만, 직접 조작하면 사용자 입력이 우선합니다. 키보드 <b>←/Z</b>는 왼쪽, <b>→/X</b>는 오른쪽 플리퍼를 작동시키며, 모바일에서는 게임 화면의 좌/우 절반을 누르면 됩니다. 누르고 있는 동안 플리퍼가 올라간 상태로 유지됩니다. 단, 서든데스 중에는 조작할 수 없습니다.</p>
       </div>
 
       <div class="help-section">
@@ -850,8 +888,9 @@
         flipAngle: -0.62,               // 작동: 팁이 위로
         angle: 0.42,
         angVel: 0,
-        state: 'rest',                  // rest | flipping | returning
+        state: 'rest',                  // rest | flipping | returning | manual
         cooldown: 0,
+        manualHold: false,              // 사용자가 키/터치로 누르고 있는 동안 true
         thickness: 11
       };
     }
@@ -1039,6 +1078,19 @@
         f.state = 'rest';
         return;
       }
+
+      // 사용자 수동 조작이 자동 로직보다 우선: 누르고 있는 동안 플리퍼를 올린 채 유지
+      if (f.manualHold) {
+        f.state = 'manual';
+        if (f.angle > f.flipAngle) {
+          f.angVel = -14;
+          f.angle = Math.max(f.flipAngle, f.angle + f.angVel * dt);
+        } else {
+          f.angVel = 0;
+        }
+        return;
+      }
+      if (f.state === 'manual') f.state = 'returning'; // 손을 뗀 직후 복귀
 
       // 자동 발동: 근처에 공이 있으면(낙하 중이든 플리퍼 위에 얹혀 있든) 확률적으로 플립
       if (f.state === 'rest' && f.cooldown <= 0) {
@@ -1353,7 +1405,7 @@
       // 플리퍼
       for (const f of flippers) {
         const tip = flipperTip(f);
-        const active = f.state === 'flipping';
+        const active = f.state === 'flipping' || f.state === 'manual';
         ctx.strokeStyle = suddenDeath ? '#64748b' : (active ? '#fde047' : '#22d3ee');
         ctx.lineWidth = f.thickness * 2;
         ctx.lineCap = 'round';
@@ -1468,6 +1520,7 @@
       `;
       overlay.classList.add('show');
       createConfetti();
+      document.getElementById('controlHint').style.display = 'none';
       document.getElementById('startBtn').disabled = false;
     }
 
@@ -1532,6 +1585,7 @@
       document.getElementById('gameOverOverlay').classList.remove('show');
       document.getElementById('dangerUI').style.display = 'none';
       document.getElementById('gameTimer').style.display = 'block';
+      document.getElementById('controlHint').style.display = 'block';
 
       gameTimeSeconds = 0;
       lastTimestamp = 0;
@@ -1560,6 +1614,7 @@
       document.getElementById('gameOverOverlay').classList.remove('show');
       document.getElementById('dangerUI').style.display = 'none';
       document.getElementById('gameTimer').style.display = 'none';
+      document.getElementById('controlHint').style.display = 'none';
       document.getElementById('startBtn').disabled = false;
       buildBoard();
       draw();
@@ -1608,6 +1663,55 @@
         }
       } catch (e) { /* ignore */ }
     }
+
+    // ===== 플리퍼 수동 조작 (키보드/터치) =====
+    // 기본은 자동이지만, 사용자가 누르고 있는 동안은 수동 조작이 우선한다.
+    // 서든데스 중에는 게임 종료 보장을 위해 수동 조작도 무시된다.
+    function setFlipperHold(side, held) {
+      const f = flippers[side];
+      if (!f) return;
+      if (held && !f.manualHold && gameRunning && !suddenDeath) sound.playFlipper();
+      f.manualHold = held;
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.repeat) return;
+      // 입력 필드/슬라이더 조작 중에는 가로채지 않는다
+      const tag = e.target.tagName;
+      if (tag === 'TEXTAREA' || tag === 'INPUT' || tag === 'SELECT') return;
+      if (e.code === 'ArrowLeft' || e.code === 'KeyZ') {
+        setFlipperHold(0, true);
+        e.preventDefault();
+      } else if (e.code === 'ArrowRight' || e.code === 'KeyX' || e.code === 'Slash') {
+        setFlipperHold(1, true);
+        e.preventDefault();
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyZ') setFlipperHold(0, false);
+      else if (e.code === 'ArrowRight' || e.code === 'KeyX' || e.code === 'Slash') setFlipperHold(1, false);
+    });
+
+    // 모바일/마우스: 게임 화면 좌/우 절반을 누르고 있으면 해당 플리퍼 작동
+    const activePointers = new Map();
+    canvas.addEventListener('pointerdown', (e) => {
+      if (!gameRunning) return;
+      const side = e.offsetX < canvas.clientWidth / 2 ? 0 : 1;
+      activePointers.set(e.pointerId, side);
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+      setFlipperHold(side, true);
+      e.preventDefault();
+    });
+    function releasePointer(e) {
+      const side = activePointers.get(e.pointerId);
+      if (side === undefined) return;
+      activePointers.delete(e.pointerId);
+      // 같은 쪽을 누르는 다른 포인터가 남아 있으면 유지
+      if (![...activePointers.values()].includes(side)) setFlipperHold(side, false);
+    }
+    canvas.addEventListener('pointerup', releasePointer);
+    canvas.addEventListener('pointercancel', releasePointer);
 
     // ===== 이벤트 =====
     document.getElementById('startBtn').addEventListener('click', () => {
