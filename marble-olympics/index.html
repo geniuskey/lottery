@@ -9,8 +9,8 @@
   "features": ["🎱 물리 시뮬레이션", "🗺️ 3가지 맵"],
   "color": "marble",
   "badge": "NEW",
-  "version": "2.0.0",
-  "updated": "2025-12-14",
+  "version": "2.1.0",
+  "updated": "2026-07-17",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -40,7 +40,7 @@
       gtag('config', 'G-GFTNV73W8L');
     </script>
 
-    <title>구슬 올림픽 - 추첨 게임 포털</title>
+    <title>구슬 올림픽 — PLAYPICK</title>
 
     <!-- SEO 기본 -->
     <meta name="description" content="구슬들이 펼치는 박진감 넘치는 레이싱 올림픽! 물리 엔진 기반의 다양한 맵에서 우승 구슬을 가리는 온라인 추첨 게임.">
@@ -49,17 +49,17 @@
     
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="추첨 게임 포털">
+    <meta property="og:site_name" content="PLAYPICK">
     <meta property="og:title" content="🏅 구슬 올림픽 - 실시간 구슬 레이싱">
     <meta property="og:description" content="어떤 구슬이 가장 먼저 결승선을 통과할까요? 눈을 뗄 수 없는 화려한 구슬 경주.">
     <meta property="og:url" content="https://geniuskey.github.io/lottery/marble-olympics/">
-    <meta property="og:image" content="https://geniuskey.github.io/lottery/og-image.png">
+    <meta property="og:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/marble-olympics.webp">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="🏅 구슬 올림픽 - 실시간 구슬 레이싱">
     <meta name="twitter:description" content="어떤 구슬이 가장 먼저 결승선을 통과할까요? 눈을 뗄 수 없는 화려한 구슬 경주.">
-    <meta name="twitter:image" content="https://geniuskey.github.io/lottery/og-image.png">
+    <meta name="twitter:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/marble-olympics.webp">
     
     <!-- Canonical & Favicon -->
     <link rel="canonical" href="https://geniuskey.github.io/lottery/marble-olympics/">
@@ -74,8 +74,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0a0a0f;
-            --bg-gradient: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            --bg-dark: #050816;
+            --bg-gradient: linear-gradient(145deg, #050816 0%, #111b40 52%, #32184f 100%);
             --accent-gold: #ffd700;
             --accent-pink: #ff6b9d;
             --accent-cyan: #00d4ff;
@@ -150,7 +150,7 @@
         .sidebar {
             width: 320px;
             min-width: 320px;
-            background: rgba(255, 255, 255, 0.03);
+            background: linear-gradient(180deg, rgba(11, 20, 48, 0.98), rgba(28, 17, 53, 0.98));
             backdrop-filter: blur(10px);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             padding: 24px;
@@ -295,6 +295,25 @@
             min-height: 100px;
         }
 
+        .seed-card {
+            padding: 10px; border: 1px solid rgba(0, 212, 255, 0.16); border-radius: 10px;
+            background: rgba(2, 8, 28, 0.45);
+        }
+        .seed-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .seed-heading label { color: rgba(255,255,255,.76); font-size: .78rem; font-weight: 700; }
+        .seed-heading small { color: rgba(255,255,255,.36); font-size: .62rem; }
+        .seed-row { display: flex; gap: 6px; margin-top: 7px; }
+        .seed-input {
+            width: 100%; min-width: 0; padding: 8px 9px; border: 1px solid rgba(255,255,255,.12); border-radius: 7px;
+            background: rgba(0,0,0,.24); color: #fff; font: 700 .72rem monospace; text-transform: uppercase;
+        }
+        .seed-refresh {
+            flex: 0 0 34px; border: 1px solid rgba(0,212,255,.24); border-radius: 7px;
+            background: rgba(0,212,255,.08); color: var(--accent-cyan); cursor: pointer; font-weight: 900;
+        }
+        .seed-proof { display: flex; justify-content: space-between; margin-top: 7px; color: rgba(255,255,255,.34); font-size: .58rem; }
+        .seed-proof code { color: var(--accent-cyan); font-size: .62rem; }
+
         .button-group {
             display: flex;
             gap: 6px;
@@ -317,6 +336,9 @@
             gap: 4px;
             flex: 1;
             white-space: nowrap;
+        }
+        .btn:disabled, textarea:disabled, select:disabled, .seed-input:disabled, .seed-refresh:disabled {
+            opacity: .48; cursor: not-allowed; transform: none !important;
         }
 
         .btn-primary {
@@ -658,6 +680,21 @@
             width: 100%;
         }
 
+        .run-proof, .map-badge, .race-phase {
+            position: absolute; z-index: 5; pointer-events: none; backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,.12); background: rgba(3,8,27,.72);
+        }
+        .run-proof { top: 14px; left: 14px; padding: 7px 9px; border-radius: 8px; color: rgba(0,212,255,.82); font: 700 .64rem monospace; letter-spacing: .06em; }
+        .map-badge { top: 14px; right: 14px; padding: 7px 10px; border-radius: 999px; color: #ffd66b; font-size: .68rem; font-weight: 800; }
+        .race-phase {
+            display: none; top: 52px; left: 50%; transform: translateX(-50%); padding: 7px 15px;
+            border-color: rgba(255,215,0,.35); border-radius: 999px; color: #fff; font-size: .72rem; font-weight: 900;
+            background: linear-gradient(90deg, rgba(255,107,157,.9), rgba(168,85,247,.9)); letter-spacing: .06em;
+            animation: phasePulse .7s ease-in-out infinite alternate;
+        }
+        .race-phase.show { display: block; }
+        @keyframes phasePulse { to { transform: translateX(-50%) scale(1.04); box-shadow: 0 0 24px rgba(255,107,157,.4); } }
+
         #gameCanvas {
             display: block;
             width: 100%;
@@ -726,6 +763,7 @@
             text-align: center;
             animation: winnerPulse 2s ease-in-out infinite;
         }
+        .result-proof { color: var(--accent-cyan); font: 700 .68rem monospace; letter-spacing: .07em; margin-top: 8px; }
 
         @keyframes winnerPulse {
             0%, 100% { transform: scale(1); }
@@ -954,8 +992,12 @@
         }
 
         .toggle-switch input {
-            display: none;
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
         }
+        .toggle-switch input:focus-visible + .toggle-slider { outline: 3px solid var(--accent-gold); outline-offset: 3px; }
 
         .toggle-slider {
             width: 40px;
@@ -1088,11 +1130,16 @@
         .toast-message {
             white-space: nowrap;
         }
+
+        :focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 3px; }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        }
 </style>
 </head>
 <body>
     <!-- Toast 알림 -->
-    <div class="toast" id="toast">
+    <div class="toast" id="toast" role="status" aria-live="polite">
         <span class="toast-icon">✅</span>
         <span class="toast-message">클립보드에 복사되었습니다!</span>
     </div>
@@ -1105,19 +1152,19 @@
                 <div class="sidebar-header">
                     <h1><span class="logo-emoji">🏅</span> <span class="logo-text">구슬 올림픽</span></h1>
                     <div class="header-btns">
-                        <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
-                        <button class="help-btn" id="helpBtn" title="도움말">?</button>
+                        <button class="sound-btn" id="soundToggle" type="button" title="소리 켜기/끄기" aria-label="소리 끄기" aria-pressed="true">🔊</button>
+                        <button class="help-btn" id="helpBtn" type="button" title="도움말" aria-label="게임 도움말 열기">?</button>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <label>참여자 입력</label>
+                    <label for="participants">참여자 입력 <small style="color:rgba(255,255,255,.36)">최대 30명</small></label>
                     <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)
 예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
                 </div>
 
                 <div class="input-group">
-                    <div class="section-title">맵 선택</div>
+                    <label class="section-title" for="mapSelect">맵 선택</label>
                     <select id="mapSelect" class="map-select">
                         <option value="chaos">🌀 카오스</option>
                         <option value="pinball">🎰 핀볼</option>
@@ -1133,10 +1180,22 @@
                     </label>
                 </div>
 
+                <div class="seed-card">
+                    <div class="seed-heading">
+                        <label for="gameSeed">재현 시드</label>
+                        <small>같은 환경 = 같은 결과</small>
+                    </div>
+                    <div class="seed-row">
+                        <input class="seed-input" id="gameSeed" type="text" maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="seedProof">
+                        <button class="seed-refresh" id="seedRefresh" type="button" aria-label="새 재현 시드 만들기" title="새 시드 만들기">↻</button>
+                    </div>
+                    <div class="seed-proof" id="seedProof"><span>RUN HASH</span><code id="seedHash">계산 전</code></div>
+                </div>
+
                 <div class="button-group">
-                    <button class="btn btn-secondary" id="shuffleBtn">🔀 섞기</button>
-                    <button class="btn btn-primary" id="startBtn">▶️ 시작!</button>
-                    <button class="btn btn-reset" id="resetBtn">↺ 초기화</button>
+                    <button class="btn btn-secondary" id="shuffleBtn" type="button">🔀 섞기</button>
+                    <button class="btn btn-primary" id="startBtn" type="button">▶️ 시작!</button>
+                    <button class="btn btn-reset" id="resetBtn" type="button">↺ 초기화</button>
                 </div>
             </div>
 
@@ -1155,34 +1214,37 @@
                 </div>
                 
                 <div class="bottom-btn-group">
-                    <a href="../" class="bottom-btn" title="추첨 포탈 홈">
+                    <a href="../" class="bottom-btn" title="PLAYPICK 홈" aria-label="PLAYPICK 홈">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                     </a>
-                    <button class="bottom-btn" id="copyResultBtn2" disabled title="결과 복사">📋</button>
-                    <a href="https://github.com/geniuskey/lottery" target="_blank" class="bottom-btn" title="GitHub 저장소">
+                    <button class="bottom-btn" id="copyResultBtn2" type="button" disabled title="결과 복사" aria-label="게임 결과 복사">📋</button>
+                    <a href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer" class="bottom-btn" title="GitHub 저장소" aria-label="GitHub 저장소 새 창에서 열기">
                         <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
                             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
                         </svg>
                     </a>
-                    <a href="https://buymeacoffee.com/euiyun" target="_blank" class="bottom-btn coffee" title="개발자에게 커피 사주기">☕</a>
+                    <a href="https://buymeacoffee.com/euiyun" target="_blank" rel="noopener noreferrer" class="bottom-btn coffee" title="개발자에게 커피 사주기" aria-label="후원 페이지 새 창에서 열기">☕</a>
                 </div>
             </div>
         </aside>
 
         <main class="game-area">
             <div class="canvas-wrapper">
-                <canvas id="gameCanvas"></canvas>
+                <div class="run-proof" id="runProof">HASH: —</div>
+                <div class="map-badge" id="mapBadge">🌀 CHAOS ARENA</div>
+                <div class="race-phase" id="racePhase" role="status">🔥 FINAL LAP 가속 🔥</div>
+                <canvas id="gameCanvas" role="img" aria-label="구슬 올림픽 물리 레이스 경기장"></canvas>
                 <div class="copyright">© 2025 Euiyun Edwin Kim</div>
             </div>
         </main>
     </div>
 
     <!-- Help Modal -->
-    <div class="modal-overlay" id="helpModal">
+    <div class="modal-overlay" id="helpModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="helpTitle">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>🏅 구슬 올림픽 도움말</h2>
-                <button class="modal-close" id="closeHelpBtn">&times;</button>
+                <h2 id="helpTitle">🏅 구슬 올림픽 도움말</h2>
+                <button class="modal-close" id="closeHelpBtn" type="button" aria-label="도움말 닫기">&times;</button>
             </div>
             <div class="modal-body">
                 <h3>🎮 게임 방법</h3>
@@ -1204,40 +1266,110 @@
                 <p>• <strong>카오스</strong> - 다양한 장애물이 빽빽하게 배치<br>
                 • <strong>핀볼</strong> - 핀볼 머신 스타일<br>
                 • <strong>깔때기</strong> - 여러 단계의 깔때기 구조</p>
+
+                <h3>🔐 재현 가능한 경기</h3>
+                <p>같은 참가자·맵·승리 규칙·화면 크기·시드는 같은 자동 경기 결과를 만듭니다. 경기 중 화면 크기가 바뀌거나 강제 종료하면 RUN HASH에 표시됩니다.</p>
             </div>
         </div>
     </div>
 
-    <div class="winner-overlay" id="winnerOverlay">
+    <div class="winner-overlay" id="winnerOverlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="winnerName">
         <div class="confetti-container" id="confettiContainer"></div>
         <div class="result-header">
             <div class="winner-label" id="winnerLabel">🏆 1등!</div>
             <div class="winner-name" id="winnerName">-</div>
+            <div class="result-proof" id="resultProof">RUN HASH: —</div>
         </div>
         <div class="final-rankings">
             <div class="final-rankings-title">🏁 최종 순위</div>
             <div id="finalRankingList"></div>
         </div>
         <div class="result-buttons">
-            <button class="btn btn-secondary" id="copyResultBtn">📋 결과 복사</button>
-            <button class="btn btn-primary" id="closeWinnerBtn">확인</button>
+            <button class="btn btn-secondary" id="copyResultBtn" type="button">📋 결과 복사</button>
+            <button class="btn btn-primary" id="closeWinnerBtn" type="button">확인</button>
         </div>
     </div>
 
     <script>
+        const MAX_PARTICIPANTS = 30;
+        const FIXED_DT = 1 / 120;
+        let activePhysicsRandom = Math.random;
+
+        function mulberry32(seed) {
+            let value = seed >>> 0;
+            return () => {
+                value += 0x6D2B79F5;
+                let result = value;
+                result = Math.imul(result ^ (result >>> 15), result | 1);
+                result ^= result + Math.imul(result ^ (result >>> 7), result | 61);
+                return ((result ^ (result >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+
+        function fallbackHash(input) {
+            let hash = 2166136261;
+            for (let index = 0; index < input.length; index++) {
+                hash ^= input.charCodeAt(index);
+                hash = Math.imul(hash, 16777619);
+            }
+            return hash >>> 0;
+        }
+
+        function generateSeed() {
+            if (window.crypto?.getRandomValues) {
+                const values = new Uint32Array(2);
+                window.crypto.getRandomValues(values);
+                return `${values[0].toString(36)}-${values[1].toString(36)}`.toUpperCase();
+            }
+            return `${Date.now().toString(36)}-${Math.floor(Math.random() * 1e9).toString(36)}`.toUpperCase();
+        }
+
+        async function createRunSeed(material) {
+            let hashHex = '';
+            if (window.crypto?.subtle && window.TextEncoder) {
+                try {
+                    const bytes = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(material));
+                    hashHex = Array.from(new Uint8Array(bytes), byte => byte.toString(16).padStart(2, '0')).join('');
+                } catch (error) { /* 제한된 로컬 환경에서는 아래 폴백 사용 */ }
+            }
+            if (!hashHex) {
+                hashHex = Array.from({ length: 8 }, (_, index) => fallbackHash(`${index}:${material}`).toString(16).padStart(8, '0')).join('');
+            }
+            return { hashHex, random: mulberry32(parseInt(hashHex.slice(0, 8), 16) >>> 0) };
+        }
+
+        function physicsRandom() {
+            return activePhysicsRandom();
+        }
+
         // ===== SoundManager =====
         class SoundManager {
             constructor() {
                 this.ctx = null;
-                this.enabled = true;
+                this.lastHitAt = -Infinity;
+                this.lastBumperAt = -Infinity;
+                try {
+                    this.enabled = localStorage.getItem('marble-olympics-sound') !== 'off';
+                } catch (error) {
+                    this.enabled = true;
+                }
                 this.setupToggleButton();
+            }
+            syncToggleButton() {
+                const btn = document.getElementById('soundToggle');
+                if (!btn) return;
+                btn.textContent = this.enabled ? '🔊' : '🔇';
+                btn.setAttribute('aria-pressed', String(this.enabled));
+                btn.setAttribute('aria-label', this.enabled ? '소리 끄기' : '소리 켜기');
             }
             setupToggleButton() {
                 const btn = document.getElementById('soundToggle');
                 if (btn) {
+                    this.syncToggleButton();
                     btn.onclick = () => {
                         this.enabled = !this.enabled;
-                        btn.textContent = this.enabled ? '🔊' : '🔇';
+                        try { localStorage.setItem('marble-olympics-sound', this.enabled ? 'on' : 'off'); } catch (error) { /* 저장 불가 환경 */ }
+                        this.syncToggleButton();
                         if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
                             this.ctx.resume();
                         }
@@ -1246,7 +1378,9 @@
             }
             init() {
                 if (this.ctx) return;
-                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContextClass) return;
+                this.ctx = new AudioContextClass();
             }
             playStart() {
                 if (!this.enabled) return;
@@ -1264,6 +1398,8 @@
             playHit(volume = 0.1) {
                 if (!this.enabled) return;
                 this.init();
+                if (!this.ctx || this.ctx.currentTime - this.lastHitAt < 0.025) return;
+                this.lastHitAt = this.ctx.currentTime;
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = 'sine';
@@ -1276,6 +1412,8 @@
             playBumper() {
                 if (!this.enabled) return;
                 this.init();
+                if (!this.ctx || this.ctx.currentTime - this.lastBumperAt < 0.08) return;
+                this.lastBumperAt = this.ctx.currentTime;
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = 'sine';
@@ -1314,7 +1452,7 @@
                 osc.start(); osc.stop(this.ctx.currentTime + 0.15);
             }
             playWin() {
-                if (!this.ctx) return;
+                if (!this.enabled || !this.ctx) return;
                 const notes = [523.25, 659.25, 783.99, 1046.50];
                 notes.forEach((freq, i) => {
                     const osc = this.ctx.createOscillator();
@@ -1355,7 +1493,7 @@
         class Ball {
             constructor(x, y, radius, color, name, initialVelY = 0, scale = 1) {
                 this.pos = new Vector2(x, y);
-                this.vel = new Vector2((Math.random() - 0.5) * 50 * scale, initialVelY);  // 초기 Y 속도 + 약간의 X 랜덤
+                this.vel = new Vector2((physicsRandom() - 0.5) * 50 * scale, initialVelY);  // 초기 Y 속도 + 약간의 X 랜덤
                 this.radius = radius;
                 this.color = color;
                 this.name = name;
@@ -1365,7 +1503,7 @@
                 this.finished = false;
                 this.finishTime = null;
                 this.trail = [];
-                this.maxTrail = 12;
+                this.maxTrail = 20;
                 this.stuckTime = 0;  // 멈춰있는 시간 추적
                 this.lastPos = new Vector2(x, y);
                 this.posHistory = [];  // 핑퐁 감지용 위치 히스토리
@@ -1384,7 +1522,7 @@
                 
                 // 가속도 기반 물리
                 this.vel = this.vel.add(gravity.mul(dt));
-                this.vel = this.vel.mul(this.airResistance);
+                this.vel = this.vel.mul(Math.pow(this.airResistance, dt * 60));
                 this.pos = this.pos.add(this.vel.mul(dt));
                 
                 // 위치 히스토리 업데이트 (핑퐁 감지용)
@@ -1430,8 +1568,8 @@
 
             // 막혔을 때 랜덤 힘 적용 - 스케일 적용
             unstuck() {
-                const angle = Math.random() * Math.PI * 2;
-                const force = (150 + Math.random() * 100) * this.scale;
+                const angle = physicsRandom() * Math.PI * 2;
+                const force = (150 + physicsRandom() * 100) * this.scale;
                 this.vel.x += Math.cos(angle) * force;
                 this.vel.y += Math.sin(angle) * force - 50 * this.scale;  // 약간 위로
                 this.stuckTime = 0;
@@ -1440,8 +1578,8 @@
 
             // 핑퐁 탈출 - 더 강하게 아래로 - 스케일 적용
             escapePingPong() {
-                const angle = -Math.PI/2 + (Math.random() - 0.5) * Math.PI * 0.5;  // 대략 아래 방향
-                const force = (300 + Math.random() * 150) * this.scale;
+                const angle = Math.PI / 2 + (physicsRandom() - 0.5) * Math.PI * 0.5;  // 대략 아래 방향
+                const force = (300 + physicsRandom() * 150) * this.scale;
                 this.vel.x = Math.cos(angle) * force;
                 this.vel.y = Math.sin(angle) * force + 200 * this.scale;  // 강하게 아래로
                 this.posHistory = [];
@@ -1478,7 +1616,7 @@
                 this.y = y;
                 this.length = length;
                 this.speed = speed;
-                this.angle = Math.random() * Math.PI * 2;
+                this.angle = physicsRandom() * Math.PI * 2;
                 this.color = '#ffd700';
             }
 
@@ -1521,12 +1659,12 @@
                 this.type = 'booster';
                 this.x = x;
                 this.y = y;
-                // 360도 랜덤 방향
-                this.angle = Math.random() * Math.PI * 2;
+                this.angle = angle;
                 this.force = force;
                 this.radius = 18;
                 this.color = '#10ac84';
                 this.hitTime = 0;
+                this.cooldown = new Map();
             }
         }
 
@@ -1579,6 +1717,7 @@
                 this.rankings = [];
                 this.time = 0;
                 this.cameraY = 0;  // 카메라 Y 위치
+                this.shake = 0;
             }
 
             addBall(ball) { this.balls.push(ball); }
@@ -1619,7 +1758,7 @@
                     // 리더가 화면의 상단 1/3 지점에 오도록 카메라 이동
                     const targetY = leader.pos.y - this.viewHeight * 0.35;
                     // 부드러운 카메라 이동
-                    this.cameraY += (targetY - this.cameraY) * 0.08;
+                    if (targetY > this.cameraY) this.cameraY += (targetY - this.cameraY) * 0.08;
                     // 범위 제한
                     this.cameraY = Math.max(0, Math.min(this.cameraY, this.height - this.viewHeight));
                 }
@@ -1627,6 +1766,7 @@
 
             update(dt) {
                 this.time += dt;
+                this.shake *= Math.pow(0.86, dt * 60);
 
                 // Update spinners
                 for (const obs of this.obstacles) {
@@ -1634,7 +1774,10 @@
                 }
 
                 for (const ball of this.balls) {
-                    ball.update(this.gravity, dt);
+                    if (ball.finished) continue;
+                    const previousY = ball.pos.y;
+                    const gravityMultiplier = 1 + Math.min(0.75, Math.max(0, this.time - 20) * 0.025);
+                    ball.update(this.gravity.mul(gravityMultiplier), dt);
                     this.collideWalls(ball);
 
                     for (const obs of this.obstacles) {
@@ -1643,8 +1786,10 @@
 
                     // Finish line
                     if (!ball.finished && ball.pos.y + ball.radius >= this.finishLine) {
+                        const distanceMoved = Math.max(0.001, ball.pos.y - previousY);
+                        const finishFraction = Math.max(0, Math.min(1, (this.finishLine - ball.radius - previousY) / distanceMoved));
                         ball.finished = true;
-                        ball.finishTime = performance.now();
+                        ball.finishTime = (this.time - dt) + finishFraction * dt;
                         ball.pos.y = this.finishLine - ball.radius;
                         ball.vel = new Vector2(ball.vel.x * 0.2, 0);
                         ball.trail = [];  // trail 즉시 제거
@@ -1663,12 +1808,16 @@
                     }
                 }
 
+                this.rankings.sort((a, b) => (a.finishTime - b.finishTime) || (a.index - b.index));
+
                 // Rubber band effect - keep the race close
                 this.applyRubberBand(dt);
 
                 // Ball-ball collision
                 for (let i = 0; i < this.balls.length; i++) {
+                    if (this.balls[i].finished) continue;
                     for (let j = i + 1; j < this.balls.length; j++) {
+                        if (this.balls[j].finished) continue;
                         this.collideBalls(this.balls[i], this.balls[j]);
                     }
                 }
@@ -1720,6 +1869,7 @@
                             ball.vel.y += (dy / dist) * impulse * 0.05;
                         }
                         obs.hitTime = this.time;
+                        this.shake = Math.max(this.shake, 6 * this.scale);
                         sound.playBumper();
                     }
                 } else if (obs.type === 'spinner') {
@@ -1747,11 +1897,13 @@
                     }
                 } else if (obs.type === 'booster') {
                     const dist = Math.sqrt((ball.pos.x - obs.x) ** 2 + (ball.pos.y - obs.y) ** 2);
-                    if (dist < obs.radius + ball.radius) {
+                    const lastBoost = obs.cooldown.get(ball) ?? -Infinity;
+                    if (dist < obs.radius + ball.radius && this.time - lastBoost > 0.25) {
                         // 부스터 방향으로 강하게 가속
                         ball.vel.x += Math.cos(obs.angle) * obs.force * 0.06;
                         ball.vel.y += Math.sin(obs.angle) * obs.force * 0.06;
                         obs.hitTime = this.time;
+                        obs.cooldown.set(ball, this.time);
                         sound.playBumper();
                     }
                 } else if (obs.type === 'triangle') {
@@ -2055,129 +2207,129 @@
 
                 // ===== 1층 (0~11%) =====
                 // 상단 범퍼
-                world.addObstacle(new Bumper(w * 0.25, h * 0.02, 28 * scale));
-                world.addObstacle(new Bumper(w * 0.75, h * 0.02, 28 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.05, 32 * scale));
+                world.addObstacle(new Bumper(w * 0.25, h * 0.02, 28));
+                world.addObstacle(new Bumper(w * 0.75, h * 0.02, 28));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.05, 32));
                 // 핀 필드 + 중간 범퍼
                 for (let row = 0; row < 3; row++) {
                     const cols = row % 2 === 0 ? 7 : 6;
                     const offsetX = row % 2 === 0 ? w / 14 : w / 14 + w / 14;
                     for (let col = 0; col < cols; col++) {
-                        world.addObstacle(new Peg(offsetX + col * (w / 7), h * 0.03 + row * 30 * scale, 5 * scale));
+                        world.addObstacle(new Peg(offsetX + col * (w / 7), h * 0.03 + row * 30 * scale, 5));
                     }
                 }
-                world.addObstacle(new Bumper(w * 0.35, h * 0.09, 24 * scale));
-                world.addObstacle(new Bumper(w * 0.65, h * 0.09, 24 * scale));
+                world.addObstacle(new Bumper(w * 0.35, h * 0.09, 24));
+                world.addObstacle(new Bumper(w * 0.65, h * 0.09, 24));
 
                 // ===== 병목 1 (12%) =====
                 world.addObstacle(new Wall(0, h * 0.11, w * 0.30, h * 0.13, 8));
                 world.addObstacle(new Wall(w, h * 0.11, w * 0.70, h * 0.13, 8));
 
                 // ===== 2층 (13~26%) =====
-                world.addObstacle(new Bumper(w * 0.20, h * 0.15, 30 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.14, 34 * scale));
-                world.addObstacle(new Bumper(w * 0.80, h * 0.15, 30 * scale));
+                world.addObstacle(new Bumper(w * 0.20, h * 0.15, 30));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.14, 34));
+                world.addObstacle(new Bumper(w * 0.80, h * 0.15, 30));
                 // 핀 필드
                 for (let row = 0; row < 4; row++) {
                     const cols = row % 2 === 0 ? 6 : 5;
                     const offsetX = row % 2 === 0 ? w / 12 : w / 12 + w / 12;
                     for (let col = 0; col < cols; col++) {
-                        world.addObstacle(new Peg(offsetX + col * (w / 6), h * 0.16 + row * 28 * scale, 5 * scale));
+                        world.addObstacle(new Peg(offsetX + col * (w / 6), h * 0.16 + row * 28 * scale, 5));
                     }
                 }
                 // 중간 범퍼
-                world.addObstacle(new Bumper(w * 0.35, h * 0.21, 26 * scale));
-                world.addObstacle(new Bumper(w * 0.65, h * 0.21, 26 * scale));
+                world.addObstacle(new Bumper(w * 0.35, h * 0.21, 26));
+                world.addObstacle(new Bumper(w * 0.65, h * 0.21, 26));
 
                 // ===== 병목 2 (27%) =====
                 world.addObstacle(new Wall(0, h * 0.26, w * 0.32, h * 0.28, 8));
                 world.addObstacle(new Wall(w, h * 0.26, w * 0.68, h * 0.28, 8));
 
                 // ===== 3층 (28~42%) =====
-                world.addObstacle(new Bumper(w * 0.25, h * 0.30, 32 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.29, 36 * scale));
-                world.addObstacle(new Bumper(w * 0.75, h * 0.30, 32 * scale));
+                world.addObstacle(new Bumper(w * 0.25, h * 0.30, 32));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.29, 36));
+                world.addObstacle(new Bumper(w * 0.75, h * 0.30, 32));
                 // 핀 필드
                 for (let row = 0; row < 4; row++) {
                     const cols = row % 2 === 0 ? 7 : 6;
                     const offsetX = row % 2 === 0 ? w / 14 : w / 14 + w / 14;
                     for (let col = 0; col < cols; col++) {
-                        world.addObstacle(new Peg(offsetX + col * (w / 7), h * 0.32 + row * 28 * scale, 5 * scale));
+                        world.addObstacle(new Peg(offsetX + col * (w / 7), h * 0.32 + row * 28 * scale, 5));
                     }
                 }
                 // 중간 범퍼
-                world.addObstacle(new Bumper(w * 0.20, h * 0.38, 28 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.40, 30 * scale));
-                world.addObstacle(new Bumper(w * 0.80, h * 0.38, 28 * scale));
+                world.addObstacle(new Bumper(w * 0.20, h * 0.38, 28));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.40, 30));
+                world.addObstacle(new Bumper(w * 0.80, h * 0.38, 28));
 
                 // ===== 병목 3 (43%) =====
                 world.addObstacle(new Wall(0, h * 0.42, w * 0.28, h * 0.44, 8));
                 world.addObstacle(new Wall(w, h * 0.42, w * 0.72, h * 0.44, 8));
 
                 // ===== 4층 (44~58%) =====
-                world.addObstacle(new Bumper(w * 0.30, h * 0.46, 32 * scale));
-                world.addObstacle(new Bumper(w * 0.70, h * 0.46, 32 * scale));
+                world.addObstacle(new Bumper(w * 0.30, h * 0.46, 32));
+                world.addObstacle(new Bumper(w * 0.70, h * 0.46, 32));
                 // 핀 필드
                 for (let row = 0; row < 4; row++) {
                     const cols = row % 2 === 0 ? 6 : 5;
                     const offsetX = row % 2 === 0 ? w / 12 : w / 12 + w / 12;
                     for (let col = 0; col < cols; col++) {
-                        world.addObstacle(new Peg(offsetX + col * (w / 6), h * 0.47 + row * 28 * scale, 5 * scale));
+                        world.addObstacle(new Peg(offsetX + col * (w / 6), h * 0.47 + row * 28 * scale, 5));
                     }
                 }
                 // 중간 범퍼
-                world.addObstacle(new Bumper(w * 0.50, h * 0.52, 38 * scale));
-                world.addObstacle(new Bumper(w * 0.25, h * 0.56, 26 * scale));
-                world.addObstacle(new Bumper(w * 0.75, h * 0.56, 26 * scale));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.52, 38));
+                world.addObstacle(new Bumper(w * 0.25, h * 0.56, 26));
+                world.addObstacle(new Bumper(w * 0.75, h * 0.56, 26));
 
                 // ===== 병목 4 (59%) =====
                 world.addObstacle(new Wall(0, h * 0.58, w * 0.30, h * 0.60, 8));
                 world.addObstacle(new Wall(w, h * 0.58, w * 0.70, h * 0.60, 8));
 
                 // ===== 5층 (60~75%) =====
-                world.addObstacle(new Bumper(w * 0.50, h * 0.62, 40 * scale));
-                world.addObstacle(new Bumper(w * 0.20, h * 0.64, 28 * scale));
-                world.addObstacle(new Bumper(w * 0.80, h * 0.64, 28 * scale));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.62, 40));
+                world.addObstacle(new Bumper(w * 0.20, h * 0.64, 28));
+                world.addObstacle(new Bumper(w * 0.80, h * 0.64, 28));
                 // 핀 필드
                 for (let row = 0; row < 4; row++) {
                     const cols = row % 2 === 0 ? 7 : 6;
                     const offsetX = row % 2 === 0 ? w / 14 : w / 14 + w / 14;
                     for (let col = 0; col < cols; col++) {
-                        world.addObstacle(new Peg(offsetX + col * (w / 7), h * 0.64 + row * 28 * scale, 5 * scale));
+                        world.addObstacle(new Peg(offsetX + col * (w / 7), h * 0.64 + row * 28 * scale, 5));
                     }
                 }
                 // 중간 범퍼
-                world.addObstacle(new Bumper(w * 0.35, h * 0.72, 30 * scale));
-                world.addObstacle(new Bumper(w * 0.65, h * 0.72, 30 * scale));
+                world.addObstacle(new Bumper(w * 0.35, h * 0.72, 30));
+                world.addObstacle(new Bumper(w * 0.65, h * 0.72, 30));
 
                 // ===== 병목 5 (76%) =====
                 world.addObstacle(new Wall(0, h * 0.75, w * 0.32, h * 0.77, 8));
                 world.addObstacle(new Wall(w, h * 0.75, w * 0.68, h * 0.77, 8));
 
                 // ===== 6층 (77~92%) =====
-                world.addObstacle(new Bumper(w * 0.25, h * 0.79, 32 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.78, 36 * scale));
-                world.addObstacle(new Bumper(w * 0.75, h * 0.79, 32 * scale));
+                world.addObstacle(new Bumper(w * 0.25, h * 0.79, 32));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.78, 36));
+                world.addObstacle(new Bumper(w * 0.75, h * 0.79, 32));
                 // 핀 필드
                 for (let row = 0; row < 4; row++) {
                     const cols = row % 2 === 0 ? 6 : 5;
                     const offsetX = row % 2 === 0 ? w / 12 : w / 12 + w / 12;
                     for (let col = 0; col < cols; col++) {
-                        world.addObstacle(new Peg(offsetX + col * (w / 6), h * 0.80 + row * 28 * scale, 5 * scale));
+                        world.addObstacle(new Peg(offsetX + col * (w / 6), h * 0.80 + row * 28 * scale, 5));
                     }
                 }
                 // 중간 범퍼
-                world.addObstacle(new Bumper(w * 0.35, h * 0.87, 28 * scale));
-                world.addObstacle(new Bumper(w * 0.65, h * 0.87, 28 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.91, 30 * scale));
+                world.addObstacle(new Bumper(w * 0.35, h * 0.87, 28));
+                world.addObstacle(new Bumper(w * 0.65, h * 0.87, 28));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.91, 30));
 
                 // ===== 골 직전 (93~98%) =====
-                world.addObstacle(new Bumper(w * 0.25, h * 0.94, 26 * scale));
-                world.addObstacle(new Bumper(w * 0.50, h * 0.96, 28 * scale));
-                world.addObstacle(new Bumper(w * 0.75, h * 0.94, 26 * scale));
+                world.addObstacle(new Bumper(w * 0.25, h * 0.94, 26));
+                world.addObstacle(new Bumper(w * 0.50, h * 0.96, 28));
+                world.addObstacle(new Bumper(w * 0.75, h * 0.94, 26));
                 // 마지막 핀
                 for (let col = 0; col < 5; col++) {
-                    world.addObstacle(new Peg(w * 0.20 + col * (w / 6), h * 0.97, 5 * scale));
+                    world.addObstacle(new Peg(w * 0.20 + col * (w / 6), h * 0.97, 5));
                 }
             },
 
@@ -2302,9 +2454,18 @@
                 this.mapType = 'chaos';
                 this.isRunning = false;
                 this.animationId = null;
-                this.lastTime = 0;
-                this.gameStartTime = 0;
+                this.lastTimestamp = 0;
+                this.accumulator = 0;
+                this.rankingElapsed = 0;
+                this.resultTimer = null;
                 this.firstWins = true;  // true: 먼저 들어온 순서가 1등, false: 나중에 들어온 순서가 1등
+                this.currentSeed = '';
+                this.currentRunHash = '';
+                this.runMode = 'AUTO';
+                this.startToken = 0;
+                this.renderScale = 1;
+                this.lastResultText = '';
+                this.backgroundCache = document.createElement('canvas');
                 
                 // 기준 너비 (PC 기준)
                 this.baseWidth = 600;
@@ -2327,13 +2488,90 @@
 
             resize() {
                 const wrapper = this.canvas.parentElement;
-                this.canvas.width = wrapper.clientWidth;
-                this.canvas.height = wrapper.clientHeight;
+                this.canvas.width = Math.max(320, wrapper.clientWidth);
+                this.canvas.height = Math.max(420, wrapper.clientHeight);
+                this.buildBackgroundCache();
                 
-                if (!this.isRunning) {
+                if ((this.isRunning || this.resultTimer) && this.world) {
+                    this.renderScale = this.canvas.width / this.world.width;
+                    this.world.viewHeight = this.canvas.height / this.renderScale;
+                    if (!this.runMode.includes('RESIZED')) this.runMode += ' · RESIZED';
+                    this.renderRunProof();
+                    this.draw();
+                } else {
                     this.setupWorld();
                     this.draw();
                 }
+            }
+
+            buildBackgroundCache() {
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+                this.backgroundCache.width = width;
+                this.backgroundCache.height = height;
+                const ctx = this.backgroundCache.getContext('2d');
+                const gradient = ctx.createLinearGradient(0, 0, 0, height);
+                gradient.addColorStop(0, '#07112d');
+                gradient.addColorStop(0.45, '#080a1b');
+                gradient.addColorStop(1, '#160c2d');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+
+                const glow = ctx.createRadialGradient(width * 0.5, height * 0.35, 0, width * 0.5, height * 0.35, width * 0.7);
+                glow.addColorStop(0, 'rgba(55,105,255,.13)');
+                glow.addColorStop(0.55, 'rgba(168,85,247,.05)');
+                glow.addColorStop(1, 'transparent');
+                ctx.fillStyle = glow;
+                ctx.fillRect(0, 0, width, height);
+
+                const crowdColors = ['#ff9f43', '#48dbfb', '#ff6b9d', '#ffd93d', '#a855f7'];
+                for (let row = 0; row < 4; row++) {
+                    for (let column = 0; column < Math.ceil(width / 24); column++) {
+                        const x = 9 + column * 24 + (row % 2) * 11;
+                        const y = 72 + row * 18;
+                        ctx.fillStyle = crowdColors[(row * 3 + column) % crowdColors.length];
+                        ctx.globalAlpha = 0.16 + (row % 2) * 0.05;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 2.2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                ctx.globalAlpha = 1;
+                ctx.strokeStyle = 'rgba(255,215,0,.14)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(8, 8, width - 16, height - 16);
+                ctx.strokeStyle = 'rgba(0,212,255,.07)';
+                ctx.setLineDash([12, 18]);
+                for (let x = width / 4; x < width; x += width / 4) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, height);
+                    ctx.stroke();
+                }
+                ctx.setLineDash([]);
+            }
+
+            setPlaceholder(message) {
+                const list = document.getElementById('rankingList');
+                const placeholder = document.createElement('div');
+                placeholder.className = 'ranking-placeholder';
+                placeholder.textContent = message;
+                list.replaceChildren(placeholder);
+            }
+
+            renderRunProof() {
+                const shortHash = this.currentRunHash ? this.currentRunHash.slice(0, 12).toUpperCase() : '—';
+                document.getElementById('runProof').textContent = `HASH: ${shortHash}${this.currentRunHash ? ` · ${this.runMode}` : ''}`;
+                document.getElementById('seedHash').textContent = shortHash;
+                const mapLabels = { chaos: '🌀 CHAOS ARENA', pinball: '🎰 PINBALL STADIUM', funnel: '🔻 FUNNEL CIRCUIT' };
+                document.getElementById('mapBadge').textContent = mapLabels[this.mapType] || this.mapType.toUpperCase();
+            }
+
+            setControlsDisabled(disabled) {
+                ['participants', 'mapSelect', 'firstWinsToggle', 'shuffleBtn', 'startBtn', 'gameSeed', 'seedRefresh'].forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) element.disabled = disabled;
+                });
             }
 
             setParticipants(participants) {
@@ -2350,27 +2588,37 @@
                 if (this.isRunning) {
                     this.stop();
                     document.getElementById('liveIndicator').style.display = 'none';
-                    document.getElementById('rankingList').innerHTML = '<div class="ranking-placeholder">게임을 시작하면 순위가 표시됩니다</div>';
+                    this.setPlaceholder('게임을 시작하면 순위가 표시됩니다');
                 }
+                this.currentRunHash = '';
+                this.runMode = 'AUTO';
+                this.renderRunProof();
                 this.setupWorld();
                 this.draw();
             }
 
             shuffle() {
                 for (let i = this.participants.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
+                    const j = Math.floor(physicsRandom() * (i + 1));
                     [this.participants[i], this.participants[j]] = [this.participants[j], this.participants[i]];
                 }
                 this.setupWorld();
                 this.draw();
             }
 
-            setupWorld() {
+            setupWorld(preserveRandom = false) {
                 const w = this.canvas.width;
                 const viewH = this.canvas.height;
                 const scale = this.getScale();
 
+                if (!preserveRandom) {
+                    this.startToken++;
+                    const seed = document.getElementById('gameSeed')?.value.trim() || 'PLAYPICK';
+                    activePhysicsRandom = mulberry32(fallbackHash(JSON.stringify({ seed, participants: this.participants, map: this.mapType, firstWins: this.firstWins, viewport: [w, viewH] })));
+                }
+
                 this.world = new PhysicsWorld(w, viewH);
+                this.renderScale = 1;
 
                 // Apply selected map - 기준 좌표계(600x2400)와 scale 전달
                 if (MapGenerators[this.mapType]) {
@@ -2384,7 +2632,7 @@
                 for (const obs of this.world.obstacles) {
                     // 범퍼 최대 크기 제한
                     if (obs.type === 'bumper' && obs.radius) {
-                        obs.radius = Math.min(obs.radius, 24 * scale);
+                        obs.radius = Math.min(obs.radius, 40 * scale);
                     }
                     // 스피너 최대 길이 제한
                     if (obs.type === 'spinner' && obs.length) {
@@ -2422,258 +2670,269 @@
                 const ballRadius = baseBallRadius * adjustedScale;
                 const startArea = w * 0.6;
                 const startX = (w - startArea) / 2;
-                const initialVelY = (150 + Math.random() * 100) * scale;  // 초기 하향 속도 - 스케일 적용
-
                 this.participants.forEach((name, i) => {
-                    const x = startX + Math.random() * startArea;
-                    const y = (-20 - Math.random() * 80 - i * 8) * scale;  // 시작 위치도 스케일 적용
+                    const initialVelY = (150 + physicsRandom() * 100) * scale;
+                    const x = startX + physicsRandom() * startArea;
+                    const y = (-20 - physicsRandom() * 80 - i * 8) * scale;  // 시작 위치도 스케일 적용
                     const color = this.colors[i % this.colors.length];
-                    this.world.addBall(new Ball(x, y, ballRadius, color, name, initialVelY, scale));
+                    const ball = new Ball(x, y, ballRadius, color, name, initialVelY, scale);
+                    ball.index = i;
+                    this.world.addBall(ball);
                 });
+                this.renderRunProof();
             }
 
-            start() {
-                if (this.isRunning || this.participants.length === 0) return;
-                
+            async configureRun() {
+                const seedInput = document.getElementById('gameSeed');
+                if (!seedInput.value.trim()) seedInput.value = generateSeed();
+                this.currentSeed = seedInput.value.trim();
+                const material = JSON.stringify({
+                    game: 'marble-olympics-2.1',
+                    seed: this.currentSeed,
+                    participants: this.participants,
+                    map: this.mapType,
+                    firstWins: this.firstWins,
+                    viewport: [this.canvas.width, this.canvas.height]
+                });
+                const seeded = await createRunSeed(material);
+                this.currentRunHash = seeded.hashHex;
+                activePhysicsRandom = seeded.random;
+                this.runMode = 'AUTO';
+                this.renderRunProof();
+            }
+
+            async start() {
+                if (this.isRunning || this.resultTimer || this.participants.length < 2) return false;
+                const token = ++this.startToken;
                 sound.init();
                 sound.playStart();
-                this.isRunning = true;
-                this.setupWorld();
-                this.gameStartTime = performance.now();
-                this.lastTime = performance.now();
-                this.animate();
+                this.setControlsDisabled(true);
+                await this.configureRun();
+                if (token !== this.startToken) {
+                    this.currentRunHash = '';
+                    this.renderRunProof();
+                    return false;
+                }
 
-                document.getElementById('rankingList').innerHTML = '<div class="ranking-placeholder">첫 번째 도착자를 기다리는 중...</div>';
+                if (this.resultTimer) clearTimeout(this.resultTimer);
+                this.resultTimer = null;
+                this.isRunning = true;
+                this.setupWorld(true);
+                this.lastTimestamp = 0;
+                this.accumulator = 0;
+                this.rankingElapsed = 0;
+                this.lastResultText = '';
+                document.getElementById('racePhase').classList.remove('show');
+                const overlay = document.getElementById('winnerOverlay');
+                overlay.classList.remove('show');
+                overlay.setAttribute('aria-hidden', 'true');
+                this.animationId = requestAnimationFrame(timestamp => this.animate(timestamp));
+
+                this.setPlaceholder('첫 번째 도착자를 기다리는 중...');
                 document.getElementById('liveIndicator').style.display = 'flex';
                 
                 // 버튼 텍스트 변경
                 document.getElementById('resetBtn').textContent = '⏹ 종료';
                 document.getElementById('resetBtn').classList.add('btn-danger');
+                return true;
             }
 
             stop() {
                 this.isRunning = false;
                 if (this.animationId) cancelAnimationFrame(this.animationId);
+                this.animationId = null;
+            }
+
+            scheduleWinner(reason = 'complete') {
+                if (this.resultTimer) return;
+                this.isRunning = false;
+                if (this.animationId) cancelAnimationFrame(this.animationId);
+                this.animationId = null;
+                document.getElementById('resetBtn').disabled = true;
+                this.resultTimer = setTimeout(() => {
+                    this.resultTimer = null;
+                    this.showWinner(reason);
+                }, 950);
             }
             
             // 게임 강제 종료 (현재 위치 기준 순위 결정)
             forceEnd() {
+                if (this.resultTimer) return;
                 if (!this.isRunning) {
                     this.reset();
                     return;
                 }
                 
-                const now = performance.now();
-                
                 // 아직 도착 안 한 공들을 Y 위치(진행도) 기준으로 정렬
                 const racingBalls = this.world.balls.filter(b => !b.finished);
-                racingBalls.sort((a, b) => b.pos.y - a.pos.y);  // Y가 큰 순서 (더 앞서 있는 순서)
+                racingBalls.sort((a, b) => (b.pos.y - a.pos.y) || (a.index - b.index));  // Y가 큰 순서 (더 앞서 있는 순서)
                 
                 // 진행도 순서대로 rankings에 추가
-                racingBalls.forEach(ball => {
+                racingBalls.forEach((ball, index) => {
                     ball.finished = true;
-                    ball.finishTime = now;
+                    ball.finishTime = this.world.time + index * 0.001;
                     ball.timedOut = true;
-                    ball.progress = (ball.pos.y / this.world.finishLine) * 100;
+                    ball.progress = Math.max(0, Math.min(100, (ball.pos.y / this.world.finishLine) * 100));
                     this.world.rankings.push(ball);
                 });
-                
-                this.isRunning = false;
-                this.showWinner(true);
+                this.runMode = this.runMode.includes('RESIZED') ? 'FORCED · RESIZED' : 'FORCED';
+                this.renderRunProof();
+                this.updateRankings();
+                this.draw();
+                this.scheduleWinner('forced');
             }
 
             reset() {
+                this.startToken++;
+                if (this.resultTimer) clearTimeout(this.resultTimer);
+                this.resultTimer = null;
                 this.stop();
+                this.currentRunHash = '';
+                this.runMode = 'AUTO';
                 this.setupWorld();
                 this.draw();
-                document.getElementById('rankingList').innerHTML = '<div class="ranking-placeholder">게임을 시작하면 순위가 표시됩니다</div>';
+                this.setPlaceholder('게임을 시작하면 순위가 표시됩니다');
                 document.getElementById('liveIndicator').style.display = 'none';
-                document.getElementById('winnerOverlay').classList.remove('show');
+                const overlay = document.getElementById('winnerOverlay');
+                overlay.classList.remove('show');
+                overlay.setAttribute('aria-hidden', 'true');
+                document.getElementById('racePhase').classList.remove('show');
+                this.setControlsDisabled(false);
                 
                 // 버튼 텍스트 복원
                 document.getElementById('resetBtn').textContent = '↺ 초기화';
                 document.getElementById('resetBtn').classList.remove('btn-danger');
+                document.getElementById('resetBtn').disabled = false;
             }
 
-            animate() {
+            animate(timestamp) {
                 if (!this.isRunning) return;
+                if (!this.lastTimestamp) this.lastTimestamp = timestamp;
+                const frameDt = Math.min((timestamp - this.lastTimestamp) / 1000, 0.1);
+                this.lastTimestamp = timestamp;
+                this.accumulator += frameDt;
 
-                const now = performance.now();
-                const dt = Math.min((now - this.lastTime) / 1000, 0.016);
-                this.lastTime = now;
+                let steps = 0;
+                while (this.accumulator >= FIXED_DT && steps < 12 && this.isRunning) {
+                    this.world.update(FIXED_DT);
+                    this.accumulator -= FIXED_DT;
+                    this.rankingElapsed += FIXED_DT;
+                    steps++;
 
-                this.world.update(dt);
-                this.updateRankings();
+                    if (this.world.time >= 60) {
+                        this.finishByTimeout();
+                        break;
+                    }
+                    if (this.world.isFinished()) {
+                        this.scheduleWinner('complete');
+                        break;
+                    }
+                }
+                if (steps === 12) this.accumulator = 0;
+                if (this.rankingElapsed >= 0.1) {
+                    this.rankingElapsed = 0;
+                    this.updateRankings();
+                }
                 this.draw();
 
-                // 60초 타임아웃 체크
-                const elapsed = (performance.now() - this.gameStartTime) / 1000;
-                if (elapsed >= 60) {
-                    this.isRunning = false;
-                    this.finishByTimeout();
-                    return;
-                }
-                
-                if (this.world.isFinished()) {
-                    this.isRunning = false;
-                    this.showWinner();
-                    return;
-                }
+                const phase = document.getElementById('racePhase');
+                if (this.world.time >= 45) phase.textContent = '⚠️ LAST CALL · MAX GRAVITY ⚠️';
+                else phase.textContent = '🔥 FINAL LAP · GRAVITY UP 🔥';
+                phase.classList.toggle('show', this.world.time >= 20 && this.isRunning);
 
-                this.animationId = requestAnimationFrame(() => this.animate());
+                if (this.isRunning) this.animationId = requestAnimationFrame(nextTimestamp => this.animate(nextTimestamp));
             }
             
             // 타임아웃으로 게임 종료 - 진행도 기준 순위 결정
             finishByTimeout() {
-                const now = performance.now();
-                
                 // 아직 도착 안 한 공들을 Y 위치(진행도) 기준으로 정렬
                 const racingBalls = this.world.balls.filter(b => !b.finished);
-                racingBalls.sort((a, b) => b.pos.y - a.pos.y);  // Y가 큰 순서 (더 앞서 있는 순서)
+                racingBalls.sort((a, b) => (b.pos.y - a.pos.y) || (a.index - b.index));  // Y가 큰 순서 (더 앞서 있는 순서)
                 
                 // 진행도 순서대로 rankings에 추가 (타임아웃으로 종료됨을 표시)
-                racingBalls.forEach(ball => {
+                racingBalls.forEach((ball, index) => {
                     ball.finished = true;
-                    ball.finishTime = now;
+                    ball.finishTime = this.world.time + index * 0.001;
                     ball.timedOut = true;  // 타임아웃 플래그
-                    ball.progress = (ball.pos.y / this.world.finishLine) * 100;  // 진행률 저장
+                    ball.progress = Math.max(0, Math.min(100, (ball.pos.y / this.world.finishLine) * 100));  // 진행률 저장
                     this.world.rankings.push(ball);
                 });
-                
-                this.showWinner(true);  // 타임아웃 플래그 전달
+                this.runMode = this.runMode.includes('RESIZED') ? 'TIMEOUT · RESIZED' : 'TIMEOUT';
+                this.renderRunProof();
+                this.updateRankings();
+                this.scheduleWinner('timeout');
             }
 
             updateRankings() {
                 const list = document.getElementById('rankingList');
                 const medals = ['🥇', '🥈', '🥉'];
-                const totalParticipants = this.world.balls.length;
                 const finishedBalls = [...this.world.rankings];  // 도착한 공들 (도착 순서대로)
                 const racingBalls = this.world.balls.filter(b => !b.finished);  // 진행 중인 공들
-                
-                let html = '';
-                
+                list.replaceChildren();
+
+                const progressOf = ball => Math.min(100, Math.max(0, (ball.pos.y / this.world.finishLine) * 100));
+                const appendSeparator = text => {
+                    const separator = document.createElement('div');
+                    separator.className = 'ranking-separator';
+                    separator.textContent = text;
+                    list.appendChild(separator);
+                };
+                const appendEntry = (ball, rank, value, racing = false, isLast = false) => {
+                    const item = document.createElement('div');
+                    item.className = `ranking-item${racing ? ' racing' : ''}${rank <= 3 ? ` rank-${rank}` : ''}${isLast ? ' rank-last' : ''}`;
+
+                    const position = document.createElement('div');
+                    position.className = 'ranking-position';
+                    position.textContent = String(rank);
+                    const color = document.createElement('div');
+                    color.className = 'ranking-color';
+                    color.style.background = ball.color;
+                    const name = document.createElement('div');
+                    name.className = 'ranking-name';
+                    name.textContent = ball.name;
+                    item.append(position, color, name);
+
+                    if (rank <= 3 || isLast) {
+                        const medal = document.createElement('span');
+                        medal.className = 'ranking-medal';
+                        medal.textContent = rank <= 3 ? medals[rank - 1] : '💀';
+                        item.appendChild(medal);
+                    }
+                    const metric = document.createElement('span');
+                    metric.className = racing ? 'ranking-progress' : 'ranking-time';
+                    metric.textContent = value;
+                    item.appendChild(metric);
+                    list.appendChild(item);
+                };
+
                 if (this.firstWins) {
-                    // ===== 먼저 들어온 순서가 1등 =====
-                    // 진행 중인 공들을 Y 위치 기준 정렬 (Y 큰 것이 앞서 있음)
-                    const sortedRacing = [...racingBalls].sort((a, b) => b.pos.y - a.pos.y);
-                    
-                    // 1. 도착한 공들 먼저 표시
-                    const firstTime = finishedBalls[0]?.finishTime || 0;
-                    const firstTimeInSec = firstTime ? (firstTime - this.gameStartTime) / 1000 : 0;
-                    
-                    finishedBalls.forEach((ball, i) => {
-                        const rankClass = i < 3 ? `rank-${i + 1}` : '';
-                        const ballTimeInSec = (ball.finishTime - this.gameStartTime) / 1000;
-                        let timeDisplay;
-                        if (i === 0) {
-                            timeDisplay = `${ballTimeInSec.toFixed(2)}s`;
-                        } else {
-                            const diff = ballTimeInSec - firstTimeInSec;
-                            timeDisplay = `+${diff.toFixed(2)}s`;
-                        }
-                        
-                        html += `
-                            <div class="ranking-item ${rankClass}">
-                                <div class="ranking-position">${i + 1}</div>
-                                <div class="ranking-color" style="background: ${ball.color};"></div>
-                                <div class="ranking-name">${ball.name}</div>
-                                ${i < 3 ? `<span class="ranking-medal">${medals[i]}</span>` : ''}
-                                <span class="ranking-time">${timeDisplay}</span>
-                            </div>
-                        `;
+                    const firstTime = finishedBalls[0]?.finishTime ?? 0;
+                    finishedBalls.forEach((ball, index) => {
+                        const value = ball.timedOut
+                            ? `${ball.progress.toFixed(0)}%`
+                            : index === 0 ? `${ball.finishTime.toFixed(3)}s` : `+${(ball.finishTime - firstTime).toFixed(3)}s`;
+                        appendEntry(ball, index + 1, value, false, index === this.world.balls.length - 1);
                     });
-                    
-                    // 2. 진행 중인 공들 표시
-                    if (sortedRacing.length > 0) {
-                        if (finishedBalls.length > 0) {
-                            html += `<div class="ranking-separator">— 레이싱 중 —</div>`;
-                        }
-                        
-                        sortedRacing.forEach((ball, i) => {
-                            const overallRank = finishedBalls.length + i + 1;
-                            const rankClass = overallRank <= 3 ? `rank-${overallRank}` : '';
-                            const progress = Math.min(100, Math.max(0, 
-                                (ball.pos.y / this.world.finishLine) * 100
-                            )).toFixed(0);
-                            
-                            html += `
-                                <div class="ranking-item racing ${rankClass}">
-                                    <div class="ranking-position">${overallRank}</div>
-                                    <div class="ranking-color" style="background: ${ball.color};"></div>
-                                    <div class="ranking-name">${ball.name}</div>
-                                    ${overallRank <= 3 ? `<span class="ranking-medal">${medals[overallRank-1]}</span>` : ''}
-                                    <span class="ranking-progress">${progress}%</span>
-                                </div>
-                            `;
-                        });
-                    }
+                    const sortedRacing = [...racingBalls].sort((a, b) => (b.pos.y - a.pos.y) || (a.index - b.index));
+                    if (finishedBalls.length && sortedRacing.length) appendSeparator('— 레이싱 중 —');
+                    sortedRacing.forEach((ball, index) => {
+                        appendEntry(ball, finishedBalls.length + index + 1, `${progressOf(ball).toFixed(0)}%`, true);
+                    });
                 } else {
-                    // ===== 늦게 들어온 순서가 1등 =====
-                    // 진행 중인 공들을 Y 위치 기준 정렬 (Y 작은 것이 1등에 가까움 - 아직 덜 내려온 것)
-                    const sortedRacing = [...racingBalls].sort((a, b) => a.pos.y - b.pos.y);
-                    
-                    // 1. 진행 중인 공들 먼저 표시 (아직 도착 안 한 공이 상위)
-                    sortedRacing.forEach((ball, i) => {
-                        const rank = i + 1;
-                        const rankClass = rank <= 3 ? `rank-${rank}` : '';
-                        const progress = Math.min(100, Math.max(0, 
-                            (ball.pos.y / this.world.finishLine) * 100
-                        )).toFixed(0);
-                        
-                        html += `
-                            <div class="ranking-item racing ${rankClass}">
-                                <div class="ranking-position">${rank}</div>
-                                <div class="ranking-color" style="background: ${ball.color};"></div>
-                                <div class="ranking-name">${ball.name}</div>
-                                ${rank <= 3 ? `<span class="ranking-medal">${medals[rank-1]}</span>` : ''}
-                                <span class="ranking-progress">${progress}%</span>
-                            </div>
-                        `;
+                    const sortedRacing = [...racingBalls].sort((a, b) => (a.pos.y - b.pos.y) || (a.index - b.index));
+                    sortedRacing.forEach((ball, index) => appendEntry(ball, index + 1, `${progressOf(ball).toFixed(0)}%`, true));
+                    if (sortedRacing.length && finishedBalls.length) appendSeparator('— 순위 확정 —');
+                    [...finishedBalls].reverse().forEach((ball, index) => {
+                        const rank = sortedRacing.length + index + 1;
+                        const value = ball.timedOut ? `${ball.progress.toFixed(0)}%` : `${ball.finishTime.toFixed(3)}s`;
+                        appendEntry(ball, rank, value, false, rank === this.world.balls.length);
                     });
-                    
-                    // 2. 도착한 공들 표시 (도착한 순서 역순 = 먼저 도착한 게 꼴찌)
-                    if (finishedBalls.length > 0) {
-                        if (racingBalls.length > 0) {
-                            html += `<div class="ranking-separator">— 순위 확정 —</div>`;
-                        }
-                        
-                        // 도착한 공들을 뒤집어서 표시 (먼저 도착한 게 제일 아래)
-                        const reversedFinished = [...finishedBalls].reverse();
-                        
-                        reversedFinished.forEach((ball, i) => {
-                            // 순위: 레이싱 중인 공 수 + i + 1 (먼저 도착한 게 뒤 순위)
-                            const rank = racingBalls.length + i + 1;
-                            const isLast = rank === totalParticipants;
-                            let rankClass = '';
-                            if (rank <= 3) rankClass = `rank-${rank}`;
-                            else if (isLast) rankClass = 'rank-last';
-                            
-                            const ballTimeInSec = (ball.finishTime - this.gameStartTime) / 1000;
-                            const timeDisplay = `${ballTimeInSec.toFixed(2)}s`;
-                            
-                            html += `
-                                <div class="ranking-item ${rankClass}">
-                                    <div class="ranking-position">${rank}</div>
-                                    <div class="ranking-color" style="background: ${ball.color};"></div>
-                                    <div class="ranking-name">${ball.name}</div>
-                                    ${rank <= 3 ? `<span class="ranking-medal">${medals[rank-1]}</span>` : ''}
-                                    ${isLast ? `<span class="ranking-medal">💀</span>` : ''}
-                                    <span class="ranking-time">${timeDisplay}</span>
-                                </div>
-                            `;
-                        });
-                    }
                 }
-                
-                // 아무도 없으면
-                if (html === '') {
-                    html = '<div class="ranking-placeholder">게임을 시작하면 순위가 표시됩니다</div>';
-                }
-                
-                list.innerHTML = html;
+
+                if (!list.childElementCount) this.setPlaceholder('게임을 시작하면 순위가 표시됩니다');
             }
 
-            showWinner(isTimeout = false) {
+            showWinner(reason = 'complete') {
                 let rankings = [...this.world.rankings];
                 sound.playWin();
                 
@@ -2683,29 +2942,26 @@
                 }
                 
                 const winner = rankings[0];
+                if (!winner) return;
 
-                // 타임아웃인 경우 다른 메시지 표시
-                if (isTimeout && winner.timedOut) {
-                    document.getElementById('winnerLabel').textContent = '⏱️ 시간 초과!';
-                } else {
-                    document.getElementById('winnerLabel').textContent = '🏆 1등!';
-                }
+                const label = reason === 'timeout' ? '⏱️ 시간 초과!' : reason === 'forced' ? '⏹ 경기 종료!' : '🏆 1등!';
+                document.getElementById('winnerLabel').textContent = label;
                 document.getElementById('winnerName').textContent = winner.name;
+                document.getElementById('resultProof').textContent = `RUN HASH: ${this.currentRunHash.slice(0, 16).toUpperCase()} · ${this.runMode}`;
                 
                 // 전체 순위 표시
                 const finalList = document.getElementById('finalRankingList');
-                finalList.innerHTML = '';
+                finalList.replaceChildren();
                 
                 const medals = ['🥇', '🥈', '🥉'];
                 
                 // 첫 번째로 정상 도착한 공 찾기 (표시용)
                 const firstFinisher = rankings.find(b => !b.timedOut);
-                const firstTimeInSec = firstFinisher 
-                    ? (firstFinisher.finishTime - this.gameStartTime) / 1000 
-                    : 60;
+                const firstTimeInSec = firstFinisher?.finishTime ?? 60;
 
                 // 결과 텍스트 생성 (복사용)
-                this.lastResultText = `🏅 구슬 올림픽 결과\n`;
+                const shortHash = this.currentRunHash.slice(0, 16).toUpperCase();
+                this.lastResultText = `🏅 구슬 올림픽 결과\nRUN HASH: ${shortHash} · ${this.runMode}\nSEED: ${this.currentSeed}\nMAP: ${this.mapType.toUpperCase()}\n`;
                 this.lastResultText += `${this.firstWins ? '(먼저 도착 = 1등)' : '(나중 도착 = 1등)'}\n\n`;
 
                 rankings.forEach((ball, i) => {
@@ -2726,14 +2982,14 @@
                     if (ball.timedOut) {
                         timeDisplay = `${ball.progress.toFixed(0)}%`;
                     } else {
-                        const ballTimeInSec = (ball.finishTime - this.gameStartTime) / 1000;
+                        const ballTimeInSec = ball.finishTime;
                         if (i === 0 || !firstFinisher) {
-                            timeDisplay = `${ballTimeInSec.toFixed(2)}s`;
+                            timeDisplay = `${ballTimeInSec.toFixed(3)}s`;
                         } else {
                             const diff = Math.abs(ballTimeInSec - firstTimeInSec);
                             timeDisplay = this.firstWins 
-                                ? `${ballTimeInSec.toFixed(2)}s (+${diff.toFixed(2)}s)`
-                                : `${ballTimeInSec.toFixed(2)}s (-${diff.toFixed(2)}s)`;
+                                ? `${ballTimeInSec.toFixed(3)}s (+${diff.toFixed(3)}s)`
+                                : `${ballTimeInSec.toFixed(3)}s (-${diff.toFixed(3)}s)`;
                         }
                     }
                     
@@ -2744,28 +3000,45 @@
                     
                     // 타임아웃된 공은 아이콘 추가
                     const timeoutIcon = ball.timedOut ? '⏱️ ' : '';
-                    
-                    item.innerHTML = `
-                        <div class="final-position">${i + 1}</div>
-                        <div class="final-color" style="background: ${ball.color}"></div>
-                        <div class="final-name">${timeoutIcon}${ball.name}</div>
-                        <span class="final-time">${timeDisplay}</span>
-                        <span class="final-medal">${medal}</span>
-                    `;
+
+                    const position = document.createElement('div');
+                    position.className = 'final-position';
+                    position.textContent = String(i + 1);
+                    const color = document.createElement('div');
+                    color.className = 'final-color';
+                    color.style.background = ball.color;
+                    const name = document.createElement('div');
+                    name.className = 'final-name';
+                    name.textContent = `${timeoutIcon}${ball.name}`;
+                    const time = document.createElement('span');
+                    time.className = 'final-time';
+                    time.textContent = timeDisplay;
+                    const medalElement = document.createElement('span');
+                    medalElement.className = 'final-medal';
+                    medalElement.textContent = medal;
+                    item.append(position, color, name, time, medalElement);
                     finalList.appendChild(item);
                     
                     // 결과 텍스트에 추가
                     this.lastResultText += `${i + 1}위 ${medalText} ${ball.name} - ${timeDisplay}\n`;
                 });
 
-                document.getElementById('winnerOverlay').classList.add('show');
+                const overlay = document.getElementById('winnerOverlay');
+                overlay.classList.add('show');
+                overlay.setAttribute('aria-hidden', 'false');
                 document.getElementById('liveIndicator').style.display = 'none';
+                document.getElementById('racePhase').classList.remove('show');
+                document.getElementById('resetBtn').textContent = '↺ 초기화';
+                document.getElementById('resetBtn').classList.remove('btn-danger');
+                document.getElementById('resetBtn').disabled = false;
+                this.setControlsDisabled(false);
                 
                 // 하단 결과 복사 버튼 활성화
                 const copyBtn2 = document.getElementById('copyResultBtn2');
                 if (copyBtn2) copyBtn2.disabled = false;
 
                 this.createConfetti();
+                setTimeout(() => document.getElementById('closeWinnerBtn').focus(), 100);
             }
             
             // 토스트 알림 표시
@@ -2782,10 +3055,21 @@
             }
             
             // 결과 복사
-            copyResult(targetBtn = null) {
+            async copyResult(targetBtn = null) {
                 if (!this.lastResultText) return;
-                
-                navigator.clipboard.writeText(this.lastResultText).then(() => {
+                try {
+                    if (navigator.clipboard?.writeText) {
+                        await navigator.clipboard.writeText(this.lastResultText);
+                    } else {
+                        const textarea = document.createElement('textarea');
+                        textarea.value = this.lastResultText;
+                        textarea.style.position = 'fixed';
+                        textarea.style.opacity = '0';
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        document.execCommand('copy');
+                        textarea.remove();
+                    }
                     // 모달 내 버튼
                     const btn = document.getElementById('copyResultBtn');
                     const originalText = btn.textContent;
@@ -2806,15 +3090,14 @@
                     
                     // 토스트 알림 표시
                     this.showToast('결과가 클립보드에 복사되었습니다!');
-                }).catch(err => {
-                    console.error('복사 실패:', err);
+                } catch (error) {
                     this.showToast('복사에 실패했습니다.');
-                });
+                }
             }
 
             createConfetti() {
                 const container = document.getElementById('confettiContainer');
-                container.innerHTML = '';
+                container.replaceChildren();
 
                 const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6b9d', '#a855f7'];
                 
@@ -2835,42 +3118,48 @@
                 const w = this.canvas.width;
                 const h = this.canvas.height;
 
-                // Clear
-                ctx.fillStyle = 'rgba(10, 10, 18, 0.97)';
-                ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(this.backgroundCache, 0, 0, w, h);
 
                 if (!this.world) return;
 
                 // 카메라 오프셋 적용
                 const camY = this.world.cameraY || 0;
                 ctx.save();
+                if (this.world.shake > 0.1) {
+                    ctx.translate((Math.random() - 0.5) * this.world.shake, (Math.random() - 0.5) * this.world.shake);
+                }
+                ctx.scale(this.renderScale, this.renderScale);
                 ctx.translate(0, -camY);
 
                 // Draw finish line (월드 좌표) - 스케일 적용
                 const scale = this.world.scale;
                 const finishLineY = this.world.finishLine;
-                const gradient = ctx.createLinearGradient(0, finishLineY, 0, finishLineY + 100 * scale);
-                gradient.addColorStop(0, 'rgba(255, 215, 0, 0.25)');
-                gradient.addColorStop(1, 'rgba(255, 215, 0, 0.08)');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, finishLineY, w, 100 * scale);
+                const viewBottom = camY + this.world.viewHeight;
+                if (finishLineY < viewBottom + 120 * scale) {
+                    const gradient = ctx.createLinearGradient(0, finishLineY, 0, finishLineY + 100 * scale);
+                    gradient.addColorStop(0, 'rgba(255, 215, 0, 0.25)');
+                    gradient.addColorStop(1, 'rgba(255, 215, 0, 0.08)');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, finishLineY, this.world.width, 100 * scale);
 
-                ctx.strokeStyle = '#ffd700';
-                ctx.lineWidth = 2 * scale;
-                ctx.setLineDash([8 * scale, 8 * scale]);
-                ctx.beginPath();
-                ctx.moveTo(0, finishLineY);
-                ctx.lineTo(w, finishLineY);
-                ctx.stroke();
-                ctx.setLineDash([]);
+                    ctx.strokeStyle = '#ffd700';
+                    ctx.lineWidth = 2 * scale;
+                    ctx.setLineDash([8 * scale, 8 * scale]);
+                    ctx.beginPath();
+                    ctx.moveTo(0, finishLineY);
+                    ctx.lineTo(this.world.width, finishLineY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
 
-                ctx.font = `bold ${Math.round(12 * scale)}px "Noto Sans KR"`;
-                ctx.fillStyle = '#ffd700';
-                ctx.textAlign = 'right';
-                ctx.fillText('🏆 GOAL', w - 15 * scale, finishLineY - 8 * scale);
+                    ctx.font = `bold ${Math.round(12 * scale)}px "Noto Sans KR"`;
+                    ctx.fillStyle = '#ffd700';
+                    ctx.textAlign = 'right';
+                    ctx.fillText('🏆 GOAL', this.world.width - 15 * scale, finishLineY - 8 * scale);
+                }
 
                 // Draw obstacles
                 for (const obs of this.world.obstacles) {
+                    if (!this.isObstacleVisible(obs, camY, viewBottom)) continue;
                     this.drawObstacle(obs);
                 }
 
@@ -2884,16 +3173,34 @@
                 // UI 오버레이 (카메라 영향 안 받음)
                 this.drawTimer();
             }
+
+            isObstacleVisible(obs, viewTop, viewBottom) {
+                let minY;
+                let maxY;
+                if (obs.type === 'portal') {
+                    minY = Math.min(obs.y1, obs.y2) - obs.radius * 2;
+                    maxY = Math.max(obs.y1, obs.y2) + obs.radius * 2;
+                } else if (obs.type === 'wall') {
+                    minY = Math.min(obs.y1, obs.y2) - obs.thickness * 2;
+                    maxY = Math.max(obs.y1, obs.y2) + obs.thickness * 2;
+                } else {
+                    const extent = (obs.radius || obs.length || obs.size || 30) * 2;
+                    minY = obs.y - extent;
+                    maxY = obs.y + extent;
+                }
+                const margin = 80 * this.world.scale;
+                return maxY >= viewTop - margin && minY <= viewBottom + margin;
+            }
             
             drawTimer() {
-                if (!this.world || !this.isRunning) return;
+                if (!this.world || (!this.isRunning && !this.resultTimer)) return;
 
                 const ctx = this.ctx;
                 const w = this.canvas.width;
-                const s = this.world.scale;  // 스케일
+                const s = Math.max(0.75, Math.min(1.5, w / 600));
 
                 // 경과 시간 계산
-                const elapsed = (performance.now() - this.gameStartTime) / 1000;
+                const elapsed = this.world.time;
                 const minutes = Math.floor(elapsed / 60);
                 const seconds = Math.floor(elapsed % 60);
                 const ms = Math.floor((elapsed % 1) * 100);
@@ -3092,6 +3399,29 @@
                 ctx.arc(ball.pos.x, ball.pos.y, ball.radius, 0, Math.PI * 2);
                 ctx.fill();
 
+                // 유리 구슬 특유의 소용돌이 무늬
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(ball.pos.x, ball.pos.y, ball.radius * 0.92, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.strokeStyle = 'rgba(255,255,255,.68)';
+                ctx.lineWidth = Math.max(1.5, ball.radius * 0.2);
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.arc(ball.pos.x - ball.radius * 0.42, ball.pos.y + ball.radius * 0.08, ball.radius * 0.82, -1.18, 1.2);
+                ctx.stroke();
+                ctx.strokeStyle = 'rgba(255,255,255,.28)';
+                ctx.lineWidth = Math.max(1, ball.radius * 0.12);
+                ctx.beginPath();
+                ctx.arc(ball.pos.x + ball.radius * 0.4, ball.pos.y - ball.radius * 0.08, ball.radius * 0.72, 1.92, 4.45);
+                ctx.stroke();
+                ctx.restore();
+                ctx.strokeStyle = 'rgba(255,255,255,.72)';
+                ctx.lineWidth = Math.max(1, ball.radius * 0.08);
+                ctx.beginPath();
+                ctx.arc(ball.pos.x, ball.pos.y, ball.radius, 0, Math.PI * 2);
+                ctx.stroke();
+
                 // Name - 구슬 오른쪽에 왼쪽 정렬로 표시 - 스케일 적용
                 const s = ball.scale || 1;
                 ctx.font = `bold ${Math.max(12 * s, ball.radius * 0.9)}px "Noto Sans KR"`;
@@ -3134,75 +3464,81 @@
             const helpBtn = document.getElementById('helpBtn');
             const helpModal = document.getElementById('helpModal');
             const closeHelpBtn = document.getElementById('closeHelpBtn');
+            const seedInput = document.getElementById('gameSeed');
+            const seedRefresh = document.getElementById('seedRefresh');
+            const winnerOverlay = document.getElementById('winnerOverlay');
+            let helpReturnFocus = null;
 
             function parseParticipants(text) {
                 const lines = text.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
                 const participants = [];
+                let tooMany = false;
 
                 for (const line of lines) {
                     const match = line.match(/^(.+?)\*(\d+)$/);
                     if (match) {
-                        const name = match[1].trim();
-                        const count = parseInt(match[2], 10);
-                        for (let i = 0; i < count; i++) participants.push(name);
+                        const name = match[1].trim().slice(0, 32);
+                        const count = Math.min(parseInt(match[2], 10) || 0, MAX_PARTICIPANTS + 1);
+                        for (let i = 0; i < count; i++) {
+                            if (participants.length >= MAX_PARTICIPANTS) { tooMany = true; break; }
+                            participants.push(name);
+                        }
+                    } else if (participants.length < MAX_PARTICIPANTS) {
+                        participants.push(line.slice(0, 32));
                     } else {
-                        participants.push(line);
+                        tooMany = true;
                     }
+                    if (tooMany) break;
                 }
-                return participants;
+                return { participants, tooMany };
             }
 
             function updateGame() {
-                const participants = parseParticipants(participantsInput.value);
+                const { participants } = parseParticipants(participantsInput.value);
+                game.currentRunHash = '';
+                game.currentSeed = seedInput.value.trim();
+                game.runMode = 'AUTO';
                 game.setParticipants(participants);
+                game.renderRunProof();
             }
             
             // localStorage 키
             const STORAGE_KEY_PARTICIPANTS = 'marble-olympics-participants';
             const STORAGE_KEY_FIRST_WINS = 'marble-olympics-first-wins';
+            const STORAGE_KEY_MAP = 'marble-olympics-map';
+            const STORAGE_KEY_SEED = 'marble-olympics-seed';
+
+            const saveSetting = (key, value) => {
+                try { localStorage.setItem(key, value); } catch (error) { /* 저장 불가 환경 */ }
+            };
+
+            const loadSetting = key => {
+                try { return localStorage.getItem(key); } catch (error) { return null; }
+            };
             
             // 저장된 값 불러오기
             function loadSavedData() {
-                try {
-                    const savedParticipants = localStorage.getItem(STORAGE_KEY_PARTICIPANTS);
-                    const savedFirstWins = localStorage.getItem(STORAGE_KEY_FIRST_WINS);
-                    
-                    if (savedParticipants) {
-                        participantsInput.value = savedParticipants;
-                    }
-                    
-                    // 항상 현재 textarea 값으로 게임 데이터 업데이트
-                    updateGame();
-                    
-                    if (savedFirstWins !== null) {
-                        const firstWins = savedFirstWins === 'true';
-                        firstWinsToggle.checked = firstWins;
-                        game.firstWins = firstWins;
-                        // 라벨 업데이트
-                        const label = document.getElementById('firstWinsLabel');
-                        label.textContent = firstWins ? '먼저 들어온 순서가 1등' : '늦게 들어온 순서가 1등';
-                    }
-                } catch (e) {
-                    console.warn('localStorage 불러오기 실패:', e);
-                }
+                const savedParticipants = loadSetting(STORAGE_KEY_PARTICIPANTS);
+                const savedFirstWins = loadSetting(STORAGE_KEY_FIRST_WINS);
+                const savedMap = loadSetting(STORAGE_KEY_MAP);
+                if (savedParticipants) participantsInput.value = savedParticipants;
+                if (savedMap && ['chaos', 'pinball', 'funnel'].includes(savedMap)) mapSelect.value = savedMap;
+                seedInput.value = loadSetting(STORAGE_KEY_SEED) || generateSeed();
+                game.mapType = mapSelect.value;
+                if (savedFirstWins !== null) firstWinsToggle.checked = savedFirstWins === 'true';
+                game.firstWins = firstWinsToggle.checked;
+                updateFirstWinsLabel();
+                updateGame();
             }
             
             // 참여자 저장
             function saveParticipants() {
-                try {
-                    localStorage.setItem(STORAGE_KEY_PARTICIPANTS, participantsInput.value);
-                } catch (e) {
-                    console.warn('localStorage 저장 실패:', e);
-                }
+                saveSetting(STORAGE_KEY_PARTICIPANTS, participantsInput.value);
             }
             
             // firstWins 저장
             function saveFirstWins() {
-                try {
-                    localStorage.setItem(STORAGE_KEY_FIRST_WINS, firstWinsToggle.checked.toString());
-                } catch (e) {
-                    console.warn('localStorage 저장 실패:', e);
-                }
+                saveSetting(STORAGE_KEY_FIRST_WINS, firstWinsToggle.checked.toString());
             }
 
             participantsInput.addEventListener('input', () => {
@@ -3212,6 +3548,7 @@
 
             // 맵 선택 드롭다운
             mapSelect.addEventListener('change', () => {
+                saveSetting(STORAGE_KEY_MAP, mapSelect.value);
                 game.setMap(mapSelect.value);
             });
             
@@ -3234,40 +3571,89 @@
                 // 게임 중이면 초기화
                 if (game.isRunning) {
                     game.reset();
+                } else {
+                    game.currentRunHash = '';
+                    game.setupWorld();
+                    game.draw();
                 }
             });
 
             // 도움말 모달
-            helpBtn.addEventListener('click', () => {
+            helpBtn.addEventListener('click', event => {
+                helpReturnFocus = event.currentTarget;
                 helpModal.classList.add('show');
+                helpModal.setAttribute('aria-hidden', 'false');
+                closeHelpBtn.focus();
             });
 
-            closeHelpBtn.addEventListener('click', () => {
+            const closeHelp = () => {
                 helpModal.classList.remove('show');
-            });
+                helpModal.setAttribute('aria-hidden', 'true');
+                helpReturnFocus?.focus();
+            };
+            closeHelpBtn.addEventListener('click', closeHelp);
 
             helpModal.addEventListener('click', (e) => {
-                if (e.target === helpModal) {
-                    helpModal.classList.remove('show');
-                }
+                if (e.target === helpModal) closeHelp();
             });
 
             shuffleBtn.addEventListener('click', () => {
-                if (game.participants.length > 0) {
-                    game.shuffle();
-                    updateGame();
+                const parsed = parseParticipants(participantsInput.value);
+                if (parsed.tooMany) {
+                    game.showToast(`참여자는 최대 ${MAX_PARTICIPANTS}명까지 등록할 수 있습니다.`);
+                    return;
                 }
+                const names = [...parsed.participants];
+                const random = mulberry32(fallbackHash(`${seedInput.value}:shuffle:${JSON.stringify(names)}`));
+                for (let index = names.length - 1; index > 0; index--) {
+                    const swapIndex = Math.floor(random() * (index + 1));
+                    [names[index], names[swapIndex]] = [names[swapIndex], names[index]];
+                }
+                participantsInput.value = names.join(', ');
+                saveParticipants();
+                updateGame();
             });
 
-            startBtn.addEventListener('click', () => {
-                game.start();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+            seedInput.addEventListener('input', () => {
+                saveSetting(STORAGE_KEY_SEED, seedInput.value);
+                updateGame();
+            });
+            seedRefresh.addEventListener('click', () => {
+                seedInput.value = generateSeed();
+                saveSetting(STORAGE_KEY_SEED, seedInput.value);
+                updateGame();
+            });
+
+            startBtn.addEventListener('click', async () => {
+                const parsed = parseParticipants(participantsInput.value);
+                if (parsed.tooMany) {
+                    game.showToast(`참여자는 최대 ${MAX_PARTICIPANTS}명까지 등록할 수 있습니다.`);
+                    return;
+                }
+                if (parsed.participants.length < 2) {
+                    game.showToast('참여자를 두 명 이상 입력해 주세요.');
+                    participantsInput.focus();
+                    return;
+                }
+                game.setParticipants(parsed.participants);
+                try {
+                    const started = await game.start();
+                    if (started) {
+                        saveSetting(STORAGE_KEY_SEED, seedInput.value);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                } catch (error) {
+                    game.setControlsDisabled(false);
+                    game.showToast('경기를 시작하지 못했습니다. 다시 시도해 주세요.');
+                }
             });
 
             resetBtn.addEventListener('click', () => game.forceEnd());
             
             closeWinnerBtn.addEventListener('click', () => {
-                document.getElementById('winnerOverlay').classList.remove('show');
+                winnerOverlay.classList.remove('show');
+                winnerOverlay.setAttribute('aria-hidden', 'true');
+                startBtn.focus();
             });
             
             copyResultBtn.addEventListener('click', () => {
@@ -3278,11 +3664,14 @@
                 game.copyResult(copyResultBtn2);
             });
 
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape' && helpModal.classList.contains('show')) closeHelp();
+            });
+
             // Initial setup
-            loadSavedData();  // 저장된 참여자/맵 불러오기
-            game.setupWorld();
+            loadSavedData();
             game.draw();
-            document.getElementById('rankingList').innerHTML = '<div class="ranking-placeholder">게임을 시작하면 순위가 표시됩니다</div>';
+            game.setPlaceholder('게임을 시작하면 순위가 표시됩니다');
         });
     </script>
 </body>

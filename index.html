@@ -1,501 +1,653 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GFTNV73W8L');
-  </script>
-
-  <!-- 기본 SEO -->
-  <title>추첨 게임 포털 - 무료 온라인 추첨 게임 모음</title>
-  <meta name="description"
-    content="다양한 무료 온라인 추첨 게임을 즐기세요! 사다리 타기, 네온 레이스, 구슬 레이싱 등 15가지 재미있는 방식으로 공정한 추첨을 할 수 있습니다. 설치 없이 브라우저에서 바로 플레이!">
-  <meta name="keywords" content="추첨 게임, 무료 추첨, 온라인 추첨, 랜덤 선택, 당첨자 추첨, 제비뽑기, 사다리 게임, 사다리 타기, 룰렛, 뽑기, 추첨기">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PLAYPICK — 추첨을 게임처럼</title>
+  <meta name="description" content="레이스, 서바이벌, 룰렛까지 22가지 무료 추첨 게임을 브라우저에서 바로 즐겨보세요. 이름만 입력하면 평범한 추첨이 모두가 지켜보는 한 판의 게임이 됩니다.">
+  <meta name="keywords" content="추첨 게임, 무료 추첨, 온라인 추첨, 랜덤 선택, 당첨자 추첨, 제비뽑기, 사다리 타기, 룰렛">
   <meta name="author" content="Euiyun Edwin Kim">
   <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#0f172a">
-
-  <!-- Open Graph -->
+  <meta name="theme-color" content="#080b18">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="추첨 게임 포탈 - 무료 온라인 추첨 게임 모음">
-  <meta property="og:description" content="다양한 무료 온라인 추첨 게임을 즐기세요! 사다리 타기, 구슬 레이싱 등 15가지 게임으로 재미있게 추첨하세요.">
-
-  <!-- Twitter Card -->
+  <meta property="og:title" content="PLAYPICK — 추첨을 게임처럼">
+  <meta property="og:description" content="22가지 게임으로 평범한 추첨을 모두가 지켜보는 한 판으로 바꿔보세요.">
+  <meta property="og:image" content="https://geniuskey.github.io/lottery/assets/portal-key-art.jpg">
+  <meta property="og:locale" content="ko_KR">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="추첨 게임 포털 - 무료 온라인 추첨 게임 모음">
-  <meta name="twitter:description" content="다양한 무료 온라인 추첨 게임을 즐기세요! 사다리 타기부터 서바이벌까지 설치 없이 브라우저에서 바로 플레이!">
-  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/og-image.png">
-
-  <!-- Canonical & Favicon -->
+  <meta name="twitter:title" content="PLAYPICK — 추첨을 게임처럼">
+  <meta name="twitter:description" content="이름만 입력하면 바로 시작되는 22가지 무료 추첨 게임.">
+  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/assets/portal-key-art.jpg">
   <link rel="canonical" href="https://geniuskey.github.io/lottery/">
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-
+  <link rel="preload" as="image" href="./assets/portal-key-art.webp" type="image/webp" fetchpriority="high">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "PLAYPICK",
+      "alternateName": "추첨 게임 포털",
+      "url": "https://geniuskey.github.io/lottery/",
+      "description": "브라우저에서 바로 즐기는 무료 추첨 게임 모음",
+      "inLanguage": "ko-KR"
+    }
+  </script>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --accent: #38bdf8;
-      --accent-glow: rgba(56, 189, 248, 0.4);
-      --purple: #a855f7;
-      --pink: #ec4899;
-      --green: #22c55e;
-      --orange: #f97316;
-      --yellow: #eab308;
+      color-scheme: dark;
+      --bg: #080b18;
+      --surface: #10162b;
+      --surface-strong: #171f38;
+      --line: rgba(255, 255, 255, .1);
+      --line-strong: rgba(255, 255, 255, .2);
+      --text: #f7f8ff;
+      --muted: #a9b0c7;
+      --cyan: #5ee7f7;
+      --coral: #ff6b6b;
+      --gold: #ffc75f;
+      --violet: #9a7cff;
+      --max-width: 1180px;
+      --radius-lg: 30px;
+      --radius-md: 20px;
+      --shadow: 0 22px 70px rgba(0, 0, 0, .35);
     }
 
     * { box-sizing: border-box; }
-
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: #020617;
-      color: var(--text);
+      min-width: 320px;
       min-height: 100vh;
-      overflow-x: hidden;
-      /* 주사위 커서 적용 */
-      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' style='font-size:30px'><text y='30'>🎲</text></svg>") 15 15, auto;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(94, 231, 247, .1), transparent 28rem),
+        radial-gradient(circle at 88% 18%, rgba(154, 124, 255, .12), transparent 31rem),
+        var(--bg);
+      color: var(--text);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Animated Background */
-    .bg-container {
+    a { color: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    img { display: block; max-width: 100%; }
+
+    .skip-link {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 0;
-      background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+      top: 12px;
+      left: 12px;
+      z-index: 100;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #fff;
+      color: #080b18;
+      font-weight: 800;
+      transform: translateY(-180%);
+      transition: transform .2s ease;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    .ambient {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
       overflow: hidden;
       pointer-events: none;
-      contain: strict; /* 배경 애니메이션이 페이지 레이아웃/페인트에 영향 주지 않도록 격리 */
     }
-
-    /* blur() 필터 대신 미리 부드럽게 퍼지는 radial-gradient 사용 (GPU 블러 비용 제거) */
-    .glow-orb {
+    .ambient::before,
+    .ambient::after {
       position: absolute;
+      width: 34rem;
+      height: 34rem;
+      border: 1px solid rgba(255, 255, 255, .05);
       border-radius: 50%;
-      opacity: 0.55;
+      content: "";
     }
-    .orb-1 { width: 600px; height: 600px; top: -200px; right: -150px;
-      background: radial-gradient(circle, rgba(56, 189, 248, 0.35) 0%, rgba(56, 189, 248, 0.1) 45%, transparent 70%); }
-    .orb-2 { width: 550px; height: 550px; bottom: 5%; left: -150px;
-      background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0.1) 45%, transparent 70%); }
-    .orb-3 { width: 500px; height: 500px; top: 25%; right: 5%;
-      background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, rgba(236, 72, 153, 0.08) 45%, transparent 70%); }
+    .ambient::before { top: 22rem; left: -18rem; box-shadow: 0 0 0 7rem rgba(94, 231, 247, .018), 0 0 0 14rem rgba(94, 231, 247, .012); }
+    .ambient::after { right: -20rem; bottom: 12rem; box-shadow: 0 0 0 8rem rgba(154, 124, 255, .018), 0 0 0 16rem rgba(154, 124, 255, .01); }
 
-    .mouse-glow {
-      position: fixed;
-      top: 0; left: 0;
-      width: 1000px; height: 1000px;
-      background: radial-gradient(
-        circle,
-        rgba(56, 189, 248, 0.07) 0%,
-        rgba(56, 189, 248, 0.02) 40%,
-        transparent 80%
-      );
-      border-radius: 50%;
-      pointer-events: none;
-      /* left/top 대신 transform으로만 이동 → 컴포지터에서 처리, 리플로우 없음 */
-      transform: translate3d(-50%, -50%, 0);
-      will-change: transform;
-      z-index: 1;
-    }
-
-    .floating-emoji {
-      position: absolute;
-      top: -100px;
-      opacity: 0;
-      animation: float-down linear forwards;
-      pointer-events: none;
-      z-index: 2;
-      /* 컴포지터 레이어로 승격해 주변 배경 리페인트 방지 */
-      will-change: transform, opacity;
-    }
-
-    @keyframes float-down {
-      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-      10% { opacity: var(--base-opacity); }
-      90% { opacity: var(--base-opacity); }
-      100% { transform: translateY(120vh) rotate(360deg); opacity: 0; }
-    }
-
-    /* Header */
-    header {
-      padding: 60px 20px 30px;
-      max-width: 1100px;
+    .site-nav {
+      width: min(var(--max-width), calc(100% - 40px));
+      height: 80px;
       margin: 0 auto;
-      text-align: center;
-      position: relative;
-      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
     }
-
-    header h1 {
-      margin: 0 0 15px;
-      font-size: clamp(28px, 5vw, 42px);
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--accent), var(--purple), var(--pink));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .brand {
       display: inline-flex;
       align-items: center;
-      gap: 15px;
+      gap: 11px;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .08em;
     }
-
-    .logo-dice { font-size: 1.2em; -webkit-text-fill-color: initial; }
-
-    header .tagline {
+    .brand-mark {
+      width: 34px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--cyan), var(--violet) 55%, var(--coral));
+      box-shadow: 0 7px 22px rgba(94, 231, 247, .2);
+      color: #07101c;
+      font-size: 17px;
+      line-height: 1;
+    }
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
       color: var(--muted);
-      font-size: 16px;
-      max-width: 650px;
-      margin: 0 auto;
-      line-height: 1.7;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 750;
+      transition: color .2s ease, border-color .2s ease, background-color .2s ease;
     }
+    .nav-link:hover { border-color: var(--line-strong); background: rgba(255, 255, 255, .05); color: var(--text); }
 
-    /* Main */
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px 15px 80px;
+    .hero {
+      width: min(var(--max-width), calc(100% - 40px));
+      margin: 18px auto 0;
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(420px, 1.1fr);
+      align-items: center;
+      gap: clamp(34px, 6vw, 80px);
+      min-height: 560px;
+    }
+    .hero-copy,
+    .hero-art { min-width: 0; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 18px;
+      color: var(--cyan);
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 16px currentColor;
+      content: "";
+    }
+    .hero h1 {
+      max-width: 640px;
+      margin: 0;
+      font-size: clamp(44px, 6.2vw, 80px);
+      line-height: 1.02;
+      letter-spacing: -.055em;
+      text-wrap: balance;
+    }
+    .hero h1 span {
+      background: linear-gradient(105deg, var(--cyan), #fff 43%, var(--gold) 76%, var(--coral));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero-copy > p:not(.eyebrow) {
+      max-width: 570px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(16px, 1.5vw, 19px);
+      line-height: 1.8;
+      word-break: keep-all;
+    }
+    .hero-actions { margin-top: 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+    .primary-action {
+      min-height: 52px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 0 22px;
+      border-radius: 15px;
+      background: var(--text);
+      color: #080b18;
+      text-decoration: none;
+      font-weight: 900;
+      box-shadow: 0 14px 35px rgba(255, 255, 255, .12);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .primary-action:hover { transform: translateY(-2px); box-shadow: 0 18px 42px rgba(255, 255, 255, .18); }
+    .hero-note { color: #7e88a4; font-size: 13px; font-weight: 700; }
+    .hero-note strong { color: var(--gold); }
+
+    .hero-art {
       position: relative;
-      z-index: 10;
+      margin: 0;
+      isolation: isolate;
     }
-
-    .section-title {
+    .hero-art::before {
+      position: absolute;
+      inset: 8% 5% -4%;
+      z-index: -1;
+      border-radius: 50%;
+      background: linear-gradient(100deg, rgba(94, 231, 247, .26), rgba(154, 124, 255, .22), rgba(255, 107, 107, .18));
+      filter: blur(48px);
+      content: "";
+    }
+    .hero-art-frame {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .15);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      transform: rotate(1.5deg);
+    }
+    .hero-art-frame::after {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, rgba(255, 255, 255, .12), transparent 32%, transparent 70%, rgba(94, 231, 247, .08));
+      pointer-events: none;
+      content: "";
+    }
+    .hero-art img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+    .art-caption {
+      position: absolute;
+      right: -14px;
+      bottom: 28px;
+      z-index: 2;
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin: 0 0 25px;
-      font-size: 20px;
-      font-weight: 700;
-      color: #fff;
+      gap: 9px;
+      padding: 11px 14px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 14px;
+      background: rgba(10, 14, 29, .9);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .3);
+      color: #dbe0f0;
+      font-size: 12px;
+      font-weight: 800;
+      backdrop-filter: blur(12px);
     }
+    .art-caption span { color: var(--gold); }
 
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
+    main {
+      width: min(var(--max-width), calc(100% - 40px));
+      margin: 90px auto 0;
+      padding-bottom: 110px;
     }
-
-    /* 3-Column Grid */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px; /* 간격 축소 */
-    }
-
-    .card {
-      /* backdrop-filter 제거: 뒤에서 이모지가 떨어질 때마다 카드 전체가 매 프레임
-         재블러링되어 FPS를 크게 떨어뜨림 → 반투명 배경으로 유리 느낌 유지 */
-      background: rgba(30, 41, 59, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
+    .games-heading {
       display: flex;
-      flex-direction: column;
-      /* transition: all → 필요한 속성만 (스타일 재계산 범위 최소화) */
-      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
-                  border-color 0.4s cubic-bezier(0.23, 1, 0.32, 1),
-                  background-color 0.4s cubic-bezier(0.23, 1, 0.32, 1),
-                  box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-      text-decoration: none;
-      color: inherit;
-      overflow: hidden;
-      position: relative;
-      z-index: 1;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 28px;
     }
+    .games-heading h2 { margin: 0; font-size: clamp(30px, 4vw, 48px); line-height: 1.1; letter-spacing: -.035em; }
+    .games-heading p { max-width: 480px; margin: 12px 0 0; color: var(--muted); word-break: keep-all; }
+    .game-count { flex: 0 0 auto; color: #7e88a4; font-size: 13px; font-weight: 750; }
 
-    .card:hover {
-      transform: translateY(-8px) scale(1.02);
-      border-color: var(--card-accent, var(--accent));
-      background: rgba(30, 41, 59, 0.9); /* 배경을 더 선명하게 */
-      /* 조이스틱 커서 적용 */
-      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' style='font-size:60px'><text y='60'>🕹️</text></svg>") 30 30, pointer;
-      /* 주변에 퍼지는 네온 효과 및 내부 광채 추가 */
-      box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.6),
-        0 0 20px var(--card-bg),
-        inset 0 0 12px var(--card-bg);
-    }
-
-    .card:hover h3 {
-      color: var(--card-accent);
-    }
-
-    .card-header {
-      padding: 16px 16px 0; /* 베젤 두께 축소 */
+    .filter-bar {
       display: flex;
-      align-items: center; /* 가로 정렬로 변경 */
-      gap: 12px;
+      gap: 8px;
+      margin-bottom: 24px;
+      padding-bottom: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
     }
-
-    .card-icon {
-      width: 44px; height: 44px; /* 크기 최적화 */
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px;
-      background: var(--card-bg, rgba(56, 189, 248, 0.25));
-      transition: transform 0.3s ease;
-      flex-shrink: 0;
-    }
-
-    .card:hover .card-icon { transform: scale(1.1) rotate(-5deg); }
-
-    .card h3 { margin: 0; font-size: 20px; font-weight: 700; color: #fff; text-align: left; flex: 1; }
-
-    .card-body {
-      padding: 10px 16px 16px; /* 베젤 두께 축소 */
-      flex-grow: 1;
-    }
-
-    .card p {
-      margin: 0;
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .filter-button {
+      flex: 0 0 auto;
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .025);
       color: var(--muted);
-      line-height: 1.6;
-      font-size: 15px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2; /* 두 줄로 제한 */
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 780;
+      cursor: pointer;
+      transition: color .2s ease, border-color .2s ease, background-color .2s ease;
     }
+    .filter-button:hover { border-color: var(--line-strong); color: var(--text); }
+    .filter-button[aria-pressed="true"] { border-color: rgba(94, 231, 247, .45); background: rgba(94, 231, 247, .12); color: var(--cyan); }
 
-    /* Card Colors */
-    .card.pinball { --card-accent: #22d3ee; --card-bg: rgba(34, 211, 238, 0.25); }
-    .card.neon { --card-accent: #f472b6; --card-bg: rgba(244, 114, 182, 0.25); }
-    .card.marble { --card-accent: #38bdf8; --card-bg: rgba(56, 189, 248, 0.25); }
-    .card.zombie { --card-accent: #22c55e; --card-bg: rgba(34, 197, 94, 0.25); }
-    .card.rps { --card-accent: #f97316; --card-bg: rgba(249, 115, 22, 0.25); }
-    .card.bingo { --card-accent: #a855f7; --card-bg: rgba(168, 85, 247, 0.25); }
-    .card.chestnut { --card-accent: #eab308; --card-bg: rgba(234, 179, 8, 0.25); }
-    .card.disk { --card-accent: #ec4899; --card-bg: rgba(236, 72, 153, 0.25); }
-    .card.punch { --card-accent: #ef4444; --card-bg: rgba(239, 68, 68, 0.25); }
-    .card.chaser { --card-accent: #14b8a6; --card-bg: rgba(20, 184, 166, 0.25); }
-    .card.chair { --card-accent: #8b5cf6; --card-bg: rgba(139, 92, 246, 0.25); }
-    .card.bowling { --card-accent: #6366f1; --card-bg: rgba(99, 102, 241, 0.25); }
-    .card.ladder { --card-accent: #3b82f6; --card-bg: rgba(59, 130, 246, 0.25); }
-    .card.bomb { --card-accent: #f43f5e; --card-bg: rgba(244, 63, 94, 0.25); }
-    .card.roulette { --card-accent: #f59e0b; --card-bg: rgba(245, 158, 11, 0.25); }
-    .card.gravity { --card-accent: #8b5cf6; --card-bg: rgba(139, 92, 246, 0.25); }
-    .card.mugunghwa { --card-accent: #ff4b2b; --card-bg: rgba(255, 75, 43, 0.25); }
-    .card.devil { --card-accent: #9333ea; --card-bg: rgba(147, 51, 234, 0.25); }
-    .card.ufo { --card-accent: #00ffcc; --card-bg: rgba(0, 255, 204, 0.25); }
-    .card.balloon { --card-accent: #f9a8d4; --card-bg: rgba(249, 168, 212, 0.25); }
-    .card.dart { --card-accent: #f87171; --card-bg: rgba(248, 113, 113, 0.25); }
-    .card.space { --card-accent: #8b5cf6; --card-bg: rgba(139, 92, 246, 0.25); }
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .game-card {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: linear-gradient(180deg, rgba(23, 31, 56, .95), rgba(13, 18, 37, .98));
+      box-shadow: 0 12px 34px rgba(0, 0, 0, .14);
+      color: inherit;
+      text-decoration: none;
+      transition: transform .25s cubic-bezier(.2, .7, .2, 1), border-color .25s ease, box-shadow .25s ease;
+      content-visibility: auto;
+      contain-intrinsic-size: 380px;
+    }
+    .game-card:hover { transform: translateY(-6px); border-color: rgba(255, 255, 255, .24); box-shadow: 0 24px 52px rgba(0, 0, 0, .3); }
+    .game-card[hidden] { display: none; }
+    .card-media {
+      position: relative;
+      margin: 0;
+      overflow: hidden;
+      aspect-ratio: 3 / 2;
+      background: #0c1022;
+    }
+    .card-media::after {
+      position: absolute;
+      inset: 45% 0 0;
+      background: linear-gradient(transparent, rgba(11, 15, 31, .88));
+      content: "";
+    }
+    .card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .55s cubic-bezier(.2, .7, .2, 1);
+    }
+    .game-card:hover .card-media img { transform: scale(1.045); }
+    .card-badge {
+      position: absolute;
+      top: 13px;
+      left: 13px;
+      z-index: 2;
+      padding: 6px 9px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 999px;
+      background: rgba(7, 10, 22, .78);
+      color: #e9ecf7;
+      font-size: 11px;
+      font-weight: 850;
+      backdrop-filter: blur(8px);
+    }
+    .card-badge.is-featured { background: rgba(255, 199, 95, .92); color: #211708; border-color: transparent; }
+    .card-content { padding: 18px 18px 20px; }
+    .card-title-row { display: flex; align-items: start; justify-content: space-between; gap: 14px; }
+    .card-title-row h3 { margin: 0; font-size: 19px; line-height: 1.35; letter-spacing: -.02em; }
+    .card-arrow {
+      flex: 0 0 auto;
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--cyan);
+      font-size: 16px;
+      transition: background-color .2s ease, transform .2s ease;
+    }
+    .game-card:hover .card-arrow { background: rgba(94, 231, 247, .1); transform: translate(2px, -2px); }
+    .game-card p {
+      min-height: 46px;
+      margin: 10px 0 0;
+      display: -webkit-box;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
 
     footer {
-      text-align: center;
-      color: var(--muted);
+      border-top: 1px solid var(--line);
+      background: rgba(5, 8, 18, .55);
+    }
+    .footer-inner {
+      width: min(var(--max-width), calc(100% - 40px));
+      min-height: 96px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      color: #7e88a4;
       font-size: 13px;
-      padding: 40px 20px;
-      position: relative;
-      z-index: 10;
     }
-    footer a { color: var(--accent); text-decoration: none; }
+    .footer-inner p { margin: 0; }
+    .footer-inner a { color: #c5cbe0; text-decoration: none; }
+    .footer-inner a:hover { color: var(--cyan); }
 
-    /* Mobile */
-    @media (max-width: 850px) {
-      .grid { grid-template-columns: repeat(2, 1fr); }
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+
+    @media (max-width: 940px) {
+      .hero { grid-template-columns: 1fr 1fr; gap: 32px; min-height: 490px; }
+      .hero h1 { font-size: clamp(42px, 7vw, 64px); }
+      .game-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-    @media (max-width: 600px) {
-      .grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-      header { padding: 40px 15px 20px; }
-      header h1 { font-size: 24px; }
-      .card-header { padding: 12px 8px 0; gap: 6px; flex-direction: column; align-items: center; }
-      .card-icon { width: 36px; height: 36px; font-size: 20px; }
-      .card h3 { font-size: 12px; text-align: center; }
-      .card-body { display: none; } /* 모바일 극강의 컴팩트함을 위해 설명 숨김 유지 */
+
+    @media (max-width: 720px) {
+      .site-nav { width: min(calc(100% - 28px), var(--max-width)); height: 68px; }
+      .nav-link { min-height: 38px; padding: 0 13px; font-size: 12px; }
+      .hero { width: min(calc(100% - 28px), var(--max-width)); grid-template-columns: minmax(0, 1fr); margin-top: 32px; }
+      .hero-copy { text-align: center; }
+      .eyebrow { justify-content: center; }
+      .hero h1, .hero-copy > p:not(.eyebrow) { margin-left: auto; margin-right: auto; }
+      .hero-actions { justify-content: center; }
+      .hero-art { width: 100%; max-width: 620px; margin: 14px auto 0; }
+      .hero-art-frame { transform: none; }
+      .art-caption { right: 10px; bottom: 10px; }
+      main { width: min(calc(100% - 28px), var(--max-width)); margin-top: 82px; padding-bottom: 80px; }
+      .games-heading { align-items: start; }
+      .game-count { padding-top: 8px; }
+      .footer-inner { width: min(calc(100% - 28px), var(--max-width)); min-height: 110px; flex-direction: column; justify-content: center; text-align: center; }
+    }
+
+    @media (max-width: 520px) {
+      .brand { font-size: 15px; }
+      .brand-mark { width: 31px; border-radius: 10px; }
+      .nav-link span { display: none; }
+      .hero { min-height: auto; }
+      .hero h1 { font-size: clamp(40px, 13vw, 58px); }
+      .hero-copy > p:not(.eyebrow) { font-size: 16px; }
+      .hero-note { width: 100%; }
+      .games-heading { display: block; }
+      .game-count { display: block; margin-top: 12px; }
+      .game-grid { grid-template-columns: 1fr; gap: 14px; }
+      .game-card { content-visibility: visible; }
+      .game-card p { min-height: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+      .hero-art-frame { transform: none; }
     }
   </style>
 </head>
-
 <body>
-  <div class="bg-container">
-    <div class="glow-orb orb-1"></div>
-    <div class="glow-orb orb-2"></div>
-    <div class="glow-orb orb-3"></div>
-    <div class="mouse-glow" id="mouseGlow"></div>
-  </div>
+  <a class="skip-link" href="#games">게임 목록으로 건너뛰기</a>
+  <div class="ambient" aria-hidden="true"></div>
 
-  <header>
-    <h1><span class="logo-dice">🎲</span> 추첨 게임 포털</h1>
-    <p class="tagline">클릭 한 번으로 도파민이 터지는 짜릿한 추첨의 순간 🎯✨<br>학교, 회사, 각종 행사부터 방송·스트리밍까지,<br>분위기를 단숨에 끌어올릴 수 있는 추첨 게임을 즐겨보세요
+  <nav class="site-nav" aria-label="주요 탐색">
+    <a class="brand" href="./" aria-label="PLAYPICK 홈">
+      <span class="brand-mark" aria-hidden="true">◆</span>
+      PLAYPICK
+    </a>
+    <a class="nav-link" href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer" aria-label="GitHub 저장소 새 창에서 열기">
+      <span>오픈소스</span> ↗
+    </a>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">22 games · zero install</p>
+      <h1>추첨을<br><span>게임처럼.</span></h1>
+      <p>이름만 입력하면 준비 끝. 평범한 결과 발표를 모두가 숨죽여 지켜보는 한 판의 게임으로 바꿔보세요.</p>
+      <div class="hero-actions">
+        <a class="primary-action" href="#games">게임 고르기 <span aria-hidden="true">↓</span></a>
+        <span class="hero-note"><strong>무료</strong> · 설치 없이 바로 시작</span>
+      </div>
+    </div>
+    <figure class="hero-art">
+      <div class="hero-art-frame">
+        <img src="./assets/portal-key-art.webp" width="1536" height="1024" alt="빛나는 구슬과 로켓, 룰렛이 놓인 미니어처 게임 아레나" fetchpriority="high">
+      </div>
+      <figcaption class="art-caption"><span>●</span> 오늘의 한 판이 시작됩니다</figcaption>
+    </figure>
   </header>
 
-  <main>
-    <h2 class="section-title">🕹️ 게임 선택</h2>
-    <section class="grid">
-      <a href="./pinball/" class="card pinball">
-        <div class="card-header"><div class="card-icon">🎱</div><h3>핀볼 서바이벌</h3></div>
-        <div class="card-body"><p>참여자 수만큼 공이 핀볼 머신에! 범퍼와 플리퍼 사이에서 최후까지 살아남으세요.</p></div>
+  <main id="games">
+    <div class="games-heading">
+      <div>
+        <h2>오늘은 뭘로 뽑을까요?</h2>
+        <p>빠른 결과가 필요할 때도, 과정 자체를 즐기고 싶을 때도 상황에 맞는 게임을 골라보세요.</p>
+      </div>
+      <output class="game-count" id="gameCount" aria-live="polite">22개의 게임</output>
+    </div>
+
+    <div class="filter-bar" aria-label="게임 장르 필터">
+      <button class="filter-button" type="button" data-filter="all" aria-pressed="true">전체</button>
+      <button class="filter-button" type="button" data-filter="race" aria-pressed="false">레이스</button>
+      <button class="filter-button" type="button" data-filter="survival" aria-pressed="false">서바이벌</button>
+      <button class="filter-button" type="button" data-filter="party" aria-pressed="false">파티</button>
+      <button class="filter-button" type="button" data-filter="classic" aria-pressed="false">클래식 추첨</button>
+      <button class="filter-button" type="button" data-filter="physics" aria-pressed="false">물리 게임</button>
+    </div>
+
+    <section class="game-grid" aria-label="추첨 게임 목록">
+      <a class="game-card" href="./pinball/" data-category="physics survival">
+        <figure class="card-media"><img src="./assets/thumbnails/pinball.webp" width="960" height="640" alt="" fetchpriority="high"><span class="card-badge is-featured">에디터 추천</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>핀볼 서바이벌</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>범퍼와 플리퍼 사이를 튕기며 마지막까지 버티는 짜릿한 핀볼 생존전.</p></div>
       </a>
-
-      <a href="./neon-race/" class="card neon">
-        <div class="card-header"><div class="card-icon">🌌</div><h3>네온 레이스</h3></div>
-        <div class="card-body"><p>사이버펑크 도시를 가로지르는 화려한 레이싱! 네온 질주를 즐겨보세요.</p></div>
+      <a class="game-card" href="./neon-race/" data-category="race">
+        <figure class="card-media"><img src="./assets/thumbnails/neon-race.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge is-featured">스피드 추천</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>네온 레이스</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>사이버 도시를 가로지르는 네온 머신들의 속도전. 마지막 역전까지 놓치지 마세요.</p></div>
       </a>
-
-      <a href="./marble-olympics/" class="card marble">
-        <div class="card-header"><div class="card-icon">🏅</div><h3>구슬 올림픽</h3></div>
-        <div class="card-body"><p>물리 엔진 기반의 박진감 넘치는 구슬 경주! 다양한 트랙에서 경쟁하세요.</p></div>
+      <a class="game-card" href="./marble-olympics/" data-category="race physics">
+        <figure class="card-media"><img src="./assets/thumbnails/marble-olympics.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge is-featured">인기 레이스</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>구슬 올림픽</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>다채로운 장애물 트랙을 질주하는 구슬들의 예측 불가 물리 레이스.</p></div>
       </a>
-
-      <a href="./zombie-arena/" class="card zombie">
-        <div class="card-header"><div class="card-icon">🧟</div><h3>좀비 아레나</h3></div>
-        <div class="card-body"><p>좀비들이 생존을 겨루는 배틀! 마지막까지 살아남는 좀비가 승리합니다.</p></div>
+      <a class="game-card" href="./zombie-arena/" data-category="survival">
+        <figure class="card-media"><img src="./assets/thumbnails/zombie-arena.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">서바이벌</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>좀비 아레나</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>점점 좁아지는 아레나에서 좀비를 피해 최후의 생존자를 가립니다.</p></div>
       </a>
-
-      <a href="./school-dance/" class="card mugunghwa">
-        <div class="card-header"><div class="card-icon">💃</div><h3>교실에서 춤을!</h3></div>
-        <div class="card-body"><p>선생님 몰래 춤을 추세요! 뒤돌아볼 때 멈추지 못하면 탈락합니다.</p></div>
+      <a class="game-card" href="./school-dance/" data-category="party survival">
+        <figure class="card-media"><img src="./assets/thumbnails/school-dance.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">파티</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>교실에서 춤을!</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>선생님이 뒤돌아보기 전에 멈춰야 합니다. 들키면 바로 탈락!</p></div>
       </a>
-
-      <a href="./group-rps/" class="card rps">
-        <div class="card-header"><div class="card-icon">✊</div><h3>단체 가위바위보</h3></div>
-        <div class="card-body"><p>빠르고 직관적인 대규모 가위바위보 서바이벌! 최후의 1인을 가립니다.</p></div>
+      <a class="game-card" href="./group-rps/" data-category="party classic">
+        <figure class="card-media"><img src="./assets/thumbnails/group-rps.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">단체전</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>단체 가위바위보</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>많은 인원도 빠르고 직관적으로. 한 번의 선택으로 승부가 갈립니다.</p></div>
       </a>
-
-      <a href="./bingo/" class="card bingo">
-        <div class="card-header"><div class="card-icon">🎯</div><h3>빙고</h3></div>
-        <div class="card-body"><p>클래식 빙고의 현대적 재해석! 실시간으로 순위가 바뀌는 짜릿한 긴장감.</p></div>
+      <a class="game-card" href="./bingo/" data-category="classic">
+        <figure class="card-media"><img src="./assets/thumbnails/bingo.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">클래식</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>빙고</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>익숙한 빙고를 화려한 실시간 순위 경쟁으로 새롭게 즐겨보세요.</p></div>
       </a>
-
-      <a href="./bomb/" class="card bomb">
-        <div class="card-header"><div class="card-icon">💣</div><h3>폭탄 돌리기</h3></div>
-        <div class="card-body"><p>폭탄이 터지기 전에 넘기세요! 긴박한 타이머와 화려한 폭발 효과.</p></div>
+      <a class="game-card" href="./bomb/" data-category="party survival">
+        <figure class="card-media"><img src="./assets/thumbnails/bomb.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">긴장감</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>폭탄 돌리기</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>언제 터질지 모르는 폭탄이 손에서 손으로. 마지막 순간의 반전을 지켜보세요.</p></div>
       </a>
-
-      <a href="./roulette/" class="card roulette">
-        <div class="card-header"><div class="card-icon">🎡</div><h3>룰렛 추첨</h3></div>
-        <div class="card-body"><p>행운의 주인공은 누구? 화려한 애니메이션과 함께 당첨자를 선정하세요.</p></div>
+      <a class="game-card" href="./roulette/" data-category="classic">
+        <figure class="card-media"><img src="./assets/thumbnails/roulette.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">빠른 추첨</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>룰렛 추첨</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>돌리고 기다리면 끝. 모두에게 익숙한 룰렛으로 행운의 주인공을 선정하세요.</p></div>
       </a>
-
-      <a href="./disk-shove/" class="card disk">
-        <div class="card-header"><div class="card-icon">🥏</div><h3>원판 밀치기</h3></div>
-        <div class="card-body"><p>원형 아레나에서 살아남으세요! 부스터로 상대를 밀어내는 쾌감.</p></div>
+      <a class="game-card" href="./disk-shove/" data-category="physics survival">
+        <figure class="card-media"><img src="./assets/thumbnails/disk-shove.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">물리 배틀</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>원판 밀치기</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>부스터로 상대를 아레나 밖으로 밀어내는 충돌과 반동의 생존 대결.</p></div>
       </a>
-
-      <a href="./chaser-survival/" class="card chaser">
-        <div class="card-header"><div class="card-icon">👊</div><h3>술래로부터 살아남기</h3></div>
-        <div class="card-body"><p>무시무시한 술래로부터 도망치세요! 끝까지 살아남는 스릴 만점 추첨.</p></div>
+      <a class="game-card" href="./chaser-survival/" data-category="survival">
+        <figure class="card-media"><img src="./assets/thumbnails/chaser-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">추격전</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>술래로부터 살아남기</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>쉴 틈 없이 따라붙는 술래를 피해 마지막 생존자가 되어보세요.</p></div>
       </a>
-
-      <a href="./devil-survival/" class="card devil">
-        <div class="card-header"><div class="card-icon">😈</div><h3>악마로부터 살아남기</h3></div>
-        <div class="card-body"><p>악마의 돌진을 피해 생존하세요! 스릴 넘치는 서바이벌 추첨 게임.</p></div>
+      <a class="game-card" href="./devil-survival/" data-category="survival">
+        <figure class="card-media"><img src="./assets/thumbnails/devil-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">돌진 회피</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>악마로부터 살아남기</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>무서운 속도로 돌진하는 악마의 궤적을 읽고 끝까지 피하세요.</p></div>
       </a>
-
-      <a href="./ufo-abduction/" class="card ufo">
-        <div class="card-header"><div class="card-icon">🛸</div><h3>UFO 납치</h3></div>
-        <div class="card-body"><p>외계인의 UFO를 피해 살아남으세요! 빔에 잡히면 납치당하는 서바이벌 게임.</p></div>
+      <a class="game-card" href="./ufo-abduction/" data-category="survival">
+        <figure class="card-media"><img src="./assets/thumbnails/ufo-abduction.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">SF 서바이벌</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>UFO 납치</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>하늘을 훑는 트랙터 빔을 피해 외계 행성의 마지막 생존자를 가립니다.</p></div>
       </a>
-
-      <a href="./space-race/" class="card space">
-        <div class="card-header"><div class="card-icon">🚀</div><h3>우주 경주</h3></div>
-        <div class="card-body"><p>소행성을 피하며 우주를 가로지르는 스릴 넘치는 우주선 레이스!</p></div>
+      <a class="game-card" href="./space-race/" data-category="race">
+        <figure class="card-media"><img src="./assets/thumbnails/space-race.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">우주 레이스</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>우주 경주</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>소행성 사이를 파고드는 우주선들의 아슬아슬한 결승선 경쟁.</p></div>
       </a>
-
-      <a href="./balloon-survival/" class="card balloon">
-        <div class="card-header"><div class="card-icon">🎈</div><h3>풍선 서바이벌</h3></div>
-        <div class="card-body"><p>하늘에 떠 있는 풍선이 하나씩 터집니다! 마지막까지 살아남으세요.</p></div>
+      <a class="game-card" href="./balloon-survival/" data-category="survival">
+        <figure class="card-media"><img src="./assets/thumbnails/balloon-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">가벼운 추첨</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>풍선 서바이벌</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>하늘의 풍선이 하나씩 팡! 마지막까지 떠 있는 풍선이 승리합니다.</p></div>
       </a>
-
-      <a href="./dart-tournament/" class="card dart">
-        <div class="card-header"><div class="card-icon">🎯</div><h3>다트 토너먼트</h3></div>
-        <div class="card-body"><p>다트를 던져 과녁을 맞추세요! 가장 높은 점수가 우승합니다.</p></div>
+      <a class="game-card" href="./dart-tournament/" data-category="physics party">
+        <figure class="card-media"><img src="./assets/thumbnails/dart-tournament.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">점수 대결</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>다트 토너먼트</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>과녁을 향해 날아가는 다트. 가장 높은 점수를 기록한 참가자가 우승합니다.</p></div>
       </a>
-
-      <a href="./punch-survival/" class="card punch">
-        <div class="card-header"><div class="card-icon">🥊</div><h3>펀치 서바이벌</h3></div>
-        <div class="card-body"><p>링 위에서 펼쳐지는 난타전! 체력이 다하기 전에 상대를 쓰러뜨리세요.</p></div>
+      <a class="game-card" href="./punch-survival/" data-category="survival physics">
+        <figure class="card-media"><img src="./assets/thumbnails/punch-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">난타전</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>펀치 서바이벌</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>링 위에서 주고받는 통쾌한 펀치. 체력을 지키며 최후까지 버텨보세요.</p></div>
       </a>
-
-      <a href="./chair/" class="card chair">
-        <div class="card-header"><div class="card-icon">🪑</div><h3>의자 앉기</h3></div>
-        <div class="card-body"><p>음악이 멈추면 의자를 쟁탈하세요! 추억의 게임을 디지털로 즐겨보세요.</p></div>
+      <a class="game-card" href="./chair/" data-category="party survival">
+        <figure class="card-media"><img src="./assets/thumbnails/chair.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">파티 클래식</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>의자 앉기</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>음악이 멈추는 순간 하나뿐인 의자를 차지해야 하는 추억의 생존 게임.</p></div>
       </a>
-
-      <a href="./gravity-orbit/" class="card gravity">
-        <div class="card-header"><div class="card-icon">🪐</div><h3>중력 궤도</h3></div>
-        <div class="card-body"><p>중력장 속의 생존 드라마! 안정적인 궤도를 유지하며 살아남으세요.</p></div>
+      <a class="game-card" href="./gravity-orbit/" data-category="physics survival">
+        <figure class="card-media"><img src="./assets/thumbnails/gravity-orbit.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">중력 물리</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>중력 궤도</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>끊임없이 변하는 중력장 안에서 안정적인 궤도를 찾는 우주 생존 드라마.</p></div>
       </a>
-
-      <a href="./chestnut-survival/" class="card chestnut">
-        <div class="card-header"><div class="card-icon">🌰</div><h3>밤송이 서바이벌</h3></div>
-        <div class="card-body"><p>하늘에서 떨어지는 밤송이를 피하세요! 물리 기반의 짜릿한 회피 액션.</p>
-      </div></a>
-
-      <a href="./bowling/" class="card bowling">
-        <div class="card-header"><div class="card-icon">🎳</div><h3>볼링 생존</h3></div>
-        <div class="card-body"><p>굴러오는 볼링공을 피하세요! 핀이 되어 살아남는 독특한 서바이벌.</p></div>
+      <a class="game-card" href="./chestnut-survival/" data-category="survival physics">
+        <figure class="card-media"><img src="./assets/thumbnails/chestnut-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">회피 액션</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>밤송이 서바이벌</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>하늘에서 쏟아지는 밤송이의 낙하지점을 읽고 재빠르게 피하세요.</p></div>
       </a>
-
-      <a href="./ladder/" class="card ladder">
-        <div class="card-header"><div class="card-icon">🪜</div><h3>사다리 추첨</h3></div>
-        <div class="card-body"><p>운명의 결과를 확인하는 클래식 사다리 타기! 공정하고 재미있게 추첨하세요.</p></div>
+      <a class="game-card" href="./bowling/" data-category="survival physics">
+        <figure class="card-media"><img src="./assets/thumbnails/bowling.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">이색 서바이벌</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>볼링 생존</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>이번에는 핀이 되어 굴러오는 볼링공을 피하는 유쾌한 역발상 생존전.</p></div>
+      </a>
+      <a class="game-card" href="./ladder/" data-category="classic">
+        <figure class="card-media"><img src="./assets/thumbnails/ladder.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">클래식 추첨</span></figure>
+        <div class="card-content"><div class="card-title-row"><h3>사다리 추첨</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>갈림길을 따라 내려가며 결과를 확인하는 가장 익숙하고 명쾌한 추첨 방식.</p></div>
       </a>
     </section>
   </main>
 
   <footer>
-    <p>© 2025 <a href="https://github.com/geniuskey/lottery">GeniusKey</a>. All rights reserved.</p>
+    <div class="footer-inner">
+      <p>© 2026 GeniusKey. 재미있는 선택의 순간을 만듭니다.</p>
+      <p><a href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer">GitHub에서 보기 ↗</a></p>
+    </div>
   </footer>
 
   <script>
-    const glow = document.getElementById('mouseGlow');
-    const bgContainer = document.querySelector('.bg-container');
-    const emojis = ['🎲', '🎯', '🏆', '⭐', '🎮', '🎪', '✨', '🌟', '💫', '🎉', '🥏', '🥊', '🪑', '🎳', '👊', '🪜'];
+    (() => {
+      const buttons = [...document.querySelectorAll('.filter-button')];
+      const cards = [...document.querySelectorAll('.game-card')];
+      const count = document.getElementById('gameCount');
+      const storageKey = 'playpick-home-filter';
 
-    // mousemove마다 스타일을 직접 바꾸면 이벤트 빈도(최대 수백Hz)만큼 스타일 갱신이 발생.
-    // 좌표만 저장하고 프레임당 1회, transform으로만 이동시킨다 (리플로우/리페인트 없음).
-    let mouseX = -2000, mouseY = -2000, glowDirty = false;
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      if (!glowDirty) {
-        glowDirty = true;
-        requestAnimationFrame(() => {
-          glow.style.transform = `translate3d(${mouseX - 500}px, ${mouseY - 500}px, 0)`;
-          glowDirty = false;
+      function setFilter(filter, shouldFocus = false) {
+        let visible = 0;
+        cards.forEach((card) => {
+          const categories = card.dataset.category.split(' ');
+          const matches = filter === 'all' || categories.includes(filter);
+          card.hidden = !matches;
+          if (matches) visible += 1;
         });
-      }
-    }, { passive: true });
-
-    function createFloatingEmoji(isInitial = false) {
-      const emoji = document.createElement('div');
-      emoji.className = 'floating-emoji';
-      emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-
-      const z = Math.random();
-      const size = 15 + (z * 35);
-      const opacity = 0.1 + (z * 0.2);
-      const duration = 10 + ((1 - z) * 15);
-
-      emoji.style.left = Math.random() * 100 + '%';
-      emoji.style.fontSize = size + 'px';
-      emoji.style.setProperty('--base-opacity', opacity);
-      emoji.style.animationDuration = duration + 's';
-
-      if (isInitial) {
-        emoji.style.animationDelay = -(Math.random() * duration) + 's';
+        buttons.forEach((button) => {
+          const active = button.dataset.filter === filter;
+          button.setAttribute('aria-pressed', String(active));
+          if (active && shouldFocus) button.focus();
+        });
+        count.value = `${visible}개의 게임`;
+        count.textContent = `${visible}개의 게임`;
+        try { localStorage.setItem(storageKey, filter); } catch (_) { /* storage may be unavailable */ }
       }
 
-      bgContainer.appendChild(emoji);
-      setTimeout(() => emoji.remove(), duration * 1000);
-    }
+      buttons.forEach((button) => button.addEventListener('click', () => setFilter(button.dataset.filter)));
 
-    for (let i = 0; i < 15; i++) createFloatingEmoji(true);
-    setInterval(() => {
-      // 백그라운드 탭에서는 애니메이션이 멈춰 이모지가 쌓이기만 하므로 생성 중단
-      if (!document.hidden) createFloatingEmoji(false);
-    }, 2500);
+      let savedFilter = 'all';
+      try { savedFilter = localStorage.getItem(storageKey) || 'all'; } catch (_) { /* use default */ }
+      if (!buttons.some((button) => button.dataset.filter === savedFilter)) savedFilter = 'all';
+      setFilter(savedFilter);
+    })();
   </script>
 </body>
 </html>

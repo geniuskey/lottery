@@ -9,8 +9,8 @@
   "features": ["🎱 물리 핀볼", "⌨️ 플리퍼 수동 조작"],
   "color": "cyan",
   "badge": "NEW",
-  "version": "1.1.0",
-  "updated": "2026-07-11",
+  "version": "1.2.0",
+  "updated": "2026-07-16",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -40,7 +40,7 @@
     gtag('config', 'G-GFTNV73W8L');
   </script>
 
-  <title>핀볼 서바이벌 - 추첨 게임 포털</title>
+  <title>핀볼 서바이벌 — PLAYPICK</title>
 
   <!-- SEO 기본 -->
   <meta name="description" content="참여자 수만큼 공이 핀볼 머신에 떨어진다! 범퍼와 플리퍼 사이에서 최후까지 살아남는 공이 승리!">
@@ -53,12 +53,14 @@
   <meta property="og:title" content="🎱 핀볼 서바이벌">
   <meta property="og:description" content="참여자 수만큼 공이 핀볼 머신에 떨어진다! 범퍼와 플리퍼 사이에서 최후까지 살아남는 공이 승리!">
   <meta property="og:url" content="https://geniuskey.github.io/lottery/pinball/">
+  <meta property="og:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/pinball.webp">
   <meta property="og:locale" content="ko_KR">
 
   <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="🎱 핀볼 서바이벌">
   <meta name="twitter:description" content="참여자 수만큼 공이 핀볼 머신에 떨어진다! 범퍼와 플리퍼 사이에서 최후까지 살아남는 공이 승리!">
+  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/pinball.webp">
 
   <!-- 추가 SEO -->
   <link rel="canonical" href="https://geniuskey.github.io/lottery/pinball/">
@@ -255,6 +257,30 @@
       font-size: 0.85rem;
     }
 
+    .seed-setting { padding-top: 2px; }
+    .seed-label-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .seed-label-row small { color: rgba(255, 255, 255, 0.38); font-size: 0.65rem; font-weight: 500; }
+    .seed-input-row { display: flex; gap: 7px; margin-top: 6px; }
+    .seed-input {
+      width: 100%; min-width: 0; height: 34px;
+      border: 1px solid var(--glass-border); border-radius: 7px;
+      background: rgba(0, 0, 0, 0.22); color: #fff;
+      padding: 0 10px; font: 700 0.76rem monospace; letter-spacing: 0.04em;
+    }
+    .seed-input:focus { outline: none; border-color: var(--accent-cyan); }
+    .seed-refresh {
+      flex: 0 0 34px; height: 34px; border: 1px solid var(--glass-border); border-radius: 7px;
+      background: rgba(255, 255, 255, 0.06); color: var(--accent-cyan); cursor: pointer;
+      font-family: inherit; font-size: 1rem; font-weight: 900;
+    }
+    .seed-refresh:hover { border-color: var(--accent-cyan); background: rgba(0, 212, 255, 0.1); }
+    .seed-input:disabled, .seed-refresh:disabled, .sidebar textarea:disabled, .sidebar input:disabled { opacity: 0.58; cursor: not-allowed; }
+    .seed-proof {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      margin-top: 7px; color: rgba(255, 255, 255, 0.38); font-size: 0.66rem;
+    }
+    .seed-proof code { color: var(--accent-light); font: 700 0.7rem monospace; letter-spacing: 0.06em; }
+
     .button-group { display: flex; gap: 6px; flex-shrink: 0; width: 100%; }
 
     .btn {
@@ -419,6 +445,14 @@
       display: none;
     }
 
+    .seed-watermark {
+      position: absolute; top: 18px; left: 18px; z-index: 20;
+      padding: 7px 10px; border: 1px solid rgba(103, 232, 249, 0.18); border-radius: 8px;
+      background: rgba(4, 8, 22, 0.65); color: rgba(103, 232, 249, 0.72);
+      font: 700 0.68rem monospace; letter-spacing: 0.08em;
+      pointer-events: none; backdrop-filter: blur(8px);
+    }
+
     .danger-ui {
       position: absolute;
       top: 80px;
@@ -530,21 +564,35 @@
     .game-over-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(4, 7, 18, 0.76);
       display: none;
       align-items: center;
       justify-content: center;
       flex-direction: column;
       z-index: 1000;
+      backdrop-filter: blur(18px);
     }
 
     .game-over-overlay.show { display: flex; }
 
-    .game-over-content { text-align: center; color: white; padding: 20px; }
+    .game-over-content {
+      width: min(520px, calc(100% - 32px)); text-align: center; color: white; padding: 34px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 24px;
+      background: linear-gradient(145deg, rgba(20, 29, 59, 0.94), rgba(9, 13, 31, 0.96));
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.45);
+    }
     .game-over-content h2 { font-size: 2.5rem; margin-bottom: 20px; color: var(--accent-gold); }
     .winners-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 30px; }
     .winner-name { background: var(--accent-gold); color: #000; padding: 10px 25px; border-radius: 30px; font-weight: 700; font-size: 1.2rem; }
     .btn-confirm { background: white; color: black; border: none; padding: 12px 40px; border-radius: 30px; font-weight: 700; cursor: pointer; }
+
+    @keyframes board-shake {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      25% { transform: translate3d(-5px, 2px, 0); }
+      50% { transform: translate3d(4px, -2px, 0); }
+      75% { transform: translate3d(-2px, -1px, 0); }
+    }
+    .game-area.shake #gameCanvas { animation: board-shake 0.18s linear; }
 
     .control-hint {
       position: absolute;
@@ -584,6 +632,12 @@
       pointer-events: none;
       user-select: none;
     }
+
+    :focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 3px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    }
   </style>
 </head>
 
@@ -594,37 +648,48 @@
         <div class="sidebar-header">
           <h1><span class="logo-emoji">🎱</span> <span class="logo-text">핀볼 서바이벌</span></h1>
           <div class="header-btns">
-            <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
-            <button class="help-btn" id="helpBtn" title="도움말">?</button>
+            <button class="sound-btn" id="soundToggle" type="button" title="소리 켜기/끄기" aria-label="소리 끄기" aria-pressed="true">🔊</button>
+            <button class="help-btn" id="helpBtn" type="button" title="도움말" aria-label="게임 도움말 열기">?</button>
           </div>
         </div>
 
         <div class="input-group">
-          <label>참여자 입력</label>
+          <label for="participants">참여자 입력</label>
           <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)
 예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
         </div>
 
         <div class="settings-group">
           <div>
-            <label>최종 생존자 수</label>
+            <label for="survivorCount">최종 생존자 수</label>
             <div class="slider-container">
               <input type="range" id="survivorCount" min="1" max="10" value="1">
               <span class="slider-value" id="survivorValue">1</span>
             </div>
           </div>
           <div>
-            <label>게임 속도</label>
+            <label for="gameSpeed">게임 속도</label>
             <div class="slider-container">
               <input type="range" id="gameSpeed" min="5" max="20" value="10">
               <span class="slider-value" id="speedValue">1.0x</span>
             </div>
           </div>
+          <div class="seed-setting">
+            <div class="seed-label-row">
+              <label for="gameSeed">재현 시드</label>
+              <small>같은 환경 = 같은 결과</small>
+            </div>
+            <div class="seed-input-row">
+              <input class="seed-input" id="gameSeed" type="text" maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="seedProof">
+              <button class="seed-refresh" id="seedRefresh" type="button" aria-label="새 재현 시드 만들기" title="새 시드 만들기">↻</button>
+            </div>
+            <div class="seed-proof" id="seedProof"><span>RUN HASH</span><code id="seedHash">계산 전</code></div>
+          </div>
         </div>
 
         <div class="button-group">
-          <button class="btn btn-primary" id="startBtn">🎮 시작!</button>
-          <button class="btn btn-reset" id="resetBtn">↺ 초기화</button>
+          <button class="btn btn-primary" id="startBtn" type="button">🎮 시작!</button>
+          <button class="btn btn-reset" id="resetBtn" type="button">↺ 초기화</button>
         </div>
       </div>
 
@@ -640,13 +705,13 @@
           <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
           </a>
-          <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+          <button class="icon-btn" id="copyResultBtn" type="button" data-tooltip="결과 복사" aria-label="게임 결과 복사">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
           </button>
-          <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+          <a href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer" class="icon-btn" data-tooltip="GitHub 저장소" aria-label="GitHub 저장소 새 창에서 열기">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
           </a>
-          <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+          <a href="https://buymeacoffee.com/euiyun" target="_blank" rel="noopener noreferrer" class="icon-btn" data-tooltip="커피 사주기 ☕" aria-label="후원 페이지 새 창에서 열기">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
           </a>
         </div>
@@ -654,8 +719,9 @@
     </aside>
 
     <main class="game-area">
+      <div class="seed-watermark" id="seedWatermark">HASH: —</div>
       <div class="game-timer" id="gameTimer">0.000s</div>
-      <div class="danger-ui" id="dangerUI">⚠️ 위험! 가속 모드 ⚠️</div>
+      <div class="danger-ui" id="dangerUI" role="status">⚠️ 위험! 가속 모드 ⚠️</div>
       <div class="death-info-container" id="deathInfoContainer"></div>
       <canvas id="gameCanvas"></canvas>
       <div class="control-hint" id="controlHint">
@@ -663,9 +729,9 @@
         <span class="mobile-hint">👆 화면 좌/우를 눌러 플리퍼 조작</span>
       </div>
       <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
-      <div class="game-over-overlay" id="gameOverOverlay">
+      <div class="game-over-overlay" id="gameOverOverlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="gameOverTitle">
         <div class="game-over-content">
-          <h2>🎉 생존자 발표!</h2>
+          <h2 id="gameOverTitle">🎉 생존자 발표!</h2>
           <div class="winners-list" id="winnersList"></div>
           <button class="btn-confirm" id="confirmBtn">확인</button>
         </div>
@@ -674,10 +740,10 @@
   </div>
 
   <!-- Help Modal -->
-  <div class="modal-overlay" id="helpModal">
+  <div class="modal-overlay" id="helpModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="helpTitle">
     <div class="modal">
-      <button class="modal-close" id="modalClose">×</button>
-      <h2>🎱 게임 방법</h2>
+      <button class="modal-close" id="modalClose" type="button" aria-label="도움말 닫기">×</button>
+      <h2 id="helpTitle">🎱 게임 방법</h2>
 
       <div class="help-section">
         <h3>🎯 게임 목표</h3>
@@ -686,7 +752,7 @@
 
       <div class="help-section">
         <h3>👥 참여자 설정</h3>
-        <p>쉼표(,) 또는 줄바꿈으로 구분하여 참여자 이름을 입력하세요. <b>이름*3</b> 형식으로 같은 이름을 여러 개 만들 수 있습니다. 최소 2명 이상 필요합니다.</p>
+        <p>쉼표(,) 또는 줄바꿈으로 구분하여 참여자 이름을 입력하세요. <b>이름*3</b> 형식으로 같은 이름을 여러 개 만들 수 있습니다. 최소 2명, 최대 60명까지 참여할 수 있습니다.</p>
       </div>
 
       <div class="help-section">
@@ -708,6 +774,11 @@
         <h3>📋 결과 복사</h3>
         <p>게임 종료 후 하단의 복사 버튼으로 결과를 클립보드에 복사할 수 있습니다.</p>
       </div>
+
+      <div class="help-section">
+        <h3>🔐 재현 시드와 해시</h3>
+        <p>같은 참여자·설정·화면 크기·시드를 사용하면 자동 진행 결과를 다시 확인할 수 있습니다. 직접 플리퍼를 조작하면 결과가 달라지며 화면에 MANUAL로 표시됩니다. 시작 후 표시되는 RUN HASH를 함께 공유하세요.</p>
+      </div>
     </div>
   </div>
 
@@ -718,14 +789,22 @@
       constructor() {
         this.ctx = null;
         this.enabled = true;
+        try { this.enabled = localStorage.getItem('pinball_sound') !== 'off'; } catch (e) { /* use default */ }
         this.lastPing = 0;
         this.setupToggleButton();
       }
       setupToggleButton() {
         const btn = document.getElementById('soundToggle');
+        const syncButton = () => {
+          btn.textContent = this.enabled ? '🔊' : '🔇';
+          btn.setAttribute('aria-pressed', String(this.enabled));
+          btn.setAttribute('aria-label', this.enabled ? '소리 끄기' : '소리 켜기');
+        };
+        syncButton();
         btn.onclick = () => {
           this.enabled = !this.enabled;
-          btn.textContent = this.enabled ? '🔊' : '🔇';
+          syncButton();
+          try { localStorage.setItem('pinball_sound', this.enabled ? 'on' : 'off'); } catch (e) { /* ignore */ }
           if (this.enabled && this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
         };
       }
@@ -793,14 +872,88 @@
     let gameTimeSeconds = 0;
     let animationId = null;
     let lastTimestamp = 0;
+    let accumulator = 0;
     let pendingSpawns = [];  // 순차 투입 대기열
     let spawnTimer = 0;
+    let eliminationCounter = 0;
     let drainY = 0;
     let suddenDeath = false;
+    let resultTimer = null;
+    let currentSeed = '';
+    let currentRunHash = '';
+    let physicsRandom = Math.random;
+    let runMode = 'AUTO';
 
     const SUDDEN_DEATH_TIME = 30;   // 서든데스 시작(초)
+    const MAX_PARTICIPANTS = 60;
     const RESTITUTION = 0.82;
     const BALL_FRICTION = 0.999;
+    const FIXED_DT = 1 / 120;
+
+    function mulberry32(seed) {
+      return function() {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function fallbackHash(value, salt) {
+      let hash = (0x811c9dc5 ^ salt) >>> 0;
+      for (let i = 0; i < value.length; i++) {
+        hash ^= value.charCodeAt(i);
+        hash = Math.imul(hash, 0x01000193) >>> 0;
+      }
+      return hash >>> 0;
+    }
+
+    function generateSeed() {
+      try {
+        const values = new Uint32Array(2);
+        crypto.getRandomValues(values);
+        return `${values[0].toString(36)}-${values[1].toString(36)}`.toUpperCase();
+      } catch (e) {
+        return `${Date.now().toString(36)}-${Math.floor(Math.random() * 0xffffffff).toString(36)}`.toUpperCase();
+      }
+    }
+
+    async function prepareDeterministicRun() {
+      const seedInput = document.getElementById('gameSeed');
+      if (!seedInput.value.trim()) seedInput.value = generateSeed();
+      currentSeed = seedInput.value.trim();
+      const material = JSON.stringify({
+        game: 'pinball-1.2',
+        seed: currentSeed,
+        participants,
+        targetSurvivors,
+        speedMultiplier,
+        viewport: [canvas.width, canvas.height]
+      });
+
+      let words;
+      let hashHex;
+      try {
+        if (window.crypto && crypto.subtle) {
+          const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(material));
+          const bytes = new Uint8Array(digest);
+          const view = new DataView(digest);
+          words = [0, 4, 8, 12, 16, 20, 24, 28].map(offset => view.getUint32(offset));
+          hashHex = [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('').toUpperCase();
+        }
+      } catch (e) { /* secure-context restrictions: deterministic fallback below */ }
+      if (!words) {
+        words = [0, 1, 2, 3, 4, 5, 6, 7].map(index => fallbackHash(material, index * 0x9e3779b9));
+        hashHex = words.map(word => word.toString(16).padStart(8, '0')).join('').toUpperCase();
+      }
+
+      const seedWord = words.reduce((value, word, index) => (value ^ Math.imul(word, index + 1)) >>> 0, 0);
+      physicsRandom = mulberry32(seedWord);
+      currentRunHash = hashHex;
+      const shortHash = hashHex.slice(0, 12);
+      document.getElementById('seedHash').textContent = shortHash;
+      document.getElementById('seedWatermark').textContent = `HASH: ${shortHash}`;
+    }
 
     // 배경(핀볼 보드) 캐시 캔버스 — 매 프레임 정적 요소를 다시 그리지 않는다
     const boardCanvas = document.createElement('canvas');
@@ -956,15 +1109,35 @@
 
     // ===== 캔버스 리사이즈 =====
     function resizeCanvas() {
-      canvas.width = canvas.parentElement.clientWidth;
-      canvas.height = canvas.parentElement.clientHeight;
-      if (!gameRunning) {
-        buildBoard();
-        draw();
-      } else {
-        // 진행 중에는 보드만 다시 캐시 (좌표계 유지 위해 재구성은 피함)
-        renderBoardCache();
+      const nextWidth = Math.max(1, canvas.parentElement.clientWidth);
+      const nextHeight = Math.max(1, canvas.parentElement.clientHeight);
+      const oldWidth = canvas.width || nextWidth;
+      const oldHeight = canvas.height || nextHeight;
+      if (oldWidth === nextWidth && oldHeight === nextHeight) return;
+
+      const scaleX = nextWidth / oldWidth;
+      const scaleY = nextHeight / oldHeight;
+      if (gameRunning) {
+        runMode = runMode === 'AUTO' ? 'RESIZED' : (runMode.includes('RESIZED') ? runMode : `${runMode}+RESIZED`);
+        document.getElementById('seedWatermark').textContent = `HASH: ${currentRunHash.slice(0, 12)} · ${runMode}`;
+        balls.forEach(ball => {
+          ball.x *= scaleX;
+          ball.y *= scaleY;
+          ball.vx *= scaleX;
+          ball.vy *= scaleY;
+        });
+        particles.forEach(particle => {
+          particle.x *= scaleX;
+          particle.y *= scaleY;
+          particle.vx *= scaleX;
+          particle.vy *= scaleY;
+        });
       }
+
+      canvas.width = nextWidth;
+      canvas.height = nextHeight;
+      buildBoard();
+      draw();
     }
 
     // ===== 공 생성 =====
@@ -988,7 +1161,7 @@
       });
       // 투입 순서 셔플
       for (let i = pendingSpawns.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(physicsRandom() * (i + 1));
         [pendingSpawns[i], pendingSpawns[j]] = [pendingSpawns[j], pendingSpawns[i]];
       }
       spawnTimer = 0;
@@ -998,12 +1171,13 @@
       const W = canvas.width;
       balls.push({
         ...spec,
-        x: W * 0.2 + Math.random() * W * 0.6,
-        y: -20 - Math.random() * 40,
-        vx: (Math.random() - 0.5) * 260,
-        vy: 60 + Math.random() * 60,
+        x: W * 0.2 + physicsRandom() * W * 0.6,
+        y: -20 - physicsRandom() * 40,
+        vx: (physicsRandom() - 0.5) * 260,
+        vy: 60 + physicsRandom() * 60,
         alive: true,
         deathTimeSeconds: null,
+        eliminationOrder: null,
         flash: 0
       });
     }
@@ -1102,7 +1276,7 @@
           const zoneX = Math.min(f.px, tip.x) - 20, zoneW = Math.abs(tip.x - f.px) + 40;
           if (ball.x > zoneX && ball.x < zoneX + zoneW &&
               ball.y > f.py - 110 && ball.y < f.py + 45) {
-            if (Math.random() > laziness) {
+            if (physicsRandom() > laziness) {
               f.state = 'flipping';
               sound.playFlipper();
             } else {
@@ -1128,7 +1302,7 @@
           f.angle = f.restAngle;
           f.angVel = 0;
           f.state = 'rest';
-          f.cooldown = 0.15 + Math.random() * 0.25;
+          f.cooldown = 0.15 + physicsRandom() * 0.25;
         }
       } else {
         f.angVel = 0;
@@ -1180,13 +1354,14 @@
       // 공 업데이트 (서브스텝으로 터널링 방지)
       const steps = 3;
       const stepDt = simDt / steps;
+      const friction = Math.pow(BALL_FRICTION, stepDt * 180);
       for (let s = 0; s < steps; s++) {
         for (const ball of balls) {
           if (!ball.alive) continue;
 
           ball.vy += gravity * stepDt;
-          ball.vx *= BALL_FRICTION;
-          ball.vy *= BALL_FRICTION;
+          ball.vx *= friction;
+          ball.vy *= friction;
 
           // 속도 상한 (안정성)
           const spd = Math.hypot(ball.vx, ball.vy);
@@ -1209,7 +1384,7 @@
           // 핀
           for (const p of pegs) {
             if (Math.abs(ball.x - p.x) > 30 || Math.abs(ball.y - p.y) > 30) continue;
-            if (collideCircle(ball, p.x, p.y, p.r, 20 + Math.random() * 40, RESTITUTION)) {
+            if (collideCircle(ball, p.x, p.y, p.r, 20 + physicsRandom() * 40, RESTITUTION)) {
               p.flash = 1;
               sound.playPing();
             }
@@ -1218,7 +1393,7 @@
           // 범퍼 — 강한 반발
           for (const b of bumpers) {
             if (Math.abs(ball.x - b.x) > 60 || Math.abs(ball.y - b.y) > 60) continue;
-            if (collideCircle(ball, b.x, b.y, b.r, 380 + Math.random() * 160, 1.0)) {
+            if (collideCircle(ball, b.x, b.y, b.r, 380 + physicsRandom() * 160, 1.0)) {
               b.flash = 1;
               ball.flash = 1;
               sound.playBumper();
@@ -1307,10 +1482,16 @@
     function killBall(ball) {
       ball.alive = false;
       ball.deathTimeSeconds = gameTimeSeconds;
+      ball.eliminationOrder = ++eliminationCounter;
       sound.playDrain();
       spawnParticles(ball.x, drainY, ball.color, 14);
       showDeathInfo(ball.name);
       updateRankings();
+      const gameArea = document.querySelector('.game-area');
+      gameArea.classList.remove('shake');
+      void gameArea.offsetWidth;
+      gameArea.classList.add('shake');
+      setTimeout(() => gameArea.classList.remove('shake'), 220);
     }
 
     function spawnParticles(x, y, color, count) {
@@ -1458,11 +1639,20 @@
     function gameLoop(timestamp) {
       if (!gameRunning) return;
       if (!lastTimestamp) lastTimestamp = timestamp;
-      const dt = Math.min((timestamp - lastTimestamp) / 1000, 0.05);
+      const frameDt = Math.min((timestamp - lastTimestamp) / 1000, 0.1);
       lastTimestamp = timestamp;
-      update(dt);
+      accumulator += frameDt;
+
+      let updateCount = 0;
+      while (accumulator >= FIXED_DT && updateCount < 12 && gameRunning) {
+        update(FIXED_DT);
+        accumulator -= FIXED_DT;
+        updateCount += 1;
+      }
+      if (updateCount === 12) accumulator = 0;
+
       draw();
-      animationId = requestAnimationFrame(gameLoop);
+      if (gameRunning) animationId = requestAnimationFrame(gameLoop);
     }
 
     // ===== 랭킹 =====
@@ -1470,23 +1660,31 @@
       const list = document.getElementById('rankingsList');
       const sorted = [...balls].sort((a, b) => {
         if (a.alive !== b.alive) return b.alive - a.alive;
-        if (!a.alive && !b.alive) return b.deathTimeSeconds - a.deathTimeSeconds;
+        if (!a.alive && !b.alive) {
+          return (b.deathTimeSeconds - a.deathTimeSeconds) || (b.eliminationOrder - a.eliminationOrder);
+        }
         return a.name.localeCompare(b.name);
       });
       const frag = document.createDocumentFragment();
       sorted.forEach(ball => {
         const item = document.createElement('div');
         item.className = `ranking-item ${ball.alive ? 'alive' : 'dead'}`;
-        let timeInfo = '';
+        const status = document.createElement('span');
+        status.className = 'status-icon';
+        status.textContent = ball.alive ? '✓' : '✗';
+        const dot = document.createElement('span');
+        dot.className = 'ball-dot';
+        dot.style.background = ball.color;
+        const name = document.createElement('span');
+        name.className = 'ranking-name';
+        name.textContent = ball.name;
+        item.append(status, dot, name);
         if (!ball.alive && ball.deathTimeSeconds != null) {
-          timeInfo = `<span class="death-time">${ball.deathTimeSeconds.toFixed(3)}s</span>`;
+          const time = document.createElement('span');
+          time.className = 'death-time';
+          time.textContent = `${ball.deathTimeSeconds.toFixed(3)}s`;
+          item.appendChild(time);
         }
-        item.innerHTML = `
-          <span class="status-icon">${ball.alive ? '✓' : '✗'}</span>
-          <span class="ball-dot" style="background:${ball.color}"></span>
-          <span class="ranking-name">${ball.name}</span>
-          ${timeInfo}
-        `;
         frag.appendChild(item);
       });
       list.innerHTML = '';
@@ -1495,9 +1693,9 @@
 
     // ===== 종료 =====
     function endGame() {
+      if (!gameRunning) return;
       gameRunning = false;
       cancelAnimationFrame(animationId);
-      sound.playWin();
 
       const winners = balls.filter(b => b.alive);
       const finalTime = gameTimeSeconds.toFixed(3) + 's';
@@ -1512,16 +1710,33 @@
         item.appendChild(timeSpan);
       });
 
-      const overlay = document.getElementById('gameOverOverlay');
-      const winnersList = document.getElementById('winnersList');
-      winnersList.innerHTML = `
-        <div style="margin-bottom: 15px; font-size: 1.2rem; color: #aaa; width: 100%;">생존 시간: ${finalTime}</div>
-        ${winners.map(w => `<span class="winner-name">🎱 ${w.name}</span>`).join('')}
-      `;
-      overlay.classList.add('show');
-      createConfetti();
       document.getElementById('controlHint').style.display = 'none';
-      document.getElementById('startBtn').disabled = false;
+      clearTimeout(resultTimer);
+      resultTimer = setTimeout(() => {
+        const overlay = document.getElementById('gameOverOverlay');
+        const winnersList = document.getElementById('winnersList');
+        winnersList.replaceChildren();
+        const time = document.createElement('div');
+        time.style.cssText = 'margin-bottom:8px;font-size:1.2rem;color:#aaa;width:100%';
+        time.textContent = `생존 시간: ${finalTime}`;
+        const proof = document.createElement('div');
+        proof.style.cssText = 'margin-bottom:15px;font:700 .75rem monospace;color:#67e8f9;width:100%;letter-spacing:.08em';
+        proof.textContent = `RUN HASH: ${currentRunHash.slice(0, 12)} · ${runMode}`;
+        winnersList.append(time, proof);
+        winners.forEach(winner => {
+          const winnerName = document.createElement('span');
+          winnerName.className = 'winner-name';
+          winnerName.textContent = `🎱 ${winner.name}`;
+          winnersList.appendChild(winnerName);
+        });
+        overlay.classList.add('show');
+        overlay.setAttribute('aria-hidden', 'false');
+        sound.playWin();
+        createConfetti();
+        document.getElementById('startBtn').disabled = false;
+        setSettingsDisabled(false);
+        document.getElementById('confirmBtn').focus({ preventScroll: true });
+      }, 950);
     }
 
     function createConfetti() {
@@ -1553,19 +1768,40 @@
       for (const name of names) {
         const match = name.match(/^(.+)\*(\d+)$/);
         if (match) {
-          const baseName = match[1].trim();
-          const count = parseInt(match[2]);
+          const baseName = match[1].trim().slice(0, 32);
+          const count = Math.min(parseInt(match[2]), MAX_PARTICIPANTS - result.length);
           for (let i = 0; i < count; i++) result.push(baseName);
         } else {
-          result.push(name);
+          result.push(name.slice(0, 32));
         }
+        if (result.length >= MAX_PARTICIPANTS) break;
       }
       return result;
     }
 
+    function countExpandedParticipants(input) {
+      let count = 0;
+      for (const name of input.split(/[,\n]/).map(value => value.trim()).filter(Boolean)) {
+        const match = name.match(/^(.+)\*(\d+)$/);
+        count += match ? parseInt(match[2]) : 1;
+        if (count > MAX_PARTICIPANTS) return count;
+      }
+      return count;
+    }
+
+    function setSettingsDisabled(disabled) {
+      ['participants', 'survivorCount', 'gameSpeed', 'gameSeed', 'seedRefresh'].forEach(id => {
+        document.getElementById(id).disabled = disabled;
+      });
+    }
+
     // ===== 시작/리셋 =====
-    function startGame() {
+    async function startGame() {
       const input = document.getElementById('participants').value;
+      if (countExpandedParticipants(input) > MAX_PARTICIPANTS) {
+        alert(`원활한 진행을 위해 참여자는 최대 ${MAX_PARTICIPANTS}명까지 입력할 수 있습니다.`);
+        return;
+      }
       participants = parseParticipants(input);
 
       if (participants.length < 2) {
@@ -1580,18 +1816,27 @@
       }
       speedMultiplier = parseInt(document.getElementById('gameSpeed').value) / 10;
 
+      document.getElementById('startBtn').disabled = true;
+      setSettingsDisabled(true);
+      runMode = 'AUTO';
+      sound.init();
+      await prepareDeterministicRun();
       saveSettings();
 
-      document.getElementById('gameOverOverlay').classList.remove('show');
+      clearTimeout(resultTimer);
+      const gameOverOverlay = document.getElementById('gameOverOverlay');
+      gameOverOverlay.classList.remove('show');
+      gameOverOverlay.setAttribute('aria-hidden', 'true');
       document.getElementById('dangerUI').style.display = 'none';
       document.getElementById('gameTimer').style.display = 'block';
       document.getElementById('controlHint').style.display = 'block';
 
       gameTimeSeconds = 0;
+      eliminationCounter = 0;
       lastTimestamp = 0;
+      accumulator = 0;
       suddenDeath = false;
       particles = [];
-      sound.init();
       sound.playStart();
 
       buildBoard();
@@ -1599,23 +1844,25 @@
       updateRankings();
 
       gameRunning = true;
-      document.getElementById('startBtn').disabled = true;
       requestAnimationFrame(gameLoop);
     }
 
     function resetGame() {
       gameRunning = false;
       cancelAnimationFrame(animationId);
+      clearTimeout(resultTimer);
       balls = [];
       pendingSpawns = [];
       particles = [];
       suddenDeath = false;
       document.getElementById('rankingsList').innerHTML = '';
       document.getElementById('gameOverOverlay').classList.remove('show');
+      document.getElementById('gameOverOverlay').setAttribute('aria-hidden', 'true');
       document.getElementById('dangerUI').style.display = 'none';
       document.getElementById('gameTimer').style.display = 'none';
       document.getElementById('controlHint').style.display = 'none';
       document.getElementById('startBtn').disabled = false;
+      setSettingsDisabled(false);
       buildBoard();
       draw();
     }
@@ -1623,9 +1870,14 @@
     // ===== 결과 복사 =====
     function copyResults() {
       const winners = balls.filter(b => b.alive);
-      const losers = [...balls.filter(b => !b.alive)].sort((a, b) => b.deathTimeSeconds - a.deathTimeSeconds);
+      const losers = [...balls.filter(b => !b.alive)].sort((a, b) =>
+        (b.deathTimeSeconds - a.deathTimeSeconds) || (b.eliminationOrder - a.eliminationOrder)
+      );
 
       let result = '🎱 핀볼 서바이벌 결과\n\n';
+      result += `🔐 SEED: ${currentSeed || document.getElementById('gameSeed').value}\n`;
+      result += `# HASH: ${currentRunHash || '게임 시작 전'}\n\n`;
+      result += `🕹️ 진행 모드: ${runMode}\n\n`;
       result += '🏆 생존자:\n';
       winners.forEach(w => result += `  ${w.name}\n`);
       result += '\n💀 탈락자:\n';
@@ -1634,6 +1886,10 @@
       navigator.clipboard.writeText(result).then(() => {
         const btn = document.getElementById('copyResultBtn');
         btn.dataset.tooltip = '복사됨!';
+        setTimeout(() => btn.dataset.tooltip = '결과 복사', 2000);
+      }).catch(() => {
+        const btn = document.getElementById('copyResultBtn');
+        btn.dataset.tooltip = '복사할 수 없습니다';
         setTimeout(() => btn.dataset.tooltip = '결과 복사', 2000);
       });
     }
@@ -1644,6 +1900,7 @@
         localStorage.setItem('pinball_participants', document.getElementById('participants').value);
         localStorage.setItem('pinball_survivors', document.getElementById('survivorCount').value);
         localStorage.setItem('pinball_speed', document.getElementById('gameSpeed').value);
+        localStorage.setItem('pinball_seed', document.getElementById('gameSeed').value);
       } catch (e) { /* localStorage 비활성 환경 무시 */ }
     }
 
@@ -1652,6 +1909,7 @@
         const p = localStorage.getItem('pinball_participants');
         const s = localStorage.getItem('pinball_survivors');
         const sp = localStorage.getItem('pinball_speed');
+        const seed = localStorage.getItem('pinball_seed');
         if (p) document.getElementById('participants').value = p;
         if (s) {
           document.getElementById('survivorCount').value = s;
@@ -1661,7 +1919,9 @@
           document.getElementById('gameSpeed').value = sp;
           document.getElementById('speedValue').textContent = (parseInt(sp) / 10).toFixed(1) + 'x';
         }
+        document.getElementById('gameSeed').value = seed || generateSeed();
       } catch (e) { /* ignore */ }
+      if (!document.getElementById('gameSeed').value) document.getElementById('gameSeed').value = generateSeed();
     }
 
     // ===== 플리퍼 수동 조작 (키보드/터치) =====
@@ -1670,7 +1930,11 @@
     function setFlipperHold(side, held) {
       const f = flippers[side];
       if (!f) return;
-      if (held && !f.manualHold && gameRunning && !suddenDeath) sound.playFlipper();
+      if (held && !f.manualHold && gameRunning && !suddenDeath) {
+        sound.playFlipper();
+        runMode = runMode === 'AUTO' ? 'MANUAL' : (runMode.includes('MANUAL') ? runMode : `MANUAL+${runMode}`);
+        document.getElementById('seedWatermark').textContent = `HASH: ${currentRunHash.slice(0, 12)} · ${runMode}`;
+      }
       f.manualHold = held;
     }
 
@@ -1721,29 +1985,72 @@
     document.getElementById('resetBtn').addEventListener('click', resetGame);
     document.getElementById('copyResultBtn').addEventListener('click', copyResults);
     document.getElementById('confirmBtn').addEventListener('click', () => {
-      document.getElementById('gameOverOverlay').classList.remove('show');
+      const overlay = document.getElementById('gameOverOverlay');
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden', 'true');
     });
 
+    const helpModal = document.getElementById('helpModal');
+    const helpButton = document.getElementById('helpBtn');
+    const closeHelpModal = () => {
+      helpModal.classList.remove('show');
+      helpModal.setAttribute('aria-hidden', 'true');
+      helpButton.focus({ preventScroll: true });
+    };
     document.getElementById('helpBtn').addEventListener('click', () => {
-      document.getElementById('helpModal').classList.add('show');
+      helpModal.classList.add('show');
+      helpModal.setAttribute('aria-hidden', 'false');
+      document.getElementById('modalClose').focus({ preventScroll: true });
     });
-    document.getElementById('modalClose').addEventListener('click', () => {
-      document.getElementById('helpModal').classList.remove('show');
+    document.getElementById('modalClose').addEventListener('click', closeHelpModal);
+    helpModal.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeHelpModal();
     });
-    document.getElementById('helpModal').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) document.getElementById('helpModal').classList.remove('show');
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && helpModal.classList.contains('show')) closeHelpModal();
     });
+
+    function syncSurvivorLimit() {
+      const survivorInput = document.getElementById('survivorCount');
+      const count = parseParticipants(document.getElementById('participants').value).length;
+      survivorInput.max = Math.max(1, count - 1);
+      if (parseInt(survivorInput.value) > parseInt(survivorInput.max)) survivorInput.value = survivorInput.max;
+      document.getElementById('survivorValue').textContent = survivorInput.value;
+    }
 
     document.getElementById('survivorCount').addEventListener('input', (e) => {
       document.getElementById('survivorValue').textContent = e.target.value;
+      saveSettings();
     });
     document.getElementById('gameSpeed').addEventListener('input', (e) => {
       document.getElementById('speedValue').textContent = (parseInt(e.target.value) / 10).toFixed(1) + 'x';
+      saveSettings();
+    });
+    document.getElementById('participants').addEventListener('input', () => {
+      syncSurvivorLimit();
+      saveSettings();
+    });
+    document.getElementById('gameSeed').addEventListener('input', () => {
+      if (!gameRunning) {
+        document.getElementById('seedHash').textContent = '계산 전';
+        document.getElementById('seedWatermark').textContent = 'HASH: —';
+      }
+      saveSettings();
+    });
+    document.getElementById('seedRefresh').addEventListener('click', () => {
+      document.getElementById('gameSeed').value = generateSeed();
+      if (!gameRunning) {
+        document.getElementById('seedHash').textContent = '계산 전';
+        document.getElementById('seedWatermark').textContent = 'HASH: —';
+      }
+      saveSettings();
     });
 
     // ===== 초기화 =====
     window.addEventListener('resize', resizeCanvas);
     loadSettings();
+    syncSurvivorLimit();
     resizeCanvas();
   </script>
 </body>
