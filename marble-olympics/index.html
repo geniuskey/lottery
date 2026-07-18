@@ -29,7 +29,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
@@ -148,8 +148,8 @@
         }
 
         .sidebar {
-            width: 320px;
-            min-width: 320px;
+            width: 336px;
+            min-width: 336px;
             background: linear-gradient(180deg, rgba(11, 20, 48, 0.98), rgba(28, 17, 53, 0.98));
             backdrop-filter: blur(10px);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -245,7 +245,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.3s, visibility 0.3s;
         }
 
         .help-btn:hover, .sound-btn:hover {
@@ -277,7 +277,7 @@
             font-family: inherit;
             font-size: 0.9rem;
             resize: none;
-            transition: all 0.3s;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.3s, visibility 0.3s;
         }
 
         select option {
@@ -309,7 +309,7 @@
             font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.3s, visibility 0.3s;
             font-family: inherit;
             display: flex;
             align-items: center;
@@ -911,13 +911,13 @@
                 max-width: none;
             }
             .sidebar { 
-                order: 2; /* 아래 배치 */
+                order: 1; /* 설정을 먼저 배치 */
                 width: 100%; min-width: 100%; height: auto; max-height: none; 
                 border-right: none; border-top: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0; padding: 20px;
                 background: rgba(255, 255, 255, 0.03);
             }
             .game-area { 
-                order: 1; /* 위에 배치 */
+                order: 2; /* 시작 후 이동할 게임 영역 */
                 flex: none; width: 100%; height: 80vh; min-height: 500px; padding: 0; 
             }
             .canvas-wrapper { border-radius: 0; border: none; height: 100%; min-height: 100%; }
@@ -986,7 +986,7 @@
             background: rgba(255, 255, 255, 0.15);
             border-radius: 11px;
             position: relative;
-            transition: all 0.3s ease;
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
             flex-shrink: 0;
         }
 
@@ -999,7 +999,7 @@
             border-radius: 50%;
             top: 2px;
             left: 2px;
-            transition: all 0.3s ease;
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
         }
 
         .toggle-switch input:checked + .toggle-slider {
@@ -1047,7 +1047,7 @@
             font-size: 1rem;
             text-decoration: none;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
         }
 
         .bottom-btn:hover {
@@ -1095,7 +1095,7 @@
             z-index: 9999;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
         }
 
         .toast.show {
@@ -1186,13 +1186,17 @@
                     <a href="../" class="bottom-btn" title="PLAYPICK 홈" aria-label="PLAYPICK 홈">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                     </a>
-                    <button class="bottom-btn" id="copyResultBtn2" type="button" disabled title="결과 복사" aria-label="게임 결과 복사">📋</button>
+                    <button class="bottom-btn" id="copyResultBtn2" type="button" disabled title="결과 복사" aria-label="게임 결과 복사">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
                     <a href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer" class="bottom-btn" title="GitHub 저장소" aria-label="GitHub 저장소 새 창에서 열기">
                         <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
                             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
                         </svg>
                     </a>
-                    <a href="https://buymeacoffee.com/euiyun" target="_blank" rel="noopener noreferrer" class="bottom-btn coffee" title="개발자에게 커피 사주기" aria-label="후원 페이지 새 창에서 열기">☕</a>
+                    <a href="https://buymeacoffee.com/euiyun" target="_blank" rel="noopener noreferrer" class="bottom-btn coffee" title="개발자에게 커피 사주기" aria-label="후원 페이지 새 창에서 열기">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13v7a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V7Z"></path><path d="M17 9h2a3 3 0 0 1 0 6h-2"></path><path d="M7 3v2M11 3v2M15 3v2"></path></svg>
+                    </a>
                 </div>
             </div>
         </aside>
@@ -2943,10 +2947,10 @@
                     // 하단 버튼 (아이콘만)
                     const btn2 = document.getElementById('copyResultBtn2');
                     if (btn2) {
-                        const originalIcon = btn2.textContent;
+                        const originalIcon = btn2.innerHTML;
                         btn2.textContent = '✅';
                         setTimeout(() => {
-                            btn2.textContent = originalIcon;
+                            btn2.innerHTML = originalIcon;
                         }, 2000);
                     }
                     
@@ -3480,7 +3484,12 @@
                 game.setParticipants(parsed.participants);
                 try {
                     const started = await game.start();
-                    if (started) window.scrollTo({ top: 0, behavior: 'smooth' });
+                    if (started && window.innerWidth <= 768) requestAnimationFrame(() => {
+                        document.querySelector('.game-area')?.scrollIntoView({
+                            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                            block: 'start'
+                        });
+                    });
                 } catch (error) {
                     game.setControlsDisabled(false);
                     game.showToast('경기를 시작하지 못했습니다. 다시 시도해 주세요.');

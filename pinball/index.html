@@ -73,7 +73,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --sidebar-width: 320px;
+      --sidebar-width: 336px;
       --bg-dark: #0a0a0f;
       --accent: #06b6d4;
       --accent-light: #67e8f9;
@@ -104,13 +104,13 @@
       body { overflow-y: auto; height: auto; touch-action: manipulation; }
       .container { display: flex !important; flex-direction: column !important; height: auto; }
       .sidebar {
-        order: 2;
+        order: 1;
         width: 100% !important; min-width: 100% !important; height: auto !important;
         border-right: none !important; border-top: 1px solid var(--glass-border) !important;
         border-radius: 0 !important; padding: 20px !important;
       }
       .game-area {
-        order: 1;
+        order: 2;
         flex: none !important; width: 100% !important; height: 75vh !important; min-height: 450px !important;
       }
       .rankings { min-height: 250px; max-height: 400px; }
@@ -863,7 +863,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
+          <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈" title="추첨 포탈 홈" aria-label="추첨 포탈 홈">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
           </a>
           <button class="icon-btn" id="copyResultBtn" type="button" data-tooltip="결과 복사" aria-label="게임 결과 복사">
@@ -2015,19 +2015,19 @@
       const input = document.getElementById('participants').value;
       if (countExpandedParticipants(input) > MAX_PARTICIPANTS) {
         alert(`원활한 진행을 위해 참여자는 최대 ${MAX_PARTICIPANTS}명까지 입력할 수 있습니다.`);
-        return;
+        return false;
       }
       participants = parseParticipants(input);
 
       if (participants.length < 2) {
         alert('최소 2명의 참여자가 필요합니다.');
-        return;
+        return false;
       }
 
       targetSurvivors = parseInt(document.getElementById('survivorCount').value);
       if (targetSurvivors >= participants.length) {
         alert('생존자 수는 참여자 수보다 적어야 합니다.');
-        return;
+        return false;
       }
       speedMultiplier = parseInt(document.getElementById('gameSpeed').value) / 10;
 
@@ -2063,6 +2063,7 @@
 
       gameRunning = true;
       requestAnimationFrame(gameLoop);
+      return true;
     }
 
     function resetGame() {
@@ -2191,8 +2192,13 @@
 
     // ===== 이벤트 =====
     document.getElementById('startBtn').addEventListener('click', () => {
-      startGame();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const started = startGame();
+      if (started && window.innerWidth <= 768) requestAnimationFrame(() => {
+        document.querySelector('.game-area')?.scrollIntoView({
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+          block: 'start'
+        });
+      });
     });
     document.getElementById('resetBtn').addEventListener('click', resetGame);
     document.getElementById('copyResultBtn').addEventListener('click', copyResults);

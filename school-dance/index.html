@@ -30,7 +30,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
@@ -151,7 +151,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.3s, visibility 0.3s;
         }
 
         .help-btn:hover, .sound-btn:hover {
@@ -217,7 +217,7 @@
       font-size: 0.95rem;
       background: rgba(255, 255, 255, 0.05);
       color: #fff;
-      transition: all 0.3s ease;
+      transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
       flex-shrink: 0;
     }
 
@@ -288,7 +288,7 @@
       font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
     }
 
     .btn-start {
@@ -379,7 +379,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s ease;
+      transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
       text-decoration: none;
       position: relative;
     }
@@ -1342,7 +1342,7 @@
     .ranking-board::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
-      transition: all 0.3s ease;
+      transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
     }
 
     .sidebar::-webkit-scrollbar-thumb:hover,
@@ -1352,7 +1352,7 @@
 
     @media (max-width: 768px) {
       body {
-        flex-direction: column-reverse;
+        flex-direction: column;
         padding: 0;
         gap: 0;
         overflow-y: auto;
@@ -1360,7 +1360,7 @@
       }
 
       .container {
-        flex-direction: column-reverse;
+        flex-direction: column;
         height: auto;
       }
 
@@ -1434,9 +1434,9 @@
     }
 
     .sidebar {
-      width: 300px;
-      min-width: 300px;
-      max-width: 300px;
+      width: 336px;
+      min-width: 336px;
+      max-width: 336px;
       padding: 18px;
       gap: 13px;
       background:
@@ -2440,7 +2440,13 @@
         activeOutcomeRandom = Math.random; activeVisualRandom = Math.random;
         simulationTimeMs = 0; roundAudit = []; saveSettings();
         renderStudents(true); gameRunning = true;
-        sound.init(); sound.playStart(); window.scrollTo({ top: 0, behavior: 'smooth' });
+        sound.init(); sound.playStart();
+        if (window.innerWidth <= 768) requestAnimationFrame(() => {
+          document.querySelector('.game-area')?.scrollIntoView({
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+            block: 'start'
+          });
+        });
         await sleep(500 * TIMING_SCALE, token);
         await gameLoop(token);
       } catch (error) {

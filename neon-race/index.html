@@ -29,7 +29,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
@@ -98,7 +98,7 @@
 
         /* Sidebar */
         .sidebar {
-            width: 280px; min-width: 280px;
+            width: 336px; min-width: 336px;
             background: var(--bg-card);
             border-right: 1px solid var(--glass-border);
             display: flex; flex-direction: column; z-index: 10;
@@ -149,7 +149,7 @@
 
         .help-btn, .sound-btn {
             background: rgba(255, 255, 255, 0.1); border: 1px solid var(--glass-border); color: var(--text-secondary);
-            width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: all 0.2s;
+            width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s, visibility 0.2s;
             display: flex; align-items: center; justify-content: center;
         }
         .help-btn:hover, .sound-btn:hover { background: rgba(255, 255, 255, 0.2); color: var(--text-primary); transform: translateY(-2px); }
@@ -175,7 +175,7 @@
         .participants-input:disabled, input:disabled { opacity: 0.55; cursor: not-allowed; }
 
         .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-shrink: 0; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-family: inherit; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-family: inherit; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s, visibility 0.2s; }
         .btn-primary {
             background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
             color: #fff;
@@ -204,14 +204,14 @@
             display: flex;
             flex-direction: column;
         }
-        .ranking-item { display: flex; align-items: center; padding: 8px; border-radius: 6px; margin-bottom: 4px; background: rgba(255, 255, 255, 0.02); font-size: 0.8rem; transition: all 0.3s; }
+        .ranking-item { display: flex; align-items: center; padding: 8px; border-radius: 6px; margin-bottom: 4px; background: rgba(255, 255, 255, 0.02); font-size: 0.8rem; transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.3s, visibility 0.3s; }
         .ranking-rank { width: 24px; font-weight: bold; color: var(--accent-cyan); }
         .ranking-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .ranking-time { font-size: 0.7rem; font-family: monospace; color: var(--text-secondary); margin-left: 8px; }
         .ranking-item-icon { margin-left: 8px; font-size: 1rem; }
 
         .sidebar-footer { padding: 15px; border-top: 1px solid var(--glass-border); display: flex; justify-content: center; gap: 10px; flex-shrink: 0; }
-        .icon-btn { width: 36px; height: 36px; border-radius: 8px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+        .icon-btn { width: 36px; height: 36px; border-radius: 8px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s, visibility 0.2s; text-decoration: none; }
         .icon-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); transform: translateY(-2px); }
 
         [data-tooltip] { position: relative; }
@@ -379,7 +379,7 @@
 
         @media (max-width: 768px) {
             body { overflow-y: auto; height: auto; }
-            .container { flex-direction: column-reverse; height: auto; }
+            .container { flex-direction: column; height: auto; }
             .sidebar { 
                 width: 100%; 
                 min-width: unset; 
@@ -469,7 +469,7 @@
                 </div>
             </div>
             <div class="sidebar-footer">
-                <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
+                <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈" title="추첨 포탈 홈" aria-label="추첨 포탈 홈">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 </a>
                 <button class="icon-btn" id="copyResultBtn" type="button" data-tooltip="결과 복사" aria-label="게임 결과 복사">
@@ -1810,7 +1810,12 @@
                 }
                 try {
                     const started = await game.start(parsed.names, Number.parseInt(raceLengthSlider.value, 10), Number.parseInt(densitySlider.value, 10));
-                    if (started) window.scrollTo({ top: 0, behavior: 'smooth' });
+                    if (started && window.innerWidth <= 768) requestAnimationFrame(() => {
+                        document.querySelector('.game-area')?.scrollIntoView({
+                            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                            block: 'start'
+                        });
+                    });
                 } catch (error) {
                     game.setControlsDisabled(false);
                     alert('레이스를 시작하지 못했습니다. 잠시 후 다시 시도해 주세요.');

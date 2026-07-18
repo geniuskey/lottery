@@ -30,7 +30,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
@@ -84,7 +84,7 @@
             --accent-gold: #ffd700;
             --glass: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
-            --sidebar-width: 320px;
+            --sidebar-width: 336px;
         }
 
         * {
@@ -910,7 +910,7 @@
             }
 
             .container {
-                flex-direction: column-reverse;
+                flex-direction: column;
                 padding: 0;
                 gap: 0;
                 height: auto;
@@ -981,41 +981,45 @@
                 font-size: 11px;
             }
         }
+        :focus-visible { outline: 3px solid var(--accent-cyan); outline-offset: 3px; }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <aside class="sidebar">
+        <aside class="sidebar" aria-label="중력 궤도 생존 게임 설정">
             <div class="logo-area">
                 <h1 class="logo"><span class="title-emoji">🪐</span> <span class="title-text">중력 궤도 생존</span></h1>
                 <div class="header-btns">
-                    <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
-                    <button class="help-btn" id="helpBtn">?</button>
+                    <button type="button" class="sound-btn" id="soundToggle" title="소리 켜기/끄기" aria-label="소리 끄기" aria-pressed="true">🔊</button>
+                    <button type="button" class="help-btn" id="helpBtn" title="게임 도움말" aria-label="게임 도움말 열기">?</button>
                 </div>
             </div>
 
             <div class="section">
-                <div class="section-title">참여자 명단</div>
-                <textarea id="participantsInput" placeholder="이름을 입력하세요 (쉼표 또는 줄바꿈)&#10;예: 김철수, 이영희*3, 박민수"></textarea>
+                <label class="section-title" for="participantsInput">참여자 명단</label>
+                <textarea id="participantsInput" name="participants" autocomplete="off" placeholder="이름을 입력하세요 (쉼표 또는 줄바꿈)&#10;예: 김철수, 이영희*3, 박민수"></textarea>
             </div>
 
             <div class="section" style="display: none;">
-                <div class="section-title">게임 설정</div>
+                <label class="section-title" for="winCondition">게임 설정</label>
                 <div class="select-group">
-                    <select id="winCondition">
+                    <select id="winCondition" name="winCondition">
                         <option value="survival" selected>A. 최후의 생존자 (Survival Time)</option>
                     </select>
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 12px; color: #888;">당첨 인원:</span>
-                        <input type="number" id="winnerCount" value="1" min="1" max="10" style="width: 60px;">
+                        <label for="winnerCount" style="font-size: 12px; color: #888;">당첨 인원:</label>
+                        <input type="number" id="winnerCount" name="winnerCount" value="1" min="1" max="10" style="width: 60px;">
                     </div>
                 </div>
             </div>
 
             <div class="btn-group">
-                <button id="startBtn" class="btn btn-primary">🎮 시작</button>
-                <button id="resetBtn" class="btn btn-secondary">↺</button>
+                <button type="button" id="startBtn" class="btn btn-primary">🎮 시작</button>
+                <button type="button" id="resetBtn" class="btn btn-secondary" title="게임 초기화" aria-label="게임 초기화">↺</button>
             </div>
 
             <div class="ranking-area">
@@ -1033,22 +1037,22 @@
             </div>
 
             <div class="sidebar-footer">
-                <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
+                <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈" title="추첨 포탈 홈" aria-label="추첨 포탈 홈">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                         <polyline points="9 22 9 12 15 12 15 22"></polyline>
                     </svg>
                 </a>
-                <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+                <button type="button" class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사" title="결과 복사" aria-label="결과 복사">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                     </svg>
                 </button>
-                <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn"
-                    data-tooltip="GitHub 저장소">
+                <a href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer" class="icon-btn"
+                    data-tooltip="GitHub 저장소" title="GitHub 저장소" aria-label="GitHub 저장소 새 창에서 열기">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                         fill="currentColor">
                         <path
@@ -1056,7 +1060,7 @@
                         </path>
                     </svg>
                 </a>
-                <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+                <a href="https://buymeacoffee.com/euiyun" target="_blank" rel="noopener noreferrer" class="icon-btn" data-tooltip="커피 사주기 ☕" title="커피 후원" aria-label="커피 후원 페이지 새 창에서 열기">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                         fill="currentColor">
                         <path
@@ -1067,7 +1071,7 @@
             </div>
         </aside>
 
-        <main class="main-content" id="gameArea">
+        <main class="main-content" id="gameArea" aria-label="중력 궤도 생존 게임 화면">
             <div id="gameTimer">0.00s</div>
             <div id="killFeed" class="kill-feed"></div>
             <canvas id="gameCanvas"></canvas>
@@ -1112,8 +1116,10 @@
                 const btn = document.getElementById('soundToggle');
                 if (btn) {
                     btn.onclick = () => {
-                        this.enabled = !this.enabled;
-                        btn.textContent = this.enabled ? '🔊' : '🔇';
+            this.enabled = !this.enabled;
+            btn.textContent = this.enabled ? '🔊' : '🔇';
+            btn.setAttribute('aria-pressed', String(this.enabled));
+            btn.setAttribute('aria-label', this.enabled ? '소리 끄기' : '소리 켜기');
                         if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
                             this.ctx.resume();
                         }
@@ -1497,7 +1503,10 @@
             start() {
                 const input = document.getElementById('participantsInput').value;
                 const names = this.parseParticipants(input);
-                if (names.length === 0) return alert("참여자를 입력해주세요.");
+                if (names.length === 0) {
+                    alert("참여자를 입력해주세요.");
+                    return false;
+                }
 
                 // Reset for new game
                 this.isRunning = true;
@@ -1531,6 +1540,7 @@
 
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('liveStatus').style.display = "block";
+                return true;
             }
 
             parseParticipants(input) {
@@ -1960,10 +1970,16 @@
          * 4. Initialization
          */
         const game = new Game();
-                    document.getElementById('startBtn').onclick = () => {
-                        game.start();
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    };        document.getElementById('resetBtn').onclick = () => game.reset();
+        document.getElementById('startBtn').onclick = () => {
+            const started = game.start();
+            if (started && window.innerWidth <= 768) requestAnimationFrame(() => {
+                document.querySelector('.main-content')?.scrollIntoView({
+                    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                    block: 'start'
+                });
+            });
+        };
+        document.getElementById('resetBtn').onclick = () => game.reset();
         document.getElementById('restartBtn').onclick = () => game.closeResult();
 
         document.getElementById('copyResultOverlayBtn').onclick = () => {
@@ -2030,7 +2046,7 @@
             alert("🪐 중력 궤도 생존 추첨 가이드\n\n1. 참여자를 입력합니다 (쉼표/줄바꿈 구분).\n2. 당첨 규칙을 선택합니다.\n   - 서바이벌: 태양에 충돌하거나 튕겨나가지 않고 생존\n   - 안정성: 궤도가 얼마나 일정한 원형인가\n   - 타겟: 특정 궤도 범위(하늘색)에 오래 머물기\n3. 시작 버튼을 누르면 매번 새로운 무작위 물리 시뮬레이션이 진행됩니다.");
         };
     </script>
-    <div id="toast">
+    <div id="toast" role="status" aria-live="polite">
         <span class="toast-icon">✅</span>
         <span class="toast-text">결과가 복사되었습니다!</span>
     </div>

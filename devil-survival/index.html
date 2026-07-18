@@ -109,8 +109,8 @@
     }
 
     .sidebar {
-      width: 320px;
-      min-width: 320px;
+      width: 336px;
+      min-width: 336px;
       background: var(--sidebar-bg);
       border-right: 3px solid var(--rope-red);
       display: flex;
@@ -211,7 +211,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s ease;
+      transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
     }
 
     .help-btn:hover, .sound-btn:hover {
@@ -303,7 +303,7 @@
       font-family: 'Black Han Sans', sans-serif;
       font-size: 1.1rem;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s, visibility 0.2s;
     }
 
     .btn-start {
@@ -356,7 +356,7 @@
       padding: 8px 12px;
       background: rgba(148, 0, 211, 0.1);
       border-radius: 8px;
-      transition: all 0.3s;
+      transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.3s, visibility 0.3s;
     }
 
     .rank-item.eliminated {
@@ -424,7 +424,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s, visibility 0.2s;
       text-decoration: none;
     }
 
@@ -538,7 +538,7 @@
       z-index: 100;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.5s;
+      transition: color 0.5s, background-color 0.5s, border-color 0.5s, box-shadow 0.5s, opacity 0.5s, transform 0.5s, visibility 0.5s;
     }
 
     .winner-overlay.show {
@@ -648,7 +648,7 @@
       z-index: 200;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.3s;
+      transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.3s, visibility 0.3s;
     }
 
     .modal-overlay.show {
@@ -716,7 +716,7 @@
       font-size: 0.9rem;
       z-index: 300;
       opacity: 0;
-      transition: all 0.3s;
+      transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.3s, visibility 0.3s;
     }
 
     .toast.show {
@@ -726,7 +726,7 @@
 
     @media (max-width: 768px) {
       body { overflow-y: auto; }
-      .container { flex-direction: column-reverse; height: auto; }
+      .container { flex-direction: column; height: auto; }
       .sidebar {
         width: 100%;
         min-width: auto;
@@ -755,29 +755,33 @@
       .winner-title { font-size: 2rem; }
       .ko-log { top: 50px; right: 10px; }
     }
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <aside class="sidebar">
+    <aside class="sidebar" aria-label="악마 생존 게임 설정">
         <div class="sidebar-header">
             <h1><span class="title-emoji">😈</span> <span class="title-text">악마로부터<br>살아남기</span></h1>
             <div class="header-btns">
-                <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
-                <button class="help-btn" id="helpBtn" title="도움말">?</button>
+                <button type="button" class="sound-btn" id="soundToggle" title="소리 켜기/끄기" aria-label="소리 끄기" aria-pressed="true">🔊</button>
+                <button type="button" class="help-btn" id="helpBtn" title="게임 도움말" aria-label="게임 도움말 열기">?</button>
             </div>
         </div>
 
       <div class="input-group">
-        <div class="section-title">👥 생존자 명단</div>
-        <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)\n예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+        <label class="section-title" for="participants">👥 생존자 명단</label>
+        <textarea id="participants" name="participants" autocomplete="off" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)\n예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
       </div>
 
       <div class="settings-group">
         <div class="section-title">⚙️ 게임 설정</div>
         <div class="setting-item">
-          <label>🏆 생존자 수</label>
-          <select id="winnerCount">
+          <label for="winnerCount">🏆 생존자 수</label>
+          <select id="winnerCount" name="winnerCount">
             <option value="1" selected>1명</option>
             <option value="2">2명</option>
             <option value="3">3명</option>
@@ -786,8 +790,8 @@
           </select>
         </div>
         <div class="setting-item">
-          <label>❤️ 시작 HP</label>
-          <select id="startHP">
+          <label for="startHP">❤️ 시작 HP</label>
+          <select id="startHP" name="startHP">
             <option value="1">1 (즉사)</option>
             <option value="3" selected>3</option>
             <option value="5">5</option>
@@ -796,8 +800,8 @@
       </div>
 
       <div class="btn-group">
-        <button class="btn btn-start" id="startBtn">🎮 지옥문 열기</button>
-        <button class="btn btn-reset" id="resetBtn">↺</button>
+        <button type="button" class="btn btn-start" id="startBtn">🎮 지옥문 열기</button>
+        <button type="button" class="btn btn-reset" id="resetBtn" title="게임 초기화" aria-label="게임 초기화">↺</button>
       </div>
 
       <div class="ranking-board">
@@ -810,14 +814,17 @@
       </div>
 
       <div class="sidebar-footer">
-        <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
+        <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈" title="추첨 포탈 홈" aria-label="추첨 포탈 홈">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
         </a>
-        <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+        <button type="button" class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사" title="결과 복사" aria-label="결과 복사">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
         </button>
-        <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+        <a href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer" class="icon-btn" data-tooltip="GitHub 저장소" title="GitHub 저장소" aria-label="GitHub 저장소 새 창에서 열기">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+        </a>
+        <a href="https://buymeacoffee.com/euiyun" target="_blank" rel="noopener noreferrer" class="icon-btn" data-tooltip="커피 사주기 ☕" title="커피 후원" aria-label="커피 후원 페이지 새 창에서 열기">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13v7a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V7Z"></path><path d="M17 9h2a3 3 0 0 1 0 6h-2"></path><path d="M7 3v2M11 3v2M15 3v2"></path></svg>
         </a>
       </div>
     </aside>
@@ -855,11 +862,11 @@
         <li>❤️ HP가 0이 되면 지옥으로 끌려갑니다 (K.O.)</li>
         <li>🏆 설정한 생존자 수만큼 남으면 게임이 끝납니다.</li>
       </ul>
-      <button class="modal-close" id="closeHelp">확인</button>
+      <button type="button" class="modal-close" id="closeHelp">확인</button>
     </div>
   </div>
 
-  <div class="toast" id="toast">결과가 복사되었습니다!</div>
+  <div class="toast" id="toast" role="status" aria-live="polite">결과가 복사되었습니다!</div>
 
   <script>
     class SoundManager {
@@ -874,6 +881,8 @@
           btn.onclick = () => {
             this.enabled = !this.enabled;
             btn.textContent = this.enabled ? '🔊' : '🔇';
+            btn.setAttribute('aria-pressed', String(this.enabled));
+            btn.setAttribute('aria-label', this.enabled ? '소리 끄기' : '소리 켜기');
             if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
               this.ctx.resume();
             }
@@ -1111,7 +1120,7 @@
         const names = parseParticipants(participantsInput.value);
         if (names.length < 2) {
           showToast('최소 2명 이상 입력하세요!');
-          return;
+          return false;
         }
 
         const wc = Math.min(parseInt(winnerCountInput.value) || 1, names.length - 1);
@@ -1171,6 +1180,7 @@
         updateAliveCount();
         updateRanking();
         gameLoop();
+        return true;
       }
 
       function gameLoop() {
@@ -1703,7 +1713,15 @@
       participantsInput.addEventListener('input', saveSettings);
       winnerCountInput.addEventListener('change', saveSettings);
       startHPSelect.addEventListener('change', saveSettings);
-      startBtn.addEventListener('click', () => { initGame(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      startBtn.addEventListener('click', () => {
+        const started = initGame();
+        if (started && window.innerWidth <= 768) requestAnimationFrame(() => {
+          document.querySelector('.game-area')?.scrollIntoView({
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+            block: 'start'
+          });
+        });
+      });
       resetBtn.addEventListener('click', resetGame);
       copyResultBtn.addEventListener('click', copyResult);
       helpBtn.addEventListener('click', () => helpModal.classList.add('show'));
