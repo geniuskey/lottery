@@ -319,7 +319,7 @@
 
     .game-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 18px;
     }
     .game-card {
@@ -425,6 +425,7 @@
     @media (max-width: 940px) {
       .hero { grid-template-columns: 1fr 1fr; gap: 32px; min-height: 490px; }
       .hero h1 { font-size: clamp(42px, 7vw, 64px); }
+      .game-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
 
     @media (max-width: 720px) {
@@ -441,6 +442,7 @@
       main { width: min(calc(100% - 28px), var(--max-width)); margin-top: 82px; padding-bottom: 80px; }
       .games-heading { align-items: start; }
       .game-count { padding-top: 8px; }
+      .game-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .footer-inner { width: min(calc(100% - 28px), var(--max-width)); min-height: 110px; flex-direction: column; justify-content: center; text-align: center; }
     }
 
