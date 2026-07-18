@@ -7,11 +7,11 @@
   "emoji": "💃",
   "category": "서바이벌",
   "description": "선생님이 수학 문제를 풀 때 몰래 춤을 추세요! 정답을 쓰고 뒤돌아볼 때 멈추지 못하면 탈락!",
-  "features": ["🏫 교실 테마", "🕺 댄스 애니메이션", "🔢 수학 문제 모드"],
+  "features": ["🏫 교실 테마", "🕺 댄스 애니메이션", "🔢 수학 문제 모드", "🎲 매회 랜덤 진행"],
   "color": "mugunghwa",
   "badge": "NEW",
-  "version": "1.7.0",
-  "updated": "2025-12-28",
+  "version": "1.8.0",
+  "updated": "2026-07-17",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -41,7 +41,7 @@
     gtag('config', 'G-GFTNV73W8L');
   </script>
 
-  <title>교실에서 춤을! - 추첨 게임 포털</title>
+  <title>교실에서 춤을! — PLAYPICK</title>
 
   <!-- SEO 기본 -->
   <meta name="description" content="선생님 몰래 춤을 추고 최후의 댄싱퀸/킹이 되세요! 무궁화 꽃이 피었습니다 방식의 온라인 서바이벌 추첨 게임.">
@@ -50,27 +50,25 @@
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="추첨 게임 포털">
+  <meta property="og:site_name" content="PLAYPICK">
   <meta property="og:title" content="💃 교실에서 춤을! - 스릴 넘치는 댄스 추첨">
   <meta property="og:description" content="선생님이 뒤돌아보는 순간, 당신의 춤을 멈추세요! 긴장백배 서바이벌 추첨.">
   <meta property="og:url" content="https://geniuskey.github.io/lottery/school-dance/">
-  <meta property="og:image" content="https://geniuskey.github.io/lottery/og-image.png">
+  <meta property="og:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/school-dance.webp">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="💃 교실에서 춤을! - 스릴 넘치는 댄스 추첨">
   <meta name="twitter:description" content="선생님이 뒤돌아보는 순간, 당신의 춤을 멈추세요! 긴장백배 서바이벌 추첨.">
-  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/og-image.png">
+  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/school-dance.webp">
 
   <!-- 추가 SEO -->
   <link rel="canonical" href="https://geniuskey.github.io/lottery/school-dance/">
   <link rel="icon" type="image/svg+xml"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💃</text></svg>">
   <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#1a1a2e">
+  <meta name="theme-color" content="#123b35">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
-
     * {
       margin: 0;
       padding: 0;
@@ -1418,6 +1416,224 @@
         min-width: 180px;
       }
     }
+
+    /* School-specific classroom theme */
+    :root {
+      --school-green: #245b4b;
+      --school-green-dark: #123b35;
+      --school-cream: #f7edcf;
+      --school-wood: #a86f3d;
+      --violet: #5b8f80;
+      --cyan: #7bd3e8;
+      --pink: #ec6b61;
+      --gold: #ffd166;
+    }
+
+    body {
+      background: linear-gradient(135deg, #dceef1 0%, #f5e9c8 52%, #d5e5d8 100%);
+    }
+
+    .sidebar {
+      width: 300px;
+      min-width: 300px;
+      max-width: 300px;
+      padding: 18px;
+      gap: 13px;
+      background:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(180deg, #16483e 0%, #0c302d 100%);
+      background-size: 100% 34px, 100% 100%;
+      border-right: 3px solid #b27a45;
+      backdrop-filter: blur(24px);
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.38rem;
+      background: linear-gradient(90deg, #ffd166, #fff8de 48%, #8ee0e7);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 6s linear infinite;
+    }
+
+    .sidebar-header h1 .title-emoji {
+      -webkit-text-fill-color: initial;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .35));
+    }
+
+    .settings-group { margin-bottom: 0; }
+    .settings-group label { color: rgba(255,255,255,.68); font-size: .76rem; }
+    .sidebar textarea {
+      height: 74px;
+      background: rgba(255,255,255,.035);
+      border-color: rgba(255,241,194,.24);
+      border-radius: 11px;
+    }
+    .sidebar textarea:focus { border-color: #ffd166; box-shadow: 0 0 0 3px rgba(255,209,102,.13); }
+    input[type="range"] { accent-color: var(--pink); }
+    .slider-value { background: rgba(255,209,102,.13); border: 1px solid rgba(255,209,102,.25); color: #ffd166; }
+
+    .participant-hint { color: rgba(255,255,255,.35); font-size: .6rem; margin-top: 5px; }
+    .btn { border-radius: 11px; padding: 12px 16px; }
+    .btn-start { background: linear-gradient(135deg, #f28c52, #e65454); }
+    .btn-start:hover { box-shadow: 0 9px 26px rgba(230,84,84,.3); }
+    .btn:disabled, textarea:disabled, input:disabled {
+      opacity: .45; cursor: not-allowed; transform: none !important;
+    }
+    .ranking-board { border: 1px solid rgba(255,241,194,.14); background: rgba(0,0,0,.18); border-radius: 12px; }
+    .ranking-heading { color: rgba(255,255,255,.52); font-size: .7rem; font-weight: 800; margin: 0 0 8px 2px; }
+    .ranking-placeholder { color: rgba(255,255,255,.4); text-align: center; padding: 20px; white-space: pre-line; }
+    .ranking-item { background: rgba(255,255,255,.045); border: 1px solid transparent; }
+    .ranking-item.alive { border-left-color: var(--cyan); }
+    .ranking-item.eliminated { border-left: 2px solid #ff6b7d; }
+    .sidebar-footer { padding-top: 12px; }
+    .icon-btn { width: 38px; height: 38px; border-radius: 9px; border: 1px solid rgba(255,241,194,.16); }
+
+    .classroom {
+      isolation: isolate;
+      background:
+        repeating-linear-gradient(90deg, rgba(160,125,72,.055) 0 2px, transparent 2px 180px),
+        linear-gradient(180deg, #fff8dc 0%, #f5e8c5 48%, #dec79d 48%, #dec79d 54%, #c69258 54%, #996037 100%);
+    }
+    .classroom::before {
+      content: '';
+      position: absolute; z-index: 0; left: 0; right: 0; bottom: 0; height: 46%;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 116px, rgba(96,55,27,.18) 117px 120px),
+        repeating-linear-gradient(0deg, transparent 0 46px, rgba(255,240,203,.13) 47px 49px),
+        linear-gradient(180deg, #c9975c 0%, #ad7442 62%, #85512f 100%);
+      box-shadow: inset 0 18px 28px rgba(83,49,24,.2), inset 0 -18px 45px rgba(72,39,19,.18);
+      transform-origin: bottom;
+    }
+    .classroom::after {
+      content: '';
+      position: absolute; z-index: 1; inset: 0;
+      background:
+        linear-gradient(112deg, rgba(255,255,224,.25) 0 12%, transparent 12% 25%, rgba(255,255,224,.11) 25% 34%, transparent 34%),
+        radial-gradient(ellipse at 10% 25%, rgba(255,255,255,.42), transparent 27%);
+      pointer-events: none;
+    }
+    .scene-decor { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+    .classroom-window {
+      position: absolute; left: 2.5%; top: 7%; width: 18%; height: 28%; overflow: hidden;
+      border: 8px solid #f6f0df; border-radius: 4px;
+      background:
+        radial-gradient(ellipse at 20% 22%, rgba(255,255,255,.92) 0 8%, transparent 9%),
+        radial-gradient(ellipse at 76% 34%, rgba(255,255,255,.75) 0 11%, transparent 12%),
+        linear-gradient(180deg, #79c8ed 0%, #bce8f3 68%, #78ad68 69%, #58904f 100%);
+      box-shadow: 0 7px 18px rgba(78,61,34,.18), inset 0 0 24px rgba(96,180,220,.18), 0 0 0 2px #b99c72;
+    }
+    .classroom-window::before, .classroom-window::after { content: ''; position: absolute; z-index: 2; background: #f6f0df; box-shadow: 0 0 0 1px rgba(120,100,70,.2); }
+    .classroom-window::before { left: calc(50% - 4px); top: 0; width: 8px; height: 100%; }
+    .classroom-window::after { left: 0; top: calc(50% - 4px); width: 100%; height: 8px; }
+    .school-view {
+      position: absolute; left: 7%; right: 7%; bottom: 0; height: 29%;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 12%, #80a7b2 12% 19%, transparent 19% 29%),
+        linear-gradient(180deg, #cf7455 0 11%, #f0d59d 11% 100%);
+      border-radius: 2px 2px 0 0;
+      box-shadow: 0 -2px 5px rgba(77,66,41,.22);
+    }
+    .chalkboard {
+      position: absolute; left: 52%; top: 7%; transform: translateX(-50%);
+      width: min(54%, 690px); height: 23%; min-height: 128px;
+      border: 11px solid #8c5b35; border-radius: 5px;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,.045), transparent 30%),
+        linear-gradient(145deg, #2f7058, #174c43 65%, #1f5c4d);
+      box-shadow: 0 9px 18px rgba(83,57,31,.25), inset 0 0 35px rgba(3,35,29,.3), 0 0 0 2px #bd8954;
+      color: rgba(239,255,243,.92); display: flex; align-items: center; justify-content: center;
+    }
+    .board-problem { font: 900 clamp(1.25rem, 3vw, 2.8rem) 'Noto Sans KR', sans-serif; letter-spacing: .08em; text-shadow: 0 1px 1px rgba(0,0,0,.2); }
+    .board-caption { position: absolute; left: 14px; top: 10px; color: rgba(255,249,218,.6); font: 700 .62rem 'Noto Sans KR', sans-serif; letter-spacing: .08em; }
+    .board-proof { position: absolute; right: 12px; bottom: 8px; color: #b8e8e1; font: 700 .55rem monospace; letter-spacing: .04em; }
+    .chalkboard::after { content: ''; position: absolute; left: -3%; right: -3%; bottom: -17px; height: 7px; border-radius: 3px; background: #8a5a3c; box-shadow: 0 4px 5px rgba(0,0,0,.35); }
+    .ceiling-light {
+      position: absolute; top: 1.6%; left: 52%; width: 190px; height: 10px; transform: translateX(-50%);
+      border: 2px solid #c7c5b8; border-radius: 4px; background: #fffef0; box-shadow: 0 2px 10px rgba(255,247,196,.65), 0 13px 38px rgba(255,250,215,.18);
+    }
+    .ceiling-light::before, .ceiling-light::after { content: ''; position: absolute; top: -28px; width: 3px; height: 28px; background: #aaa99f; }
+    .ceiling-light::before { left: 28px; } .ceiling-light::after { right: 28px; }
+    .wall-clock {
+      position: absolute; right: 7.2%; top: 6%; width: 58px; aspect-ratio: 1;
+      border: 6px solid #f8f3e5; border-radius: 50%; background: #fffdf5;
+      box-shadow: 0 4px 12px rgba(91,66,38,.22), 0 0 0 2px #ad8b61;
+    }
+    .wall-clock::before, .wall-clock::after { content: ''; position: absolute; left: 50%; bottom: 50%; width: 3px; border-radius: 3px; background: #314c49; transform-origin: 50% 100%; }
+    .wall-clock::before { height: 16px; transform: translateX(-50%) rotate(28deg); }
+    .wall-clock::after { height: 20px; transform: translateX(-50%) rotate(126deg); }
+    .bulletin-board {
+      position: absolute; right: 2.5%; top: 18%; width: 15%; min-width: 110px; height: 17%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+      border: 7px solid #a76d3b; border-radius: 3px; background: #e8bf73;
+      box-shadow: 0 6px 14px rgba(92,61,30,.22), inset 0 0 18px rgba(139,84,30,.12);
+      color: #4c3b29; text-align: center; transform: rotate(.4deg);
+    }
+    .bulletin-board span { padding: 3px 10px; border-radius: 2px; background: #fff8dd; color: #b64f43; font-size: .63rem; font-weight: 900; box-shadow: 1px 2px 3px rgba(0,0,0,.12); }
+    .bulletin-board b { font-size: clamp(.58rem, 1vw, .78rem); line-height: 1.45; }
+
+    .students-area { top: 34%; left: 5%; right: 5%; height: 43%; gap: clamp(14px, 3vh, 28px); align-content: start; }
+    .student { width: 86px; height: 116px; filter: drop-shadow(0 10px 9px rgba(0,0,0,.25)); }
+    .students-area[data-density="medium"] { gap: 8px 12px; }
+    .students-area[data-density="medium"] .student { width: 75px; height: 98px; transform: scale(.82); transform-origin: top center; }
+    .students-area[data-density="high"] { top: 31%; gap: 3px 7px; }
+    .students-area[data-density="high"] .student { width: 68px; height: 84px; transform: scale(.68); transform-origin: top center; }
+    .student-name { background: rgba(22,65,56,.88); border: 1px solid rgba(255,255,255,.18); border-radius: 6px; }
+    .desk-top { background: linear-gradient(#e8b86f,#bd7547); border-color: #9f5a35; box-shadow: 0 3px 8px rgba(0,0,0,.35); }
+    .desk-leg { background: #76402f; }
+    .bottom-stage { height: 18%; background: transparent; border-top: 0; z-index: 500; }
+    .bottom-stage::before { content: ''; position: absolute; left: 50%; bottom: 0; width: min(34%, 340px); height: 14px; transform: translateX(-50%); border: 3px solid #7e4d2c; border-bottom: 0; border-radius: 5px 5px 0 0; background: #b87b43; box-shadow: 0 -4px 10px rgba(82,48,25,.18); }
+    .teacher-container { top: -82px; filter: drop-shadow(0 15px 12px rgba(0,0,0,.4)); }
+    .t-body, .t-arm, .t-forearm { background: linear-gradient(145deg,#3d5d69,#243e4b); }
+    .speech-bubble { bottom: 23%; background: rgba(255,253,244,.97); border: 2px solid rgba(59,111,94,.22); box-shadow: 0 15px 45px rgba(73,51,31,.28); }
+    .round-counter { top: 16px; background: rgba(20,70,59,.88); border-color: rgba(255,236,172,.4); }
+    .phase-banner {
+      position: absolute; left: 50%; top: 58px; transform: translateX(-50%) translateY(-10px); z-index: 1200;
+      opacity: 0; visibility: hidden; padding: 7px 16px; border-radius: 999px;
+      background: linear-gradient(90deg,rgba(221,78,65,.94),rgba(238,139,55,.94));
+      border: 1px solid rgba(255,255,255,.25); color: #fff; font-size: .7rem; font-weight: 900; letter-spacing: .08em;
+      transition: .2s ease; pointer-events: none;
+    }
+    .phase-banner.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .classroom.impact { animation: classroom-impact .32s cubic-bezier(.36,.07,.19,.97); }
+    @keyframes classroom-impact {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-7px, 3px); }
+      45% { transform: translate(6px, -3px); }
+      70% { transform: translate(-3px, 2px); }
+    }
+
+    .winner-overlay { opacity: 0; visibility: hidden; transition: opacity .45s ease, visibility .45s ease; background: rgba(5,5,20,.84); backdrop-filter: blur(20px); }
+    .winner-overlay.show { opacity: 1; visibility: visible; }
+    .certificate { max-width: 640px; border: 10px double #d8aa4d; border-radius: 3px; box-shadow: 0 25px 80px rgba(0,0,0,.55), inset 0 0 60px rgba(212,175,55,.1); }
+    .cert-title { color: #2a2141; }
+    .cert-proof { margin-top: 14px; color: #765da0; font: 700 .63rem monospace; overflow-wrap: anywhere; }
+    #celebCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 3100; pointer-events: none; }
+    .toast { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(18px); transition: .25s ease; animation: none; }
+    .toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+
+    @media (max-width: 768px) {
+      .game-area { height: 78vh; min-height: 560px; }
+      .sidebar { width: 100%; min-width: 0; max-width: none; padding: 18px; }
+      .classroom-window, .bulletin-board { display: none; }
+      .chalkboard { left: 50%; top: 6%; width: 88%; height: 21%; min-height: 115px; border-width: 8px; }
+      .ceiling-light { left: 50%; width: 145px; }
+      .wall-clock { right: 3%; top: 29%; width: 38px; border-width: 4px; }
+      .students-area { top: 32%; left: 2%; right: 2%; height: 46%; gap: 12px 5px; }
+      .student { width: 70px; height: 105px; transform: scale(.84); transform-origin: top center; }
+      .student.dancing { --x-off: 23px; --y-off: -14px; }
+      .teacher-container { top: -63px; }
+      .speech-bubble { bottom: 22%; width: min(88%, 380px); padding: 12px 15px; }
+      .phase-banner { top: 52px; width: max-content; max-width: 92%; text-align: center; }
+      .certificate { width: 92%; padding: 26px 20px; border-width: 8px; max-height: 88vh; overflow-y: auto; }
+      .cert-title { font-size: 2rem; letter-spacing: 9px; margin-bottom: 20px; }
+      .cert-content { font-size: .9rem; line-height: 1.6; margin-bottom: 22px; }
+    }
   </style>
 </head>
 
@@ -1426,58 +1642,61 @@
         <div class="sidebar-header">
             <h1><span class="title-emoji">💃</span> <span class="title-text">교실에서 춤을!</span></h1>
             <div class="header-btns">
-                <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
-                <button class="help-btn" id="helpBtn">?</button>
+                <button class="sound-btn" id="soundToggle" type="button" title="소리 켜기/끄기" aria-label="소리 끄기" aria-pressed="true">🔊</button>
+                <button class="help-btn" id="helpBtn" type="button" aria-label="게임 도움말 열기">?</button>
             </div>
         </div>
 
     <div class="settings-group">
       <label for="participants">참여자</label>
       <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)\n예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+      <div class="participant-hint">쉼표 또는 줄바꿈으로 구분 · MAX 30</div>
     </div>
 
     <div class="settings-group">
-      <label>🏆 최종 생존자 수</label>
+      <label for="winnerCount">🏆 최종 생존자 수</label>
       <div class="slider-container">
         <input type="range" id="winnerCount" min="1" max="10" value="1">
         <div class="slider-value" id="winnerValue">1</div>
       </div>
     </div>
 
+
     <div class="btn-group">
-      <button class="btn btn-start" id="startBtn">🎮 시작</button>
-      <button class="btn btn-reset" id="resetBtn">↺</button>
+      <button class="btn btn-start" id="startBtn" type="button">🎮 시작</button>
+      <button class="btn btn-reset" id="resetBtn" type="button" aria-label="게임 초기화">↺</button>
     </div>
 
     <div class="ranking-board">
-      <div class="ranking-list" id="rankingList">
-        <div style="color:rgba(255,255,255,0.4);text-align:center;padding:20px;">참여자를 입력하세요</div>
+      <div class="ranking-heading">🏆 생존 현황</div>
+      <div class="ranking-list" id="rankingList" aria-live="polite">
+        <div class="ranking-placeholder">참여자를 입력하세요</div>
       </div>
     </div>
 
     <div class="sidebar-footer">
-      <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
+      <a href="../" class="icon-btn" data-tooltip="PLAYPICK 홈" aria-label="PLAYPICK 홈">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
         </svg>
       </a>
-      <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
+      <button class="icon-btn" id="copyResultBtn" type="button" data-tooltip="결과 복사" aria-label="게임 결과 복사">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
         </svg>
       </button>
-      <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
+      <a href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer" class="icon-btn" data-tooltip="GitHub 저장소" aria-label="GitHub 저장소 새 창에서 열기">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path
             d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z">
           </path>
         </svg>
       </a>
-      <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
+      <a href="https://buymeacoffee.com/euiyun" target="_blank" rel="noopener noreferrer" class="icon-btn" data-tooltip="커피 사주기 ☕" aria-label="후원 페이지 새 창에서 열기">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path
             d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.081 1.156.147 1.737.158 2.48.043 4.966-.096 7.447-.177.179-.005.301.035.405.16.065.078.137.204.159.286.073.302.14.606.225.908.012.044.042.108.03.146zM5.946 5.972c-.039.133-.086.27-.126.407-.191.659-.408 1.32-.606 1.987-.26.875-1.02 1.582-2.0 1.708-1.086.14-2.13-.21-2.807-1.145-.258-.355-.405-.834-.41-1.283-.007-.597.161-1.184.338-1.753.157-.504.331-1.006.503-1.506.172-.5.44-.991.804-1.396.487-.541 1.21-.79 1.912-.877C5.172 1.866 6.818 3.046 5.946 5.972z">
@@ -1487,9 +1706,20 @@
     </div>
   </aside>
 
-  <main class="game-area">
+  <main class="game-area" aria-label="교실에서 춤을 생존 시뮬레이션">
     <div class="classroom" id="classroom">
-      <div id="roundCounter" class="round-counter">ROUND 1</div>
+      <div class="scene-decor" aria-hidden="true">
+        <div class="classroom-window"><span class="school-view"></span></div>
+        <div class="chalkboard">
+          <span class="board-caption">오늘의 수학 시간 · 집중!</span>
+          <span class="board-problem" id="boardProblem">수업 준비!</span>
+        </div>
+        <div class="ceiling-light"></div>
+        <div class="wall-clock"></div>
+        <div class="bulletin-board"><span>우리 반 약속</span><b>서로 돕고<br>신나게 배우자!</b></div>
+      </div>
+      <div id="roundCounter" class="round-counter" aria-live="polite">ROUND 1</div>
+      <div id="phaseBanner" class="phase-banner" role="status">⚡ 수업 속도가 빨라집니다! ⚡</div>
       <div class="students-area" id="studentsArea"></div>
 
       <div id="speechBubble" class="speech-bubble"></div>
@@ -1524,9 +1754,9 @@
   </main>
 
   <!-- Help Modal -->
-  <div class="modal-overlay" id="helpModal">
+  <div class="modal-overlay" id="helpModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="helpTitle">
     <div class="modal-content">
-      <h3>❓ 게임 방법</h3>
+      <h3 id="helpTitle">❓ 게임 방법</h3>
       <p>선생님이 수학 문제를 푸는 동안 몰래 춤을 추는 서바이벌 게임입니다!</p>
       <ul>
         <li>선생님이 칠판을 보고 있을 때 학생들이 춤을 춥니다.</li>
@@ -1534,23 +1764,55 @@
         <li>선생님이 뒤를 돌아봤을 때 완전히 앉지 못한 학생은 적발되어 반성하게 됩니다.</li>
         <li>최후까지 적발되지 않고 살아남은 학생이 승리합니다!</li>
       </ul>
-      <button class="modal-close-btn" id="modalCloseBtn">확인</button>
+      <button class="modal-close-btn" id="modalCloseBtn" type="button">확인</button>
     </div>
   </div>
 
+  <div class="winner-overlay" id="winnerOverlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="resultTitle">
+    <div class="certificate">
+      <div class="cert-title" id="resultTitle">상 장</div>
+      <div class="cert-award-name" id="certificateNumber">PLAYPICK 모범상</div>
+      <div class="cert-names" id="winnerNames"></div>
+      <div class="cert-content">위 학생들은 선생님이 칠판을 향한 동안에도 완벽한 눈치와 리듬감을 발휘하고, 마지막까지 자리를 지켜 타의 모범이 되었으므로 이 상장을 수여합니다.</div>
+      <div class="cert-date" id="resultStats"></div>
+      <div class="cert-footer">PLAYPICK 수학 선생님 (인)</div>
+      <button class="cert-btn" id="closeWinnerBtn" type="button">확인</button>
+    </div>
+  </div>
+  <canvas id="celebCanvas" aria-hidden="true"></canvas>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
   <script>
+    const MAX_PARTICIPANTS = 30;
+    const TIMING_SCALE = new URLSearchParams(location.search).has('qa') ? 0.025 : 1;
+    let activeOutcomeRandom = Math.random;
+    let activeVisualRandom = Math.random;
+
+    const outcomeRandom = () => activeOutcomeRandom();
+    const visualRandom = () => activeVisualRandom();
+
     class SoundManager {
       constructor() {
         this.ctx = null;
-        this.enabled = true;
+        try { this.enabled = localStorage.getItem('school-dance-sound') !== 'off'; }
+        catch (error) { this.enabled = true; }
         this.setupToggleButton();
+      }
+      syncToggleButton() {
+        const btn = document.getElementById('soundToggle');
+        if (!btn) return;
+        btn.textContent = this.enabled ? '🔊' : '🔇';
+        btn.setAttribute('aria-pressed', String(this.enabled));
+        btn.setAttribute('aria-label', this.enabled ? '소리 끄기' : '소리 켜기');
       }
       setupToggleButton() {
         const btn = document.getElementById('soundToggle');
         if (btn) {
+          this.syncToggleButton();
           btn.onclick = () => {
             this.enabled = !this.enabled;
-            btn.textContent = this.enabled ? '🔊' : '🔇';
+            try { localStorage.setItem('school-dance-sound', this.enabled ? 'on' : 'off'); } catch (error) { /* 저장 불가 */ }
+            this.syncToggleButton();
             if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
               this.ctx.resume();
             }
@@ -1559,11 +1821,13 @@
       }
       init() {
         if (this.ctx) return;
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) this.ctx = new AudioContextClass();
       }
       playStart() {
-        if (!this.enabled || !this.ctx) return;
+        if (!this.enabled) return;
         this.init();
+        if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'square';
@@ -1575,8 +1839,9 @@
         osc.start(); osc.stop(this.ctx.currentTime + 0.1);
       }
       playTick() {
-        if (!this.enabled || !this.ctx) return;
+        if (!this.enabled) return;
         this.init();
+        if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'triangle';
@@ -1587,8 +1852,9 @@
         osc.start(); osc.stop(this.ctx.currentTime + 0.05);
       }
       playWarning() {
-        if (!this.enabled || !this.ctx) return;
+        if (!this.enabled) return;
         this.init();
+        if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sine';
@@ -1600,8 +1866,9 @@
         osc.start(); osc.stop(this.ctx.currentTime + 0.2);
       }
       playCaught() {
-        if (!this.enabled || !this.ctx) return;
+        if (!this.enabled) return;
         this.init();
+        if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sawtooth';
@@ -1613,8 +1880,9 @@
         osc.start(); osc.stop(this.ctx.currentTime + 0.3);
       }
       playWin() {
-        if (!this.enabled || !this.ctx) return;
+        if (!this.enabled) return;
         this.init();
+        if (!this.ctx) return;
         const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
         notes.forEach((freq, i) => {
           const osc = this.ctx.createOscillator();
@@ -1633,8 +1901,11 @@
     const COLORS = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6', '#e67e22', '#1abc9c', '#d35400', '#27ae60'];
     const EMOJIS = ['😊', '😁', '🤪', '😮', '😋', '🙂‍↔️', '😏', '😆', '😙', '🤖'];
 
-    let participants = [], alivePlayers = [], eliminatedPlayers = [], winners = [], playerEmojis = {}, eliminationRounds = {}, reactionTimeouts = {};
-    let gameRunning = false, gameStopped = false, currentRound = 0;
+    let participants = [], alivePlayers = [], eliminatedPlayers = [], winners = [];
+    let playerEmojis = Object.create(null), eliminationRounds = Object.create(null);
+    let gameRunning = false, gameStopped = false, currentRound = 0, runToken = 0;
+    let simulationTimeMs = 0, roundAudit = [];
+    let reactionTimeouts = [], pendingSleeps = new Map(), toastTimer = null, celebrationAnimationId = null;
     const sound = new SoundManager();
 
     const REASONS = {
@@ -1648,59 +1919,88 @@
     const startBtn = $('startBtn'), resetBtn = $('resetBtn'), rList = $('rankingList');
     const sArea = $('studentsArea'), teacher = $('teacher'), bubble = $('speechBubble'), rCounter = $('roundCounter');
     const helpBtn = $('helpBtn'), helpModal = $('helpModal'), modalCloseBtn = $('modalCloseBtn'), copyResultBtn = $('copyResultBtn');
+    const boardProblem = $('boardProblem'), phaseBanner = $('phaseBanner');
+    const winnerOverlay = $('winnerOverlay'), winnerNames = $('winnerNames'), resultStats = $('resultStats');
+    const certificateNumber = $('certificateNumber'), closeWinnerBtn = $('closeWinnerBtn');
+    const celebCanvas = $('celebCanvas'), celebCtx = celebCanvas.getContext('2d'), toast = $('toast');
 
     // Storage logic
+    function readStorage(key, fallback = '') {
+      try { return localStorage.getItem(key) ?? fallback; } catch (error) { return fallback; }
+    }
+
+    function writeStorage(key, value) {
+      try { localStorage.setItem(key, value); } catch (error) { /* 비공개 모드 등 저장 불가 환경 */ }
+    }
+
     function saveSettings() {
-      localStorage.setItem('mugunghwa_participants', pInput.value);
-      localStorage.setItem('mugunghwa_winnerCount', wCount.value);
+      writeStorage('school-dance-participants', pInput.value);
+      writeStorage('school-dance-winner-count', wCount.value);
     }
 
     function loadSettings() {
-      const savedParticipants = localStorage.getItem('mugunghwa_participants');
-      const savedWinnerCount = localStorage.getItem('mugunghwa_winnerCount');
+      const savedParticipants = readStorage('school-dance-participants', readStorage('mugunghwa_participants'));
+      const savedWinnerCount = readStorage('school-dance-winner-count', readStorage('mugunghwa_winnerCount', '1'));
       if (savedParticipants) pInput.value = savedParticipants;
-      if (savedWinnerCount) {
-        wCount.value = savedWinnerCount;
-        wVal.textContent = savedWinnerCount;
-      }
+      const safeWinnerCount = Math.max(1, Math.min(10, Number.parseInt(savedWinnerCount, 10) || 1));
+      wCount.value = safeWinnerCount; wVal.textContent = safeWinnerCount;
     }
 
     wCount.oninput = () => {
       wVal.textContent = wCount.value;
       saveSettings();
+      if (!gameRunning) { configurePreviewRandom(); renderStudents(true); }
     };
 
+    let inputPreviewTimer = null;
     pInput.oninput = () => {
       saveSettings();
-      if (!gameRunning) renderStudents();
+      clearTimeout(inputPreviewTimer);
+      if (!gameRunning) inputPreviewTimer = setTimeout(() => {
+        if (!gameRunning) { configurePreviewRandom(); renderStudents(true); }
+      }, 100);
     };
 
     // Standard parse function
     function parseParticipants(input) {
       const names = input.split(/[,\n]/).map(n => n.trim()).filter(n => n);
       const result = [];
-      const nameCount = {};
+      const nameCount = Object.create(null);
+      let truncated = false;
+      const appendName = rawName => {
+        if (result.length >= MAX_PARTICIPANTS) { truncated = true; return; }
+        const name = rawName.slice(0, 32);
+        nameCount[name] = (nameCount[name] || 0) + 1;
+        result.push(nameCount[name] > 1 ? `${name}(${nameCount[name]})` : name);
+      };
 
-      for (const name of names) {
-        const match = name.match(/^(.+)\*(\d+)$/);
+      for (let nameIndex = 0; nameIndex < names.length; nameIndex++) {
+        const rawName = names[nameIndex];
+        const match = rawName.match(/^(.+)\*(\d+)$/);
         if (match) {
           const baseName = match[1].trim();
-          const count = parseInt(match[2]);
-          for (let i = 0; i < count; i++) {
-            nameCount[baseName] = (nameCount[baseName] || 0) + 1;
-            result.push(nameCount[baseName] > 1 ? `${baseName}(${nameCount[baseName]})` : baseName);
-          }
+          const count = Math.min(MAX_PARTICIPANTS, Math.max(1, Number.parseInt(match[2], 10) || 1));
+          for (let index = 0; index < count; index++) appendName(baseName);
         } else {
-          nameCount[name] = (nameCount[name] || 0) + 1;
-          result.push(nameCount[name] > 1 ? `${name}(${nameCount[name]})` : name);
+          appendName(rawName);
+        }
+        if (result.length >= MAX_PARTICIPANTS) {
+          truncated = truncated || nameIndex < names.length - 1
+            || Boolean(match && Number.parseInt(match[2], 10) > MAX_PARTICIPANTS);
+          break;
         }
       }
+      result.truncated = truncated;
       return result;
     }
 
+    function configurePreviewRandom() { activeVisualRandom = Math.random; }
+
     function init() {
       loadSettings();
+      configurePreviewRandom();
       renderStudents(true);
+      resizeCelebrationCanvas();
     }
 
     function renderStudents(resetEmojis = false) {
@@ -1708,375 +2008,448 @@
       alivePlayers = [...participants];
       eliminatedPlayers = [];
       winners = [];
-      if (resetEmojis) playerEmojis = {};
-      eliminationRounds = {};
-      reactionTimeouts = {};
+      if (resetEmojis) playerEmojis = Object.create(null);
+      eliminationRounds = Object.create(null);
       currentRound = 0;
       rCounter.style.display = 'none';
+      phaseBanner.classList.remove('show');
+      boardProblem.textContent = '수업 준비!';
 
-      sArea.innerHTML = '';
+      sArea.replaceChildren();
       if (participants.length === 0) {
-        rList.innerHTML = '<div style="color:rgba(255,255,255,0.4);text-align:center;padding:20px;">참여자를 입력하세요</div>';
+        updateRanking();
         return;
       }
 
       const cols = Math.ceil(Math.sqrt(participants.length * 1.5));
-      sArea.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      sArea.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+      sArea.dataset.density = participants.length > 20 ? 'high' : (participants.length > 12 ? 'medium' : 'normal');
+
+      const makeNode = (className, text = '') => {
+        const node = document.createElement('div'); node.className = className;
+        if (text) node.textContent = text;
+        return node;
+      };
 
       participants.forEach((name, i) => {
         const color = COLORS[i % COLORS.length];
         if (!playerEmojis[name]) {
-          playerEmojis[name] = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+          playerEmojis[name] = EMOJIS[Math.floor(visualRandom() * EMOJIS.length)];
         }
         const emoji = playerEmojis[name];
 
-        // Individual dance randomness
-        const dur = (0.2 + Math.random() * 0.3).toFixed(2) + 's';
-        const delAl = (Math.random() * -1).toFixed(2) + 's';
-        const delAr = (Math.random() * -1).toFixed(2) + 's';
-        const delF = (Math.random() * -1).toFixed(2) + 's';
-        const delLl = (Math.random() * -1).toFixed(2) + 's';
-        const delLr = (Math.random() * -1).toFixed(2) + 's';
-        const delS = (Math.random() * -1).toFixed(2) + 's';
-        const delH = (Math.random() * -1).toFixed(2) + 's';
+        const dur = (0.2 + visualRandom() * 0.3).toFixed(2) + 's';
+        const delays = Array.from({ length: 7 }, () => (visualRandom() * -1).toFixed(2) + 's');
 
         const el = document.createElement('div');
         el.className = 'student';
         el.id = `student-${i}`;
         el.style.setProperty('--dur', dur);
-        el.style.setProperty('--del-al', delAl);
-        el.style.setProperty('--del-ar', delAr);
-        el.style.setProperty('--del-f', delF);
-        el.style.setProperty('--del-ll', delLl);
-        el.style.setProperty('--del-lr', delLr);
-        el.style.setProperty('--del-s', delS);
-        el.style.setProperty('--del-h', delH);
+        ['--del-al','--del-ar','--del-f','--del-ll','--del-lr','--del-s','--del-h'].forEach((property, index) => el.style.setProperty(property, delays[index]));
 
-        el.innerHTML = `
-          <div class="student-name">${name}</div>
-          <div class="target-mark"></div>
-          <div class="apology-bubble">잘못했어요..😭</div>
-          <div class="chat-bubble">소곤소곤..💬</div>
-          <div class="sleep-bubble">Zzz..💤</div>
-          <div class="chair">🪑</div>
-          <div class="char" style="--color: ${color}">
-            <div class="c-head">${emoji}</div>
-            <div class="c-body"></div>
-            <div class="c-arm l"><div class="c-forearm"></div></div>
-            <div class="c-arm r"><div class="c-forearm"></div></div>
-            <div class="c-leg l"><div class="c-shin"></div></div>
-            <div class="c-leg r"><div class="c-shin"></div></div>
-          </div>
-          <div class="desk-group">
-            <div class="desk-top"></div>
-            <div class="desk-leg l"></div>
-            <div class="desk-leg r"></div>
-          </div>
-        `;
+        const character = makeNode('char'); character.style.setProperty('--color', color);
+        character.append(makeNode('c-head', emoji), makeNode('c-body'));
+        for (const side of ['l', 'r']) {
+          const arm = makeNode(`c-arm ${side}`); arm.append(makeNode('c-forearm')); character.append(arm);
+        }
+        for (const side of ['l', 'r']) {
+          const leg = makeNode(`c-leg ${side}`); leg.append(makeNode('c-shin')); character.append(leg);
+        }
+        const desk = makeNode('desk-group'); desk.append(makeNode('desk-top'), makeNode('desk-leg l'), makeNode('desk-leg r'));
+        el.append(
+          makeNode('student-name', name), makeNode('target-mark'), makeNode('apology-bubble', '잘못했어요..😭'),
+          makeNode('chat-bubble', '소곤소곤..💬'), makeNode('sleep-bubble', 'Zzz..💤'), makeNode('chair', '🪑'),
+          character, desk
+        );
         sArea.appendChild(el);
       });
       updateRanking();
     }
 
     function updateRanking() {
-      let h = '';
-      winners.forEach(n => h += `<div class="ranking-item winner">🏆 ${playerEmojis[n]} ${n}</div>`);
-      alivePlayers.forEach(n => h += `<div class="ranking-item">✓ ${playerEmojis[n]} ${n}</div>`);
-      [...eliminatedPlayers].reverse().forEach(n => {
-        const info = eliminationRounds[n] || { reason: '알 수 없음' };
-        h += `
-          <div class="ranking-item eliminated">
-            <span>✗ ${playerEmojis[n]} ${n}</span>
-            <span class="reason-text">${info.reason}</span>
-          </div>`;
+      rList.replaceChildren();
+      const appendRow = (className, label, reason = '') => {
+        const row = document.createElement('div'); row.className = `ranking-item ${className}`;
+        const nameNode = document.createElement('span'); nameNode.textContent = label; row.appendChild(nameNode);
+        if (reason) {
+          const reasonNode = document.createElement('span'); reasonNode.className = 'reason-text'; reasonNode.textContent = reason; row.appendChild(reasonNode);
+        }
+        rList.appendChild(row);
+      };
+      winners.forEach(name => appendRow('winner', `🏆 ${playerEmojis[name]} ${name}`));
+      alivePlayers.forEach(name => appendRow('alive', `✓ ${playerEmojis[name]} ${name}`));
+      [...eliminatedPlayers].reverse().forEach(name => {
+        const info = eliminationRounds[name] || { reason: '알 수 없음' };
+        appendRow('eliminated', `✗ ${playerEmojis[name]} ${name}`, `${info.reason} · R${info.round || '?'}`);
       });
-      rList.innerHTML = h || '<div style="color:rgba(255,255,255,0.4);text-align:center;padding:20px;">참여자를 입력하세요</div>';
+      if (!rList.childElementCount) {
+        const placeholder = document.createElement('div'); placeholder.className = 'ranking-placeholder';
+        placeholder.textContent = '참여자를 입력하세요'; rList.appendChild(placeholder);
+      }
     }
 
     function generateMathProblem() {
-      const a = Math.floor(Math.random() * 20) + 1;
-      const b = Math.floor(Math.random() * 20) + 1;
+      let a = Math.floor(outcomeRandom() * 20) + 1;
+      let b = Math.floor(outcomeRandom() * 20) + 1;
       const ops = ['+', '-'];
-      const op = ops[Math.floor(Math.random() * ops.length)];
+      const op = ops[Math.floor(outcomeRandom() * ops.length)];
+      if (op === '-' && b > a) [a, b] = [b, a];
       return `${a} ${op} ${b} = ${op === '+' ? a + b : a - b}`;
     }
 
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    function shuffle(values) {
+      const shuffled = [...values];
+      for (let index = shuffled.length - 1; index > 0; index--) {
+        const swapIndex = Math.floor(outcomeRandom() * (index + 1));
+        [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+      }
+      return shuffled;
+    }
 
-    async function gameLoop() {
-      while (gameRunning && alivePlayers.length > parseInt(wCount.value)) {
-        if (gameStopped) break;
+    function abortError() { return new DOMException('Run cancelled', 'AbortError'); }
 
+    function sleep(ms, token = runToken) {
+      return new Promise((resolve, reject) => {
+        if (token !== runToken) { reject(abortError()); return; }
+        const timer = setTimeout(() => {
+          pendingSleeps.delete(timer);
+          if (token !== runToken) reject(abortError()); else resolve();
+        }, Math.max(0, ms));
+        pendingSleeps.set(timer, reject);
+      });
+    }
+
+    function pacedSleep(ms, token) {
+      simulationTimeMs += ms;
+      return sleep(ms * TIMING_SCALE, token);
+    }
+
+    function scheduleReaction(callback, delay, token) {
+      const timer = setTimeout(() => {
+        reactionTimeouts = reactionTimeouts.filter(id => id !== timer);
+        if (token === runToken) callback();
+      }, Math.max(0, delay * TIMING_SCALE));
+      reactionTimeouts.push(timer);
+    }
+
+    function cancelScheduled() {
+      reactionTimeouts.forEach(timer => clearTimeout(timer)); reactionTimeouts = [];
+      for (const [timer, reject] of pendingSleeps) { clearTimeout(timer); reject(abortError()); }
+      pendingSleeps.clear();
+    }
+
+    function setControlsDisabled(disabled) {
+      [pInput, wCount, startBtn].forEach(control => { control.disabled = disabled; });
+    }
+
+    function clearStudentState(index, restoreFace = true) {
+      const element = $(`student-${index}`);
+      if (!element) return;
+      element.classList.remove('dancing', 'chatting', 'chat-left', 'chat-right', 'sleeping', 'caught');
+      if (restoreFace) element.querySelector('.c-head').textContent = playerEmojis[participants[index]];
+    }
+
+    function applyRoundState(index, roundType, actors) {
+      const element = $(`student-${index}`);
+      if (!element) return;
+      if (roundType === 2) {
+        element.classList.add('sleeping'); element.querySelector('.c-head').textContent = '😪';
+      } else if (roundType === 1) {
+        element.classList.add('chatting');
+        const position = actors.indexOf(index);
+        const partnerPosition = position % 2 === 0 ? position + 1 : position - 1;
+        const partner = actors[partnerPosition] ?? index;
+        element.classList.add(index < partner ? 'chat-right' : 'chat-left');
+      } else {
+        element.classList.add('dancing');
+      }
+    }
+
+    async function gameLoop(token) {
+      const winnerTarget = Number(wCount.value);
+      while (gameRunning && token === runToken && alivePlayers.length > winnerTarget) {
         currentRound++;
-        rCounter.textContent = `ROUND ${currentRound}`;
-        rCounter.style.display = 'block';
-
+        rCounter.textContent = `ROUND ${currentRound}`; rCounter.style.display = 'block';
         teacher.classList.remove('watching');
-        bubble.style.display = 'block';
-        bubble.textContent = '';
-        bubble.style.color = '#333';
+        bubble.style.display = 'none'; bubble.textContent = ''; bubble.style.color = '#333';
+        reactionTimeouts.forEach(timer => clearTimeout(timer)); reactionTimeouts = [];
 
-        reactionTimeouts = {};
-
-        const aliveIndices = participants.map((n, i) => alivePlayers.includes(n) ? i : -1).filter(i => i !== -1);
-
-        // Decide round type (0: Dancing, 1: Chatting, 2: Sleeping)
-        let roundType = 0;
-        if (currentRound > 1) {
-          const rand = Math.random();
-          if (rand < 0.33 && aliveIndices.length >= 2) roundType = 1;
-          else if (rand < 0.66) roundType = 2;
-          else roundType = 0;
-        }
-
-        const isPeacefulRound = (currentRound === 1 || Math.random() > 0.8);
-
-        // Determine how many students will "break the rules"
+        const aliveIndices = participants.map((name, index) => alivePlayers.includes(name) ? index : -1).filter(index => index !== -1);
+        const typeRoll = currentRound === 1 ? 0.9 : outcomeRandom();
+        const roundType = typeRoll < .33 && aliveIndices.length >= 2 ? 1 : (typeRoll < .66 ? 2 : 0);
+        const forcedEscalation = currentRound >= Math.max(4, participants.length);
+        const isPeacefulRound = currentRound === 1 || (!forcedEscalation && outcomeRandom() > .8);
         const maxByRatio = Math.max(1, Math.floor(alivePlayers.length / 3));
-        const maxByWinners = alivePlayers.length - parseInt(wCount.value);
-        const currentLimit = Math.min(maxByRatio, maxByWinners);
-        const numToAct = isPeacefulRound ? Math.max(1, Math.floor(currentLimit / 2)) : (Math.floor(Math.random() * currentLimit) + 1);
+        const currentLimit = Math.min(maxByRatio, alivePlayers.length - winnerTarget);
+        const numToAct = isPeacefulRound ? Math.max(1, Math.floor(currentLimit / 2)) : Math.floor(outcomeRandom() * currentLimit) + 1;
 
-        let actors = [];
-        if (roundType === 1) { // Chatting
-          const numPairs = Math.max(1, Math.ceil(numToAct / 2));
-          for (let p = 0; p < numPairs; p++) {
-            const available = aliveIndices.filter(idx => !actors.includes(idx));
-            if (available.length < 2) break;
-            const startPos = Math.floor(Math.random() * (available.length - 1));
-            actors.push(available[startPos], available[startPos + 1]);
-          }
-        } else if (roundType === 2) { // Sleeping
-          const shuffled = [...aliveIndices].sort(() => Math.random() - 0.5);
-          actors = shuffled.slice(0, numToAct);
-        } else { // Dancing
-          const shuffled = [...aliveIndices].sort(() => Math.random() - 0.5);
-          const numDancing = Math.max(numToAct, Math.floor(aliveIndices.length * 0.6));
-          actors = shuffled.slice(0, numDancing);
+        let actors;
+        if (roundType === 1) {
+          const pairCount = Math.max(2, Math.ceil(numToAct / 2) * 2);
+          actors = shuffle(aliveIndices).slice(0, Math.min(aliveIndices.length, pairCount));
+        } else if (roundType === 2) {
+          actors = shuffle(aliveIndices).slice(0, numToAct);
+        } else {
+          actors = shuffle(aliveIndices).slice(0, Math.max(numToAct, Math.ceil(aliveIndices.length * .62)));
         }
-
-        // Apply initial states - strictly one behavior per round
-        aliveIndices.forEach(idx => {
-          const el = $('student-' + idx);
-          const isActor = actors.includes(idx);
-
-          if (isActor) {
-            if (roundType === 2) {
-              el.classList.add('sleeping');
-              el.querySelector('.c-head').textContent = '😪';
-            } else if (roundType === 1) {
-              el.classList.add('chatting');
-              const actorIdxInActors = actors.indexOf(idx);
-              const partnerIdxInActors = actorIdxInActors % 2 === 0 ? actorIdxInActors + 1 : actorIdxInActors - 1;
-              el.classList.add(idx < actors[partnerIdxInActors] ? 'chat-right' : 'chat-left');
-            } else {
-              el.classList.add('dancing');
-            }
-          }
-        });
+        const caughtTargets = isPeacefulRound ? [] : actors.slice(0, Math.min(numToAct, currentLimit));
+        actors.forEach(index => applyRoundState(index, roundType, actors));
 
         const problem = generateMathProblem();
-        const speed = Math.max(40, 150 - (10 - alivePlayers.length) * 10);
-
-        const reactionTimes = {};
-        for (let char of problem) {
-          if (gameStopped) return;
-          bubble.textContent += char;
-          sound.playTick();
-
-          if (roundType === 1 && !isPeacefulRound && bubble.textContent.length > problem.length * 0.7) {
-            break;
-          }
-
-          if (char === '=') {
-            sound.playWarning();
-            actors.forEach(idx => {
-              let time;
-              const isCaughtTarget = !isPeacefulRound && actors.indexOf(idx) < numToAct;
-
-              if (isCaughtTarget) time = 1500 + Math.random() * 500;
-              else time = 50 + Math.random() * 200;
-
-              const name = participants[idx];
-              reactionTimes[name] = Date.now() + time;
-              reactionTimeouts[name] = setTimeout(() => {
-                const el = $('student-' + idx);
-                if (el) {
-                  el.classList.remove('dancing', 'chatting', 'chat-left', 'chat-right', 'sleeping');
-                  el.querySelector('.c-head').textContent = playerEmojis[name];
-                }
-              }, time);
-            });
-          }
-          await sleep(speed + Math.random() * 40);
-        }
-
-        // --- NEW: Force sit down for anyone who hasn't started yet (e.g. early turn) ---
-        actors.forEach(idx => {
-          const name = participants[idx];
-          if (!reactionTimes[name]) {
-            const isCaughtTarget = !isPeacefulRound && actors.indexOf(idx) < numToAct;
-            let time = isCaughtTarget ? 1500 : (100 + Math.random() * 400);
-            
-            reactionTimes[name] = Date.now() + time;
-            reactionTimeouts[name] = setTimeout(() => {
-              const el = $('student-' + idx);
-              if (el) {
-                el.classList.remove('dancing', 'chatting', 'chat-left', 'chat-right', 'sleeping');
-                el.querySelector('.c-head').textContent = playerEmojis[name];
-              }
-            }, time);
-          }
+        const displayLength = roundType === 1 && !isPeacefulRound ? Math.max(1, Math.ceil(problem.length * .76)) : problem.length;
+        const displayedProblem = problem.slice(0, displayLength);
+        const baseSpeed = Math.max(55, 145 - Math.min(80, (currentRound - 1) * 8 + eliminatedPlayers.length * 3));
+        const charDelays = Array.from(displayedProblem, () => baseSpeed + outcomeRandom() * 34);
+        const equalIndex = displayedProblem.indexOf('=');
+        const teacherLookDelay = 150 + (equalIndex >= 0 ? charDelays.slice(equalIndex).reduce((sum, delay) => sum + delay, 0) : 260);
+        const reactionDelays = Object.create(null);
+        actors.forEach(index => {
+          const name = participants[index];
+          reactionDelays[name] = caughtTargets.includes(index) ? 920 + outcomeRandom() * 360 : 70 + outcomeRandom() * 170;
         });
 
-        await sleep(150);
+        let reactionsScheduled = false;
+        const scheduleReactions = () => {
+          if (reactionsScheduled) return;
+          reactionsScheduled = true; sound.playWarning();
+          actors.forEach(index => {
+            const name = participants[index];
+            scheduleReaction(() => clearStudentState(index), reactionDelays[name], token);
+          });
+        };
+
+        boardProblem.textContent = '';
+        for (let index = 0; index < displayedProblem.length; index++) {
+          boardProblem.textContent += displayedProblem[index]; sound.playTick();
+          if (displayedProblem[index] === '=') scheduleReactions();
+          await pacedSleep(charDelays[index], token);
+        }
+        scheduleReactions();
+        await pacedSleep(150, token);
 
         teacher.classList.add('watching');
-        bubble.style.color = "#ff4b2b";
-
-        const catchTime = Date.now();
-        const lateStudents = actors.map(idx => participants[idx]).filter(name => !reactionTimes[name] || reactionTimes[name] > catchTime);
+        if (currentRound >= 3) {
+          phaseBanner.textContent = currentRound >= 6 ? '🔥 FINAL EXAM · 초고속 감시! 🔥' : '⚡ 수업 속도가 빨라집니다! ⚡';
+          phaseBanner.classList.add('show');
+        }
+        const lateStudents = actors.map(index => participants[index]).filter(name => reactionDelays[name] > teacherLookDelay);
         const toEliminate = lateStudents.slice(0, currentLimit);
+        reactionTimeouts.forEach(timer => clearTimeout(timer)); reactionTimeouts = [];
+        actors.forEach(index => { if (!toEliminate.includes(participants[index])) clearStudentState(index); });
 
-        if (toEliminate.length > 0) {
-          let reason = roundType === 1 ? REASONS.CHATTING : (roundType === 2 ? REASONS.SLEEPING : REASONS.DANCING);
+        const reason = roundType === 1 ? REASONS.CHATTING : (roundType === 2 ? REASONS.SLEEPING : REASONS.DANCING);
+        roundAudit.push({
+          round: currentRound, type: ['dance', 'chat', 'sleep'][roundType], peaceful: isPeacefulRound,
+          problem, targets: caughtTargets.map(index => participants[index]), eliminated: [...toEliminate]
+        });
+
+        if (toEliminate.length) {
           sound.playCaught();
+          document.getElementById('classroom').classList.remove('impact');
+          void document.getElementById('classroom').offsetWidth;
+          document.getElementById('classroom').classList.add('impact');
+          toEliminate.forEach(name => $(`student-${participants.indexOf(name)}`)?.classList.add('caught'));
+          await pacedSleep(400, token);
+
+          bubble.style.display = 'block'; bubble.style.color = '#d62e59';
+          const names = toEliminate.join(', ');
+          bubble.textContent = reason === REASONS.CHATTING
+            ? `누가 이렇게 떠들어!!\n${names} 손들고 반성해!`
+            : reason === REASONS.SLEEPING
+              ? `수업시간에 잠을 자다니!!\n${names} 일어나서 반성해!`
+              : `수업 시간에 춤 금지!!\n${names} 손들고 반성해!`;
 
           toEliminate.forEach(name => {
-            if (reactionTimeouts[name]) clearTimeout(reactionTimeouts[name]);
-            const idx = participants.indexOf(name);
-            $('student-' + idx).classList.add('caught');
-          });
-
-          await sleep(400);
-
-          const styledNames = toEliminate.map(name => `<span style="color: black;">${name}</span>`).join(', ');
-
-          if (reason === REASONS.CHATTING) bubble.innerHTML = `누가 이렇게 떠들어!!\n${styledNames} 손들고 반성해!`;
-          else if (reason === REASONS.SLEEPING) bubble.innerHTML = `수업시간에 잠을 자다니!!\n${styledNames} 일어나서 반성해!`;
-          else bubble.innerHTML = `수업 시간에 춤 금지!!\n${styledNames} 손들고 반성해!`;
-
-          toEliminate.forEach(name => {
-            const idx = participants.indexOf(name);
-            const el = $('student-' + idx);
-            el.classList.remove('dancing', 'chatting', 'chat-left', 'chat-right', 'sleeping');
-            el.classList.remove('caught');
-            el.classList.add('eliminated');
-            el.querySelector('.c-head').textContent = '😭';
-            alivePlayers = alivePlayers.filter(n => n !== name);
-            eliminatedPlayers.push(name);
-            eliminationRounds[name] = { reason: reason };
+            const index = participants.indexOf(name), element = $(`student-${index}`);
+            clearStudentState(index, false); element?.classList.add('eliminated');
+            if (element) element.querySelector('.c-head').textContent = '😭';
+            alivePlayers = alivePlayers.filter(player => player !== name); eliminatedPlayers.push(name);
+            eliminationRounds[name] = { reason, round: currentRound, time: simulationTimeMs / 1000 };
           });
           updateRanking();
-          await sleep(2000);
+          await pacedSleep(1250, token);
         } else {
-          bubble.style.color = "black";
-          bubble.textContent = "수업 잘 듣고 있군요.\n좋습니다. 계속 수업할게요.";
-          await sleep(1000);
+          bubble.style.display = 'block'; bubble.style.color = '#222';
+          bubble.textContent = '수업 잘 듣고 있군요.\n좋습니다. 계속 수업할게요.';
+          await pacedSleep(720, token);
         }
       }
 
-      if (!gameStopped) {
-        winners = [...alivePlayers];
-        alivePlayers = [];
-        updateRanking();
-        showWinner();
+      if (!gameStopped && token === runToken) {
+        gameRunning = false; winners = [...alivePlayers]; alivePlayers = [];
+        updateRanking(); boardProblem.textContent = '수업 끝!';
+        bubble.style.display = 'none'; phaseBanner.classList.remove('show');
+        await pacedSleep(950, token);
+        if (token === runToken) showWinner();
       }
     }
 
     function showWinner() {
       bubble.style.display = 'none';
       sound.playWin();
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth() + 1;
-      const day = now.getDate();
-
-      const winnersList = winners.map(w => `${playerEmojis[w]} ${w}`).join(', ');
-
-      const overlay = document.createElement('div');
-      overlay.className = 'winner-overlay';
-      overlay.innerHTML = `
-        <div class="certificate">
-          <div class="cert-title">상 장</div>
-          <div class="cert-award-name">제 2025-수학-01호 (모범상)</div>
-          <div class="cert-names">성명: ${winnersList}</div>
-          <div class="cert-content">
-            위 학생들은 평소 투철한 학업 정신과 성실한 자세로 수학 시간에 임하였으며, 
-            특히 선생님이 칠판을 향해 열정적으로 문제를 풀이하는 동안 
-            단 한 순간의 흔들림 없이 책상을 지키며 학업에 전념하여 타의 귀감이 되었으므로 
-            이에 상장을 수여하여 그 공로를 치하함.
-          </div>
-          <div class="cert-date">${year}년 ${month}월 ${day}일</div>
-          <div class="cert-footer">수학 선생님 일동 (인)</div>
-          <button class="cert-btn" onclick="this.parentElement.parentElement.remove()">확인</button>
-        </div>
-      `;
-      document.body.appendChild(overlay);
+      winnerNames.textContent = `성명: ${winners.map(name => `${playerEmojis[name]} ${name}`).join(', ')}`;
+      certificateNumber.textContent = 'PLAYPICK 모범상';
+      resultStats.textContent = `${currentRound}라운드 · 시뮬레이션 ${(simulationTimeMs / 1000).toFixed(3)}초`;
+      winnerOverlay.classList.add('show'); winnerOverlay.setAttribute('aria-hidden', 'false');
+      document.querySelectorAll('aside, main').forEach(element => { element.inert = true; });
+      setControlsDisabled(false); startCelebration(); closeWinnerBtn.focus();
     }
 
-    function showToast(m) {
-      const e = document.querySelector('.toast');
-      if (e) e.remove();
-      const t = document.createElement('div');
-      t.className = 'toast';
-      t.textContent = m;
-      document.body.appendChild(t);
-      setTimeout(() => t.remove(), 2500);
+    function resizeCelebrationCanvas() {
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      celebCanvas.width = Math.round(innerWidth * ratio); celebCanvas.height = Math.round(innerHeight * ratio);
+      celebCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
     }
 
-    copyResultBtn.onclick = () => {
+    function startCelebration() {
+      stopCelebration(); resizeCelebrationCanvas();
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const colors = ['#ff5d9e','#8c63ff','#57dcff','#ffd36a','#ff8a4c'];
+      const particles = Array.from({ length: reduced ? 45 : 150 }, (_, index) => ({
+        x: innerWidth * (.18 + visualRandom() * .64), y: innerHeight * (.33 + visualRandom() * .12),
+        vx: (visualRandom() - .5) * 9, vy: -4 - visualRandom() * 8,
+        gravity: .12 + visualRandom() * .08, rotation: visualRandom() * Math.PI,
+        spin: (visualRandom() - .5) * .24, size: 4 + visualRandom() * 7,
+        color: colors[index % colors.length], life: 1
+      }));
+      let lastTimestamp = 0;
+      const animate = timestamp => {
+        if (!lastTimestamp) lastTimestamp = timestamp;
+        const dt = Math.min((timestamp - lastTimestamp) / 1000, .05); lastTimestamp = timestamp;
+        const dtScale = dt * 60; celebCtx.clearRect(0, 0, innerWidth, innerHeight);
+        let alive = false;
+        for (const particle of particles) {
+          if (particle.life <= 0) continue;
+          alive = true; particle.x += particle.vx * dtScale; particle.y += particle.vy * dtScale;
+          particle.vy += particle.gravity * dtScale; particle.rotation += particle.spin * dtScale; particle.life -= dt * .48;
+          celebCtx.save(); celebCtx.globalAlpha = Math.max(0, particle.life); celebCtx.translate(particle.x, particle.y); celebCtx.rotate(particle.rotation);
+          celebCtx.fillStyle = particle.color; celebCtx.fillRect(-particle.size / 2, -particle.size / 4, particle.size, particle.size / 2); celebCtx.restore();
+        }
+        if (alive) celebrationAnimationId = requestAnimationFrame(animate); else stopCelebration();
+      };
+      celebrationAnimationId = requestAnimationFrame(animate);
+    }
+
+    function stopCelebration() {
+      if (celebrationAnimationId) cancelAnimationFrame(celebrationAnimationId);
+      celebrationAnimationId = null;
+      if (celebCtx) celebCtx.clearRect(0, 0, innerWidth, innerHeight);
+    }
+
+    function showToast(message) {
+      toast.textContent = message; toast.classList.add('show');
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function getResultText() {
+      let result = '💃 교실에서 춤을! 결과\n━━━━━━━━━━━━━━━\n';
+      result += `⏱️ 시뮬레이션: ${(simulationTimeMs / 1000).toFixed(3)}초\n`;
+      if (winners.length) result += `🏆 최종 생존자: ${winners.join(', ')}\n`;
+      result += `📊 총 ${currentRound}라운드 진행\n👥 참여자: ${participants.length}명\n`;
+      if (eliminatedPlayers.length) {
+        result += '❌ 탈락자 목록:\n';
+        eliminatedPlayers.forEach(name => {
+          const info = eliminationRounds[name];
+          result += `- ${name} (${info.reason}, R${info.round}, ${info.time.toFixed(3)}s)\n`;
+        });
+      }
+      return result;
+    }
+
+    async function copyText(text) {
+      if (navigator.clipboard?.writeText) { await navigator.clipboard.writeText(text); return; }
+      const fallback = document.createElement('textarea'); fallback.value = text;
+      fallback.style.position = 'fixed'; fallback.style.opacity = '0'; document.body.appendChild(fallback);
+      fallback.select();
+      if (!document.execCommand('copy')) { fallback.remove(); throw new Error('copy failed'); }
+      fallback.remove();
+    }
+
+    copyResultBtn.onclick = async () => {
       if (winners.length === 0 && eliminatedPlayers.length === 0) {
         showToast('아직 게임 결과가 없습니다!');
         return;
       }
-      let r = '💃 교실에서 춤을! 결과\n━━━━━━━━━━━━━━━\n';
-      if (winners.length > 0) r += `🏆 최종 생존자: ${winners.join(', ')}\n`;
-      r += `📊 총 ${currentRound}라운드 진행\n👥 참여자: ${participants.length}명\n`;
-      if (eliminatedPlayers.length > 0) {
-        r += `❌ 탈락자 목록:\n`;
-        eliminatedPlayers.forEach(n => {
-          const info = eliminationRounds[n];
-          r += `- ${n} (${info.reason})\n`;
-        });
-      }
-      navigator.clipboard.writeText(r).then(() => showToast('결과가 복사되었습니다!'))
-        .catch(() => showToast('복사에 실패했습니다.'));
+      try { await copyText(getResultText()); showToast('결과가 복사되었습니다!'); }
+      catch (error) { showToast('복사에 실패했습니다.'); }
     };
 
     startBtn.onclick = async () => {
       if (gameRunning) return;
+      clearTimeout(inputPreviewTimer);
       const names = parseParticipants(pInput.value);
-      if (names.length <= parseInt(wCount.value)) {
-        alert("참여자가 생존자 수보다 많아야 합니다!");
+      const winnerCount = Number(wCount.value);
+      if (names.truncated) showToast('참여자는 최대 30명까지 등록됩니다.');
+      if (names.length < 2 || names.length <= winnerCount) {
+        alert('참여자가 생존자 수보다 많아야 합니다!');
         return;
       }
-      sound.init();
-      sound.playStart();
-      gameRunning = true;
-      gameStopped = false;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      startBtn.disabled = true;
-      renderStudents();
-      await sleep(500);
-      gameLoop();
+      closeWinner(false); cancelScheduled();
+      const token = ++runToken;
+      setControlsDisabled(true); gameStopped = false;
+      try {
+        activeOutcomeRandom = Math.random; activeVisualRandom = Math.random;
+        simulationTimeMs = 0; roundAudit = []; saveSettings();
+        renderStudents(true); gameRunning = true;
+        sound.init(); sound.playStart(); window.scrollTo({ top: 0, behavior: 'smooth' });
+        await sleep(500 * TIMING_SCALE, token);
+        await gameLoop(token);
+      } catch (error) {
+        if (error?.name !== 'AbortError') {
+          console.error(error); gameRunning = false; setControlsDisabled(false); showToast('게임 진행 중 오류가 발생했습니다.');
+        }
+      }
     };
 
-    resetBtn.onclick = () => {
-      gameStopped = true;
-      gameRunning = false;
-      startBtn.disabled = false;
+    function closeWinner(shouldFocus = true) {
+      winnerOverlay.classList.remove('show'); winnerOverlay.setAttribute('aria-hidden', 'true'); stopCelebration();
+      document.querySelectorAll('aside, main').forEach(element => { element.inert = false; });
+      if (shouldFocus) startBtn.focus();
+    }
+
+    function resetGame() {
+      gameStopped = true; gameRunning = false; runToken++; cancelScheduled();
+      setControlsDisabled(false); closeWinner(false); configurePreviewRandom();
       renderStudents(true);
       teacher.classList.remove('watching');
-      bubble.style.display = 'none';
-      rCounter.style.display = 'none';
-    };
+      bubble.style.display = 'none'; rCounter.style.display = 'none'; phaseBanner.classList.remove('show');
+      document.getElementById('classroom').classList.remove('impact');
+    }
 
-    helpBtn.onclick = () => helpModal.style.display = 'flex';
-    modalCloseBtn.onclick = () => helpModal.style.display = 'none';
-    window.onclick = (e) => { if (e.target === helpModal) helpModal.style.display = 'none'; };
+    resetBtn.onclick = resetGame;
+    closeWinnerBtn.onclick = () => closeWinner(true);
+
+    let helpReturnFocus = null;
+    const closeHelp = () => {
+      helpModal.style.display = 'none'; helpModal.setAttribute('aria-hidden', 'true');
+      document.querySelectorAll('aside, main').forEach(element => { element.inert = false; });
+      helpReturnFocus?.focus();
+    };
+    helpBtn.onclick = event => {
+      helpReturnFocus = event.currentTarget; helpModal.style.display = 'flex'; helpModal.setAttribute('aria-hidden', 'false');
+      document.querySelectorAll('aside, main').forEach(element => { element.inert = true; }); modalCloseBtn.focus();
+    };
+    modalCloseBtn.onclick = closeHelp;
+    window.addEventListener('click', event => { if (event.target === helpModal) closeHelp(); });
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape') return;
+      if (helpModal.style.display === 'flex') closeHelp();
+      else if (winnerOverlay.classList.contains('show')) closeWinner(true);
+    });
+    window.addEventListener('resize', resizeCelebrationCanvas);
 
     init();
+    if (new URLSearchParams(location.search).has('qa')) {
+      window.__schoolDanceGame = {
+        reset: resetGame,
+        snapshot: () => ({
+          winners: [...winners], eliminated: [...eliminatedPlayers],
+          eliminationRounds: JSON.parse(JSON.stringify(eliminationRounds)), rounds: currentRound,
+          simulatedSeconds: (simulationTimeMs / 1000).toFixed(3), audit: JSON.parse(JSON.stringify(roundAudit)), running: gameRunning
+        }),
+        resultText: getResultText
+      };
+    }
   </script>
 </body>
 

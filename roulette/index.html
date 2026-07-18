@@ -1,1316 +1,1428 @@
-<!DOCTYPE html>
 <!--
 @game-meta
 {
   "id": "roulette",
-  "title": "룰렛 추첨",
+  "title": "네온 포춘 룰렛",
   "emoji": "🎡",
-  "category": "추첨",
-  "description": "화려한 룰렛 휠을 돌려 행운의 당첨자를 선정하세요!",
-  "features": ["🎨 화려한 색상", "⚡ 스핀 애니메이션"],
+  "category": "classic",
+  "description": "황금 포인터와 네온 휠로 여러 당첨자를 무작위로 선정하는 룰렛",
+  "features": ["정밀 포인터 판정", "다중 당첨", "매회 랜덤 회전", "회전 기록"],
+  "tags": ["룰렛", "추첨", "행운", "이벤트", "랜덤"],
   "color": "purple",
-  "badge": "NEW",
-  "version": "1.0.0",
-  "updated": "2025-12-23",
+  "version": "1.1.0",
+  "created": "2025-12-23",
+  "updated": "2026-07-17",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
     "github": "geniuskey"
+  },
+  "requirements": {
+    "minParticipants": 2,
+    "maxParticipants": 24,
+    "recommendedParticipants": "4-16"
+  },
+  "settings": {
+    "winnerCount": true,
+    "spinDuration": true,
+    "soundEnabled": true
   },
   "urls": {
     "service": "https://geniuskey.github.io/lottery/roulette/",
     "repository": "https://github.com/geniuskey/lottery"
   },
   "license": "MIT",
-  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+  "copyright": "© 2026 Euiyun Edwin Kim. Licensed under the MIT License."
 }
 @end-game-meta
 -->
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-GFTNV73W8L');
-    </script>
-
-    <title>룰렛 추첨 - 추첨 게임 포털</title>
-
-    <!-- SEO 기본 -->
-    <meta name="description" content="화려한 룰렛을 돌려 당첨자를 확인하세요! 직관적이고 시각적으로 즐거운 온라인 룰렛 추첨 게임.">
-    <meta name="author" content="Euiyun Edwin Kim">
-    <meta name="keywords" content="룰렛 추첨, 돌려돌려 돌림판, 추첨 게임, 온라인 추첨, 랜덤 선택, 점심 내기, 복불복">
-    
-    <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="추첨 게임 포털">
-    <meta property="og:title" content="🎡 룰렛 추첨 - 화려한 돌림판 추첨">
-    <meta property="og:description" content="멈추지 않는 긴장감! 룰렛 바늘이 멈추는 곳이 바로 당신의 운명입니다.">
-    <meta property="og:url" content="https://geniuskey.github.io/lottery/roulette/">
-    <meta property="og:image" content="https://geniuskey.github.io/lottery/og-image.png">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="🎡 룰렛 추첨 - 화려한 돌림판 추첨">
-    <meta name="twitter:description" content="멈추지 않는 긴장감! 룰렛 바늘이 멈추는 곳이 바로 당신의 운명입니다.">
-    <meta name="twitter:image" content="https://geniuskey.github.io/lottery/og-image.png">
-    
-    <!-- Canonical & Favicon -->
-    <link rel="canonical" href="https://geniuskey.github.io/lottery/roulette/">
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎡</text></svg>">
-    <meta name="robots" content="index, follow">
-    
-  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#080622">
+  <meta name="description" content="매 회전 새로운 정지 위치와 당첨 순서를 만드는 네온 포춘 룰렛">
+  <meta name="robots" content="index, follow">
+  <title>네온 포춘 룰렛 | PLAYPICK</title>
+  <link rel="canonical" href="https://geniuskey.github.io/lottery/roulette/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PLAYPICK">
+  <meta property="og:title" content="네온 포춘 룰렛 | PLAYPICK">
+  <meta property="og:description" content="황금 포인터 아래 정확히 멈추는 무작위 다중 당첨 룰렛">
+  <meta property="og:url" content="https://geniuskey.github.io/lottery/roulette/">
+  <meta property="og:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/roulette.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="네온 포춘 룰렛 | PLAYPICK">
+  <meta name="twitter:description" content="매번 새롭게 돌아가는 네온 행운의 휠">
+  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/roulette.webp">
   <style>
     :root {
-      --bg-dark: #0a0a1a;
-      --bg-sidebar: #12122a;
-      --accent-primary: #9b5de5;
-      --accent-secondary: #f15bb5;
-      --accent-gold: #ffd93d;
-      --text-primary: #ffffff;
-      --text-secondary: #a0a0c0;
-      --border-glow: rgba(155, 93, 229, 0.3);
-      --glass-bg: rgba(255, 255, 255, 0.05);
+      --ink: #fcfaff;
+      --muted: #aaa7c8;
+      --panel: rgba(12,10,42,.95);
+      --panel-soft: rgba(255,255,255,.065);
+      --line: rgba(255,255,255,.13);
+      --cyan: #42dcff;
+      --blue: #4f72ff;
+      --purple: #9c56ff;
+      --pink: #ff4eb2;
+      --red: #ff4f68;
+      --orange: #ff9447;
+      --gold: #ffd45a;
+      --green: #4ff1a0;
+      --sidebar: 334px;
     }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; background: #060519; }
     body {
-      font-family: 'Noto Sans KR', sans-serif;
-      background: var(--bg-dark);
-      color: var(--text-primary);
-      min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       overflow: hidden;
-      touch-action: manipulation;
+      color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      word-break: keep-all;
     }
-
-    .sidebar {
-      width: 320px;
-      min-width: 320px;
-      background: var(--bg-sidebar);
-      border-right: 1px solid var(--border-glow);
+    button, input, textarea, select { font: inherit; }
+    button, select { color: inherit; }
+    button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(66,220,255,.75);
+      outline-offset: 2px;
+    }
+    .control-panel {
+      width: var(--sidebar);
+      flex: 0 0 var(--sidebar);
+      height: 100dvh;
       display: flex;
       flex-direction: column;
-      padding: 20px;
-      gap: 15px;
-      height: 100vh;
+      gap: 14px;
+      padding: 21px 19px 16px;
+      overflow-y: auto;
+      z-index: 20;
+      border-right: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 3% 0%,rgba(156,86,255,.19),transparent 27%),
+        radial-gradient(circle at 100% 17%,rgba(255,78,178,.11),transparent 28%),
+        var(--panel);
+      box-shadow: 20px 0 50px rgba(0,0,0,.36);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(156,86,255,.46) transparent;
     }
-
-        .sidebar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            flex-shrink: 0;
-            gap: 10px;
-        }
-
-        .header-btns {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .help-btn, .sound-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: var(--glass-bg);
-            border: 1px solid var(--border-glow);
-            color: var(--accent-primary);
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .help-btn:hover, .sound-btn:hover {
-            background: rgba(255, 217, 61, 0.1);
-            border-color: var(--accent-primary);
-            transform: translateY(-2px);
-        }
-
-        .sidebar-header h1 {
-            font-family: 'Noto Sans KR', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            white-space: nowrap;
-            letter-spacing: -0.8px;
-
-            /* 프리미엄 금속 광택 효과 */
-            background: linear-gradient(
-                to right, 
-                var(--accent-primary) 0%, 
-                #fff 45%, 
-                #fff 55%, 
-                var(--accent-primary) 100%
-            );
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shine 5s linear infinite;
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
-        }
-
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        .sidebar-header h1 .title-emoji {
-            filter: drop-shadow(0 0 5px rgba(255, 217, 61, 0.5));
-            -webkit-text-fill-color: initial;
-            background: none;
-        }
-
-    .section-title {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
+    .brand-row { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      font-size: 1.35rem;
+      background: linear-gradient(145deg,var(--purple),var(--pink) 56%,var(--orange));
+      box-shadow: 0 9px 25px rgba(156,86,255,.33),inset 0 1px rgba(255,255,255,.45);
     }
-
-    .participants-input {
-      width: 100%;
-      background: var(--glass-bg);
-      border: 1px solid var(--border-glow);
+    .brand-copy { min-width: 0; flex: 1; }
+    .eyebrow { margin: 0 0 2px; color: var(--cyan); font-size: .62rem; font-weight: 950; letter-spacing: .2em; }
+    h1 { margin: 0; font-size: 1.26rem; letter-spacing: -.05em; }
+    .icon-btn {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
       border-radius: 12px;
-      padding: 12px;
-      color: var(--text-primary);
-      font-size: 0.95rem;
-      resize: vertical;
-      min-height: 80px;
-      transition: all 0.3s ease;
+      background: var(--panel-soft);
+      cursor: pointer;
+      transition: transform .18s,background .18s,border-color .18s;
     }
-
-    .participants-input:focus {
-      outline: none;
-      border-color: var(--accent-primary);
-      box-shadow: 0 0 20px rgba(155, 93, 229, 0.2);
-    }
-
-    .participants-input::placeholder { color: var(--text-secondary); }
-
-    .sidebar > section:not(.rankings) {
-      flex-shrink: 0;
-    }
-
-    .settings-card {
-      background: var(--glass-bg);
-      border: 1px solid var(--border-glow);
-      border-radius: 12px;
-      padding: 12px;
-      flex-shrink: 0;
-    }
-
-    .settings-card .section-title { margin-bottom: 8px; }
-
-    .settings-card-content {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .setting-item {
+    .icon-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,.11); border-color: rgba(66,220,255,.48); }
+    .field { display: grid; gap: 6px; }
+    .field-label {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 4px 0;
+      color: #dddaf0;
+      font-size: .77rem;
+      font-weight: 850;
     }
-
-    .setting-item label {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
+    .field-label small { color: var(--muted); font-weight: 650; }
+    textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      color: #fff;
+      background: rgba(255,255,255,.055);
+      transition: border-color .18s,background .18s;
     }
-
-    .setting-item select {
-      background: var(--bg-dark);
-      border: 1px solid var(--border-glow);
-      border-radius: 6px;
-      padding: 6px 10px;
-      color: var(--text-primary);
-      font-size: 0.9rem;
-      cursor: pointer;
+    textarea {
+      min-height: 72px;
+      max-height: 135px;
+      padding: 10px 11px;
+      resize: vertical;
+      border-radius: 13px;
+      font-size: .84rem;
+      line-height: 1.45;
     }
-
-    .setting-item select:focus {
-      outline: none;
-      border-color: var(--accent-primary);
+    textarea:hover, textarea:focus, select:hover, select:focus {
+      border-color: rgba(66,220,255,.48);
+      background: rgba(255,255,255,.08);
     }
-
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      flex-shrink: 0;
+    .input-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: .68rem; }
+    .settings-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(3,3,22,.35);
     }
-
-    .btn-start {
-      flex: 1;
-      padding: 14px 20px;
-      font-family: 'Black Han Sans', sans-serif;
-      font-size: 1.2rem;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      color: white;
-      transition: all 0.3s ease;
+    .mini-field { display: grid; gap: 5px; }
+    .mini-field span { color: var(--muted); font-size: .66rem; font-weight: 750; }
+    select {
+      height: 38px;
+      padding: 0 28px 0 9px;
+      border-radius: 10px;
+      font-size: .76rem;
+      font-weight: 850;
     }
-
-    .btn-start:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(155, 93, 229, 0.4);
-    }
-
-    .btn-start:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .btn-reset {
-      width: 50px;
+    select option { color: #17132d; }
+    .action-row { display: grid; grid-template-columns: 1fr 54px; gap: 8px; }
+    .primary-btn, .reset-btn {
       height: 50px;
-      border: 1px solid var(--border-glow);
-      border-radius: 12px;
-      background: var(--glass-bg);
-      color: var(--text-secondary);
-      font-size: 1.3rem;
+      border: 0;
+      border-radius: 14px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      font-weight: 950;
+      transition: transform .18s,filter .18s,opacity .18s;
     }
-
-    .btn-reset:hover {
-      border-color: var(--accent-secondary);
-      color: var(--accent-secondary);
+    .primary-btn {
+      color: #0d0a23;
+      background: linear-gradient(105deg,var(--cyan),#7472ff 48%,var(--pink));
+      box-shadow: 0 12px 29px rgba(79,114,255,.24);
     }
-
-    .rankings {
-      flex: 1;
+    .reset-btn { border: 1px solid var(--line); background: rgba(255,255,255,.09); font-size: 1.08rem; }
+    .primary-btn:hover:not(:disabled), .reset-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.08); }
+    button:disabled, input:disabled, textarea:disabled, select:disabled { cursor: not-allowed; opacity: .48; }
+    .winner-card {
+      min-height: 155px;
       display: flex;
       flex-direction: column;
-      min-height: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(3,3,22,.4);
     }
-
-    .rankings-list {
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .rank-item {
-      display: flex;
+    .winner-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: .76rem; font-weight: 900; }
+    .winner-title span:last-child { color: var(--green); font: 800 .65rem ui-monospace,monospace; }
+    .winner-history { display: grid; gap: 5px; max-height: 220px; overflow-y: auto; }
+    .history-item {
+      display: grid;
+      grid-template-columns: 28px minmax(0,1fr) auto;
       align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      background: var(--glass-bg);
-      border-radius: 10px;
-      border: 1px solid transparent;
-      transition: all 0.3s ease;
+      gap: 7px;
+      min-height: 33px;
+      padding: 6px 8px;
+      border-left: 3px solid var(--gold);
+      border-radius: 9px;
+      color: #fff0ad;
+      background: rgba(255,212,90,.08);
+      font-size: .73rem;
     }
-
-    .rank-item.winner {
-      border-color: var(--accent-gold);
-      background: rgba(255, 217, 61, 0.1);
-      animation: winnerGlow 1s ease infinite alternate;
-    }
-
-    @keyframes winnerGlow {
-      from { box-shadow: 0 0 10px rgba(255, 217, 61, 0.3); }
-      to { box-shadow: 0 0 20px rgba(255, 217, 61, 0.6); }
-    }
-
-    .rank-position {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 0.85rem;
-    }
-
-    .rank-position.gold { background: linear-gradient(135deg, #ffd93d, #f0b90b); color: #000; }
-    .rank-position.silver { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #000; }
-    .rank-position.bronze { background: linear-gradient(135deg, #cd7f32, #b8690e); color: #fff; }
-    .rank-position.normal { background: var(--glass-bg); color: var(--text-secondary); }
-
-    .rank-name {
-      flex: 1;
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-
-    .sidebar-footer {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      padding-top: 15px;
-      border-top: 1px solid var(--border-glow);
-      flex-shrink: 0;
-    }
-
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      background: var(--glass-bg);
-      border: 1px solid var(--border-glow);
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      position: relative;
-    }
-
-    .icon-btn:hover {
-      border-color: var(--accent-primary);
-      color: var(--accent-primary);
-      transform: translateY(-2px);
-    }
-
-    .icon-btn[data-tooltip]:hover::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--bg-dark);
-      border: 1px solid var(--border-glow);
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      white-space: nowrap;
-      z-index: 100;
-    }
+    .history-rank { text-align: center; font-weight: 950; }
+    .history-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 850; }
+    .history-spin { color: var(--muted); font: 750 .6rem ui-monospace,monospace; }
+    .waiting-history { padding: 18px 8px; color: var(--muted); text-align: center; font-size: .75rem; line-height: 1.6; }
+    .panel-footer { margin-top: auto; display: flex; justify-content: center; gap: 8px; }
+    .footer-link { color: var(--muted); text-decoration: none; }
 
     .game-area {
+      position: relative;
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      position: relative;
-      min-width: 0; /* Allow shrinking in flex container */
+      min-width: 0;
+      height: 100dvh;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 50% 52%,rgba(156,86,255,.2),transparent 27%),
+        radial-gradient(circle at 10% 25%,rgba(66,220,255,.15),transparent 23%),
+        radial-gradient(circle at 91% 22%,rgba(255,78,178,.16),transparent 24%),
+        linear-gradient(#080621,#0d0931 56%,#07051c);
     }
-
-    .copyright {
+    .game-area::before {
+      content: "";
       position: absolute;
-      bottom: 10px;
-      right: 15px;
-      font-size: 0.7rem;
-      color: rgba(255, 255, 255, 0.25);
-      pointer-events: none;
-      user-select: none;
+      inset: 0;
+      z-index: -5;
+      opacity: .58;
+      background:
+        radial-gradient(circle,rgba(255,255,255,.72) 0 1px,transparent 1.5px),
+        linear-gradient(120deg,transparent 8%,rgba(66,220,255,.1) 8.3%,transparent 9%),
+        linear-gradient(60deg,transparent 12%,rgba(255,78,178,.1) 12.3%,transparent 13%);
+      background-size: 38px 38px,45% 100%,48% 100%;
     }
-
-    .wheel-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #wheelCanvas {
-      display: block;
+    .cloud {
+      position: absolute;
+      z-index: -2;
+      width: 38%;
+      height: 24%;
       border-radius: 50%;
-      box-shadow: 0 0 50px rgba(155, 93, 229, 0.3), 0 0 100px rgba(155, 93, 229, 0.1);
+      filter: blur(18px);
+      opacity: .44;
     }
-
+    .cloud-left { left: -10%; bottom: 2%; background: radial-gradient(circle,var(--cyan),var(--blue) 45%,transparent 70%); }
+    .cloud-right { right: -10%; bottom: 4%; background: radial-gradient(circle,var(--pink),var(--purple) 48%,transparent 72%); }
+    .arena-header {
+      position: absolute;
+      top: 17px;
+      left: 50%;
+      z-index: 8;
+      width: min(610px,63%);
+      text-align: center;
+      transform: translateX(-50%);
+    }
+    .arena-kicker { color: var(--cyan); font: 950 .62rem ui-monospace,monospace; letter-spacing: .22em; text-shadow: 0 0 16px rgba(66,220,255,.6); }
+    .arena-title {
+      margin-top: 6px;
+      padding: 9px 16px 10px;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 15px;
+      background: linear-gradient(180deg,rgba(29,25,79,.88),rgba(7,6,28,.9));
+      box-shadow: 0 14px 35px rgba(0,0,0,.32),inset 0 0 22px rgba(66,220,255,.04);
+      font-size: clamp(1.12rem,2vw,1.75rem);
+      font-weight: 1000;
+      letter-spacing: -.05em;
+    }
+    .arena-proof { margin-top: 5px; color: #aaa7c8; font: 750 .59rem ui-monospace,monospace; }
+    .hud {
+      position: absolute;
+      top: 18px;
+      right: 19px;
+      z-index: 9;
+      display: grid;
+      grid-template-columns: repeat(2,91px);
+      gap: 8px;
+    }
+    .hud-stat {
+      padding: 9px 7px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: rgba(6,5,25,.76);
+      text-align: center;
+    }
+    .hud-stat strong { display: block; color: var(--gold); font: 950 1rem ui-monospace,monospace; }
+    .hud-stat span { color: var(--muted); font-size: .57rem; letter-spacing: .08em; }
+    .wheel-stage {
+      position: absolute;
+      inset: 92px 18px 76px;
+      display: grid;
+      place-items: center;
+      z-index: 3;
+    }
+    .wheel-machine {
+      position: relative;
+      width: var(--wheel-size,650px);
+      height: var(--wheel-size,650px);
+      filter: drop-shadow(0 28px 40px rgba(0,0,0,.5));
+    }
+    .wheel-glow {
+      position: absolute;
+      inset: -6%;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg,rgba(66,220,255,.36),rgba(156,86,255,.18),rgba(255,78,178,.35),rgba(255,212,90,.24),rgba(66,220,255,.36));
+      filter: blur(18px);
+      opacity: .72;
+      animation: glow-turn 8s linear infinite;
+    }
+    @keyframes glow-turn { to { transform: rotate(360deg); } }
+    .wheel-frame {
+      position: absolute;
+      inset: 0;
+      border: clamp(12px,1.6vw,20px) solid #131330;
+      border-radius: 50%;
+      background: #08071d;
+      box-shadow:
+        0 0 0 5px #f0a948,
+        0 0 0 9px #4c2c85,
+        0 0 0 12px #ffca5a,
+        inset 0 0 35px rgba(0,0,0,.6),
+        0 25px 45px rgba(0,0,0,.52);
+    }
+    #wheelCanvas {
+      position: absolute;
+      inset: 4.5%;
+      width: 91%;
+      height: 91%;
+      border-radius: 50%;
+      transform: rotate(0rad);
+      will-change: transform;
+    }
+    .studs { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
+    .stud {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: clamp(8px,1vw,13px);
+      aspect-ratio: 1;
+      border: 2px solid #8d501e;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%,#fff1a0,#f7af3c 45%,#9d501b 78%);
+      box-shadow: 0 0 10px rgba(255,212,90,.62);
+      transform: translate(-50%,-50%) rotate(var(--angle)) translateY(calc(var(--wheel-size,-650px) * -.47));
+    }
     .wheel-pointer {
       position: absolute;
-      top: -20px;
       left: 50%;
-      transform: translateX(-50%);
-      font-size: 3rem;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+      top: -4%;
       z-index: 10;
+      width: clamp(54px,7vw,84px);
+      height: clamp(80px,10vw,112px);
+      transform: translateX(-50%);
+      filter: drop-shadow(0 10px 12px rgba(0,0,0,.4));
     }
-
-    .wheel-center {
+    .wheel-pointer::before {
+      content: "";
       position: absolute;
-      width: 80px;
-      height: 80px;
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      border: 4px solid white;
+      inset: 0;
+      clip-path: polygon(50% 100%,4% 30%,12% 9%,88% 9%,96% 30%);
+      background: linear-gradient(90deg,#b76c25,#ffe081 42%,#ffba43 67%,#9b521c);
+      box-shadow: inset 0 0 0 4px #fff0a0;
     }
-
-    .winner-display {
+    .wheel-pointer::after {
+      content: "";
       position: absolute;
-      top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.5);
-      background: linear-gradient(135deg, var(--accent-gold), #ff9f1c);
-      color: #000;
-      padding: 30px 60px;
-      border-radius: 20px;
-      font-family: 'Black Han Sans', sans-serif;
-      font-size: 3rem;
-      opacity: 0;
+      top: 11%;
+      width: 45%;
+      aspect-ratio: 1;
+      border: 3px solid #a45e20;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 28%,#fff3af,#f2a937 54%,#a5581d);
+      transform: translateX(-50%);
+    }
+    .wheel-pointer.tick { animation: pointer-tick .12s cubic-bezier(.2,.9,.3,1); }
+    @keyframes pointer-tick { 50% { transform: translateX(-50%) rotate(8deg) translateY(4px); } }
+    .wheel-hub {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 8;
+      width: 21%;
+      aspect-ratio: 1;
+      border: 6px solid #f5b34a;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 28%,#fff1a0,#d97d20 29%,#3c1c31 34%,#100d2d 58%,#b96422 64%,#ffd76b 74%,#3a1935 78%);
+      box-shadow: 0 0 0 5px #492078,0 10px 25px rgba(0,0,0,.48),0 0 25px rgba(255,212,90,.42);
+      transform: translate(-50%,-50%);
+    }
+    .wheel-base {
+      position: absolute;
+      left: 50%;
+      bottom: -8%;
+      z-index: -1;
+      width: 74%;
+      height: 18%;
+      border: 5px solid #d88a32;
+      border-radius: 50% 50% 18px 18px;
+      background: linear-gradient(#372064,#0c0a2b 68%,#06051c);
+      box-shadow: 0 17px 35px rgba(0,0,0,.52),0 0 25px rgba(66,220,255,.18);
+      transform: translateX(-50%) perspective(400px) rotateX(45deg);
+    }
+    .decor {
+      position: absolute;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,.38));
+      animation: decor-float 3.6s ease-in-out infinite alternate;
       pointer-events: none;
-      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 0 50px rgba(255, 217, 61, 0.6), 0 0 100px rgba(255, 217, 61, 0.3);
-      z-index: 1000;
+    }
+    .decor-chip {
+      width: clamp(40px,5vw,72px);
+      aspect-ratio: 1.5;
+      border: 5px solid #f6af43;
+      border-radius: 50%;
+      background: radial-gradient(ellipse,#e54f74 0 40%,#791d57 42% 56%,#f9b33f 58% 72%,#39204e 73%);
+    }
+    .decor-gem {
+      width: clamp(36px,4vw,60px);
+      aspect-ratio: 1;
+      clip-path: polygon(50% 0,95% 30%,78% 90%,22% 90%,5% 30%);
+      background: linear-gradient(135deg,#ef9cff,#8b28f2 42%,#351069 74%);
+      box-shadow: inset 0 0 0 4px rgba(255,255,255,.26);
+    }
+    .decor-star {
+      width: clamp(38px,4.5vw,64px);
+      aspect-ratio: 1;
+      clip-path: polygon(50% 0,61% 34%,98% 35%,68% 56%,79% 93%,50% 71%,21% 93%,32% 56%,2% 35%,39% 34%);
+      background: linear-gradient(145deg,#fff1a0,#ffaf37 54%,#bd5a21);
+    }
+    .decor-a { left: 7%; top: 16%; transform: rotate(-22deg); }
+    .decor-b { right: 8%; top: 19%; animation-delay: -1.2s; }
+    .decor-c { right: 7%; bottom: 15%; animation-delay: -2.2s; }
+    @keyframes decor-float { to { translate: 0 -14px; rotate: 8deg; } }
+    .spin-reveal {
+      position: absolute;
+      left: 50%;
+      bottom: 19px;
+      z-index: 10;
+      min-width: min(540px,66%);
+      padding: 10px 18px;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 15px;
+      color: #e8e4f4;
+      background: rgba(7,6,27,.84);
+      box-shadow: 0 12px 30px rgba(0,0,0,.34);
       text-align: center;
-      white-space: nowrap;
-      border: 6px solid #fff;
-      backdrop-filter: blur(10px);
+      transform: translateX(-50%);
     }
-
-    .winner-display.show {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+    .spin-reveal strong { color: var(--gold); font-size: 1rem; }
+    .spin-reveal.winner { border-color: rgba(255,212,90,.4); box-shadow: 0 0 28px rgba(255,212,90,.17),0 12px 30px rgba(0,0,0,.34); }
+    #celebrationCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 70; display: none; pointer-events: none; }
+    .result-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(3,2,17,.57);
+      backdrop-filter: blur(18px) saturate(1.25);
     }
-
-    .winner-display .winner-label {
-      display: block;
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-      color: rgba(0, 0, 0, 0.7);
-    }
-
-    .winner-display .winner-name {
-      display: block;
-      font-size: 3.5rem;
-      text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.5);
-    }
-
-    .waiting-message {
+    .result-overlay.show { display: grid; animation: overlay-in .36s ease; }
+    @keyframes overlay-in { from { opacity: 0; } }
+    .result-card {
+      width: min(570px,100%);
+      max-height: min(740px,90dvh);
+      padding: 28px;
+      overflow-y: auto;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 27px;
+      background:
+        radial-gradient(circle at 50% 0%,rgba(255,212,90,.2),transparent 32%),
+        linear-gradient(145deg,rgba(38,29,92,.97),rgba(8,7,33,.97));
+      box-shadow: 0 30px 90px rgba(0,0,0,.6),0 0 55px rgba(156,86,255,.17);
       text-align: center;
-      color: var(--text-secondary);
     }
-
-    .waiting-message .icon {
-      font-size: 5rem;
-      margin-bottom: 20px;
-      animation: float 3s ease-in-out infinite;
+    .result-icon { font-size: 3.8rem; filter: drop-shadow(0 0 25px rgba(255,212,90,.7)); }
+    .result-eyebrow { margin-top: 5px; color: var(--gold); font: 950 .68rem ui-monospace,monospace; letter-spacing: .2em; }
+    .result-card h2 { margin: 7px 0 15px; font-size: clamp(1.5rem,4vw,2.25rem); letter-spacing: -.06em; }
+    .result-winners { display: grid; gap: 7px; margin-bottom: 15px; }
+    .result-winner {
+      display: grid;
+      grid-template-columns: 36px minmax(0,1fr) auto;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border: 1px solid rgba(255,212,90,.28);
+      border-radius: 13px;
+      color: #fff1b4;
+      background: rgba(255,212,90,.08);
+      text-align: left;
+      font-weight: 900;
     }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+    .result-winner span:last-child { color: var(--muted); font: 750 .62rem ui-monospace,monospace; }
+    .result-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-bottom: 12px; }
+    .result-stat { padding: 10px 5px; border-radius: 11px; background: rgba(255,255,255,.06); }
+    .result-stat strong { display: block; color: var(--cyan); font-size: 1rem; }
+    .result-stat span { color: var(--muted); font-size: .6rem; }
+    .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+    .secondary-btn {
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.08);
+      cursor: pointer;
+      font-weight: 850;
     }
-
+    .secondary-btn.accent { color: #100d25; border: 0; background: linear-gradient(110deg,var(--gold),var(--orange)); }
+    dialog {
+      width: min(530px,calc(100% - 30px));
+      max-height: 86dvh;
+      padding: 0;
+      overflow-y: auto;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 22px;
+      color: #fcfaff;
+      background: linear-gradient(145deg,#292069,#09072c);
+      box-shadow: 0 30px 90px rgba(0,0,0,.66);
+    }
+    dialog::backdrop { background: rgba(2,2,15,.7); backdrop-filter: blur(8px); }
+    .help-content { padding: 24px; }
+    .help-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .help-head h2 { margin: 0; }
+    .help-content ol { margin: 17px 0; padding-left: 22px; color: #d9d6ea; font-size: .86rem; line-height: 1.75; }
+    .help-note { padding: 11px; border-radius: 11px; color: #ffe69d; background: rgba(255,212,90,.08); font-size: .75rem; line-height: 1.55; }
     .toast {
       position: fixed;
-      bottom: 30px;
       left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--bg-sidebar);
-      border: 1px solid var(--accent-primary);
-      padding: 14px 28px;
-      border-radius: 12px;
-      font-size: 1rem;
+      bottom: 23px;
+      z-index: 100;
+      max-width: calc(100% - 30px);
+      padding: 10px 16px;
+      border: 1px solid rgba(66,220,255,.33);
+      border-radius: 99px;
+      color: #fff;
+      background: rgba(10,8,38,.95);
+      box-shadow: 0 12px 35px rgba(0,0,0,.43);
       opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 1001;
-    }
-
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    .confetti {
-      position: fixed;
-      width: 10px;
-      height: 10px;
-      top: -10px;
-      z-index: 999;
+      transform: translate(-50%,14px);
       pointer-events: none;
+      transition: .23s;
+      font-size: .76rem;
+      font-weight: 850;
     }
-
-    /* Help Modal */
-    .help-modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.85);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-      padding: 20px;
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+    .copyright { position: absolute; right: 11px; bottom: 6px; z-index: 8; color: rgba(255,255,255,.25); font-size: .55rem; }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
     }
-
-    .help-modal-overlay.show {
-      opacity: 1;
-      visibility: visible;
+    @media (max-width: 1100px) {
+      :root { --sidebar: 300px; }
+      .control-panel { padding-inline: 15px; }
+      .hud { right: 11px; grid-template-columns: repeat(2,76px); }
+      .arena-header { width: 58%; }
     }
-
-    .help-modal {
-      background: var(--bg-sidebar);
-      border: 2px solid var(--accent-primary);
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 500px;
-      width: 100%;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-
-    .help-modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid var(--border-glow);
-    }
-
-    .help-modal-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.5rem;
-      color: var(--accent-primary);
-    }
-
-    .help-close-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--glass-bg);
-      border: 1px solid var(--border-glow);
-      color: var(--text-secondary);
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .help-close-btn:hover {
-      border-color: var(--accent-secondary);
-      color: var(--accent-secondary);
-    }
-
-    .help-section {
-      margin-bottom: 20px;
-    }
-
-    .help-section-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--accent-gold);
-      margin-bottom: 10px;
-    }
-
-    .help-section p, .help-section li {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.7;
-    }
-
-    .help-section ul {
-      padding-left: 20px;
-    }
-
-    .help-highlight {
-      color: var(--accent-primary);
-      font-weight: 700;
-    }
-
-    @media (max-width: 900px) {
-      body { flex-direction: column-reverse; overflow-y: auto; height: auto; }
-      .sidebar {
+    @media (max-width: 760px) {
+      html { max-width: 100%; overflow-x: hidden; }
+      body { display: block; overflow-x: hidden; overflow-y: auto; }
+      .control-panel {
         width: 100%;
-        min-width: unset;
         height: auto;
-        max-height: none;
-        border-right: none;
-        border-top: 1px solid var(--border-glow);
+        min-height: 0;
         padding: 15px;
+        overflow: visible;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
       }
-      .rankings { max-height: 200px; min-height: 100px; }
-      .game-area { 
-        flex: none; 
-        width: 100%;
-        height: 60vh; 
-        min-height: 400px;
-        padding: 10px;
-      }
-      .winner-display {
-        font-size: 2rem;
-        padding: 20px 40px;
-      }
-      .winner-display .winner-name {
-        font-size: 2.5rem;
-      }
+      textarea { min-height: 64px; max-height: 105px; }
+      .winner-card { min-height: 116px; }
+      .winner-history { max-height: 142px; }
+      .panel-footer { margin-top: 0; }
+      .game-area { width: 100%; height: 790px; min-height: 790px; }
+      .arena-header { top: 12px; left: 10px; width: calc(100% - 178px); text-align: left; transform: none; }
+      .arena-kicker { font-size: .5rem; }
+      .arena-title { padding: 8px 10px; font-size: .96rem; }
+      .arena-proof { padding-left: 4px; font-size: .49rem; }
+      .hud { top: 12px; right: 8px; grid-template-columns: repeat(2,71px); }
+      .hud-stat { padding: 7px 4px; }
+      .wheel-stage { inset: 92px 6px 72px; }
+      .decor { opacity: .48; }
+      .decor-a { left: 1%; }
+      .decor-b { right: 1%; }
+      .decor-c { right: 1%; }
+      .spin-reveal { bottom: 14px; min-width: calc(100% - 20px); padding: 9px 12px; }
+      .copyright { display: none; }
     }
-
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
+    @media (max-width: 390px) {
+      .control-panel { padding-inline: 12px; }
+      .game-area { height: 740px; min-height: 740px; }
+      .result-card { padding: 21px 15px; }
     }
-    ::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 10px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(155, 93, 229, 0.3);
-      border-radius: 10px;
-      border: 2px solid transparent;
-      background-clip: padding-box;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--accent-primary);
+    /* Let winner history consume the remaining sidebar height and anchor utility actions. */
+    .winner-card { flex: 1; min-height: 0; max-height: none; }
+    .winner-history { flex: 1; min-height: 0; max-height: none; align-content: start; }
+    .panel-footer { flex: none; margin-top: 0; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.08); }
+    .panel-footer .icon-btn { color: var(--muted); }
+    .panel-footer .icon-btn:hover { color: #fff; }
+    .panel-footer .icon-btn svg { display: block; width: 18px; height: 18px; }
+    @media (max-width:760px) {
+      .winner-card { flex: none; min-height: 150px; max-height: 260px; }
+      .winner-history { max-height: none; }
+      .panel-footer { padding-bottom: max(2px,env(safe-area-inset-bottom)); }
     }
   </style>
 </head>
 <body>
-  <aside class="sidebar">
-            <header class="sidebar-header">
-                <h1><span class="title-emoji">🎡</span> <span class="title-text">룰렛 추첨</span></h1>
-                <div class="header-btns">
-                    <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
-                    <button class="help-btn" id="helpBtn">?</button>
-                </div>
-            </header>
-
-    <section>
-      <div class="section-title">👥 참여자 명단</div>
-      <textarea class="participants-input" id="participantsInput" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
-    </section>
-
-    <section class="settings-card">
-      <div class="section-title">⚙️ 게임 설정</div>
-      <div class="settings-card-content">
-        <div class="setting-item">
-          <label>🏆 당첨자 수</label>
-          <select id="winnerCount">
-            <option value="1" selected>1명</option>
-            <option value="2">2명</option>
-            <option value="3">3명</option>
-          </select>
-        </div>
-        <div class="setting-item">
-          <label>⏱️ 스핀 시간</label>
-          <select id="spinDuration">
-            <option value="3">3초</option>
-            <option value="5" selected>5초</option>
-            <option value="7">7초</option>
-          </select>
-        </div>
+  <aside class="control-panel" aria-label="룰렛 게임 설정">
+    <div class="brand-row">
+      <div class="brand-mark" aria-hidden="true">🎡</div>
+      <div class="brand-copy">
+        <p class="eyebrow">PLAYPICK FORTUNE</p>
+        <h1>네온 포춘 룰렛</h1>
       </div>
-    </section>
-
-    <div class="btn-group">
-      <button class="btn-start" id="startBtn">🎡 돌리기</button>
-      <button class="btn-reset" id="resetBtn">↺</button>
+      <button class="icon-btn" id="soundBtn" type="button" aria-label="소리 끄기" title="소리 켜기/끄기">🔊</button>
+      <button class="icon-btn" id="helpBtn" type="button" aria-label="게임 도움말" title="도움말">?</button>
     </div>
 
-    <section class="rankings">
-      <div class="section-title">🏆 당첨자</div>
-      <div class="rankings-list" id="rankingsList">
-        <div class="waiting-message" style="padding: 20px; text-align: center;">
-          <p style="font-size: 0.9rem; color: var(--text-secondary);">룰렛을 돌려주세요!</p>
-        </div>
-      </div>
+    <label class="field">
+      <span class="field-label">참가자 <small>이름*인원 지원</small></span>
+      <textarea id="participants" maxlength="1600" spellcheck="false" aria-describedby="participantHint">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+      <span class="input-meta" id="participantHint"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 24</strong></span>
+    </label>
+
+    <section class="settings-card" aria-label="세부 설정">
+      <label class="mini-field">
+        <span>🏆 당첨자</span>
+        <select id="winnerCount">
+          <option value="1">1명</option><option value="2">2명</option><option value="3">3명</option>
+          <option value="4">4명</option><option value="5">5명</option>
+        </select>
+      </label>
+      <label class="mini-field">
+        <span>⏱️ 스핀 시간</span>
+        <select id="spinDuration">
+          <option value="3">3초</option><option value="5" selected>5초</option><option value="7">7초</option>
+        </select>
+      </label>
     </section>
 
-    <div class="sidebar-footer">
-      <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-      </a>
-      <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-      </button>
-      <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
-      </a>
-      <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
-      </a>
+    <div class="action-row">
+      <button class="primary-btn" id="startBtn" type="button">✨ 룰렛 돌리기</button>
+      <button class="reset-btn" id="resetBtn" type="button" aria-label="게임 초기화" title="초기화">↺</button>
     </div>
+
+    <section class="winner-card" aria-labelledby="winnerHistoryTitle">
+      <div class="winner-title" id="winnerHistoryTitle"><span>🏆 당첨 기록</span><span id="liveState">READY</span></div>
+      <div class="winner-history" id="winnerHistory" aria-live="polite"></div>
+    </section>
+
+    <nav class="panel-footer" aria-label="바로가기">
+      <a class="icon-btn footer-link" href="../" aria-label="추첨 포털 홈" title="추첨 포털 홈"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></a>
+      <button class="icon-btn" id="copyResultBtn" type="button" aria-label="결과 복사" title="결과 복사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+      <a class="icon-btn footer-link" href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer" aria-label="GitHub 저장소" title="GitHub 저장소"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg></a>
+      <a class="icon-btn footer-link" href="https://buymeacoffee.com/euiyun" target="_blank" rel="noopener noreferrer" aria-label="커피 사주기" title="커피 사주기"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg></a>
+    </nav>
   </aside>
 
   <main class="game-area" id="gameArea">
-    <div class="waiting-message" id="waitingMessage">
-      <div class="icon">🎡</div>
-      <p>참여자를 입력하고 룰렛을 돌리세요!</p>
+    <div class="cloud cloud-left"></div><div class="cloud cloud-right"></div>
+    <header class="arena-header">
+      <div class="arena-kicker">RANDOM FORTUNE ENGINE</div>
+      <div class="arena-title" id="arenaTitle" aria-live="assertive">행운의 휠이 참가자를 기다립니다</div>
+      <div class="arena-proof" id="arenaProof">RANDOM · READY</div>
+    </header>
+    <div class="hud">
+      <div class="hud-stat"><strong id="spinNumber">0</strong><span>SPIN</span></div>
+      <div class="hud-stat"><strong id="winnerProgress">0/1</strong><span>WINNERS</span></div>
     </div>
-    <div class="wheel-container" id="wheelContainer" style="display: none;">
-      <div class="wheel-pointer">▼</div>
-      <canvas id="wheelCanvas"></canvas>
-      <div class="wheel-center">🎯</div>
-    </div>
-    <div class="winner-display" id="winnerDisplay"></div>
-    <div class="copyright">© 2025 Euiyun Edwin Kim</div>
+
+    <div class="decor decor-chip decor-a" aria-hidden="true"></div>
+    <div class="decor decor-gem decor-b" aria-hidden="true"></div>
+    <div class="decor decor-star decor-c" aria-hidden="true"></div>
+
+    <section class="wheel-stage" aria-label="행운의 룰렛">
+      <div class="wheel-machine" id="wheelMachine">
+        <div class="wheel-glow"></div>
+        <div class="wheel-base"></div>
+        <div class="wheel-frame"></div>
+        <canvas id="wheelCanvas"></canvas>
+        <div class="studs" id="studs" aria-hidden="true"></div>
+        <div class="wheel-pointer" id="wheelPointer" aria-hidden="true"></div>
+        <div class="wheel-hub" aria-hidden="true"></div>
+      </div>
+    </section>
+    <div class="spin-reveal" id="spinReveal">참가자를 확인한 뒤 룰렛을 돌려주세요</div>
+    <div class="copyright">© 2026 Euiyun Edwin Kim · PLAYPICK</div>
   </main>
 
-  <div class="toast" id="toast"></div>
-
-  <div class="help-modal-overlay" id="helpModalOverlay">
-    <div class="help-modal">
-      <div class="help-modal-header">
-        <h2 class="help-modal-title">📖 게임 설명</h2>
-        <button class="help-close-btn" id="helpCloseBtn">✕</button>
+  <canvas id="celebrationCanvas" aria-hidden="true"></canvas>
+  <section class="result-overlay" id="resultOverlay" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <div class="result-card">
+      <div class="result-icon" aria-hidden="true">🌟</div>
+      <div class="result-eyebrow">FORTUNE WHEEL WINNERS</div>
+      <h2 id="resultTitle">최종 당첨자</h2>
+      <div class="result-winners" id="resultWinners"></div>
+      <div class="result-stats">
+        <div class="result-stat"><strong id="resultSpins">0</strong><span>SPINS</span></div>
+        <div class="result-stat"><strong id="resultTurns">0</strong><span>TURNS</span></div>
+        <div class="result-stat"><strong id="resultTime">0.000s</strong><span>SIM TIME</span></div>
       </div>
-
-      <div class="help-section">
-        <div class="help-section-title">🎡 게임 개요</div>
-        <p>룰렛 추첨은 화려한 룰렛 휠을 돌려 행운의 당첨자를 선정하는 게임입니다.</p>
-      </div>
-
-      <div class="help-section">
-        <div class="help-section-title">🎮 게임 방법</div>
-        <ul>
-          <li>참여자 명단을 입력합니다.</li>
-          <li>당첨자 수와 스핀 시간을 설정합니다.</li>
-          <li><span class="help-highlight">🎡 돌리기</span> 버튼을 누르면 룰렛이 회전합니다.</li>
-          <li>룰렛이 멈추면 화살표가 가리키는 사람이 당첨!</li>
-        </ul>
-      </div>
-
-      <div class="help-section">
-        <div class="help-section-title">💡 팁</div>
-        <p><span class="help-highlight">이름*숫자</span> 형식으로 입력하면 같은 이름으로 여러 명을 추가할 수 있습니다. (예: 영희*3)</p>
+      <div class="result-actions">
+        <button class="secondary-btn" id="resultCloseBtn" type="button">룰렛 보기</button>
+        <button class="secondary-btn accent" id="resultCopyBtn" type="button">결과 복사</button>
       </div>
     </div>
-  </div>
+  </section>
+
+  <dialog id="helpDialog" aria-labelledby="helpTitle">
+    <div class="help-content">
+      <div class="help-head">
+        <h2 id="helpTitle">포춘 룰렛 방법</h2>
+        <button class="icon-btn" id="helpCloseBtn" type="button" aria-label="도움말 닫기">✕</button>
+      </div>
+      <ol>
+        <li>참가자와 당첨자 수, 회전 시간을 설정합니다.</li>
+        <li>한 번 시작하면 설정한 당첨자 수만큼 자동으로 연속 회전합니다.</li>
+        <li>당첨자는 다음 회전에서 제외되어 중복 당첨되지 않습니다.</li>
+        <li>각 회전은 포인터가 당첨 조각의 정중앙을 가리키도록 수학적으로 계산됩니다.</li>
+      </ol>
+      <div class="help-note">게임을 다시 시작할 때마다 당첨 순서와 정지 위치가 새롭게 무작위로 정해집니다.</div>
+    </div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
-
-    class SoundManager {
-      constructor() {
-        this.ctx = null;
-        this.enabled = true;
-        this.setupToggleButton();
+    (() => {
+      'use strict';
+      const GAME_VERSION = '1.1.0';
+      const MAX_PARTICIPANTS = 24;
+      const MAX_NAME_LENGTH = 32;
+      const STORAGE_PREFIX = 'playpick-roulette-';
+      const QA_MODE = new URLSearchParams(location.search).has('qa');
+      const TIME_SCALE = QA_MODE ? .018 : 1;
+      const REAL_MOTION_SCALE = reducedMotionValue();
+      const TAU = Math.PI * 2;
+      const COLORS = ['#ff4f68','#42dcff','#ffd45a','#9c56ff','#4ff1a0','#ff4eb2','#4f72ff','#ff9447'];
+      const byId = id => document.getElementById(id);
+      const els = {
+        participants:byId('participants'),participantCount:byId('participantCount'),
+        winnerCount:byId('winnerCount'),spinDuration:byId('spinDuration'),
+        startBtn:byId('startBtn'),resetBtn:byId('resetBtn'),soundBtn:byId('soundBtn'),helpBtn:byId('helpBtn'),
+        winnerHistory:byId('winnerHistory'),liveState:byId('liveState'),copyResultBtn:byId('copyResultBtn'),
+        gameArea:byId('gameArea'),arenaTitle:byId('arenaTitle'),arenaProof:byId('arenaProof'),
+        spinNumber:byId('spinNumber'),winnerProgress:byId('winnerProgress'),
+        wheelMachine:byId('wheelMachine'),wheelCanvas:byId('wheelCanvas'),studs:byId('studs'),
+        wheelPointer:byId('wheelPointer'),spinReveal:byId('spinReveal'),
+        celebrationCanvas:byId('celebrationCanvas'),resultOverlay:byId('resultOverlay'),
+        resultWinners:byId('resultWinners'),resultSpins:byId('resultSpins'),
+        resultTurns:byId('resultTurns'),resultTime:byId('resultTime'),
+        resultCloseBtn:byId('resultCloseBtn'),resultCopyBtn:byId('resultCopyBtn'),
+        helpDialog:byId('helpDialog'),helpCloseBtn:byId('helpCloseBtn'),toast:byId('toast')
+      };
+      const state = {
+        players:[],winners:[],audit:[],running:false,phase:'READY',
+        rng:Math.random,targetWinners:1,durationMs:5000,rotation:0,
+        simulatedMs:0,totalTurns:0,token:0,pending:new Map(),animationFrame:0,
+        animationResolve:null,inputTimer:0,toastTimer:0,celebrationFrame:0,lastResult:'',wheelPlayers:[]
+      };
+      function reducedMotionValue() {
+        if (QA_MODE) return TIME_SCALE;
+        return matchMedia('(prefers-reduced-motion: reduce)').matches ? .16 : 1;
       }
+      const storage = {
+        get(key,fallback='') { try { return localStorage.getItem(STORAGE_PREFIX + key) ?? fallback; } catch { return fallback; } },
+        set(key,value) { try { localStorage.setItem(STORAGE_PREFIX + key,String(value)); } catch {} }
+      };
+      const sound = {
+        enabled:storage.get('sound','true') !== 'false',context:null,
+        init() {
+          if (!this.enabled) return;
+          if (!this.context) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) this.context = new AudioContext();
+          }
+          if (this.context?.state === 'suspended') this.context.resume();
+        },
+        tone(frequency,duration=.07,type='sine',volume=.035,delay=0) {
+          if (!this.enabled) return;
+          this.init();
+          if (!this.context) return;
+          const at = this.context.currentTime + delay;
+          const oscillator = this.context.createOscillator();
+          const gain = this.context.createGain();
+          oscillator.type = type;
+          oscillator.frequency.setValueAtTime(frequency,at);
+          gain.gain.setValueAtTime(volume,at);
+          gain.gain.exponentialRampToValueAtTime(.0001,at + duration);
+          oscillator.connect(gain).connect(this.context.destination);
+          oscillator.start(at);
+          oscillator.stop(at + duration);
+        },
+        start() { [330,495,660].forEach((note,index) => this.tone(note,.16,'triangle',.04,index * .06)); },
+        tick() { this.tone(760,.045,'square',.024); },
+        winner() { [523,659,784].forEach((note,index) => this.tone(note,.26,'triangle',.047,index * .09)); },
+        finish() { [523,659,784,1047].forEach((note,index) => this.tone(note,.34,'triangle',.052,index * .12)); }
+      };
+      function setSoundUi() {
+        els.soundBtn.textContent = sound.enabled ? '🔊' : '🔇';
+        els.soundBtn.setAttribute('aria-label',sound.enabled ? '소리 끄기' : '소리 켜기');
+      }
+      function parseParticipants(value=els.participants.value) {
+        const names = [];
+        for (const rawToken of value.split(/[,\n]/)) {
+          if (names.length >= MAX_PARTICIPANTS) break;
+          const token = rawToken.trim();
+          if (!token) continue;
+          const match = token.match(/^(.*?)(?:\*(\d+))?$/);
+          const rawName = (match?.[1] || '').trim();
+          if (!rawName) continue;
+          const name = rawName.slice(0,MAX_NAME_LENGTH);
+          const requested = match?.[2] ? Number.parseInt(match[2],10) : 1;
+          const count = Math.max(1,Math.min(Number.isFinite(requested) ? requested : 1,MAX_PARTICIPANTS - names.length));
+          for (let index=0; index<count && names.length<MAX_PARTICIPANTS; index+=1) names.push(name);
+        }
+        const totals = new Map();
+        names.forEach(name => totals.set(name,(totals.get(name) || 0) + 1));
+        const seen = new Map();
+        return names.map((name,id) => {
+          const ordinal = (seen.get(name) || 0) + 1;
+          seen.set(name,ordinal);
+          return {
+            id,name,label:totals.get(name) > 1 ? `${name} ${ordinal}` : name,status:'active'
+          };
+        });
+      }
+      function activePlayers() { return state.players.filter(player => player.status === 'active'); }
+      function normalizeAngle(angle) { return ((angle % TAU) + TAU) % TAU; }
+      function formatTime(ms) { return `${(ms / 1000).toFixed(3)}s`; }
+      function setPhase(phase) { state.phase = phase; els.liveState.textContent = phase; }
+      function setControlsLocked(locked) {
+        [els.participants,els.winnerCount,els.spinDuration,els.startBtn]
+          .forEach(control => { control.disabled = locked; });
+      }
+      function saveSettings() {
+        storage.set('participants',els.participants.value);
+        storage.set('winner-count',els.winnerCount.value);
+        storage.set('duration',els.spinDuration.value);
+      }
+      function restoreSettings() {
+        const participants = storage.get('participants');
+        let winnerCount = storage.get('winner-count');
+        let duration = storage.get('duration');
+        if (!winnerCount && !duration) {
+          try {
+            const legacy = JSON.parse(localStorage.getItem('rouletteSettings') || '{}');
+            winnerCount = legacy.winnerCount || '';
+            duration = legacy.spinDuration || '';
+          } catch {}
+        }
+        if (participants) els.participants.value = participants;
+        if (winnerCount) els.winnerCount.value = winnerCount;
+        if (duration) els.spinDuration.value = duration;
+      }
+      function cancelRun() {
+        state.token += 1;
+        state.pending.forEach((resolve,timeout) => { clearTimeout(timeout); resolve(false); });
+        state.pending.clear();
+        cancelAnimationFrame(state.animationFrame);
+        state.animationFrame = 0;
+        if (state.animationResolve) state.animationResolve(false);
+        state.animationResolve = null;
+      }
+      function pause(duration,token) {
+        state.simulatedMs += duration;
+        return new Promise(resolve => {
+          const timeout = setTimeout(() => {
+            state.pending.delete(timeout);
+            resolve(token === state.token);
+          },Math.max(1,Math.round(duration * TIME_SCALE)));
+          state.pending.set(timeout,resolve);
+        });
+      }
+      function updateWinnerOptions(count) {
+        const maximum = Math.max(1,Math.min(5,count - 1 || 1));
+        [...els.winnerCount.options].forEach(option => { option.disabled = Number(option.value) > maximum; });
+        if (Number(els.winnerCount.value) > maximum) els.winnerCount.value = String(maximum);
+      }
+      function renderLobby() {
+        if (state.running) return;
+        state.players = parseParticipants();
+        state.winners = [];
+        updateWinnerOptions(state.players.length);
+        els.participantCount.textContent = `${state.players.length} / ${MAX_PARTICIPANTS}`;
+        els.winnerProgress.textContent = `0/${els.winnerCount.value}`;
+        els.spinNumber.textContent = '0';
+        renderWinnerHistory();
+        resizeWheel();
+        drawWheel(state.players);
+        setPhase(state.players.length >= 2 ? 'READY' : 'NEED 2+');
+      }
+      function renderWinnerHistory() {
+        els.winnerHistory.replaceChildren();
+        if (!state.winners.length) {
+          const waiting = document.createElement('div');
+          waiting.className = 'waiting-history';
+          waiting.textContent = '룰렛을 돌리면 당첨 순서가 여기에 기록됩니다.';
+          els.winnerHistory.appendChild(waiting);
+          return;
+        }
+        const fragment = document.createDocumentFragment();
+        state.winners.forEach((player,index) => {
+          const item = document.createElement('div');
+          item.className = 'history-item';
+          const rank = document.createElement('span');
+          rank.className = 'history-rank';
+          rank.textContent = index + 1;
+          const name = document.createElement('span');
+          name.className = 'history-name';
+          name.textContent = player.label;
+          const spin = document.createElement('span');
+          spin.className = 'history-spin';
+          spin.textContent = `SPIN ${index + 1}`;
+          item.append(rank,name,spin);
+          fragment.appendChild(item);
+        });
+        els.winnerHistory.appendChild(fragment);
+      }
+      function buildStuds() {
+        els.studs.replaceChildren();
+        const fragment = document.createDocumentFragment();
+        for (let index=0; index<18; index+=1) {
+          const stud = document.createElement('span');
+          stud.className = 'stud';
+          stud.style.setProperty('--angle',`${index * 20}deg`);
+          fragment.appendChild(stud);
+        }
+        els.studs.appendChild(fragment);
+      }
+      function wheelSize() {
+        const rect = els.gameArea.getBoundingClientRect();
+        const mobile = rect.width <= 760;
+        return Math.floor(Math.max(250,Math.min(
+          rect.width * (mobile ? .88 : .69),
+          rect.height * (mobile ? .65 : .72),
+          720
+        )));
+      }
+      function resizeWheel() {
+        const size = wheelSize();
+        els.wheelMachine.style.setProperty('--wheel-size',`${size}px`);
+        buildStuds();
+      }
+      function drawWheel(players) {
+        state.wheelPlayers = [...players];
+        const canvas = els.wheelCanvas;
+        const size = wheelSize() * .91;
+        const dpr = Math.min(devicePixelRatio || 1,2);
+        canvas.width = Math.round(size * dpr);
+        canvas.height = Math.round(size * dpr);
+        canvas.style.width = `${size}px`;
+        canvas.style.height = `${size}px`;
+        const context = canvas.getContext('2d');
+        context.setTransform(dpr,0,0,dpr,0,0);
+        context.clearRect(0,0,size,size);
+        const center = size / 2;
+        const radius = center - 3;
+        if (!players.length) {
+          context.fillStyle = '#18143f';
+          context.beginPath();
+          context.arc(center,center,radius,0,TAU);
+          context.fill();
+          return;
+        }
+        const slice = TAU / players.length;
+        players.forEach((player,index) => {
+          const start = -Math.PI / 2 + index * slice;
+          const end = start + slice;
+          const gradient = context.createRadialGradient(center,center,radius * .12,center,center,radius);
+          const color = COLORS[player.id % COLORS.length];
+          gradient.addColorStop(0,'#fff0a4');
+          gradient.addColorStop(.12,color);
+          gradient.addColorStop(.68,color);
+          gradient.addColorStop(1,'#171033');
+          context.beginPath();
+          context.moveTo(center,center);
+          context.arc(center,center,radius,start,end);
+          context.closePath();
+          context.fillStyle = gradient;
+          context.fill();
+          context.strokeStyle = 'rgba(255,226,139,.82)';
+          context.lineWidth = Math.max(1.4,size * .004);
+          context.stroke();
 
-      setupToggleButton() {
-        const btn = document.getElementById('soundToggle');
-        if (btn) {
-          btn.onclick = () => {
-            this.enabled = !this.enabled;
-            btn.textContent = this.enabled ? '🔊' : '🔇';
-            if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
-              this.ctx.resume();
+          const middle = start + slice / 2;
+          context.save();
+          context.translate(center,center);
+          context.rotate(middle);
+          const maxChars = players.length > 18 ? 6 : players.length > 12 ? 7 : 9;
+          const graphemes = Array.from(player.label);
+          const label = graphemes.length > maxChars
+            ? [...graphemes.slice(0,maxChars - 1),'…']
+            : graphemes;
+          const innerLabelRadius = radius * .31;
+          const outerLabelRadius = radius * .84;
+          const labelRadius = (innerLabelRadius + outerLabelRadius) / 2;
+          const radialSpace = outerLabelRadius - innerLabelRadius;
+          const sliceWidth = 2 * labelRadius * Math.tan(slice / 2);
+          const fontSize = Math.max(10,Math.min(
+            38,
+            size * .068,
+            sliceWidth * .72,
+            radialSpace / Math.max(1,label.length * 1.06)
+          ));
+          const lineHeight = fontSize * 1.06;
+          context.translate(labelRadius,0);
+          context.rotate(Math.PI / 2);
+          context.font = `900 ${fontSize}px Pretendard, sans-serif`;
+          context.textAlign = 'center';
+          context.textBaseline = 'middle';
+          context.fillStyle = '#fff';
+          context.shadowColor = 'rgba(0,0,0,.65)';
+          context.shadowBlur = 4;
+          label.forEach((character,characterIndex) => {
+            const offset = (characterIndex - (label.length - 1) / 2) * lineHeight;
+            context.fillText(character,0,offset);
+          });
+          context.restore();
+        });
+        context.strokeStyle = '#ffd45a';
+        context.lineWidth = Math.max(4,size * .013);
+        context.beginPath();
+        context.arc(center,center,radius - context.lineWidth / 2,0,TAU);
+        context.stroke();
+      }
+      function pointerIndex(rotation,count) {
+        if (!count) return -1;
+        const slice = TAU / count;
+        const wheelAngleAtPointer = normalizeAngle(-Math.PI / 2 - rotation);
+        const relative = normalizeAngle(wheelAngleAtPointer + Math.PI / 2);
+        return Math.floor(relative / slice) % count;
+      }
+      function targetRotationForIndex(index,count,startRotation,turns) {
+        const slice = TAU / count;
+        const targetNormalized = normalizeAngle(-(index + .5) * slice);
+        const currentNormalized = normalizeAngle(startRotation);
+        const delta = normalizeAngle(targetNormalized - currentNormalized);
+        return startRotation + turns * TAU + delta;
+      }
+      function easeOutQuint(value) { return 1 - Math.pow(1 - value,5); }
+      function tickPointer() {
+        els.wheelPointer.classList.remove('tick');
+        void els.wheelPointer.offsetWidth;
+        els.wheelPointer.classList.add('tick');
+        sound.tick();
+      }
+      function animateWheel(startRotation,endRotation,duration,contestantCount,token) {
+        state.simulatedMs += duration;
+        const realDuration = Math.max(1,duration * REAL_MOTION_SCALE);
+        let lastIndex = pointerIndex(startRotation,contestantCount);
+        return new Promise(resolve => {
+          const started = performance.now();
+          state.animationResolve = resolve;
+          const frame = timestamp => {
+            if (token !== state.token) {
+              state.animationResolve = null;
+              resolve(false);
+              return;
+            }
+            const progress = Math.min(1,(timestamp - started) / realDuration);
+            const eased = easeOutQuint(progress);
+            const rotation = startRotation + (endRotation - startRotation) * eased;
+            state.rotation = rotation;
+            els.wheelCanvas.style.transform = `rotate(${rotation}rad)`;
+            const index = pointerIndex(rotation,contestantCount);
+            if (index !== lastIndex) {
+              lastIndex = index;
+              tickPointer();
+            }
+            if (progress < 1) {
+              state.animationFrame = requestAnimationFrame(frame);
+            } else {
+              state.rotation = endRotation;
+              els.wheelCanvas.style.transform = `rotate(${endRotation}rad)`;
+              state.animationFrame = 0;
+              state.animationResolve = null;
+              resolve(true);
             }
           };
+          state.animationFrame = requestAnimationFrame(frame);
+        });
+      }
+      async function performSpin(token) {
+        const contestants = activePlayers();
+        const spinIndex = state.winners.length + 1;
+        state.rotation = 0;
+        els.wheelCanvas.style.transform = 'rotate(0rad)';
+        drawWheel(contestants);
+        const winnerIndex = Math.floor(state.rng() * contestants.length);
+        const turns = 8 + Math.floor(state.rng() * 5);
+        const targetRotation = targetRotationForIndex(winnerIndex,contestants.length,0,turns);
+        const expectedWinner = contestants[winnerIndex];
+        els.spinNumber.textContent = spinIndex;
+        els.arenaTitle.textContent = `SPIN ${spinIndex} · 행운이 움직입니다`;
+        els.spinReveal.classList.remove('winner');
+        els.spinReveal.textContent = `${contestants.length}개 조각 · ${state.durationMs / 1000}초 스핀`;
+        setPhase('SPINNING');
+        sound.start();
+        const continued = await animateWheel(0,targetRotation,state.durationMs,contestants.length,token);
+        if (!continued || token !== state.token) return false;
+        const landedIndex = pointerIndex(state.rotation,contestants.length);
+        const landedWinner = contestants[landedIndex];
+        const valid = landedWinner?.id === expectedWinner.id;
+        if (!valid) throw new Error(`Pointer mismatch: expected ${winnerIndex}, landed ${landedIndex}`);
+        expectedWinner.status = 'winner';
+        state.winners.push(expectedWinner);
+        state.totalTurns += turns;
+        state.audit.push({
+          spin:spinIndex,contestants:contestants.map(player => player.id),
+          expectedIndex:winnerIndex,landedIndex,winnerId:expectedWinner.id,
+          turns,durationMs:state.durationMs,finalRotation:state.rotation,timeMs:state.simulatedMs
+        });
+        els.winnerProgress.textContent = `${state.winners.length}/${state.targetWinners}`;
+        els.arenaTitle.textContent = `🌟 ${expectedWinner.label} 당첨!`;
+        els.spinReveal.textContent = `축하합니다 · ${expectedWinner.label}`;
+        els.spinReveal.classList.add('winner');
+        setPhase('WINNER');
+        renderWinnerHistory();
+        sound.winner();
+        return true;
+      }
+      async function runDraw(token) {
+        while (state.winners.length < state.targetWinners && token === state.token) {
+          if (!await performSpin(token)) return;
+          if (state.winners.length < state.targetWinners) {
+            if (!await pause(900,token)) return;
+          }
         }
+        if (token !== state.token) return;
+        setPhase('COMPLETE');
+        els.arenaTitle.textContent = '모든 당첨자가 결정되었습니다';
+        els.arenaProof.textContent = `RANDOM RUN · ${formatTime(state.simulatedMs)}`;
+        els.spinReveal.textContent = '포인터 검증 완료 · 결과 공개 대기';
+        state.lastResult = buildResultText();
+        sound.finish();
+        if (!await pause(1000,token) || token !== state.token) return;
+        finishGame();
       }
-
-      init() {
-        if (this.ctx) return;
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      function buildResultText() {
+        return [
+          '🌟 PLAYPICK 네온 포춘 룰렛 결과',
+          ...state.winners.map((player,index) => `${index + 1}. ${player.label}`),'',
+          `스핀 수: ${state.audit.length}`,`총 회전: ${state.totalTurns}바퀴`,
+          `시뮬레이션 시간: ${formatTime(state.simulatedMs)}`,
+          `버전: ${GAME_VERSION}`
+        ].join('\\n');
       }
-
-      playStart() {
-        if (!this.enabled || !this.ctx) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.1);
-      }
-
-      playTick() {
-        if (!this.enabled || !this.ctx) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.05);
-      }
-
-      playWin() {
-        if (!this.enabled || !this.ctx) return;
-        this.init();
-        const notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, i) => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
-          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
-          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
-          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.1 + 0.4);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(this.ctx.currentTime + i * 0.1);
-          osc.stop(this.ctx.currentTime + i * 0.1 + 0.4);
+      function renderResult() {
+        els.resultWinners.replaceChildren();
+        const medals = ['🥇','🥈','🥉','🏅','🏅'];
+        const fragment = document.createDocumentFragment();
+        state.winners.forEach((player,index) => {
+          const row = document.createElement('div');
+          row.className = 'result-winner';
+          const medal = document.createElement('span');
+          medal.textContent = medals[index] || '🏅';
+          const name = document.createElement('span');
+          name.textContent = player.label;
+          const spin = document.createElement('span');
+          spin.textContent = `SPIN ${index + 1}`;
+          row.append(medal,name,spin);
+          fragment.appendChild(row);
         });
+        els.resultWinners.appendChild(fragment);
+        els.resultSpins.textContent = state.audit.length;
+        els.resultTurns.textContent = state.totalTurns;
+        els.resultTime.textContent = formatTime(state.simulatedMs);
       }
-    }
-
-    const COLORS = [
-      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
-      '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
-      '#F8B500', '#00CED1', '#FF69B4', '#32CD32', '#FFD700'
-    ];
-
-    class RouletteGame {
-      constructor() {
-        this.participants = [];
-        this.winners = [];
-        this.isSpinning = false;
-        this.currentAngle = 0;
-        this.maxWinners = 1;
-        this.spinDuration = 5;
-        this.animationId = null;
-        this.sound = new SoundManager();
-
-        this.initElements();
-        this.bindEvents();
-        this.loadSettings();
-        this.updateWheelState();
+      function finishGame() {
+        state.running = false;
+        setControlsLocked(false);
+        els.startBtn.textContent = '✨ 다시 돌리기';
+        renderResult();
+        startCelebration();
+        els.resultOverlay.classList.add('show');
+        els.resultCloseBtn.focus({ preventScroll:true });
       }
-
-      initElements() {
-        this.participantsInput = document.getElementById('participantsInput');
-        this.winnerCountSelect = document.getElementById('winnerCount');
-        this.spinDurationSelect = document.getElementById('spinDuration');
-        this.startBtn = document.getElementById('startBtn');
-        this.resetBtn = document.getElementById('resetBtn');
-        this.rankingsList = document.getElementById('rankingsList');
-        this.gameArea = document.getElementById('gameArea');
-        this.waitingMessage = document.getElementById('waitingMessage');
-        this.wheelContainer = document.getElementById('wheelContainer');
-        this.canvas = document.getElementById('wheelCanvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.winnerDisplay = document.getElementById('winnerDisplay');
-        this.copyResultBtn = document.getElementById('copyResultBtn');
-        this.toast = document.getElementById('toast');
-        this.helpBtn = document.getElementById('helpBtn');
-        this.helpModalOverlay = document.getElementById('helpModalOverlay');
-        this.helpCloseBtn = document.getElementById('helpCloseBtn');
+      async function startGame() {
+        if (state.running) return;
+        clearTimeout(state.inputTimer);
+        const players = parseParticipants();
+        if (players.length < 2) {
+          showToast('참가자를 2명 이상 입력해주세요.');
+          els.participants.focus();
+          return;
+        }
+        const targetWinners = Number(els.winnerCount.value);
+        if (targetWinners < 1 || targetWinners >= players.length) {
+          showToast('당첨자 수는 참가자 수보다 적어야 합니다.');
+          return;
+        }
+        sound.init();
+        cancelRun();
+        const token = state.token;
+        state.running = true;
+        state.players = players;
+        state.winners = [];
+        state.audit = [];
+        state.targetWinners = targetWinners;
+        state.durationMs = Number(els.spinDuration.value) * 1000;
+        state.rng = Math.random;
+        state.rotation = 0;
+        state.simulatedMs = 0;
+        state.totalTurns = 0;
+        state.lastResult = '';
+        saveSettings();
+        setControlsLocked(true);
+        stopCelebration();
+        els.resultOverlay.classList.remove('show');
+        els.startBtn.textContent = '룰렛 진행 중…';
+        els.spinNumber.textContent = '0';
+        els.winnerProgress.textContent = `0/${targetWinners}`;
+        els.arenaProof.textContent = 'RANDOMIZING';
+        els.arenaTitle.textContent = '새로운 무작위 회전을 준비하는 중…';
+        els.spinReveal.textContent = '당첨 타임라인 생성 중';
+        els.spinReveal.classList.remove('winner');
+        els.wheelCanvas.style.transform = 'rotate(0rad)';
+        setPhase('RANDOMIZING');
+        renderWinnerHistory();
+        resizeWheel();
+        drawWheel(players);
+        if (innerWidth <= 760) {
+          requestAnimationFrame(() => els.gameArea.scrollIntoView({
+            behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',block:'start'
+          }));
+        }
+        els.arenaProof.textContent = 'RANDOM RUN';
+        els.arenaTitle.textContent = `${players.length}명 · ${targetWinners}개의 행운`;
+        els.spinReveal.textContent = '포인터와 조각을 정렬했습니다';
+        setPhase('LOCKED');
+        if (!await pause(650,token)) return;
+        await runDraw(token);
       }
-
-      bindEvents() {
-        this.startBtn.addEventListener('click', () => {
-            this.spin();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-        this.resetBtn.addEventListener('click', () => this.reset());
-        this.copyResultBtn.addEventListener('click', () => this.copyResult());
-        this.helpBtn.addEventListener('click', () => this.showHelp());
-        this.helpCloseBtn.addEventListener('click', () => this.hideHelp());
-        this.helpModalOverlay.addEventListener('click', (e) => {
-          if (e.target === this.helpModalOverlay) this.hideHelp();
-        });
-
-        this.winnerCountSelect.addEventListener('change', () => {
-          this.saveSettings();
-          this.updateWheelState();
-        });
-        this.spinDurationSelect.addEventListener('change', () => this.saveSettings());
-        this.participantsInput.addEventListener('input', () => {
-          this.saveSettings();
-          if (!this.isSpinning) {
-            this.updateWheelState();
-          }
-        });
-
-        window.addEventListener('resize', () => {
-          if (this.participants.length > 0) {
-            this.drawWheel();
-          }
-        });
+      function resetGame() {
+        cancelRun();
+        state.running = false;
+        state.winners = [];
+        state.audit = [];
+        state.rotation = 0;
+        state.simulatedMs = 0;
+        state.totalTurns = 0;
+        state.lastResult = '';
+        setControlsLocked(false);
+        stopCelebration();
+        els.resultOverlay.classList.remove('show');
+        els.wheelCanvas.style.transform = 'rotate(0rad)';
+        els.startBtn.textContent = '✨ 룰렛 돌리기';
+        els.arenaProof.textContent = 'RANDOM · READY';
+        els.arenaTitle.textContent = '행운의 휠이 참가자를 기다립니다';
+        els.spinReveal.textContent = '참가자를 확인한 뒤 룰렛을 돌려주세요';
+        els.spinReveal.classList.remove('winner');
+        renderLobby();
       }
-
-      loadSettings() {
-        const settings = JSON.parse(localStorage.getItem('rouletteSettings') || '{}');
-        if (settings.winnerCount) this.winnerCountSelect.value = settings.winnerCount;
-        if (settings.spinDuration) this.spinDurationSelect.value = settings.spinDuration;
-        if (settings.participants) this.participantsInput.value = settings.participants;
+      async function copyResult() {
+        if (!state.lastResult) {
+          showToast('완료된 룰렛 결과가 없습니다.');
+          return;
+        }
+        try { await navigator.clipboard.writeText(state.lastResult); }
+        catch {
+          const textarea = document.createElement('textarea');
+          textarea.value = state.lastResult;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          textarea.remove();
+        }
+        showToast('당첨 결과와 검증 해시를 복사했습니다.');
       }
-
-      saveSettings() {
-        const settings = {
-          winnerCount: this.winnerCountSelect.value,
-          spinDuration: this.spinDurationSelect.value,
-          participants: this.participantsInput.value
+      function showToast(message) {
+        clearTimeout(state.toastTimer);
+        els.toast.textContent = message;
+        els.toast.classList.add('show');
+        state.toastTimer = setTimeout(() => els.toast.classList.remove('show'),2200);
+      }
+      function resizeCelebrationCanvas() {
+        const canvas = els.celebrationCanvas;
+        const dpr = Math.min(devicePixelRatio || 1,2);
+        canvas.width = Math.round(innerWidth * dpr);
+        canvas.height = Math.round(innerHeight * dpr);
+        canvas.style.width = `${innerWidth}px`;
+        canvas.style.height = `${innerHeight}px`;
+        canvas.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+      }
+      function startCelebration() {
+        stopCelebration();
+        resizeCelebrationCanvas();
+        els.celebrationCanvas.style.display = 'block';
+        const context = els.celebrationCanvas.getContext('2d');
+        const rng = Math.random;
+        const particles = Array.from({ length:130 },(_,index) => ({
+          x:innerWidth * (.18 + rng() * .64),y:innerHeight * (.32 + rng() * .1),
+          vx:(rng() - .5) * (290 + rng() * 330),vy:-200 - rng() * 420,
+          gravity:440 + rng() * 180,rotation:rng() * Math.PI,vr:(rng() - .5) * 10,
+          size:4 + rng() * 8,color:COLORS[index % COLORS.length],life:3 + rng() * 2
+        }));
+        let last = performance.now();
+        let elapsed = 0;
+        const frame = now => {
+          const dt = Math.min((now - last) / 1000,.05);
+          last = now;
+          elapsed += dt;
+          context.clearRect(0,0,innerWidth,innerHeight);
+          particles.forEach(particle => {
+            particle.life -= dt;
+            if (particle.life <= 0) return;
+            particle.vy += particle.gravity * dt;
+            particle.x += particle.vx * dt;
+            particle.y += particle.vy * dt;
+            particle.rotation += particle.vr * dt;
+            context.save();
+            context.globalAlpha = Math.min(1,particle.life);
+            context.translate(particle.x,particle.y);
+            context.rotate(particle.rotation);
+            context.fillStyle = particle.color;
+            context.fillRect(-particle.size,-particle.size * .4,particle.size * 2,particle.size * .8);
+            context.restore();
+          });
+          if (elapsed < 5.6) state.celebrationFrame = requestAnimationFrame(frame);
+          else stopCelebration();
         };
-        localStorage.setItem('rouletteSettings', JSON.stringify(settings));
+        state.celebrationFrame = requestAnimationFrame(frame);
+      }
+      function stopCelebration() {
+        cancelAnimationFrame(state.celebrationFrame);
+        state.celebrationFrame = 0;
+        const context = els.celebrationCanvas.getContext('2d');
+        context.clearRect(0,0,els.celebrationCanvas.width,els.celebrationCanvas.height);
+        els.celebrationCanvas.style.display = 'none';
       }
 
-      parseParticipants() {
-        const text = this.participantsInput.value.trim();
-        if (!text) return [];
-        const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
-        const result = [];
-        const usedNames = new Set();
-
-        const addUniqueName = (baseName) => {
-          let name = baseName;
-          let counter = 1;
-          while (usedNames.has(name)) {
-            counter++;
-            name = `${baseName}(${counter})`;
+      els.participants.addEventListener('input',() => {
+        storage.set('participants',els.participants.value);
+        clearTimeout(state.inputTimer);
+        state.inputTimer = setTimeout(renderLobby,170);
+      });
+      [els.winnerCount,els.spinDuration].forEach(control => {
+        control.addEventListener('change',() => { saveSettings(); renderLobby(); });
+      });
+      els.startBtn.addEventListener('click',startGame);
+      els.resetBtn.addEventListener('click',resetGame);
+      els.soundBtn.addEventListener('click',() => {
+        sound.enabled = !sound.enabled;
+        storage.set('sound',sound.enabled);
+        setSoundUi();
+        if (sound.enabled) { sound.init(); sound.tone(640,.1); }
+      });
+      els.helpBtn.addEventListener('click',() => els.helpDialog.showModal());
+      els.helpCloseBtn.addEventListener('click',() => els.helpDialog.close());
+      els.helpDialog.addEventListener('click',event => { if (event.target === els.helpDialog) els.helpDialog.close(); });
+      els.resultCloseBtn.addEventListener('click',() => {
+        els.resultOverlay.classList.remove('show');
+        stopCelebration();
+      });
+      els.copyResultBtn.addEventListener('click',copyResult);
+      els.resultCopyBtn.addEventListener('click',copyResult);
+      let resizeTimer = 0;
+      addEventListener('resize',() => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          resizeWheel();
+          drawWheel(state.wheelPlayers.length ? state.wheelPlayers : state.players);
+          if (els.celebrationCanvas.style.display === 'block') resizeCelebrationCanvas();
+        },100);
+      },{ passive:true });
+      if ('ResizeObserver' in window) {
+        const wheelObserver = new ResizeObserver(() => {
+          if (!state.running) {
+            resizeWheel();
+            drawWheel(state.wheelPlayers.length ? state.wheelPlayers : state.players);
           }
-          usedNames.add(name);
-          result.push(name);
+        });
+        wheelObserver.observe(els.gameArea);
+      }
+
+      if (QA_MODE) {
+        window.__ROULETTE_QA__ = {
+          start:startGame,reset:resetGame,
+          pointerIndex:(rotation,count) => pointerIndex(rotation,count),
+          snapshot:() => ({
+            running:state.running,phase:state.phase,
+            winners:state.winners.map(player => ({ id:player.id,label:player.label })),
+            players:state.players.map(player => ({ id:player.id,label:player.label,status:player.status })),
+            audit:structuredClone(state.audit),rotation:state.rotation,
+            simulatedMs:state.simulatedMs,totalTurns:state.totalTurns,
+            pendingTimers:state.pending.size,animationActive:Boolean(state.animationFrame),
+            resultOpen:els.resultOverlay.classList.contains('show'),
+            overflowX:document.documentElement.scrollWidth - document.documentElement.clientWidth
+          })
         };
-
-        for (const rawName of names) {
-          const match = rawName.match(/^(.+)\*(\d+)$/);
-          if (match) {
-            const baseName = match[1].trim();
-            const count = Math.min(100, parseInt(match[2]) || 1);
-            for (let i = 0; i < count; i++) {
-              addUniqueName(baseName);
-            }
-          } else {
-            addUniqueName(rawName);
-          }
-        }
-        return result;
       }
-
-      updateButtonState() {
-        const allParticipants = this.parseParticipants();
-        this.maxWinners = parseInt(this.winnerCountSelect.value);
-
-        if (allParticipants.length === 0) {
-          this.waitingMessage.style.display = 'block';
-          this.wheelContainer.style.display = 'none';
-          this.startBtn.disabled = true;
-          return;
-        }
-
-        this.waitingMessage.style.display = 'none';
-        this.wheelContainer.style.display = 'flex';
-
-        if (this.winners.length >= this.maxWinners) {
-          this.startBtn.disabled = false;
-          this.startBtn.textContent = '🔄 다시 시작하기';
-        } else if (allParticipants.length - this.winners.length === 0) {
-          this.startBtn.disabled = true;
-          this.startBtn.textContent = '🎡 참여자 없음';
-        } else {
-          this.startBtn.disabled = false;
-          this.startBtn.textContent = this.winners.length > 0 ? '🎡 다시 돌리기' : '🎡 돌리기';
-        }
-      }
-
-      updateWheelState() {
-        const allParticipants = this.parseParticipants();
-        this.participants = allParticipants.filter(p => !this.winners.includes(p));
-        
-        this.updateButtonState();
-        this.drawWheel();
-      }
-
-      drawWheel() {
-        const container = this.gameArea;
-        const dpr = window.devicePixelRatio || 1;
-        
-        // Calculate container-aware size
-        const padding = 40;
-        const size = Math.min(container.clientWidth, container.clientHeight) - padding;
-        const wheelSize = Math.max(200, size); // Reduce floor to 200px
-
-        // Set logical display size
-        this.canvas.style.width = `${wheelSize}px`;
-        this.canvas.style.height = `${wheelSize}px`;
-        
-        // Ensure container matches wheel size for correct pointer positioning
-        this.wheelContainer.style.width = `${wheelSize}px`;
-        this.wheelContainer.style.height = `${wheelSize}px`;
-        
-        // Set actual pixel resolution
-        this.canvas.width = wheelSize * dpr;
-        this.canvas.height = wheelSize * dpr;
-
-        const ctx = this.ctx;
-        ctx.save();
-        ctx.scale(dpr, dpr); // Handle high DPI
-        
-        const centerX = wheelSize / 2;
-        const centerY = wheelSize / 2;
-        const radius = wheelSize / 2 - 10;
-
-        const currentParticipants = this.participants.length > 0 ? this.participants : ['?'];
-        const sliceAngle = (2 * Math.PI) / currentParticipants.length;
-
-        ctx.clearRect(0, 0, wheelSize, wheelSize);
-        ctx.save();
-        ctx.translate(centerX, centerY);
-        ctx.rotate(this.currentAngle);
-        ctx.translate(-centerX, -centerY);
-
-        currentParticipants.forEach((name, i) => {
-          const startAngle = i * sliceAngle - Math.PI / 2;
-          const endAngle = startAngle + sliceAngle;
-
-          ctx.beginPath();
-          ctx.moveTo(centerX, centerY);
-          ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-          ctx.closePath();
-          ctx.fillStyle = COLORS[i % COLORS.length];
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-          ctx.lineWidth = 2;
-          ctx.stroke();
-
-          ctx.save();
-          ctx.translate(centerX, centerY);
-          ctx.rotate(startAngle + sliceAngle / 2);
-          ctx.textAlign = 'right';
-          ctx.fillStyle = '#000';
-          const fontSize = Math.max(10, Math.min(18, radius / 8));
-          ctx.font = `bold ${fontSize}px 'Noto Sans KR'`;
-          const displayName = name.length > 8 ? name.substring(0, 7) + '..' : name;
-          ctx.fillText(displayName, radius - 20, fontSize / 3);
-          ctx.restore();
-        });
-
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.lineWidth = 5;
-        ctx.stroke();
-
-        ctx.restore();
-        ctx.restore(); // Restore dpr scale
-      }
-
-      spin() {
-        if (this.isSpinning) return;
-        this.sound.init();
-        
-        // 당첨자 선정 완료 후 다시 시작하거나, 다음 당첨자를 위해 휠 갱신
-        const isGameFinished = this.winners.length >= parseInt(this.winnerCountSelect.value);
-        if (isGameFinished) {
-          this.winners = [];
-          this.currentAngle = 0; // 새 게임 시작 시 각도 초기화
-          this.updateRankings(); // 당첨자 현황 리스트 초기화
-          this.updateWheelState();
-        } else {
-          // 다음 당첨자 추첨 시 현재 각도를 유지하며 참여자만 제거
-          this.updateWheelState();
-        }
-
-        if (this.participants.length === 0) {
-          this.showToast('참여자가 없습니다!');
-          return;
-        }
-
-        this.isSpinning = true;
-        this.startBtn.disabled = true;
-        this.winnerDisplay.classList.remove('show');
-        this.sound.playStart();
-
-        // 정밀한 시작 각도 계산 (0 ~ 2PI 사이로 정규화)
-        const normalizedStartAngle = ((this.currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-        this.currentAngle = normalizedStartAngle;
-
-        const currentParticipants = this.participants;
-        const sliceAngle = (2 * Math.PI) / currentParticipants.length;
-        const winnerIndex = Math.floor(Math.random() * currentParticipants.length);
-
-        // 목표 각도: (한 바퀴 - 슬라이스 중심 각도) + 여러 번의 회전
-        // 슬라이스 i의 중심 각도는 (i + 0.5) * sliceAngle 임
-        const rotations = 10 + Math.floor(Math.random() * 5); // 최소 10바퀴 이상
-        const targetRotation = rotations * 2 * Math.PI - (winnerIndex + 0.5) * sliceAngle;
-        
-        const startTime = performance.now();
-        const duration = parseInt(this.spinDurationSelect.value) * 1000;
-        let lastTickAngle = normalizedStartAngle;
-
-        const animate = (currentTime) => {
-          const elapsed = currentTime - startTime;
-          const progress = Math.min(elapsed / duration, 1);
-
-          // Easing: Quintic Out (더 부드럽게 멈춤)
-          const easeOut = 1 - Math.pow(1 - progress, 5);
-          
-          const prevAngle = this.currentAngle;
-          this.currentAngle = normalizedStartAngle + (targetRotation - normalizedStartAngle) * easeOut;
-          
-          // Tick sound logic
-          const sliceSize = (2 * Math.PI) / currentParticipants.length;
-          const currentTickPos = Math.floor((this.currentAngle + Math.PI / 2) / sliceSize);
-          const lastTickPos = Math.floor((prevAngle + Math.PI / 2) / sliceSize);
-          
-          if (currentTickPos !== lastTickPos) {
-            this.sound.playTick();
-          }
-
-          this.drawWheel();
-
-          if (progress < 1) {
-            this.animationId = requestAnimationFrame(animate);
-          } else {
-            // 마지막 위치 정확히 고정
-            this.currentAngle = targetRotation;
-            this.drawWheel();
-            this.onSpinComplete(currentParticipants[winnerIndex]);
-          }
-        };
-
-        this.animationId = requestAnimationFrame(animate);
-      }
-
-      onSpinComplete(winner) {
-        this.isSpinning = false;
-        this.winners.push(winner);
-        this.currentAngle = this.currentAngle % (2 * Math.PI);
-        this.sound.playWin();
-
-        // Show winner with rich format
-        this.winnerDisplay.innerHTML = `
-          <span class="winner-label">🎊 CONGRATULATIONS 🎊</span>
-          <span class="winner-name">${winner}</span>
-        `;
-        this.winnerDisplay.classList.add('show');
-
-        // Hide winner display after 4 seconds automatically to allow next interaction
-        setTimeout(() => {
-          this.winnerDisplay.classList.remove('show');
-        }, 4000);
-
-        this.createConfetti();
-        this.updateRankings();
-        
-        // 중요: 당첨 즉시 휠을 갱신하지 않고 버튼 상태만 업데이트함
-        // 이를 통해 당첨자가 화살표가 가리키는 위치에 그대로 남아있게 됨
-        this.updateButtonState();
-      }
-
-      updateRankings() {
-        if (this.winners.length === 0) {
-          this.rankingsList.innerHTML = `
-            <div class="waiting-message" style="padding: 20px; text-align: center;">
-              <p style="font-size: 0.9rem; color: var(--text-secondary);">룰렛을 돌려주세요!</p>
-            </div>
-          `;
-          return;
-        }
-
-        const medals = ['🥇', '🥈', '🥉'];
-        let html = '';
-
-        this.winners.forEach((name, i) => {
-          const posClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'normal';
-          html += `
-            <div class="rank-item winner">
-              <div class="rank-position ${posClass}">${medals[i] || (i + 1)}</div>
-              <div class="rank-name">${name}</div>
-            </div>
-          `;
-        });
-
-        this.rankingsList.innerHTML = html;
-      }
-
-      reset() {
-        if (this.animationId) {
-          cancelAnimationFrame(this.animationId);
-        }
-        this.isSpinning = false;
-        this.winners = [];
-        this.currentAngle = 0;
-        this.winnerDisplay.classList.remove('show');
-        this.updateRankings();
-        this.updateWheelState();
-      }
-
-      copyResult() {
-        if (this.winners.length === 0) {
-          this.showToast('복사할 결과가 없습니다!');
-          return;
-        }
-
-        const medals = ['🥇', '🥈', '🥉'];
-        let result = '🎡 룰렛 추첨 결과\n';
-        result += '─'.repeat(20) + '\n';
-        this.winners.forEach((name, i) => {
-          result += `${medals[i] || '🏅'} ${i + 1}등: ${name}\n`;
-        });
-
-        navigator.clipboard.writeText(result).then(() => {
-          this.showToast('결과가 복사되었습니다! 📋');
-        }).catch(() => {
-          this.showToast('복사에 실패했습니다.');
-        });
-      }
-
-      showToast(message) {
-        this.toast.textContent = message;
-        this.toast.classList.add('show');
-        setTimeout(() => this.toast.classList.remove('show'), 2500);
-      }
-
-      showHelp() {
-        this.helpModalOverlay.classList.add('show');
-      }
-
-      hideHelp() {
-        this.helpModalOverlay.classList.remove('show');
-      }
-
-      createConfetti() {
-        const colors = ['#ffd93d', '#ff6b6b', '#9b5de5', '#f15bb5', '#00f5d4'];
-        for (let i = 0; i < 50; i++) {
-          setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + 'vw';
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.width = (Math.random() * 10 + 5) + 'px';
-            confetti.style.height = confetti.style.width;
-            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-            document.body.appendChild(confetti);
-
-            confetti.animate([
-              { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
-              { transform: `translateY(100vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
-            ], {
-              duration: 2000 + Math.random() * 2000,
-              easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-            }).onfinish = () => confetti.remove();
-          }, i * 30);
-        }
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      new RouletteGame();
-    });
+      restoreSettings();
+      setSoundUi();
+      renderLobby();
+    })();
   </script>
 </body>
 </html>

@@ -172,26 +172,7 @@
         input[type="range"] { width: 100%; height: 4px; border-radius: 2px; background: var(--glass-border); -webkit-appearance: none; cursor: pointer; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent-pink); cursor: pointer; }
 
-        .seed-setting { margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--glass-border); }
-        .seed-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
-        .seed-heading label { color: var(--text-secondary); font-size: 0.75rem; }
-        .seed-heading small { color: rgba(255,255,255,0.28); font-size: 0.62rem; }
-        .seed-input-row { display: flex; gap: 6px; }
-        .seed-input {
-            width: 100%; min-width: 0; height: 34px; padding: 0 9px;
-            border: 1px solid var(--glass-border); border-radius: 7px;
-            background: rgba(0,0,0,0.25); color: #fff;
-            font: 700 0.72rem monospace; letter-spacing: 0.04em;
-        }
-        .seed-input:focus { outline: none; border-color: var(--accent-cyan); }
-        .seed-refresh {
-            flex: 0 0 34px; height: 34px; border: 1px solid var(--glass-border); border-radius: 7px;
-            background: rgba(255,255,255,0.06); color: var(--accent-cyan); cursor: pointer;
-            font-family: inherit; font-size: 1rem; font-weight: 900;
-        }
-        .seed-proof { display: flex; justify-content: space-between; margin-top: 6px; color: rgba(255,255,255,0.3); font-size: 0.62rem; }
-        .seed-proof code { color: var(--accent-cyan); font: 700 0.66rem monospace; letter-spacing: 0.06em; }
-        .participants-input:disabled, input:disabled, .seed-refresh:disabled { opacity: 0.55; cursor: not-allowed; }
+        .participants-input:disabled, input:disabled { opacity: 0.55; cursor: not-allowed; }
 
         .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-shrink: 0; }
         .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-family: inherit; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
@@ -269,13 +250,6 @@
             pointer-events: none;
         }
 
-        .seed-watermark {
-            position: absolute; top: 18px; left: 18px; z-index: 6;
-            padding: 7px 10px; border: 1px solid rgba(0,242,255,0.2); border-radius: 8px;
-            background: rgba(2,6,23,0.72); color: rgba(0,242,255,0.78);
-            font: 700 0.68rem monospace; letter-spacing: 0.08em;
-            pointer-events: none; backdrop-filter: blur(8px);
-        }
         .race-phase {
             position: absolute; top: 76px; left: 50%; z-index: 6;
             transform: translateX(-50%); display: none;
@@ -427,7 +401,6 @@
                 min-height: 200px;
                 max-height: 300px;
             }
-            .seed-watermark { top: 12px; left: 12px; font-size: 0.6rem; }
             .race-phase { top: 68px; }
         }
 
@@ -476,17 +449,6 @@
                             </div>
                             <input type="range" id="densitySlider" min="20" max="100" step="10" value="60">
                         </div>
-                        <div class="seed-setting">
-                            <div class="seed-heading">
-                                <label for="gameSeed">재현 시드</label>
-                                <small>같은 환경 = 같은 결과</small>
-                            </div>
-                            <div class="seed-input-row">
-                                <input class="seed-input" id="gameSeed" type="text" maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="seedProof">
-                                <button class="seed-refresh" id="seedRefresh" type="button" aria-label="새 재현 시드 만들기" title="새 시드 만들기">↻</button>
-                            </div>
-                            <div class="seed-proof" id="seedProof"><span>RUN HASH</span><code id="seedHash">계산 전</code></div>
-                        </div>
                     </div>
                 </div>
                 
@@ -522,7 +484,6 @@
             </div>
         </aside>
         <main class="game-area">
-            <div class="seed-watermark" id="seedWatermark">HASH: —</div>
             <div class="game-timer" id="gameTimer">00:00.00</div>
             <div class="race-phase" id="racePhase" role="status">⚡ HYPER DRIVE ⚡</div>
             <canvas id="gameCanvas"></canvas>
@@ -536,7 +497,6 @@
             <div class="winner-label">🏆 CHAMPION</div>
             <div class="winner-title" id="winnerTitle">NEON RACE</div>
             <div class="winner-name" id="winnerName">-</div>
-            <div class="result-proof" id="resultProof">RUN HASH: —</div>
         </div>
         <div class="final-rankings">
             <div class="final-rankings-title">🏁 최종 순위</div>
@@ -558,8 +518,6 @@
             <p>🚀 니트로, 🛡️ 쉴드, 👻 고스트, 🌩️ 번개가 순위에 따라 차등 등장합니다. 뒤처진 참가자에게 더 강한 역전 기회가 주어집니다.</p>
             <h3>미니맵과 카메라</h3>
             <p>하단 미니맵을 드래그해 원하는 구간을 볼 수 있습니다. 레이스 결과에는 영향을 주지 않습니다.</p>
-            <h3>재현 시드</h3>
-            <p>같은 참가자·설정·화면 크기·시드는 같은 자동 진행 결과를 만듭니다. 진행 중 리사이즈나 강제 종료가 발생하면 RUN HASH 옆에 표시됩니다.</p>
         </div>
     </div>
 
@@ -568,49 +526,6 @@
     <script>
         const MAX_PARTICIPANTS = 40;
         const FIXED_DT = 1 / 60;
-
-        function mulberry32(seed) {
-            let value = seed >>> 0;
-            return () => {
-                value += 0x6D2B79F5;
-                let result = value;
-                result = Math.imul(result ^ (result >>> 15), result | 1);
-                result ^= result + Math.imul(result ^ (result >>> 7), result | 61);
-                return ((result ^ (result >>> 14)) >>> 0) / 4294967296;
-            };
-        }
-
-        function fallbackHash(input) {
-            let hash = 2166136261;
-            for (let index = 0; index < input.length; index++) {
-                hash ^= input.charCodeAt(index);
-                hash = Math.imul(hash, 16777619);
-            }
-            return hash >>> 0;
-        }
-
-        function generateSeed() {
-            if (window.crypto?.getRandomValues) {
-                const values = new Uint32Array(2);
-                window.crypto.getRandomValues(values);
-                return `${values[0].toString(36)}-${values[1].toString(36)}`.toUpperCase();
-            }
-            return `${Date.now().toString(36)}-${Math.floor(Math.random() * 1e9).toString(36)}`.toUpperCase();
-        }
-
-        async function createRunSeed(material) {
-            let hashHex = '';
-            if (window.crypto?.subtle && window.TextEncoder) {
-                try {
-                    const bytes = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(material));
-                    hashHex = Array.from(new Uint8Array(bytes), byte => byte.toString(16).padStart(2, '0')).join('');
-                } catch (error) { /* 제한된 로컬 환경에서는 아래 폴백 사용 */ }
-            }
-            if (!hashHex) {
-                hashHex = Array.from({ length: 8 }, (_, index) => fallbackHash(`${index}:${material}`).toString(16).padStart(8, '0')).join('');
-            }
-            return { hashHex, random: mulberry32(parseInt(hashHex.slice(0, 8), 16) >>> 0) };
-        }
 
         class SoundManager {
             constructor() {
@@ -768,11 +683,7 @@
                 this.rankingElapsed = 0;
                 this.resultTimer = null;
                 this.shake = 0;
-                this.physicsRandom = mulberry32(1);
-                this.currentSeed = '';
-                this.currentRunHash = '';
-                this.runMode = 'AUTO';
-                this.startToken = 0;
+                this.physicsRandom = Math.random;
                 
                 // 미니맵 관련
                 this.isDraggingMinimap = false;
@@ -829,7 +740,6 @@
                     });
                     this.obstacles.forEach(obstacle => { obstacle.y = mapY(obstacle.y); });
                     this.itemBoxes.forEach(box => { box.y = mapY(box.y); });
-                    if (!this.runMode.includes('RESIZED')) this.runMode += ' · RESIZED';
                 }
                 this.trackTop = nextTrackTop;
                 this.trackBottom = nextTrackBottom;
@@ -846,7 +756,6 @@
 
                 // Reinitialize background on resize
                 this.initBackground();
-                this.renderRunProof();
             }
 
             initBackground() {
@@ -924,17 +833,8 @@
                 this.cameraX = Math.max(0, Math.min(this.cameraX, maxCamX));
             }
 
-            renderRunProof() {
-                const compactHash = this.currentRunHash ? this.currentRunHash.slice(0, 12).toUpperCase() : '—';
-                const label = `HASH: ${compactHash}${this.currentRunHash ? ` · ${this.runMode}` : ''}`;
-                const watermark = document.getElementById('seedWatermark');
-                if (watermark) watermark.textContent = label;
-                const proof = document.getElementById('seedHash');
-                if (proof) proof.textContent = compactHash;
-            }
-
             setControlsDisabled(disabled) {
-                ['participants', 'raceLengthSlider', 'densitySlider', 'gameSeed', 'seedRefresh'].forEach(id => {
+                ['participants', 'raceLengthSlider', 'densitySlider'].forEach(id => {
                     const element = document.getElementById(id);
                     if (element) element.disabled = disabled;
                 });
@@ -944,8 +844,7 @@
                 if (finishButton) finishButton.disabled = !disabled;
             }
 
-            prepare(names, raceLength, density, shouldShuffle = false, preserveRandom = false) {
-                if (!preserveRandom) this.startToken++;
+            prepare(names, raceLength, density, shouldShuffle = false) {
                 if (this.resultTimer) {
                     clearTimeout(this.resultTimer);
                     this.resultTimer = null;
@@ -959,10 +858,7 @@
                 this.simTime = 0;
                 this.rankingElapsed = 0;
 
-                if (!preserveRandom) {
-                    const seed = document.getElementById('gameSeed')?.value.trim() || 'PLAYPICK';
-                    this.physicsRandom = mulberry32(fallbackHash(JSON.stringify({ seed, names, raceLength, density })));
-                }
+                this.physicsRandom = Math.random;
                 const random = () => this.physicsRandom();
 
                 // 트랙 영역 계산 (빌딩 라인 아래)
@@ -1042,38 +938,11 @@
                 this.draw();
             }
 
-            async configureRun(names, raceLength, density) {
-                const seedInput = document.getElementById('gameSeed');
-                if (!seedInput.value.trim()) seedInput.value = generateSeed();
-                this.currentSeed = seedInput.value.trim();
-                const material = JSON.stringify({
-                    game: 'neon-race-1.8',
-                    seed: this.currentSeed,
-                    participants: names,
-                    raceLength,
-                    density,
-                    viewport: [this.canvas.width, this.canvas.height]
-                });
-                const seeded = await createRunSeed(material);
-                this.currentRunHash = seeded.hashHex;
-                this.physicsRandom = seeded.random;
-                this.runMode = 'AUTO';
-                this.renderRunProof();
-            }
-
             async start(names, raceLength, density) {
                 if (this.isRunning || names.length < 2) return false;
-                const token = ++this.startToken;
                 this.sound.init();
                 this.setControlsDisabled(true);
-                await this.configureRun(names, raceLength, density);
-                if (token !== this.startToken) {
-                    this.currentRunHash = '';
-                    this.currentSeed = document.getElementById('gameSeed').value.trim();
-                    this.renderRunProof();
-                    return false;
-                }
-                this.prepare(names, raceLength, density, false, true);
+                this.prepare(names, raceLength, density, true);
                 this.setControlsDisabled(true);
                 this.isRunning = true;
                 this.simTime = 0;
@@ -1123,8 +992,6 @@
                     p.trail = [];
                     p.finishTime = this.simTime + i * 0.001;
                 });
-                this.runMode = this.runMode.includes('RESIZED') ? 'FORCED · RESIZED' : 'FORCED';
-                this.renderRunProof();
                 this.updateRankingUI();
                 if (this.resultTimer) clearTimeout(this.resultTimer);
                 this.resultTimer = setTimeout(() => {
@@ -1477,8 +1344,6 @@
                 const winner = sorted[0];
                 if (!winner) return;
                 document.getElementById('winnerName').textContent = `${winner.emoji} ${winner.name}`;
-                document.getElementById('resultProof').textContent = `RUN HASH: ${this.currentRunHash.slice(0, 16).toUpperCase()} · ${this.runMode}`;
-                
                 // 최종 순위 리스트 생성
                 const finalRankingList = document.getElementById('finalRankingList');
                 finalRankingList.replaceChildren();
@@ -1857,8 +1722,7 @@
                     return "";
                 };
 
-                const shortHash = this.currentRunHash ? this.currentRunHash.slice(0, 16).toUpperCase() : '—';
-                let text = `🌌 네온 레이스 결과 🌌\nRUN HASH: ${shortHash} · ${this.runMode}\nSEED: ${this.currentSeed || '—'}\n━━━━━━━━━━━━━━\n`;
+                let text = `🌌 네온 레이스 결과 🌌\n━━━━━━━━━━━━━━\n`;
                 sorted.forEach((p, i) => {
                     const rank = i + 1;
                     if (p.finished) {
@@ -1880,7 +1744,6 @@
             const raceLengthValue = document.getElementById('lengthValue');
             const densitySlider = document.getElementById('densitySlider');
             const densityValue = document.getElementById('densityValue');
-            const seedInput = document.getElementById('gameSeed');
             const helpModal = document.getElementById('helpModal');
             const winnerOverlay = document.getElementById('winnerOverlay');
             let helpReturnFocus = null;
@@ -1924,26 +1787,15 @@
                 const { names } = parseParticipants(participantsInput.value);
                 const length = Number.parseInt(raceLengthSlider.value, 10);
                 const density = Number.parseInt(densitySlider.value, 10);
-                game.currentRunHash = '';
-                game.currentSeed = seedInput.value.trim();
-                game.runMode = 'AUTO';
-                game.renderRunProof();
                 game.prepare(names, length, density, shouldShuffle);
                 saveSetting('neon-race-participants', participantsInput.value);
                 saveSetting('neon-race-length', String(length));
                 saveSetting('neon-race-density', String(density));
-                saveSetting('neon-race-seed', seedInput.value);
             }
 
             participantsInput.addEventListener('input', () => updateInit(false));
             raceLengthSlider.addEventListener('input', (e) => { raceLengthValue.textContent = e.target.value; updateInit(false); });
             densitySlider.addEventListener('input', (e) => { densityValue.textContent = getDensityText(e.target.value); updateInit(false); });
-            seedInput.addEventListener('input', () => updateInit(false));
-            document.getElementById('seedRefresh').addEventListener('click', () => {
-                seedInput.value = generateSeed();
-                updateInit(false);
-            });
-
             document.getElementById('startBtn').addEventListener('click', async () => {
                 if (game.isRunning) return; 
                 const parsed = parseParticipants(participantsInput.value);
@@ -1958,16 +1810,13 @@
                 }
                 try {
                     const started = await game.start(parsed.names, Number.parseInt(raceLengthSlider.value, 10), Number.parseInt(densitySlider.value, 10));
-                    if (started) {
-                        saveSetting('neon-race-seed', seedInput.value);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
+                    if (started) window.scrollTo({ top: 0, behavior: 'smooth' });
                 } catch (error) {
                     game.setControlsDisabled(false);
                     alert('레이스를 시작하지 못했습니다. 잠시 후 다시 시도해 주세요.');
                 }
             });
-            document.getElementById('resetBtn').addEventListener('click', () => { updateInit(false); });
+            document.getElementById('resetBtn').addEventListener('click', () => { updateInit(true); });
             document.getElementById('finishBtn').addEventListener('click', () => { game.forceFinish(); });
 
             const closeHelp = () => {
@@ -1987,7 +1836,7 @@
             document.getElementById('restartBtn').addEventListener('click', () => {
                 winnerOverlay.classList.remove('show');
                 winnerOverlay.setAttribute('aria-hidden', 'true');
-                updateInit(false);
+                updateInit(true);
                 document.getElementById('startBtn').focus();
             });
 
@@ -2036,9 +1885,7 @@
             if (savedLength) { raceLengthSlider.value = savedLength; raceLengthValue.textContent = savedLength; }
             const savedDensity = loadSetting('neon-race-density');
             if (savedDensity) { densitySlider.value = savedDensity; densityValue.textContent = getDensityText(savedDensity); }
-            seedInput.value = loadSetting('neon-race-seed') || generateSeed();
-
-            updateInit(false);
+            updateInit(true);
         });
     </script>
 </body>

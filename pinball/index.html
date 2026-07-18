@@ -9,8 +9,8 @@
   "features": ["🎱 물리 핀볼", "⌨️ 플리퍼 수동 조작"],
   "color": "cyan",
   "badge": "NEW",
-  "version": "1.2.0",
-  "updated": "2026-07-16",
+  "version": "1.3.0",
+  "updated": "2026-07-17",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -70,8 +70,6 @@
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎱</text></svg>">
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
@@ -257,29 +255,7 @@
       font-size: 0.85rem;
     }
 
-    .seed-setting { padding-top: 2px; }
-    .seed-label-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .seed-label-row small { color: rgba(255, 255, 255, 0.38); font-size: 0.65rem; font-weight: 500; }
-    .seed-input-row { display: flex; gap: 7px; margin-top: 6px; }
-    .seed-input {
-      width: 100%; min-width: 0; height: 34px;
-      border: 1px solid var(--glass-border); border-radius: 7px;
-      background: rgba(0, 0, 0, 0.22); color: #fff;
-      padding: 0 10px; font: 700 0.76rem monospace; letter-spacing: 0.04em;
-    }
-    .seed-input:focus { outline: none; border-color: var(--accent-cyan); }
-    .seed-refresh {
-      flex: 0 0 34px; height: 34px; border: 1px solid var(--glass-border); border-radius: 7px;
-      background: rgba(255, 255, 255, 0.06); color: var(--accent-cyan); cursor: pointer;
-      font-family: inherit; font-size: 1rem; font-weight: 900;
-    }
-    .seed-refresh:hover { border-color: var(--accent-cyan); background: rgba(0, 212, 255, 0.1); }
-    .seed-input:disabled, .seed-refresh:disabled, .sidebar textarea:disabled, .sidebar input:disabled { opacity: 0.58; cursor: not-allowed; }
-    .seed-proof {
-      display: flex; align-items: center; justify-content: space-between; gap: 8px;
-      margin-top: 7px; color: rgba(255, 255, 255, 0.38); font-size: 0.66rem;
-    }
-    .seed-proof code { color: var(--accent-light); font: 700 0.7rem monospace; letter-spacing: 0.06em; }
+    .sidebar textarea:disabled, .sidebar input:disabled { opacity: 0.58; cursor: not-allowed; }
 
     .button-group { display: flex; gap: 6px; flex-shrink: 0; width: 100%; }
 
@@ -443,14 +419,6 @@
       z-index: 20;
       pointer-events: none;
       display: none;
-    }
-
-    .seed-watermark {
-      position: absolute; top: 18px; left: 18px; z-index: 20;
-      padding: 7px 10px; border: 1px solid rgba(103, 232, 249, 0.18); border-radius: 8px;
-      background: rgba(4, 8, 22, 0.65); color: rgba(103, 232, 249, 0.72);
-      font: 700 0.68rem monospace; letter-spacing: 0.08em;
-      pointer-events: none; backdrop-filter: blur(8px);
     }
 
     .danger-ui {
@@ -633,6 +601,210 @@
       user-select: none;
     }
 
+    /* Arcade cabinet refresh */
+    :root {
+      --arcade-red: #e43854;
+      --arcade-amber: #ffcf56;
+      --arcade-teal: #2dd4bf;
+      --arcade-ink: #07111f;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 72% 8%, rgba(255,207,86,.08), transparent 24%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.012) 0 1px, transparent 1px 9px),
+        linear-gradient(135deg,#090306,#18070b 55%,#050407);
+      font-family: Pretendard, "Noto Sans KR", system-ui, sans-serif;
+    }
+
+    .sidebar {
+      border-right: 1px solid rgba(255,207,86,.24);
+      background:
+        radial-gradient(circle at 0 0,rgba(228,56,84,.16),transparent 27%),
+        linear-gradient(180deg,rgba(26,12,19,.98),rgba(8,8,16,.98));
+      box-shadow: 16px 0 52px rgba(0,0,0,.36), inset -1px 0 rgba(255,255,255,.035);
+    }
+
+    .sidebar-header h1 {
+      background: linear-gradient(110deg,#fff7dd,#ffcf56 46%,#ff6c83 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: none;
+      filter: drop-shadow(0 2px 8px rgba(255,73,104,.16));
+    }
+
+    .sidebar-header h1 .logo-emoji {
+      display: grid;
+      width: 44px;
+      height: 44px;
+      flex: 0 0 44px;
+      place-items: center;
+      border: 1px solid rgba(255,207,86,.34);
+      border-radius: 14px;
+      background: linear-gradient(145deg,rgba(228,56,84,.36),rgba(255,207,86,.1));
+      box-shadow: inset 0 1px rgba(255,255,255,.18),0 10px 24px rgba(228,56,84,.17);
+      filter: none;
+    }
+
+    .settings-group,
+    .rankings {
+      border: 1px solid rgba(255,255,255,.085);
+      background: linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.022));
+      box-shadow: inset 0 1px rgba(255,255,255,.035);
+    }
+
+    .sidebar textarea {
+      border-color: rgba(255,255,255,.11);
+      background: rgba(255,255,255,.045);
+    }
+
+    .btn-primary {
+      color: #fff9e9;
+      border: 1px solid rgba(255,255,255,.15);
+      background: linear-gradient(120deg,#f04962,#c91f42 62%,#8f112d);
+      box-shadow: inset 0 1px rgba(255,255,255,.25),0 12px 28px rgba(201,31,66,.27);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: inset 0 1px rgba(255,255,255,.3),0 16px 34px rgba(201,31,66,.34);
+    }
+
+    .game-area {
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 50% 16%,rgba(255,207,86,.12),transparent 26%),
+        repeating-linear-gradient(90deg,#3d1210 0 7px,#260a0c 7px 14px);
+      box-shadow: inset 0 0 0 9px #16080a,inset 0 0 0 12px rgba(255,207,86,.18),inset 0 0 45px rgba(0,0,0,.85);
+    }
+
+    .game-area::before {
+      position: absolute;
+      inset: 10px;
+      z-index: 6;
+      border: 1px solid rgba(238,247,255,.34);
+      border-radius: 20px;
+      box-shadow: inset 0 0 0 4px rgba(0,0,0,.4),inset 0 0 28px rgba(177,223,255,.08),0 0 0 2px rgba(0,0,0,.55);
+      content: '';
+      pointer-events: none;
+    }
+
+    .game-area::after {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      background:
+        linear-gradient(112deg,rgba(255,255,255,.075),transparent 17% 73%,rgba(255,255,255,.025)),
+        radial-gradient(ellipse at 50% 48%,transparent 45%,rgba(0,0,0,.28) 100%);
+      content: '';
+      pointer-events: none;
+    }
+
+    #gameCanvas {
+      position: relative;
+      z-index: 1;
+      filter: saturate(1.08) contrast(1.04);
+    }
+
+    .arcade-scoreboard {
+      position: absolute;
+      top: 17px;
+      left: 50%;
+      z-index: 30;
+      display: none;
+      grid-template-columns: 1.35fr 1fr .75fr;
+      width: min(430px,calc(100% - 350px));
+      min-width: 300px;
+      overflow: hidden;
+      border: 3px solid #1b0c0b;
+      border-radius: 11px;
+      background: #080403;
+      box-shadow: 0 0 0 1px #bd7131,0 8px 24px rgba(0,0,0,.5),inset 0 0 18px rgba(255,93,35,.12);
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .arcade-scoreboard > div {
+      display: grid;
+      gap: 2px;
+      padding: 7px 12px 8px;
+      border-right: 1px solid rgba(255,119,57,.22);
+      text-align: center;
+    }
+
+    .arcade-scoreboard > div:last-child { border-right: 0; }
+    .arcade-scoreboard span { color: #9d5b37; font: 800 .49rem/1 ui-monospace,monospace; letter-spacing: .18em; }
+    .arcade-scoreboard strong {
+      color: #ff8a3d;
+      font: 900 clamp(.82rem,1.35vw,1.2rem)/1.15 ui-monospace,"Cascadia Mono",monospace;
+      letter-spacing: .08em;
+      text-shadow: 0 0 5px #ff5c1f,0 0 12px rgba(255,75,20,.56);
+    }
+
+    .danger-ui {
+      top: 76px;
+      border: 2px solid #2a080e;
+      border-radius: 8px;
+      color: #ff9b4b;
+      background: #160504 !important;
+      box-shadow: 0 0 0 1px #9d3128,0 0 24px rgba(255,44,52,.32),inset 0 0 12px rgba(255,55,20,.16);
+      font-family: ui-monospace,monospace;
+      letter-spacing: .08em;
+    }
+
+    .death-info-container { top: 18px; right: 22px; }
+    .death-info-item {
+      border: 1px solid rgba(255,255,255,.1);
+      border-right: 4px solid var(--arcade-red);
+      border-radius: 8px;
+      background: rgba(15,7,10,.86);
+      box-shadow: 0 10px 28px rgba(0,0,0,.38);
+      backdrop-filter: blur(10px);
+    }
+
+    .control-hint {
+      bottom: 18px;
+      left: 50%;
+      border-color: rgba(255,207,86,.28);
+      color: #ded7c7;
+      background: rgba(12,6,8,.82);
+      box-shadow: 0 8px 24px rgba(0,0,0,.36);
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    .control-hint kbd { color: var(--arcade-amber); background: rgba(255,207,86,.12); }
+
+    .game-over-overlay {
+      background: rgba(7,3,8,.69);
+      backdrop-filter: blur(18px) saturate(1.1);
+    }
+
+    .game-over-content {
+      border-color: rgba(255,207,86,.28);
+      background: radial-gradient(circle at 50% 0,rgba(228,56,84,.18),transparent 32%),linear-gradient(145deg,rgba(37,14,24,.97),rgba(8,8,17,.98));
+      box-shadow: 0 30px 90px rgba(0,0,0,.62),0 0 55px rgba(255,207,86,.08);
+    }
+
+    .winner-name { background: linear-gradient(110deg,#ffdf72,#f5b73e); box-shadow: 0 8px 22px rgba(255,196,57,.22); }
+
+    @media (max-width: 1050px) and (min-width: 769px) {
+      .arcade-scoreboard { width: min(390px,calc(100% - 270px)); min-width: 270px; }
+      .arcade-scoreboard > div { padding-inline: 8px; }
+    }
+
+    @media (max-width: 768px) {
+      .game-area { box-shadow: inset 0 0 0 6px #16080a,inset 0 0 0 8px rgba(255,207,86,.16); }
+      .game-area::before { inset: 6px; border-radius: 14px; }
+      .arcade-scoreboard { top: 11px; width: min(300px,calc(100% - 24px)); min-width: 0; }
+      .arcade-scoreboard > div { padding: 6px 6px 7px; }
+      .arcade-scoreboard span { font-size: .42rem; }
+      .arcade-scoreboard strong { font-size: .76rem; }
+      .danger-ui { top: 83px; max-width: calc(100% - 30px); padding: 8px 13px; font-size: .78rem; white-space: nowrap; }
+      .death-info-container { top: 54px; right: 8px; }
+      .death-info-item { max-width: 210px; padding: 7px 10px; overflow: hidden; font-size: .7rem; text-overflow: ellipsis; }
+      .control-hint { bottom: 12px; max-width: calc(100% - 24px); overflow: hidden; font-size: .68rem; text-overflow: ellipsis; }
+    }
+
     :focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 3px; }
 
     @media (prefers-reduced-motion: reduce) {
@@ -674,17 +846,6 @@
               <span class="slider-value" id="speedValue">1.0x</span>
             </div>
           </div>
-          <div class="seed-setting">
-            <div class="seed-label-row">
-              <label for="gameSeed">재현 시드</label>
-              <small>같은 환경 = 같은 결과</small>
-            </div>
-            <div class="seed-input-row">
-              <input class="seed-input" id="gameSeed" type="text" maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="seedProof">
-              <button class="seed-refresh" id="seedRefresh" type="button" aria-label="새 재현 시드 만들기" title="새 시드 만들기">↻</button>
-            </div>
-            <div class="seed-proof" id="seedProof"><span>RUN HASH</span><code id="seedHash">계산 전</code></div>
-          </div>
         </div>
 
         <div class="button-group">
@@ -719,8 +880,11 @@
     </aside>
 
     <main class="game-area">
-      <div class="seed-watermark" id="seedWatermark">HASH: —</div>
-      <div class="game-timer" id="gameTimer">0.000s</div>
+      <div class="arcade-scoreboard" id="arcadeScoreboard" aria-label="핀볼 점수판">
+        <div><span>SCORE</span><strong id="scoreValue">000000</strong></div>
+        <div><span>TIME</span><strong id="gameTimer">0.000</strong></div>
+        <div><span>BALLS</span><strong id="ballCount">0</strong></div>
+      </div>
       <div class="danger-ui" id="dangerUI" role="status">⚠️ 위험! 가속 모드 ⚠️</div>
       <div class="death-info-container" id="deathInfoContainer"></div>
       <canvas id="gameCanvas"></canvas>
@@ -775,10 +939,6 @@
         <p>게임 종료 후 하단의 복사 버튼으로 결과를 클립보드에 복사할 수 있습니다.</p>
       </div>
 
-      <div class="help-section">
-        <h3>🔐 재현 시드와 해시</h3>
-        <p>같은 참여자·설정·화면 크기·시드를 사용하면 자동 진행 결과를 다시 확인할 수 있습니다. 직접 플리퍼를 조작하면 결과가 달라지며 화면에 MANUAL로 표시됩니다. 시작 후 표시되는 RUN HASH를 함께 공유하세요.</p>
-      </div>
     </div>
   </div>
 
@@ -833,8 +993,15 @@
         this.lastPing = now;
         this.tone('sine', 700 + Math.random() * 400, null, 0.05, 0.02);
       }
-      playBumper() { this.tone('square', 220, 440, 0.1, 0.06); }
-      playFlipper() { this.tone('triangle', 180, 90, 0.08, 0.05); }
+      playBumper() {
+        this.tone('square', 190, 520, 0.11, 0.065);
+        this.tone('sine', 880, 1320, 0.08, 0.025);
+      }
+      playFlipper() {
+        this.tone('triangle', 160, 72, 0.085, 0.055);
+        this.tone('square', 720, 260, 0.035, 0.018);
+      }
+      playRescue() { this.tone('sawtooth', 130, 390, 0.12, 0.035); }
       playDrain() { this.tone('sawtooth', 200, 40, 0.35, 0.1); }
       playWin() {
         if (!this.enabled) return;
@@ -879,81 +1046,27 @@
     let drainY = 0;
     let suddenDeath = false;
     let resultTimer = null;
-    let currentSeed = '';
-    let currentRunHash = '';
     let physicsRandom = Math.random;
-    let runMode = 'AUTO';
+    let score = 0;
+    let hudTimer = 0;
+    let unstickCount = 0;
 
     const SUDDEN_DEATH_TIME = 30;   // 서든데스 시작(초)
     const MAX_PARTICIPANTS = 60;
     const RESTITUTION = 0.82;
     const BALL_FRICTION = 0.999;
     const FIXED_DT = 1 / 120;
+    const WALL_RADIUS = 6;
+    const FLIPPER_RADIUS = 5.25;
+    const SPINNER_RADIUS = 4.5;
+    const QA_MODE = new URLSearchParams(location.search).has('qa');
 
-    function mulberry32(seed) {
-      return function() {
-        let t = seed += 0x6D2B79F5;
-        t = Math.imul(t ^ (t >>> 15), t | 1);
-        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-      };
+    function syncArcadeHud() {
+      document.getElementById('scoreValue').textContent = Math.round(score).toString().padStart(6, '0');
+      document.getElementById('ballCount').textContent = balls.filter(ball => ball.alive).length;
     }
 
-    function fallbackHash(value, salt) {
-      let hash = (0x811c9dc5 ^ salt) >>> 0;
-      for (let i = 0; i < value.length; i++) {
-        hash ^= value.charCodeAt(i);
-        hash = Math.imul(hash, 0x01000193) >>> 0;
-      }
-      return hash >>> 0;
-    }
-
-    function generateSeed() {
-      try {
-        const values = new Uint32Array(2);
-        crypto.getRandomValues(values);
-        return `${values[0].toString(36)}-${values[1].toString(36)}`.toUpperCase();
-      } catch (e) {
-        return `${Date.now().toString(36)}-${Math.floor(Math.random() * 0xffffffff).toString(36)}`.toUpperCase();
-      }
-    }
-
-    async function prepareDeterministicRun() {
-      const seedInput = document.getElementById('gameSeed');
-      if (!seedInput.value.trim()) seedInput.value = generateSeed();
-      currentSeed = seedInput.value.trim();
-      const material = JSON.stringify({
-        game: 'pinball-1.2',
-        seed: currentSeed,
-        participants,
-        targetSurvivors,
-        speedMultiplier,
-        viewport: [canvas.width, canvas.height]
-      });
-
-      let words;
-      let hashHex;
-      try {
-        if (window.crypto && crypto.subtle) {
-          const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(material));
-          const bytes = new Uint8Array(digest);
-          const view = new DataView(digest);
-          words = [0, 4, 8, 12, 16, 20, 24, 28].map(offset => view.getUint32(offset));
-          hashHex = [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('').toUpperCase();
-        }
-      } catch (e) { /* secure-context restrictions: deterministic fallback below */ }
-      if (!words) {
-        words = [0, 1, 2, 3, 4, 5, 6, 7].map(index => fallbackHash(material, index * 0x9e3779b9));
-        hashHex = words.map(word => word.toString(16).padStart(8, '0')).join('').toUpperCase();
-      }
-
-      const seedWord = words.reduce((value, word, index) => (value ^ Math.imul(word, index + 1)) >>> 0, 0);
-      physicsRandom = mulberry32(seedWord);
-      currentRunHash = hashHex;
-      const shortHash = hashHex.slice(0, 12);
-      document.getElementById('seedHash').textContent = shortHash;
-      document.getElementById('seedWatermark').textContent = `HASH: ${shortHash}`;
-    }
+    function addScore(points) { score += points; }
 
     // 배경(핀볼 보드) 캐시 캔버스 — 매 프레임 정적 요소를 다시 그리지 않는다
     const boardCanvas = document.createElement('canvas');
@@ -1044,7 +1157,7 @@
         state: 'rest',                  // rest | flipping | returning | manual
         cooldown: 0,
         manualHold: false,              // 사용자가 키/터치로 누르고 있는 동안 true
-        thickness: 11
+        thickness: FLIPPER_RADIUS
       };
     }
 
@@ -1057,54 +1170,89 @@
       boardCanvas.height = H;
       const b = boardCtx;
 
-      // 배경 그라데이션
-      const bg = b.createLinearGradient(0, 0, 0, H);
-      bg.addColorStop(0, '#0d1230');
-      bg.addColorStop(0.6, '#131a3f');
-      bg.addColorStop(1, '#1a1030');
-      b.fillStyle = bg;
-      b.fillRect(0, 0, W, H);
+      const cx=W/2;
+      const leftRail=walls[0]?.x1 || 20;
+      const rightRail=walls[1]?.x1 || W-20;
+      const wood=b.createLinearGradient(0,0,W,0);
+      wood.addColorStop(0,'#17080a'); wood.addColorStop(.07,'#642019'); wood.addColorStop(.14,'#210a0d');
+      wood.addColorStop(.86,'#210a0d'); wood.addColorStop(.93,'#642019'); wood.addColorStop(1,'#17080a');
+      b.fillStyle=wood; b.fillRect(0,0,W,H);
+      const field=b.createLinearGradient(0,0,0,H);
+      field.addColorStop(0,'#07172d'); field.addColorStop(.48,'#10264a'); field.addColorStop(.76,'#25123d'); field.addColorStop(1,'#11081b');
+      b.fillStyle=field; b.beginPath(); b.roundRect(leftRail-8,-24,rightRail-leftRail+16,H+34,30); b.fill();
 
-      // 은은한 네온 아치
-      b.strokeStyle = 'rgba(34, 211, 238, 0.08)';
-      b.lineWidth = 40;
-      b.beginPath();
-      b.arc(W / 2, H * 0.05, W * 0.42, 0, Math.PI);
-      b.stroke();
+      // 플레이필드 인쇄 패턴과 상단 레인 — 정적 캐시에 한 번만 렌더링
+      b.save(); b.globalAlpha=.24;
+      for (let i=0;i<56;i++) {
+        const x=leftRail+18+((i*83)%Math.max(1,rightRail-leftRail-36));
+        const y=52+((i*137)%Math.max(1,H-130));
+        b.fillStyle=i%3===0?'#ffcf56':i%3===1?'#2dd4bf':'#f85b7f';
+        b.beginPath(); b.arc(x,y,1+(i%2),0,Math.PI*2); b.fill();
+      }
+      b.strokeStyle='rgba(118,213,255,.11)'; b.lineWidth=1;
+      for (let radius=90;radius<Math.min(W,H)*.55;radius+=56) { b.beginPath(); b.arc(cx,H*.46,radius,0,Math.PI*2); b.stroke(); }
+      b.restore();
+      b.save(); b.strokeStyle='rgba(255,207,86,.22)'; b.lineWidth=3;
+      [0,.055,.11].forEach(offset => { b.beginPath(); b.arc(cx,H*.03,W*(.34+offset),0,Math.PI); b.stroke(); });
+      for (let i=-2;i<=2;i++) {
+        const x=cx+i*Math.min(62,W*.075);
+        b.fillStyle=i%2?'rgba(248,91,127,.12)':'rgba(45,212,191,.11)';
+        b.beginPath(); b.roundRect(x-17,H*.085,34,66,17); b.fill();
+        b.strokeStyle=i%2?'rgba(248,91,127,.36)':'rgba(45,212,191,.34)'; b.lineWidth=2; b.stroke();
+      }
+      b.restore();
+      b.textAlign='center'; b.font=`900 ${Math.max(28,Math.min(68,W*.07))}px Impact, system-ui`;
+      b.fillStyle='rgba(255,255,255,.055)'; b.fillText('MULTIBALL',cx,H*.31);
+      b.font=`900 ${Math.max(13,Math.min(24,W*.026))}px ui-monospace, monospace`;
+      b.fillStyle='rgba(255,207,86,.14)'; b.fillText('SURVIVAL · FREE PLAY',cx,H*.31+30);
 
-      // 벽/경사면
-      b.strokeStyle = '#22d3ee';
-      b.lineWidth = 5;
-      b.lineCap = 'round';
-      b.shadowColor = '#22d3ee';
-      b.shadowBlur = 12;
-      walls.forEach(w => {
-        b.beginPath();
-        b.moveTo(w.x1, w.y1);
-        b.lineTo(w.x2, w.y2);
-        b.stroke();
+      // 크롬 레일: 렌더 두께와 물리 반경을 일치시킨다
+      b.lineCap='round'; b.lineJoin='round';
+      walls.forEach(wall => {
+        b.shadowColor='rgba(0,0,0,.8)'; b.shadowBlur=8; b.strokeStyle='#05070c'; b.lineWidth=WALL_RADIUS*2+8;
+        b.beginPath(); b.moveTo(wall.x1,wall.y1); b.lineTo(wall.x2,wall.y2); b.stroke();
+        b.shadowColor='#43d9ff'; b.shadowBlur=10; b.strokeStyle='#7b8797'; b.lineWidth=WALL_RADIUS*2;
+        b.beginPath(); b.moveTo(wall.x1,wall.y1); b.lineTo(wall.x2,wall.y2); b.stroke();
+        b.shadowBlur=0; b.strokeStyle='#eef7ff'; b.lineWidth=3;
+        b.beginPath(); b.moveTo(wall.x1,wall.y1); b.lineTo(wall.x2,wall.y2); b.stroke();
       });
-      b.shadowBlur = 0;
 
-      // 핀
-      pegs.forEach(p => {
-        const g = b.createRadialGradient(p.x - 2, p.y - 2, 1, p.x, p.y, p.r);
-        g.addColorStop(0, '#ffffff');
-        g.addColorStop(1, '#8b9cf5');
-        b.fillStyle = g;
-        b.beginPath();
-        b.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        b.fill();
+      // 금속 포스트와 고무 링
+      pegs.forEach(peg => {
+        b.fillStyle='rgba(0,0,0,.55)'; b.beginPath(); b.arc(peg.x+2,peg.y+3,peg.r+3,0,Math.PI*2); b.fill();
+        const gradient=b.createRadialGradient(peg.x-2,peg.y-2,1,peg.x,peg.y,peg.r+1);
+        gradient.addColorStop(0,'#ffffff'); gradient.addColorStop(.35,'#c9e4ff'); gradient.addColorStop(.72,'#67768d'); gradient.addColorStop(1,'#151a24');
+        b.fillStyle=gradient; b.beginPath(); b.arc(peg.x,peg.y,peg.r+1,0,Math.PI*2); b.fill();
+        b.strokeStyle='rgba(45,212,191,.65)'; b.lineWidth=1.5; b.stroke();
       });
 
-      // 배수구 표시
-      const cx = W / 2;
-      b.fillStyle = 'rgba(255, 60, 90, 0.15)';
-      b.fillRect(flippers[0].px, H - 90, flippers[1].px - flippers[0].px, 90);
-      b.font = '900 16px "Noto Sans KR"';
-      b.textAlign = 'center';
-      b.fillStyle = 'rgba(255, 107, 157, 0.5)';
-      b.fillText('DRAIN', cx, H - 40);
+      // 인서트 화살표와 하단 에이프런
+      [[cx-W*.16,H*.37,-.65,'#ffcf56'],[cx+W*.16,H*.37,.65,'#ffcf56'],[cx-W*.1,H*.62,-.35,'#2dd4bf'],[cx+W*.1,H*.62,.35,'#f85b7f']].forEach(([x,y,angle,color]) => {
+        b.save(); b.translate(x,y); b.rotate(angle); b.fillStyle=color; b.globalAlpha=.2;
+        b.beginPath(); b.moveTo(0,-16); b.lineTo(13,8); b.lineTo(5,6); b.lineTo(5,18); b.lineTo(-5,18); b.lineTo(-5,6); b.lineTo(-13,8); b.closePath(); b.fill();
+        b.globalAlpha=.58; b.strokeStyle=color; b.lineWidth=2; b.stroke(); b.restore();
+      });
+      const leftPivot=flippers[0].px,rightPivot=flippers[1].px;
+      const apron=b.createLinearGradient(0,H-150,0,H);
+      apron.addColorStop(0,'rgba(102,18,39,.35)'); apron.addColorStop(1,'rgba(8,4,13,.92)');
+      b.fillStyle=apron; b.beginPath(); b.moveTo(leftRail,H-210); b.lineTo(leftPivot,H-90); b.lineTo(rightPivot,H-90); b.lineTo(rightRail,H-210); b.lineTo(rightRail,H); b.lineTo(leftRail,H); b.closePath(); b.fill();
+      b.fillStyle='rgba(255,44,91,.12)'; b.beginPath(); b.roundRect(leftPivot,H-88,rightPivot-leftPivot,78,14); b.fill();
+      b.font='900 15px ui-monospace, monospace'; b.textAlign='center'; b.fillStyle='rgba(255,112,137,.62)'; b.fillText('D R A I N',cx,H-38);
+
+      // 에이프런 위로 하단 레일을 다시 올려 연결부가 한 몸처럼 보이게 한다
+      walls.slice(2).forEach(wall => {
+        b.strokeStyle='#05070c'; b.lineWidth=WALL_RADIUS*2+8; b.beginPath(); b.moveTo(wall.x1,wall.y1); b.lineTo(wall.x2,wall.y2); b.stroke();
+        b.strokeStyle='#7b8797'; b.lineWidth=WALL_RADIUS*2; b.beginPath(); b.moveTo(wall.x1,wall.y1); b.lineTo(wall.x2,wall.y2); b.stroke();
+        b.strokeStyle='#eef7ff'; b.lineWidth=3; b.beginPath(); b.moveTo(wall.x1,wall.y1); b.lineTo(wall.x2,wall.y2); b.stroke();
+      });
+
+      // 유리 반사와 가장자리 비네트
+      const glass=b.createLinearGradient(0,0,W,H);
+      glass.addColorStop(0,'rgba(255,255,255,.09)'); glass.addColorStop(.16,'rgba(255,255,255,0)'); glass.addColorStop(.72,'rgba(255,255,255,0)'); glass.addColorStop(1,'rgba(255,255,255,.035)');
+      b.fillStyle=glass; b.fillRect(leftRail,0,rightRail-leftRail,H);
+      const vignette=b.createRadialGradient(cx,H*.46,Math.min(W,H)*.18,cx,H*.46,Math.max(W,H)*.68);
+      vignette.addColorStop(.35,'rgba(0,0,0,0)'); vignette.addColorStop(1,'rgba(0,0,0,.48)'); b.fillStyle=vignette; b.fillRect(0,0,W,H);
+      b.shadowBlur=0;
     }
 
     // ===== 캔버스 리사이즈 =====
@@ -1118,13 +1266,13 @@
       const scaleX = nextWidth / oldWidth;
       const scaleY = nextHeight / oldHeight;
       if (gameRunning) {
-        runMode = runMode === 'AUTO' ? 'RESIZED' : (runMode.includes('RESIZED') ? runMode : `${runMode}+RESIZED`);
-        document.getElementById('seedWatermark').textContent = `HASH: ${currentRunHash.slice(0, 12)} · ${runMode}`;
         balls.forEach(ball => {
           ball.x *= scaleX;
           ball.y *= scaleY;
           ball.vx *= scaleX;
           ball.vy *= scaleY;
+          ball.trapSampleX *= scaleX;
+          ball.trapSampleY *= scaleY;
         });
         particles.forEach(particle => {
           particle.x *= scaleX;
@@ -1178,8 +1326,16 @@
         alive: true,
         deathTimeSeconds: null,
         eliminationOrder: null,
-        flash: 0
+        flash: 0,
+        trapSampleX: 0,
+        trapSampleY: 0,
+        trapSampleTime: 0,
+        trapTime: 0
       });
+      const ball = balls[balls.length - 1];
+      ball.trapSampleX = ball.x;
+      ball.trapSampleY = ball.y;
+      syncArcadeHud();
     }
 
     // ===== 물리 =====
@@ -1207,27 +1363,79 @@
       return true;
     }
 
-    // 선분(두께 포함)과 공 충돌
-    function collideSegment(ball, x1, y1, x2, y2, thickness, segVelFn, restitution) {
+    function clampValue(value,min,max) { return Math.max(min,Math.min(max,value)); }
+
+    function closestPointOnSegment(x,y,x1,y1,x2,y2) {
       const dx = x2 - x1, dy = y2 - y1;
-      const lenSq = dx * dx + dy * dy;
-      let t = ((ball.x - x1) * dx + (ball.y - y1) * dy) / lenSq;
-      t = Math.max(0, Math.min(1, t));
-      const px = x1 + dx * t, py = y1 + dy * t;
-      const ddx = ball.x - px, ddy = ball.y - py;
-      const d = Math.hypot(ddx, ddy);
+      const lenSq = dx*dx + dy*dy;
+      const t = lenSq > 0 ? clampValue(((x-x1)*dx + (y-y1)*dy) / lenSq,0,1) : 0;
+      return { x:x1+dx*t,y:y1+dy*t,dx,dy,lenSq };
+    }
+
+    function distanceToSegment(x,y,x1,y1,x2,y2) {
+      const point = closestPointOnSegment(x,y,x1,y1,x2,y2);
+      return Math.hypot(x-point.x,y-point.y);
+    }
+
+    // 선분(두께 포함)과 공 충돌 — 중심이 선분에 정확히 겹쳐도 법선을 복구한다
+    function collideSegment(ball, x1, y1, x2, y2, thickness, segVelFn, restitution) {
+      const point = closestPointOnSegment(ball.x,ball.y,x1,y1,x2,y2);
+      const { x:px,y:py,dx,dy,lenSq } = point;
+      const ddx = ball.x-px, ddy = ball.y-py;
+      const distanceSq = ddx*ddx + ddy*ddy;
       const minD = ball.r + thickness;
-      if (d >= minD || d === 0) return false;
-      const nx = ddx / d, ny = ddy / d;
-      ball.x = px + nx * minD;
-      ball.y = py + ny * minD;
-      // 접촉점의 표면 속도(플리퍼 회전) 반영
-      let svx = 0, svy = 0;
-      if (segVelFn) { const v = segVelFn(px, py); svx = v.x; svy = v.y; }
-      ball.vx -= svx; ball.vy -= svy;
-      reflectBall(ball, nx, ny, 0, restitution);
-      ball.vx += svx; ball.vy += svy;
+      if (distanceSq >= minD*minD || lenSq <= .000001) return false;
+      let svx=0,svy=0;
+      if (segVelFn) { const velocity=segVelFn(px,py); svx=velocity.x; svy=velocity.y; }
+      let nx,ny;
+      if (distanceSq > .000001) {
+        const distance=Math.sqrt(distanceSq);
+        nx=ddx/distance; ny=ddy/distance;
+      } else {
+        const length=Math.sqrt(lenSq);
+        nx=-dy/length; ny=dx/length;
+        if ((ball.vx-svx)*nx + (ball.vy-svy)*ny > 0) { nx=-nx; ny=-ny; }
+      }
+      ball.x=px+nx*minD;
+      ball.y=py+ny*minD;
+      ball.vx-=svx; ball.vy-=svy;
+      reflectBall(ball,nx,ny,0,restitution);
+      ball.vx+=svx; ball.vy+=svy;
       return true;
+    }
+
+    function guardAgainstFlipperTrap(ball,dt) {
+      if (!ball.alive || !flippers.length) return;
+      ball.trapSampleTime += dt;
+      if (ball.trapSampleTime < .16) return;
+      const sampleTime=ball.trapSampleTime;
+      const moved=Math.hypot(ball.x-ball.trapSampleX,ball.y-ball.trapSampleY);
+      const speed=Math.hypot(ball.vx,ball.vy);
+      const nearFlipper=flippers.some(flipper => {
+        const tip=flipperTip(flipper);
+        return distanceToSegment(ball.x,ball.y,flipper.px,flipper.py,tip.x,tip.y) < ball.r+flipper.thickness+4;
+      });
+      const nearWall=walls.some(wall => distanceToSegment(ball.x,ball.y,wall.x1,wall.y1,wall.x2,wall.y2) < ball.r+WALL_RADIUS+3);
+      const barelyMoved=moved < Math.max(4,ball.r*.34);
+      if (nearFlipper && barelyMoved && (nearWall || speed < 55)) ball.trapTime += sampleTime;
+      else ball.trapTime=Math.max(0,ball.trapTime-sampleTime*1.7);
+      ball.trapSampleX=ball.x;
+      ball.trapSampleY=ball.y;
+      ball.trapSampleTime=0;
+      const rescueAfter=nearWall ? .34 : .72;
+      if (ball.trapTime < rescueAfter) return;
+      const towardCenter=Math.sign(canvas.width/2-ball.x) || (physicsRandom() < .5 ? -1 : 1);
+      ball.x+=towardCenter*4;
+      ball.y-=5;
+      ball.vx=towardCenter*(150+physicsRandom()*80);
+      ball.vy=-350-physicsRandom()*110;
+      ball.flash=1;
+      ball.trapTime=0;
+      ball.trapSampleX=ball.x;
+      ball.trapSampleY=ball.y;
+      unstickCount+=1;
+      spawnParticles(ball.x,ball.y,ball.color,8);
+      sound.playRescue();
     }
 
     function flipperTip(f) {
@@ -1311,7 +1519,9 @@
 
     function update(dt) {
       gameTimeSeconds += dt;
-      document.getElementById('gameTimer').textContent = gameTimeSeconds.toFixed(3) + 's';
+      document.getElementById('gameTimer').textContent = gameTimeSeconds.toFixed(3);
+      hudTimer -= dt;
+      if (hudTimer <= 0) { hudTimer=.08; syncArcadeHud(); }
 
       // 순차 투입
       if (pendingSpawns.length > 0) {
@@ -1378,7 +1588,7 @@
 
           // 벽/경사면
           for (const w of walls) {
-            collideSegment(ball, w.x1, w.y1, w.x2, w.y2, 2.5, null, RESTITUTION);
+            collideSegment(ball, w.x1, w.y1, w.x2, w.y2, WALL_RADIUS, null, RESTITUTION);
           }
 
           // 핀
@@ -1386,6 +1596,7 @@
             if (Math.abs(ball.x - p.x) > 30 || Math.abs(ball.y - p.y) > 30) continue;
             if (collideCircle(ball, p.x, p.y, p.r, 20 + physicsRandom() * 40, RESTITUTION)) {
               p.flash = 1;
+              addScore(10);
               sound.playPing();
             }
           }
@@ -1396,6 +1607,7 @@
             if (collideCircle(ball, b.x, b.y, b.r, 380 + physicsRandom() * 160, 1.0)) {
               b.flash = 1;
               ball.flash = 1;
+              addScore(100);
               sound.playBumper();
               spawnParticles(ball.x, ball.y, ball.color, 6);
             }
@@ -1406,22 +1618,22 @@
             const c = Math.cos(spinner.angle), sn = Math.sin(spinner.angle);
             const x1 = spinner.x - c * spinner.len, y1 = spinner.y - sn * spinner.len;
             const x2 = spinner.x + c * spinner.len, y2 = spinner.y + sn * spinner.len;
-            collideSegment(ball, x1, y1, x2, y2, 5, (px, py) => {
+            if (collideSegment(ball, x1, y1, x2, y2, SPINNER_RADIUS, (px, py) => {
               // 회전 표면 속도: ω × r
               const rx = px - spinner.x, ry = py - spinner.y;
               const w = spinner.speed * (1 + gameTimeSeconds * 0.02);
               return { x: -ry * w, y: rx * w };
-            }, 0.9);
+            }, 0.9)) addScore(50);
           }
 
           // 플리퍼
           for (const f of flippers) {
             const tip = flipperTip(f);
-            collideSegment(ball, f.px, f.py, tip.x, tip.y, f.thickness, (px, py) => {
+            if (collideSegment(ball, f.px, f.py, tip.x, tip.y, f.thickness, (px, py) => {
               // tip = (px + cos·len·dir, py + sin·len) 파라미터화의 표면 속도
               const rx = px - f.px, ry = py - f.py;
               return { x: -ry * f.angVel * f.dir, y: rx * f.angVel * f.dir };
-            }, 0.75);
+            }, 0.75) && Math.abs(f.angVel) > 2) addScore(25);
           }
 
           // 탈락 판정
@@ -1457,6 +1669,8 @@
         }
       }
 
+      balls.forEach(ball => guardAgainstFlipperTrap(ball,dt));
+
       // 이펙트 감쇠
       pegs.forEach(p => { if (p.flash > 0) p.flash = Math.max(0, p.flash - dt * 4); });
       bumpers.forEach(b => { if (b.flash > 0) b.flash = Math.max(0, b.flash - dt * 5); });
@@ -1483,6 +1697,7 @@
       ball.alive = false;
       ball.deathTimeSeconds = gameTimeSeconds;
       ball.eliminationOrder = ++eliminationCounter;
+      syncArcadeHud();
       sound.playDrain();
       spawnParticles(ball.x, drainY, ball.color, 14);
       showDeathInfo(ball.name);
@@ -1550,63 +1765,61 @@
 
       // 범퍼
       for (const b of bumpers) {
-        const grad = ctx.createRadialGradient(b.x, b.y, 4, b.x, b.y, b.r);
-        grad.addColorStop(0, b.flash > 0 ? '#fff7cc' : '#f472b6');
-        grad.addColorStop(1, b.flash > 0 ? '#fbbf24' : '#9d174d');
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r + b.flash * 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = `rgba(255, 255, 255, ${0.5 + b.flash * 0.5})`;
-        ctx.lineWidth = 3;
-        ctx.stroke();
-        ctx.fillStyle = 'rgba(255,255,255,0.9)';
-        ctx.font = '900 12px "Noto Sans KR"';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('+', b.x, b.y);
+        ctx.save();
+        ctx.shadowColor=b.flash>0?'#fff2a6':'#ff4f87'; ctx.shadowBlur=18+b.flash*24;
+        ctx.fillStyle='#080b12'; ctx.beginPath(); ctx.arc(b.x,b.y,b.r+9+b.flash*4,0,Math.PI*2); ctx.fill();
+        const chrome=ctx.createRadialGradient(b.x-8,b.y-9,2,b.x,b.y,b.r+7);
+        chrome.addColorStop(0,'#ffffff'); chrome.addColorStop(.22,'#8794a8'); chrome.addColorStop(.48,'#eef5ff'); chrome.addColorStop(.72,'#4f5b6b'); chrome.addColorStop(1,'#111621');
+        ctx.fillStyle=chrome; ctx.beginPath(); ctx.arc(b.x,b.y,b.r+7,0,Math.PI*2); ctx.fill();
+        const cap=ctx.createRadialGradient(b.x-7,b.y-8,2,b.x,b.y,b.r);
+        cap.addColorStop(0,b.flash>0?'#fffde4':'#ffd4e2'); cap.addColorStop(.35,b.flash>0?'#ffd84d':'#ff5d91'); cap.addColorStop(1,b.flash>0?'#f26522':'#8d1648');
+        ctx.fillStyle=cap; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill();
+        ctx.strokeStyle='rgba(255,255,255,.82)'; ctx.lineWidth=2.5; ctx.stroke();
+        ctx.shadowBlur=0; ctx.fillStyle='#fff9dc'; ctx.font='900 10px ui-monospace, monospace'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('100',b.x,b.y);
+        ctx.restore();
       }
 
       // 스피너
       {
         const c = Math.cos(spinner.angle), sn = Math.sin(spinner.angle);
-        ctx.strokeStyle = '#a78bfa';
-        ctx.lineWidth = 9;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(spinner.x - c * spinner.len, spinner.y - sn * spinner.len);
-        ctx.lineTo(spinner.x + c * spinner.len, spinner.y + sn * spinner.len);
-        ctx.stroke();
-        ctx.fillStyle = '#7c3aed';
-        ctx.beginPath();
-        ctx.arc(spinner.x, spinner.y, 8, 0, Math.PI * 2);
-        ctx.fill();
+        const x1=spinner.x-c*spinner.len,y1=spinner.y-sn*spinner.len,x2=spinner.x+c*spinner.len,y2=spinner.y+sn*spinner.len;
+        ctx.lineCap='round'; ctx.shadowColor='#b675ff'; ctx.shadowBlur=12; ctx.strokeStyle='#15101f'; ctx.lineWidth=14;
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+        ctx.shadowBlur=0; ctx.strokeStyle='#ffcf56'; ctx.lineWidth=9; ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+        ctx.setLineDash([12,10]); ctx.strokeStyle='#e83e62'; ctx.lineWidth=6; ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); ctx.setLineDash([]);
+        const hub=ctx.createRadialGradient(spinner.x-3,spinner.y-3,1,spinner.x,spinner.y,10);
+        hub.addColorStop(0,'#fff'); hub.addColorStop(.4,'#cbd5e1'); hub.addColorStop(1,'#263244'); ctx.fillStyle=hub;
+        ctx.beginPath(); ctx.arc(spinner.x,spinner.y,10,0,Math.PI*2); ctx.fill();
       }
 
       // 플리퍼
       for (const f of flippers) {
         const tip = flipperTip(f);
         const active = f.state === 'flipping' || f.state === 'manual';
-        ctx.strokeStyle = suddenDeath ? '#64748b' : (active ? '#fde047' : '#22d3ee');
-        ctx.lineWidth = f.thickness * 2;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(f.px, f.py);
-        ctx.lineTo(tip.x, tip.y);
-        ctx.stroke();
-        ctx.fillStyle = '#0e7490';
-        ctx.beginPath();
-        ctx.arc(f.px, f.py, f.thickness + 3, 0, Math.PI * 2);
-        ctx.fill();
+        const body=suddenDeath?'#66717e':active?'#ffcf3f':'#e33b55';
+        ctx.save(); ctx.lineCap='round';
+        ctx.shadowColor='rgba(0,0,0,.8)'; ctx.shadowBlur=8; ctx.strokeStyle='#090b10'; ctx.lineWidth=f.thickness*2+9;
+        ctx.beginPath(); ctx.moveTo(f.px,f.py+3); ctx.lineTo(tip.x,tip.y+3); ctx.stroke();
+        ctx.shadowColor=active?'#ffd24d':'#ff315d'; ctx.shadowBlur=active?18:9; ctx.strokeStyle='#eef4f8'; ctx.lineWidth=f.thickness*2+4;
+        ctx.beginPath(); ctx.moveTo(f.px,f.py); ctx.lineTo(tip.x,tip.y); ctx.stroke();
+        ctx.shadowBlur=0; ctx.strokeStyle=body; ctx.lineWidth=f.thickness*2;
+        ctx.beginPath(); ctx.moveTo(f.px,f.py); ctx.lineTo(tip.x,tip.y); ctx.stroke();
+        ctx.strokeStyle='rgba(255,255,255,.64)'; ctx.lineWidth=2;
+        ctx.beginPath(); ctx.moveTo(f.px,f.py-2); ctx.lineTo(tip.x,tip.y-2); ctx.stroke();
+        const pivot=ctx.createRadialGradient(f.px-3,f.py-4,1,f.px,f.py,f.thickness+7);
+        pivot.addColorStop(0,'#fff'); pivot.addColorStop(.3,'#b8c4d2'); pivot.addColorStop(.65,'#495567'); pivot.addColorStop(1,'#111721');
+        ctx.fillStyle=pivot; ctx.beginPath(); ctx.arc(f.px,f.py,f.thickness+7,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle=body; ctx.beginPath(); ctx.arc(f.px,f.py,f.thickness+2,0,Math.PI*2); ctx.fill(); ctx.restore();
       }
 
       // 파티클
       for (const pt of particles) {
         ctx.globalAlpha = Math.max(0, pt.life / pt.maxLife);
         ctx.fillStyle = pt.color;
-        ctx.fillRect(pt.x - pt.size / 2, pt.y - pt.size / 2, pt.size, pt.size);
+        ctx.shadowColor=pt.color; ctx.shadowBlur=8;
+        ctx.beginPath(); ctx.arc(pt.x,pt.y,pt.size*.65,0,Math.PI*2); ctx.fill();
       }
-      ctx.globalAlpha = 1;
+      ctx.globalAlpha = 1; ctx.shadowBlur=0;
 
       // 공
       ctx.textAlign = 'center';
@@ -1621,6 +1834,10 @@
         ctx.beginPath();
         ctx.arc(ball.x, ball.y, ball.r + ball.flash * 3, 0, Math.PI * 2);
         ctx.fill();
+        ctx.strokeStyle='rgba(235,247,255,.78)'; ctx.lineWidth=2;
+        ctx.stroke();
+        ctx.fillStyle='rgba(255,255,255,.78)';
+        ctx.beginPath(); ctx.ellipse(ball.x-ball.r*.32,ball.y-ball.r*.36,ball.r*.22,ball.r*.12,-.55,0,Math.PI*2); ctx.fill();
 
         // 이름표
         ctx.font = '700 11px "Noto Sans KR"';
@@ -1641,15 +1858,16 @@
       if (!lastTimestamp) lastTimestamp = timestamp;
       const frameDt = Math.min((timestamp - lastTimestamp) / 1000, 0.1);
       lastTimestamp = timestamp;
-      accumulator += frameDt;
+      accumulator += frameDt * (QA_MODE ? 30 : 1);
 
       let updateCount = 0;
-      while (accumulator >= FIXED_DT && updateCount < 12 && gameRunning) {
+      const maxUpdates = QA_MODE ? 480 : 12;
+      while (accumulator >= FIXED_DT && updateCount < maxUpdates && gameRunning) {
         update(FIXED_DT);
         accumulator -= FIXED_DT;
         updateCount += 1;
       }
-      if (updateCount === 12) accumulator = 0;
+      if (updateCount === maxUpdates) accumulator = 0;
 
       draw();
       if (gameRunning) animationId = requestAnimationFrame(gameLoop);
@@ -1719,10 +1937,7 @@
         const time = document.createElement('div');
         time.style.cssText = 'margin-bottom:8px;font-size:1.2rem;color:#aaa;width:100%';
         time.textContent = `생존 시간: ${finalTime}`;
-        const proof = document.createElement('div');
-        proof.style.cssText = 'margin-bottom:15px;font:700 .75rem monospace;color:#67e8f9;width:100%;letter-spacing:.08em';
-        proof.textContent = `RUN HASH: ${currentRunHash.slice(0, 12)} · ${runMode}`;
-        winnersList.append(time, proof);
+        winnersList.append(time);
         winners.forEach(winner => {
           const winnerName = document.createElement('span');
           winnerName.className = 'winner-name';
@@ -1790,13 +2005,13 @@
     }
 
     function setSettingsDisabled(disabled) {
-      ['participants', 'survivorCount', 'gameSpeed', 'gameSeed', 'seedRefresh'].forEach(id => {
+      ['participants', 'survivorCount', 'gameSpeed'].forEach(id => {
         document.getElementById(id).disabled = disabled;
       });
     }
 
     // ===== 시작/리셋 =====
-    async function startGame() {
+    function startGame() {
       const input = document.getElementById('participants').value;
       if (countExpandedParticipants(input) > MAX_PARTICIPANTS) {
         alert(`원활한 진행을 위해 참여자는 최대 ${MAX_PARTICIPANTS}명까지 입력할 수 있습니다.`);
@@ -1818,9 +2033,8 @@
 
       document.getElementById('startBtn').disabled = true;
       setSettingsDisabled(true);
-      runMode = 'AUTO';
+      physicsRandom = Math.random;
       sound.init();
-      await prepareDeterministicRun();
       saveSettings();
 
       clearTimeout(resultTimer);
@@ -1828,7 +2042,7 @@
       gameOverOverlay.classList.remove('show');
       gameOverOverlay.setAttribute('aria-hidden', 'true');
       document.getElementById('dangerUI').style.display = 'none';
-      document.getElementById('gameTimer').style.display = 'block';
+      document.getElementById('arcadeScoreboard').style.display = 'grid';
       document.getElementById('controlHint').style.display = 'block';
 
       gameTimeSeconds = 0;
@@ -1837,10 +2051,14 @@
       accumulator = 0;
       suddenDeath = false;
       particles = [];
+      score = 0;
+      hudTimer = 0;
+      unstickCount = 0;
       sound.playStart();
 
       buildBoard();
       initBalls();
+      syncArcadeHud();
       updateRankings();
 
       gameRunning = true;
@@ -1859,10 +2077,13 @@
       document.getElementById('gameOverOverlay').classList.remove('show');
       document.getElementById('gameOverOverlay').setAttribute('aria-hidden', 'true');
       document.getElementById('dangerUI').style.display = 'none';
-      document.getElementById('gameTimer').style.display = 'none';
+      document.getElementById('arcadeScoreboard').style.display = 'none';
       document.getElementById('controlHint').style.display = 'none';
       document.getElementById('startBtn').disabled = false;
       setSettingsDisabled(false);
+      score = 0;
+      unstickCount = 0;
+      syncArcadeHud();
       buildBoard();
       draw();
     }
@@ -1875,9 +2096,6 @@
       );
 
       let result = '🎱 핀볼 서바이벌 결과\n\n';
-      result += `🔐 SEED: ${currentSeed || document.getElementById('gameSeed').value}\n`;
-      result += `# HASH: ${currentRunHash || '게임 시작 전'}\n\n`;
-      result += `🕹️ 진행 모드: ${runMode}\n\n`;
       result += '🏆 생존자:\n';
       winners.forEach(w => result += `  ${w.name}\n`);
       result += '\n💀 탈락자:\n';
@@ -1900,7 +2118,6 @@
         localStorage.setItem('pinball_participants', document.getElementById('participants').value);
         localStorage.setItem('pinball_survivors', document.getElementById('survivorCount').value);
         localStorage.setItem('pinball_speed', document.getElementById('gameSpeed').value);
-        localStorage.setItem('pinball_seed', document.getElementById('gameSeed').value);
       } catch (e) { /* localStorage 비활성 환경 무시 */ }
     }
 
@@ -1909,7 +2126,6 @@
         const p = localStorage.getItem('pinball_participants');
         const s = localStorage.getItem('pinball_survivors');
         const sp = localStorage.getItem('pinball_speed');
-        const seed = localStorage.getItem('pinball_seed');
         if (p) document.getElementById('participants').value = p;
         if (s) {
           document.getElementById('survivorCount').value = s;
@@ -1919,9 +2135,7 @@
           document.getElementById('gameSpeed').value = sp;
           document.getElementById('speedValue').textContent = (parseInt(sp) / 10).toFixed(1) + 'x';
         }
-        document.getElementById('gameSeed').value = seed || generateSeed();
       } catch (e) { /* ignore */ }
-      if (!document.getElementById('gameSeed').value) document.getElementById('gameSeed').value = generateSeed();
     }
 
     // ===== 플리퍼 수동 조작 (키보드/터치) =====
@@ -1932,8 +2146,6 @@
       if (!f) return;
       if (held && !f.manualHold && gameRunning && !suddenDeath) {
         sound.playFlipper();
-        runMode = runMode === 'AUTO' ? 'MANUAL' : (runMode.includes('MANUAL') ? runMode : `MANUAL+${runMode}`);
-        document.getElementById('seedWatermark').textContent = `HASH: ${currentRunHash.slice(0, 12)} · ${runMode}`;
       }
       f.manualHold = held;
     }
@@ -2031,27 +2243,46 @@
       syncSurvivorLimit();
       saveSettings();
     });
-    document.getElementById('gameSeed').addEventListener('input', () => {
-      if (!gameRunning) {
-        document.getElementById('seedHash').textContent = '계산 전';
-        document.getElementById('seedWatermark').textContent = 'HASH: —';
-      }
-      saveSettings();
-    });
-    document.getElementById('seedRefresh').addEventListener('click', () => {
-      document.getElementById('gameSeed').value = generateSeed();
-      if (!gameRunning) {
-        document.getElementById('seedHash').textContent = '계산 전';
-        document.getElementById('seedWatermark').textContent = 'HASH: —';
-      }
-      saveSettings();
-    });
+    if (QA_MODE) {
+      window.__PINBALL_QA__ = {
+        start:startGame,
+        reset:resetGame,
+        placeAtFlipperJoint(side=0) {
+          const ball=balls.find(item => item.alive);
+          const flipper=flippers[side];
+          if (!ball || !flipper) return false;
+          ball.x=flipper.px;
+          ball.y=flipper.py;
+          ball.vx=0;
+          ball.vy=0;
+          ball.trapSampleX=ball.x;
+          ball.trapSampleY=ball.y;
+          ball.trapSampleTime=0;
+          ball.trapTime=0;
+          return true;
+        },
+        snapshot:() => ({
+          running:gameRunning,
+          time:gameTimeSeconds,
+          score,
+          alive:balls.filter(ball => ball.alive).length,
+          unstickCount,
+          wallRadius:WALL_RADIUS,
+          flipperRadius:FLIPPER_RADIUS,
+          flippers:flippers.map(flipper => ({px:flipper.px,py:flipper.py,angle:flipper.angle,state:flipper.state})),
+          balls:balls.map(ball => ({name:ball.name,alive:ball.alive,x:ball.x,y:ball.y,vx:ball.vx,vy:ball.vy,trapTime:ball.trapTime})),
+          resultOpen:document.getElementById('gameOverOverlay').classList.contains('show'),
+          overflowX:document.documentElement.scrollWidth-document.documentElement.clientWidth
+        })
+      };
+    }
 
     // ===== 초기화 =====
     window.addEventListener('resize', resizeCanvas);
     loadSettings();
     syncSurvivorLimit();
     resizeCanvas();
+    syncArcadeHud();
   </script>
 </body>
 </html>
