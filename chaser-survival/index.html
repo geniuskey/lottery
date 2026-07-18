@@ -67,7 +67,6 @@
   <link rel="icon" type="image/svg+xml"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👊</text></svg>">
 
-  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -765,6 +764,704 @@
       .winner-title { font-size: 2rem; }
       .ko-log { top: 50px; right: 10px; }
     }
+
+    /* 2026 visual refresh: keep the original chase simulation, polish only the presentation. */
+    :root {
+      color-scheme: dark;
+      --bg-dark: #090607;
+      --bg-ring: #241416;
+      --rope-red: #ff3b45;
+      --rope-white: #fff8eb;
+      --gold: #f6c85f;
+      --gold-dark: #9c6720;
+      --knockout-red: #ff4654;
+      --survivor-green: #52e6a5;
+      --sidebar-bg: rgba(15, 10, 12, 0.96);
+      --card-bg: rgba(255, 255, 255, 0.055);
+      --text-primary: #fffaf3;
+      --text-secondary: #a99fa0;
+      --accent: #ff5360;
+    }
+
+    body {
+      position: relative;
+      min-height: 100dvh;
+      background:
+        radial-gradient(circle at 75% 15%, rgba(246, 200, 95, 0.08), transparent 28%),
+        linear-gradient(145deg, #080506, #16090c 56%, #070506);
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+      background-size: 34px 34px;
+      content: '';
+      pointer-events: none;
+    }
+
+    button,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      min-height: 100dvh;
+      background: transparent;
+    }
+
+    .sidebar {
+      position: relative;
+      width: 344px;
+      min-width: 344px;
+      height: 100dvh;
+      gap: 14px;
+      padding: 22px;
+      overflow: hidden;
+      border-right: 1px solid rgba(246, 200, 95, 0.22);
+      background:
+        radial-gradient(circle at 0 0, rgba(255, 59, 69, 0.13), transparent 32%),
+        linear-gradient(180deg, rgba(24, 15, 18, 0.98), rgba(10, 7, 9, 0.98));
+      box-shadow: 18px 0 50px rgba(0, 0, 0, 0.34);
+    }
+
+    .sidebar::after {
+      position: absolute;
+      inset: 0 0 auto;
+      height: 3px;
+      background: linear-gradient(90deg, var(--rope-red), var(--gold), transparent 85%);
+      content: '';
+    }
+
+    .sidebar-header {
+      position: relative;
+      min-height: 72px;
+      padding: 18px 0 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-header::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: var(--gold);
+      content: 'PLAYPICK · CHASE ARENA';
+      font: 700 0.58rem/1 'Noto Sans KR', sans-serif;
+      letter-spacing: 0.16em;
+      opacity: 0.82;
+    }
+
+    .sidebar-header h1 {
+      gap: 12px;
+      font-size: 1.28rem;
+      line-height: 1.15;
+      letter-spacing: -0.055em;
+    }
+
+    .sidebar-header h1 .title-emoji {
+      display: grid;
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
+      place-items: center;
+      border: 1px solid rgba(246, 200, 95, 0.28);
+      border-radius: 15px;
+      background: linear-gradient(145deg, rgba(255, 83, 96, 0.3), rgba(246, 200, 95, 0.08));
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.14), 0 10px 28px rgba(255, 59, 69, 0.15);
+      filter: none;
+      font-size: 1.35rem;
+    }
+
+    .sidebar-header h1 .title-text {
+      background: linear-gradient(110deg, #fffdf6 0 50%, #f3d58e 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: none;
+      filter: none;
+    }
+
+    .header-btns {
+      gap: 7px;
+    }
+
+    .help-btn,
+    .sound-btn {
+      width: 38px;
+      height: 38px;
+      border-color: rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      color: #f7e1a8;
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .help-btn:hover,
+    .sound-btn:hover {
+      border-color: rgba(246, 200, 95, 0.42);
+      background: rgba(246, 200, 95, 0.1);
+    }
+
+    .section-title {
+      margin-bottom: 8px;
+      color: #e9d69d;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .input-group textarea {
+      height: 88px;
+      padding: 12px 13px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 13px;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.045);
+      box-shadow: inset 0 1px 8px rgba(0, 0, 0, 0.18);
+      line-height: 1.55;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+
+    .input-group textarea:hover,
+    .input-group textarea:focus {
+      border-color: rgba(246, 200, 95, 0.42);
+      background: rgba(255, 255, 255, 0.065);
+      box-shadow: 0 0 0 3px rgba(246, 200, 95, 0.05);
+    }
+
+    .settings-group {
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.085);
+      border-radius: 15px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025));
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+    }
+
+    .setting-item {
+      min-height: 45px;
+      padding: 7px 0;
+      border-color: rgba(255, 255, 255, 0.07);
+    }
+
+    .setting-item label {
+      color: #c4b9b9;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .setting-item select {
+      min-width: 92px;
+      height: 34px;
+      padding: 0 30px 0 11px;
+      border-color: rgba(246, 200, 95, 0.2);
+      border-radius: 9px;
+      color: #fff7e6;
+      background: #25171a;
+      cursor: pointer;
+    }
+
+    .btn-group {
+      gap: 8px;
+    }
+
+    .btn {
+      min-height: 50px;
+      padding: 12px;
+      border-radius: 13px;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.96rem;
+      font-weight: 900;
+    }
+
+    .btn-start {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: linear-gradient(120deg, #ff5360, #d72031 68%, #a40e21);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.28), 0 12px 28px rgba(215, 32, 49, 0.24);
+    }
+
+    .btn-start:hover:not(:disabled) {
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.3), 0 15px 34px rgba(215, 32, 49, 0.3);
+    }
+
+    .btn-reset {
+      flex-basis: 52px;
+      border-color: rgba(255, 255, 255, 0.11);
+      background: rgba(255, 255, 255, 0.055);
+      font-size: 1.15rem;
+    }
+
+    .ranking-board {
+      padding: 13px;
+      border: 1px solid rgba(255, 255, 255, 0.085);
+      border-radius: 15px;
+      background: rgba(5, 3, 4, 0.35);
+    }
+
+    .ranking-list {
+      gap: 5px;
+    }
+
+    .rank-item {
+      min-height: 38px;
+      padding: 7px 9px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .rank-item:hover {
+      border-color: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.065);
+    }
+
+    .rank-item.eliminated {
+      background: rgba(255, 70, 84, 0.045);
+    }
+
+    .rank-item.winner {
+      border-color: rgba(246, 200, 95, 0.34);
+      background: linear-gradient(110deg, rgba(246, 200, 95, 0.16), rgba(246, 200, 95, 0.045));
+    }
+
+    .rank-num {
+      border-radius: 8px;
+      background: rgba(255, 83, 96, 0.22);
+      color: #ffb6bc;
+    }
+
+    .rank-name {
+      overflow: hidden;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .rank-status {
+      color: #8ef1c5;
+      background: rgba(82, 230, 165, 0.1);
+      font-size: 0.64rem;
+      font-weight: 700;
+    }
+
+    .sidebar-footer {
+      gap: 9px;
+      padding-top: 12px;
+      border-color: rgba(255, 255, 255, 0.07);
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-color: rgba(255, 255, 255, 0.09);
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .icon-btn:hover {
+      border-color: rgba(246, 200, 95, 0.34);
+      color: var(--gold);
+      background: rgba(246, 200, 95, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .game-area {
+      isolation: isolate;
+      min-width: 0;
+      overflow: hidden;
+      padding: 22px;
+      background:
+        radial-gradient(ellipse at 50% 58%, rgba(156, 103, 32, 0.16), transparent 35%),
+        radial-gradient(circle at 17% 13%, rgba(255, 59, 69, 0.12), transparent 26%),
+        linear-gradient(160deg, #120b0d, #080607 62%, #16090c);
+    }
+
+    .game-area::before,
+    .game-area::after {
+      position: absolute;
+      top: -12%;
+      z-index: -1;
+      width: 38%;
+      height: 72%;
+      background: linear-gradient(180deg, rgba(246, 200, 95, 0.13), transparent 75%);
+      clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+      content: '';
+      filter: blur(4px);
+      opacity: 0.58;
+      pointer-events: none;
+    }
+
+    .game-area::before {
+      left: 1%;
+      transform: rotate(13deg);
+    }
+
+    .game-area::after {
+      right: 1%;
+      transform: rotate(-13deg);
+    }
+
+    .game-status {
+      top: 18px;
+      max-width: calc(100% - 360px);
+      padding: 9px 18px;
+      overflow: hidden;
+      border: 1px solid rgba(246, 200, 95, 0.25);
+      border-radius: 999px;
+      color: #fff5d8;
+      background: rgba(12, 8, 10, 0.72);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.08), 0 10px 30px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(12px);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.94rem;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      text-shadow: none;
+      white-space: nowrap;
+    }
+
+    .ring-container {
+      width: min(calc(100vw - 400px), calc(100dvh - 92px), 790px);
+      height: min(calc(100vw - 400px), calc(100dvh - 92px), 790px);
+      filter: drop-shadow(0 28px 35px rgba(0, 0, 0, 0.56));
+    }
+
+    .ring-container::before {
+      position: absolute;
+      inset: 8%;
+      z-index: 0;
+      border: 1px solid rgba(246, 200, 95, 0.16);
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.18);
+      box-shadow: 0 0 0 14px rgba(0, 0, 0, 0.12), 0 32px 55px rgba(0, 0, 0, 0.48);
+      content: '';
+      transform: perspective(700px) rotateX(3deg);
+    }
+
+    .boxing-ring {
+      z-index: 1;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.055), transparent 34%),
+        repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 18px),
+        linear-gradient(145deg, #382226, #231416 58%, #160d0f);
+      box-shadow:
+        inset 0 0 70px rgba(0, 0, 0, 0.6),
+        inset 0 1px rgba(255, 255, 255, 0.07),
+        0 22px 55px rgba(0, 0, 0, 0.48);
+    }
+
+    .boxing-ring::after {
+      position: absolute;
+      inset: 11%;
+      border: 1px solid rgba(246, 200, 95, 0.07);
+      border-radius: 50%;
+      content: '';
+      pointer-events: none;
+    }
+
+    .corner-post {
+      width: 26px;
+      height: 26px;
+      border: 3px solid #5d3818;
+      background: radial-gradient(circle at 35% 30%, #fff1af, #d79d32 48%, #72420e);
+      box-shadow: 0 0 0 4px rgba(255, 59, 69, 0.18), 0 0 22px rgba(246, 200, 95, 0.5);
+    }
+
+    #gameCanvas {
+      z-index: 5;
+      filter: saturate(1.05) contrast(1.02);
+    }
+
+    .alive-count {
+      bottom: 18px;
+      padding: 9px 20px;
+      border: 1px solid rgba(82, 230, 165, 0.3);
+      border-radius: 999px;
+      color: #d6cec9;
+      background: rgba(8, 6, 7, 0.76);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.07), 0 10px 28px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(12px);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.84rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .alive-count span {
+      color: #72efba;
+      font-size: 1rem;
+    }
+
+    .ko-log {
+      top: 70px;
+      right: 18px;
+      gap: 7px;
+    }
+
+    .ko-log-item {
+      padding: 8px 11px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-right: 3px solid var(--knockout-red);
+      border-radius: 9px;
+      background: rgba(12, 8, 10, 0.82);
+      box-shadow: 0 9px 24px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(8px);
+      font-size: 0.75rem;
+    }
+
+    .winner-overlay {
+      padding: 24px;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(246, 200, 95, 0.16), transparent 30%),
+        rgba(7, 4, 6, 0.75);
+      backdrop-filter: blur(18px) saturate(1.1);
+    }
+
+    .winner-title {
+      margin-bottom: 24px;
+      color: #ffe8a6;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.35rem);
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      text-shadow: 0 0 32px rgba(246, 200, 95, 0.35);
+    }
+
+    .winner-list {
+      width: min(680px, 100%);
+      max-width: 680px;
+      gap: 12px;
+    }
+
+    .winner-card {
+      min-width: 180px;
+      padding: 22px 28px;
+      border: 1px solid rgba(246, 200, 95, 0.38);
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(48, 31, 22, 0.92), rgba(18, 12, 14, 0.94));
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.1), 0 22px 55px rgba(0, 0, 0, 0.38);
+    }
+
+    .winner-card .name {
+      color: #ffe4a0;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 900;
+    }
+
+    .modal-overlay {
+      padding: 18px;
+      background: rgba(7, 4, 6, 0.72);
+      backdrop-filter: blur(12px);
+    }
+
+    .modal {
+      padding: 26px;
+      border: 1px solid rgba(246, 200, 95, 0.3);
+      border-radius: 20px;
+      background: linear-gradient(145deg, #211418, #0e0a0c);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
+    }
+
+    .modal h2 {
+      color: #ffe4a0;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .modal-close {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 11px;
+      background: linear-gradient(120deg, #ff5360, #c61e30);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 900;
+    }
+
+    .toast {
+      border-color: rgba(246, 200, 95, 0.34);
+      border-radius: 999px;
+      background: rgba(20, 13, 15, 0.92);
+      box-shadow: 0 14px 38px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+    }
+
+    @media (max-width: 1080px) and (min-width: 769px) {
+      .sidebar {
+        width: 312px;
+        min-width: 312px;
+        padding: 18px;
+      }
+
+      .ring-container {
+        width: min(calc(100vw - 344px), calc(100dvh - 88px), 720px);
+        height: min(calc(100vw - 344px), calc(100dvh - 88px), 720px);
+      }
+    }
+
+    @media (max-height: 760px) and (min-width: 769px) {
+      .sidebar {
+        gap: 9px;
+        padding-block: 14px;
+        overflow-y: auto;
+      }
+
+      .sidebar-header {
+        min-height: 62px;
+        padding-top: 15px;
+      }
+
+      .input-group textarea {
+        height: 68px;
+      }
+
+      .settings-group {
+        padding-block: 8px;
+      }
+
+      .setting-item {
+        min-height: 37px;
+        padding-block: 4px;
+      }
+
+      .btn {
+        min-height: 44px;
+      }
+
+      .sidebar-footer {
+        padding-top: 8px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      .container {
+        height: auto;
+        min-height: 100dvh;
+      }
+
+      .game-area {
+        width: 100%;
+        height: 76svh;
+        min-height: 520px;
+        max-height: 720px;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(246, 200, 95, 0.16);
+      }
+
+      .ring-container {
+        width: 100%;
+        height: 100%;
+        max-width: 680px;
+        max-height: 680px;
+      }
+
+      .game-status {
+        top: 10px;
+        max-width: calc(100% - 20px);
+        padding: 7px 13px;
+        font-size: 0.78rem;
+      }
+
+      .alive-count {
+        bottom: 10px;
+        padding: 7px 15px;
+        font-size: 0.75rem;
+      }
+
+      .ko-log {
+        top: 54px;
+        right: 8px;
+      }
+
+      .ko-log-item {
+        max-width: calc(100vw - 24px);
+        padding: 6px 9px;
+        overflow: hidden;
+        font-size: 0.68rem;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        max-height: none;
+        padding: 18px;
+        overflow: visible;
+        border-top: 0;
+        border-right: 0;
+      }
+
+      .ranking-board {
+        min-height: 150px;
+        max-height: 260px;
+      }
+
+      .sidebar-footer {
+        padding-bottom: max(2px, env(safe-area-inset-bottom));
+      }
+
+      .copyright {
+        display: none;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .sidebar {
+        padding-inline: 13px;
+      }
+
+      .sidebar-header h1 {
+        font-size: 1.13rem;
+      }
+
+      .sidebar-header h1 .title-emoji {
+        width: 42px;
+        height: 42px;
+        flex-basis: 42px;
+      }
+
+      .help-btn,
+      .sound-btn {
+        width: 35px;
+        height: 35px;
+      }
+
+      .winner-card {
+        min-width: min(180px, 100%);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -869,6 +1566,7 @@
       <ul>
         <li>😠 <strong>술래</strong>가 가장 가까운 참여자를 추적합니다</li>
         <li>⚡ 가끔 <strong>기습 공격</strong>으로 예상치 못한 타겟을 노립니다!</li>
+        <li>💨 술래는 중거리에서 <strong>추격 대시</strong>, 참여자는 위기 순간 <strong>회피 대시</strong>를 사용합니다</li>
         <li>🥊 술래는 다양한 펀치 기술로 공격합니다:<br>
           <strong>Jab</strong>, <strong>Straight</strong>, <strong>Hook</strong>, <strong>Body</strong>, <strong>Uppercut</strong></li>
         <li>❤️ 각 참여자는 HP를 가지며, HP가 0이 되면 <strong>K.O.</strong>됩니다</li>
@@ -1006,6 +1704,24 @@
         { name: 'Uppercut', damage: 2, knockback: 20, duration: 0.25 }
       ];
 
+      // Values use 60 fps reference frames. dtScale keeps them consistent on every device.
+      const CHASER_SPEED = 2.0;
+      const DASH_CONFIG = {
+        chaser: {
+          speed: 7.2,
+          duration: 20,
+          cooldown: 90,
+          minDistance: 85,
+          maxDistance: 300
+        },
+        participant: {
+          speed: 5.0,
+          duration: 12,
+          cooldown: 180,
+          triggerDistance: 105
+        }
+      };
+
       // Game State
       let participants = [];
       let chaser = null;
@@ -1017,6 +1733,7 @@
       let punchEffects = [];
       let textEffects = [];
       let eliminatedParticipants = [];
+      let lastTimestamp = 0;
       const soundManager = new SoundManager();
 
       // Canvas resize
@@ -1137,7 +1854,10 @@
             radius: 22,
             hitFlash: 0,
             wanderAngle: Math.random() * Math.PI * 2,
-            wanderTimer: Math.random() * 60
+            wanderTimer: Math.random() * 60,
+            dashTimer: 0,
+            dashCooldown: Math.random() * 90,
+            dashAngle: 0
           };
         });
 
@@ -1156,7 +1876,10 @@
           punchTarget: null,
           punchCooldown: 0,
           currentPunch: null,
-          gloveExtend: 0
+          gloveExtend: 0,
+          dashTimer: 0,
+          dashCooldown: 20,
+          dashAngle: 0
         };
 
         eliminationOrder = [];
@@ -1164,6 +1887,7 @@
         punchEffects = [];
         textEffects = [];
         eliminatedParticipants = [];
+        lastTimestamp = 0;
         gameRunning = true;
         startBtn.disabled = true;
         gameStatus.textContent = '👊 술래가 쫓아옵니다!';
@@ -1171,19 +1895,26 @@
 
         updateAliveCount();
         updateRanking();
-        gameLoop();
+        animationId = requestAnimationFrame(gameLoop);
       }
 
       // Game loop
-      function gameLoop() {
+      function gameLoop(timestamp) {
         if (!gameRunning) return;
-        update();
-        draw();
+
+        if (!lastTimestamp) lastTimestamp = timestamp;
+        const dt = Math.min((timestamp - lastTimestamp) / 1000, 0.1);
+        const dtScale = dt * 60;
+        lastTimestamp = timestamp;
+
+        update(dtScale);
+        if (!gameRunning) return;
+        draw(dtScale);
         animationId = requestAnimationFrame(gameLoop);
       }
 
       // Update game state
-      function update() {
+      function update(dtScale) {
         const alive = participants.filter(p => p.alive);
 
         // Check win condition
@@ -1192,21 +1923,20 @@
           return;
         }
 
-        // Slower speed (30% slower)
-        const speed = 2.0;
-
         // Chaser cooldown
         if (chaser.punchCooldown > 0) {
-          chaser.punchCooldown--;
+          chaser.punchCooldown = Math.max(0, chaser.punchCooldown - dtScale);
         }
+        chaser.dashCooldown = Math.max(0, chaser.dashCooldown - dtScale);
+        chaser.dashTimer = Math.max(0, chaser.dashTimer - dtScale);
         
         // Target switch timer
         if (!chaser.targetSwitchTimer) chaser.targetSwitchTimer = 0;
         if (!chaser.lockedTarget) chaser.lockedTarget = null;
         if (!chaser.lockTimer) chaser.lockTimer = 0;
         
-        chaser.targetSwitchTimer--;
-        if (chaser.lockTimer > 0) chaser.lockTimer--;
+        chaser.targetSwitchTimer -= dtScale;
+        if (chaser.lockTimer > 0) chaser.lockTimer -= dtScale;
         
         // Random target switch chance (surprise attack!)
         if (chaser.targetSwitchTimer <= 0) {
@@ -1220,7 +1950,7 @@
         if (chaser.isPunching) {
           const punch = chaser.currentPunch;
           const punchSpeed = punch ? punch.duration : 0.2;
-          chaser.punchProgress += punchSpeed * 0.7; // 30% slower
+          chaser.punchProgress += punchSpeed * 0.7 * dtScale; // 30% slower
           
           // Glove extension animation
           chaser.gloveExtend = Math.sin(chaser.punchProgress * Math.PI) * 40;
@@ -1231,6 +1961,7 @@
               // Apply damage
               target.hp -= punch.damage;
               target.hitFlash = 15;
+              target.dashTimer = 0;
               
               // Apply knockback
               target.vx = Math.cos(chaser.facingAngle) * punch.knockback;
@@ -1349,16 +2080,31 @@
             const angle = Math.atan2(predictedY - chaser.y, predictedX - chaser.x);
             chaser.facingAngle = angle;
 
-            // Move towards predicted target (30% slower)
-            chaser.vx += (Math.cos(angle) * speed - chaser.vx) * 0.06;
-            chaser.vy += (Math.sin(angle) * speed - chaser.vy) * 0.06;
-            chaser.x += chaser.vx;
-            chaser.y += chaser.vy;
+            const distanceToTarget = Math.hypot(closest.x - chaser.x, closest.y - chaser.y);
+            if (chaser.dashTimer <= 0 && chaser.dashCooldown <= 0 &&
+                distanceToTarget >= DASH_CONFIG.chaser.minDistance &&
+                distanceToTarget <= DASH_CONFIG.chaser.maxDistance) {
+              startDash(chaser, angle, DASH_CONFIG.chaser, 'CHASE!', '#ffcc00', 0.85);
+            }
+
+            if (chaser.dashTimer > 0) {
+              chaser.facingAngle = chaser.dashAngle;
+              chaser.vx = Math.cos(chaser.dashAngle) * DASH_CONFIG.chaser.speed;
+              chaser.vy = Math.sin(chaser.dashAngle) * DASH_CONFIG.chaser.speed;
+            } else {
+              // Move towards predicted target (30% slower)
+              const steer = 1 - Math.pow(0.94, dtScale);
+              chaser.vx += (Math.cos(angle) * CHASER_SPEED - chaser.vx) * steer;
+              chaser.vy += (Math.sin(angle) * CHASER_SPEED - chaser.vy) * steer;
+            }
+            chaser.x += chaser.vx * dtScale;
+            chaser.y += chaser.vy * dtScale;
 
             // Check punch range (use actual position, not predicted)
             const actualDist = Math.hypot(closest.x - chaser.x, closest.y - chaser.y);
             if (actualDist < chaser.radius + closest.radius + 5 && chaser.punchCooldown <= 0) {
               chaser.isPunching = true;
+              chaser.dashTimer = 0;
               chaser.punchProgress = 0;
               chaser.punchTarget = closest;
               chaser.currentPunch = PUNCH_TYPES[Math.floor(Math.random() * PUNCH_TYPES.length)];
@@ -1374,11 +2120,13 @@
           if (!p.alive) return;
 
           // Decrease hit flash
-          if (p.hitFlash > 0) p.hitFlash--;
+          if (p.hitFlash > 0) p.hitFlash = Math.max(0, p.hitFlash - dtScale);
+          p.dashCooldown = Math.max(0, p.dashCooldown - dtScale);
+          p.dashTimer = Math.max(0, p.dashTimer - dtScale);
           
           // Help cooldown
           if (!p.helpCooldown) p.helpCooldown = 0;
-          if (p.helpCooldown > 0) p.helpCooldown--;
+          if (p.helpCooldown > 0) p.helpCooldown = Math.max(0, p.helpCooldown - dtScale);
 
           // Calculate distance to chaser
           const dx = p.x - chaser.x;
@@ -1402,7 +2150,7 @@
           const isCornered = (nearLeftWall || nearRightWall) && (nearTopWall || nearBottomWall);
           
           // Wander timer
-          p.wanderTimer--;
+          p.wanderTimer -= dtScale;
           if (p.wanderTimer <= 0) {
             p.wanderAngle = Math.random() * Math.PI * 2;
             p.wanderTimer = 60 + Math.random() * 60;
@@ -1411,10 +2159,27 @@
           // Behavior: Run away if chaser is close, otherwise wander
           const fleeDistance = 180;
           const wanderSpeed = 0.8;
-          const chaserSpeed = 2.0;
-          const fleeSpeed = chaserSpeed * 0.95; // 95% of chaser speed
+          const fleeSpeed = CHASER_SPEED * 0.95; // 95% of chaser speed
 
-          if (distToChaser < fleeDistance && distToChaser > 0) {
+          // A participant can briefly dodge when the chaser gets dangerously close.
+          if (p.dashTimer <= 0 && p.dashCooldown <= 0 && p.hitFlash <= 0 &&
+              distToChaser < DASH_CONFIG.participant.triggerDistance && distToChaser > 0) {
+            const awayX = dx / distToChaser;
+            const awayY = dy / distToChaser;
+            const centerX = ringBounds.x + ringBounds.w / 2;
+            const centerY = ringBounds.y + ringBounds.h / 2;
+            const centerDist = Math.hypot(centerX - p.x, centerY - p.y) || 1;
+            const wallAvoidance = isCornered ? 1.35 : 0.35;
+            const escapeX = awayX + ((centerX - p.x) / centerDist) * wallAvoidance;
+            const escapeY = awayY + ((centerY - p.y) / centerDist) * wallAvoidance;
+            const escapeAngle = Math.atan2(escapeY, escapeX);
+            startDash(p, escapeAngle, DASH_CONFIG.participant, 'DASH!', '#00e5ff', 0.65);
+          }
+
+          if (p.dashTimer > 0) {
+            p.vx = Math.cos(p.dashAngle) * DASH_CONFIG.participant.speed;
+            p.vy = Math.sin(p.dashAngle) * DASH_CONFIG.participant.speed;
+          } else if (distToChaser < fleeDistance && distToChaser > 0) {
             if (isCornered) {
               // When cornered, run to opposite corner
               let targetX, targetY;
@@ -1433,22 +2198,22 @@
               const toDy = targetY - p.y;
               const toDist = Math.hypot(toDx, toDy);
               if (toDist > 0) {
-                p.vx += (toDx / toDist) * fleeSpeed * 0.3;
-                p.vy += (toDy / toDist) * fleeSpeed * 0.3;
+                p.vx += (toDx / toDist) * fleeSpeed * 0.3 * dtScale;
+                p.vy += (toDy / toDist) * fleeSpeed * 0.3 * dtScale;
               }
             } else {
               // Normal flee from chaser
-              p.vx += (dx / distToChaser) * fleeSpeed * 0.2;
-              p.vy += (dy / distToChaser) * fleeSpeed * 0.2;
+              p.vx += (dx / distToChaser) * fleeSpeed * 0.2 * dtScale;
+              p.vy += (dy / distToChaser) * fleeSpeed * 0.2 * dtScale;
             }
           } else {
             // Random wandering
-            p.vx += Math.cos(p.wanderAngle) * wanderSpeed * 0.1;
-            p.vy += Math.sin(p.wanderAngle) * wanderSpeed * 0.1;
+            p.vx += Math.cos(p.wanderAngle) * wanderSpeed * 0.1 * dtScale;
+            p.vy += Math.sin(p.wanderAngle) * wanderSpeed * 0.1 * dtScale;
           }
 
           // Clamp velocity to max speed
-          const maxSpeed = fleeSpeed;
+          const maxSpeed = p.dashTimer > 0 ? DASH_CONFIG.participant.speed : fleeSpeed;
           const currentSpeed = Math.hypot(p.vx, p.vy);
           if (currentSpeed > maxSpeed) {
             p.vx = (p.vx / currentSpeed) * maxSpeed;
@@ -1456,31 +2221,38 @@
           }
 
           // Apply velocity
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vx *= 0.92;
-          p.vy *= 0.92;
+          p.x += p.vx * dtScale;
+          p.y += p.vy * dtScale;
+          if (p.dashTimer <= 0) {
+            const friction = Math.pow(0.92, dtScale);
+            p.vx *= friction;
+            p.vy *= friction;
+          }
 
           // Keep participants inside ring
           const wallMargin = 15;
           if (p.x < ringBounds.x + wallMargin) {
             p.x = ringBounds.x + wallMargin;
             p.vx = 0;
+            p.dashTimer = 0;
             p.wanderAngle = Math.random() * Math.PI * 2;
           }
           if (p.x > ringBounds.x + ringBounds.w - wallMargin) {
             p.x = ringBounds.x + ringBounds.w - wallMargin;
             p.vx = 0;
+            p.dashTimer = 0;
             p.wanderAngle = Math.random() * Math.PI * 2;
           }
           if (p.y < ringBounds.y + wallMargin) {
             p.y = ringBounds.y + wallMargin;
             p.vy = 0;
+            p.dashTimer = 0;
             p.wanderAngle = Math.random() * Math.PI * 2;
           }
           if (p.y > ringBounds.y + ringBounds.h - wallMargin) {
             p.y = ringBounds.y + ringBounds.h - wallMargin;
             p.vy = 0;
+            p.dashTimer = 0;
             p.wanderAngle = Math.random() * Math.PI * 2;
           }
         });
@@ -1520,8 +2292,27 @@
         }
 
         // Keep chaser inside ring
-        chaser.x = Math.max(ringBounds.x + chaser.radius, Math.min(ringBounds.x + ringBounds.w - chaser.radius, chaser.x));
-        chaser.y = Math.max(ringBounds.y + chaser.radius, Math.min(ringBounds.y + ringBounds.h - chaser.radius, chaser.y));
+        const clampedChaserX = Math.max(ringBounds.x + chaser.radius, Math.min(ringBounds.x + ringBounds.w - chaser.radius, chaser.x));
+        const clampedChaserY = Math.max(ringBounds.y + chaser.radius, Math.min(ringBounds.y + ringBounds.h - chaser.radius, chaser.y));
+        if (clampedChaserX !== chaser.x) {
+          chaser.vx = 0;
+          chaser.dashTimer = 0;
+        }
+        if (clampedChaserY !== chaser.y) {
+          chaser.vy = 0;
+          chaser.dashTimer = 0;
+        }
+        chaser.x = clampedChaserX;
+        chaser.y = clampedChaserY;
+      }
+
+      function startDash(entity, angle, config, label, color, fontScale) {
+        entity.dashAngle = angle;
+        entity.dashTimer = config.duration;
+        entity.dashCooldown = config.cooldown;
+        entity.vx = Math.cos(angle) * config.speed;
+        entity.vy = Math.sin(angle) * config.speed;
+        createTextEffect(entity.x, entity.y - entity.radius - 18, label, color, false, fontScale);
       }
 
       // Create text effect
@@ -1550,7 +2341,7 @@
       }
 
       // Draw game
-      function draw() {
+      function draw(dtScale) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // Draw ring rope
@@ -1580,6 +2371,8 @@
         // Draw alive participants
         participants.forEach(p => {
           if (!p.alive) return;
+
+          drawDashTrail(p, '#00e5ff');
 
           ctx.save();
           ctx.translate(p.x, p.y);
@@ -1638,6 +2431,8 @@
 
         // Draw chaser
         if (chaser) {
+          drawDashTrail(chaser, '#ffcc00');
+
           ctx.save();
           ctx.translate(chaser.x, chaser.y);
 
@@ -1721,8 +2516,9 @@
 
         // Draw punch effects
         punchEffects = punchEffects.filter(e => {
-          e.life--;
-          e.scale += 0.12;
+          e.life -= dtScale;
+          if (e.life <= 0) return false;
+          e.scale += 0.12 * dtScale;
 
           ctx.save();
           ctx.translate(e.x, e.y);
@@ -1738,13 +2534,14 @@
 
         // Draw text effects
         textEffects = textEffects.filter(e => {
-          e.life--;
-          
+          e.life -= dtScale;
+          if (e.life <= 0) return false;
+
           const progress = 1 - (e.life / e.maxLife);
           const y = e.y - progress * 30;
           
           if (e.isKO) {
-            e.scale = Math.min(e.scale + 0.08, 2);
+            e.scale = Math.min(e.scale + 0.08 * dtScale, 2);
           }
 
           const fontScale = e.fontScale || 1;
@@ -1769,6 +2566,31 @@
 
           return e.life > 0;
         });
+      }
+
+      function drawDashTrail(entity, color) {
+        if (!entity || entity.dashTimer <= 0) return;
+
+        const speed = Math.hypot(entity.vx, entity.vy) || 1;
+        const directionX = entity.vx / speed;
+        const directionY = entity.vy / speed;
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        for (let i = 1; i <= 3; i++) {
+          ctx.globalAlpha = 0.2 / i;
+          ctx.beginPath();
+          ctx.arc(
+            entity.x - directionX * entity.radius * i * 0.75,
+            entity.y - directionY * entity.radius * i * 0.75,
+            entity.radius * (1 - i * 0.12),
+            0,
+            Math.PI * 2
+          );
+          ctx.fillStyle = color;
+          ctx.fill();
+        }
+        ctx.restore();
       }
 
       // Update alive count display
@@ -1811,6 +2633,8 @@
       function endGame() {
         gameRunning = false;
         cancelAnimationFrame(animationId);
+        animationId = null;
+        lastTimestamp = 0;
         survivors = participants.filter(p => p.alive);
         gameStatus.textContent = '🏆 게임 종료!';
         soundManager.playWin();
@@ -1860,6 +2684,8 @@
       function resetGame() {
         gameRunning = false;
         cancelAnimationFrame(animationId);
+        animationId = null;
+        lastTimestamp = 0;
         participants = [];
         chaser = null;
         eliminationOrder = [];

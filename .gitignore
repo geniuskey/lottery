@@ -1,4 +1,71 @@
-.claude/*
-nul
-temp.png
+# Operating system files
+.DS_Store
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.Spotlight-V100/
+.Trashes/
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.code-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+
+# Local agent settings (shared agent instructions remain trackable)
+.claude/settings.local.json
+
+# git stuff
+.git/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Package managers and dependencies
+node_modules/
+bower_components/
+.npm/
+.yarn/
+.pnpm-store/
+
+# Generated build and tool caches
+dist/
+build/
+.cache/
+.parcel-cache/
+.vite/
+.sass-cache/
+*.tsbuildinfo
+
+# Test and browser automation output
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+artifacts/
+
+# Logs, temporary files, and backups
+logs/
+*.log
+*.tmp
+*.temp
 *.bak
+*.orig
+*.rej
+tmp/
+temp/
+.tmp/
+.temp/
+
+# Known local scratch files
+/nul
+/temp.png

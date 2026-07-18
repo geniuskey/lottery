@@ -6,11 +6,11 @@
   "emoji": "🧟",
   "category": "서바이벌",
   "description": "좀비를 피해 생존하세요! 영역이 점점 축소됩니다.",
-  "features": ["🔥 영역 축소", "👁️ 시야 시스템"],
+  "features": ["🔥 영역 축소", "👁️ 시야 시스템", "🎲 매회 랜덤 진행", "☣️ 감염 가속"],
   "color": "zombie",
   "badge": null,
-  "version": "1.2.0",
-  "updated": "2025-01-15",
+  "version": "1.3.0",
+  "updated": "2026-07-17",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -40,7 +40,7 @@
       gtag('config', 'G-GFTNV73W8L');
     </script>
 
-    <title>좀비 아레나 - 추첨 게임 포털</title>
+    <title>좀비 아레나 — PLAYPICK</title>
 
     <!-- SEO 기본 -->
     <meta name="description" content="좀비를 피해 끝까지 생존하세요! 영역이 점점 축소되는 긴장감 넘치는 온라인 서바이벌 추첨 게임.">
@@ -49,17 +49,17 @@
     
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="추첨 게임 포털">
+    <meta property="og:site_name" content="PLAYPICK">
     <meta property="og:title" content="🧟 좀비 아레나 - 실시간 서바이벌 추첨">
     <meta property="og:description" content="좀비들의 습격을 피해 최후의 생존자가 되세요! 손에 땀을 쥐게 하는 추첨 게임.">
     <meta property="og:url" content="https://geniuskey.github.io/lottery/zombie-arena/">
-    <meta property="og:image" content="https://geniuskey.github.io/lottery/og-image.png">
+    <meta property="og:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/zombie-arena.webp">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="🧟 좀비 아레나 - 실시간 서바이벌 추첨">
     <meta name="twitter:description" content="좀비들의 습격을 피해 최후의 생존자가 되세요! 손에 땀을 쥐게 하는 추첨 게임.">
-    <meta name="twitter:image" content="https://geniuskey.github.io/lottery/og-image.png">
+    <meta name="twitter:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/zombie-arena.webp">
     
     <!-- Canonical & Favicon -->
     <link rel="canonical" href="https://geniuskey.github.io/lottery/zombie-arena/">
@@ -75,14 +75,14 @@
     
     <style>
         :root {
-            --bg-dark: #0a0f0a;
-            --bg-gradient: linear-gradient(135deg, #0a0f0a 0%, #1a2e1a 50%, #162116 100%);
+            --bg-dark: #050716;
+            --bg-gradient: linear-gradient(145deg, #050716 0%, #111333 52%, #32103e 100%);
             --accent-red: #ff3333;
-            --accent-green: #33ff33;
+            --accent-green: #65ffb1;
             --accent-purple: #9933ff;
             --glass: rgba(0, 0, 0, 0.6);
-            --glass-border: rgba(100, 255, 100, 0.2);
-            --bg-card: rgba(20, 20, 20, 0.95);
+            --glass-border: rgba(145, 126, 255, 0.22);
+            --bg-card: rgba(9, 12, 29, 0.97);
             --glass-bg: rgba(255, 255, 255, 0.03);
             --text-primary: #fff;
             --text-secondary: rgba(255, 255, 255, 0.6);
@@ -109,7 +109,7 @@
         .sidebar {
             width: 280px;
             min-width: 280px;
-            background: var(--bg-card);
+            background: linear-gradient(180deg, rgba(8, 13, 31, 0.98), rgba(28, 10, 39, 0.98));
             border-right: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
@@ -327,6 +327,10 @@
 
         .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
 
+        .btn:disabled, .participants-input:disabled, .lang-select:disabled, input:disabled {
+            opacity: .45; cursor: not-allowed; transform: none !important;
+        }
+
         .ranking-section {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -364,6 +368,9 @@
         .ranking-item.infected { background: rgba(255, 50, 50, 0.15); border-left: 2px solid var(--accent-red); }
         .ranking-item.survivor { background: rgba(50, 255, 50, 0.15); border-left: 2px solid var(--accent-green); }
         .ranking-item.winner { background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 150, 0, 0.3)); border-left: 2px solid gold; }
+        .ranking-item.initial { opacity: .62; }
+        .ranking-divider-label { border-top: 1px solid rgba(255,255,255,.1); margin: 6px 0; padding-top: 6px; font-size: .64rem; color: #8d91aa; }
+        .ranking-placeholder { white-space: pre-line; }
         .ranking-divider { border-top: 1px dashed rgba(255, 255, 255, 0.2); margin: 8px 0; }
 
         .ranking-rank { width: 24px; font-weight: bold; color: var(--text-secondary); }
@@ -421,7 +428,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: #0a0f0a;
+            background: #050716;
             position: relative;
         }
 
@@ -431,7 +438,7 @@
             justify-content: flex-end;
             align-items: center;
             padding: 10px 15px;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(4, 6, 19, 0.86);
             border-bottom: 1px solid var(--glass-border);
             gap: 15px;
             flex-shrink: 0;
@@ -464,6 +471,19 @@
         .status-item { display: flex; align-items: center; gap: 5px; }
         .status-item.humans { color: var(--accent-green); }
         .status-item.zombies { color: var(--accent-red); }
+
+        .run-proof {
+            position: absolute; left: 15px; top: 15px; z-index: 2; padding: 5px 8px; border: 1px solid rgba(153,51,255,.28);
+            border-radius: 7px; background: rgba(8,7,25,.72); color: #ca8fff; font: 700 .6rem monospace; letter-spacing: .05em;
+        }
+        .danger-phase {
+            position: absolute; left: 50%; top: 48px; z-index: 6; display: none; transform: translateX(-50%);
+            padding: 7px 15px; border: 1px solid rgba(255,50,80,.4); border-radius: 999px;
+            background: linear-gradient(90deg, rgba(153,20,80,.9), rgba(100,20,170,.9)); color: #fff;
+            font-size: .7rem; font-weight: 900; letter-spacing: .06em; pointer-events: none;
+            animation: pulse .55s ease-in-out infinite alternate;
+        }
+        .danger-phase.show { display: block; }
 
         .canvas-wrapper {
             flex: 1;
@@ -547,7 +567,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(3, 4, 15, 0.86);
+            backdrop-filter: blur(20px);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -582,7 +603,10 @@
         }
 
         .winner-stats { font-size: 1rem; color: var(--text-secondary); margin-bottom: 30px; }
+        .result-proof { max-width: min(90vw, 720px); color: #c995ff; font: 700 .68rem monospace; letter-spacing: .07em; margin-top: -18px; margin-bottom: 24px; overflow-wrap: anywhere; text-align: center; }
         .winner-overlay .modal-btn { width: auto; padding: 12px 40px; font-size: 0.9rem; }
+
+        #celebCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1100; pointer-events: none; }
 
         .toast {
             position: fixed;
@@ -600,11 +624,16 @@
 
         .toast.show { transform: translateX(-50%) translateY(0); }
 
+        :focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 3px; }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        }
+
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb {
-            background: rgba(51, 255, 51, 0.3);
+            background: rgba(145, 126, 255, 0.3);
             border-radius: 10px;
             transition: all 0.3s;
         }
@@ -651,36 +680,36 @@
     <div class="container">
         <aside class="sidebar">
         <div class="sidebar-header">
-            <h1><span class="title-emoji">🧟</span> <span class="title-text">좀비 아레나</span></h1>
+            <h1><span class="title-emoji">🧟</span> <span class="title-text" data-i18n="title">좀비 아레나</span></h1>
             <div class="header-btns">
-                <select id="langSelect" class="lang-select">
+                <select id="langSelect" class="lang-select" aria-label="언어 선택">
                     <option value="ko">KO</option>
                     <option value="en">EN</option>
                     <option value="zh">ZH</option>
                 </select>
-                <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
-                <button class="help-btn" id="helpBtn">?</button>
+                <button class="sound-btn" id="soundToggle" type="button" title="소리 켜기/끄기" aria-label="소리 끄기" aria-pressed="true">🔊</button>
+                <button class="help-btn" id="helpBtn" type="button" aria-label="게임 도움말 열기">?</button>
             </div>
         </div>
             <div class="sidebar-content">
                 <div class="section">
-                    <div class="section-title" data-i18n="participants">참여자 명단</div>
+                    <label class="section-title" for="participants" data-i18n="participants">참여자 명단</label>
                     <textarea class="participants-input" id="participants" data-placeholder-i18n="participantsPlaceholder" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
-                    <div class="hint" data-i18n="hint">쉼표 또는 줄바꿈으로 구분</div>
+                    <div class="hint"><span data-i18n="hint">쉼표 또는 줄바꿈으로 구분</span> · MAX 30</div>
                 </div>
                 <div class="section">
                     <div class="slider-group">
-                        <div class="slider-header"><span class="slider-label" data-i18n="initialZombies">🧟 초기 좀비 수</span><span class="slider-value" id="zombieValue">3</span></div>
+                        <div class="slider-header"><label class="slider-label" for="zombieCount" data-i18n="initialZombies">🧟 초기 좀비 수</label><span class="slider-value" id="zombieValue">3</span></div>
                         <input type="range" id="zombieCount" min="1" max="5" value="3">
                     </div>
                     <div class="slider-group">
-                        <div class="slider-header"><span class="slider-label" data-i18n="survivors">🏆 최종 생존자 수</span><span class="slider-value" id="survivorValue">1</span></div>
+                        <div class="slider-header"><label class="slider-label" for="survivorCount" data-i18n="survivors">🏆 최종 생존자 수</label><span class="slider-value" id="survivorValue">1</span></div>
                         <input type="range" id="survivorCount" min="1" max="5" value="1">
                     </div>
                 </div>
                 <div class="btn-group">
-                    <button class="btn btn-primary" id="startBtn" data-i18n="start">🎮 시작</button>
-                    <button class="btn btn-secondary" id="resetBtn">↺</button>
+                    <button class="btn btn-primary" id="startBtn" type="button" data-i18n="start">🎮 시작</button>
+                    <button class="btn btn-secondary" id="resetBtn" type="button" aria-label="게임 초기화">↺</button>
                 </div>
                 <div class="section" style="margin-top:15px;flex:1;display:flex;flex-direction:column;min-height:0">
                     <div class="ranking-section">
@@ -690,10 +719,10 @@
                 </div>
             </div>
             <div class="sidebar-footer">
-                <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></a>
-                <button class="icon-btn" id="copyResultBtn" data-tooltip-i18n="copyResult" data-tooltip="결과 복사"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
-                <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip-i18n="github" data-tooltip="GitHub 저장소"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg></a>
-                <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip-i18n="coffee" data-tooltip="커피 사주기 ☕"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg></a>
+                <a href="../" class="icon-btn" data-tooltip="PLAYPICK 홈" aria-label="PLAYPICK 홈"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></a>
+                <button class="icon-btn" id="copyResultBtn" type="button" data-tooltip-i18n="copyResult" data-tooltip="결과 복사" aria-label="게임 결과 복사"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                <a href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer" class="icon-btn" data-tooltip-i18n="github" data-tooltip="GitHub 저장소" aria-label="GitHub 저장소 새 창에서 열기"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg></a>
+                <a href="https://buymeacoffee.com/euiyun" target="_blank" rel="noopener noreferrer" class="icon-btn" data-tooltip-i18n="coffee" data-tooltip="커피 사주기 ☕" aria-label="후원 페이지 새 창에서 열기"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg></a>
             </div>
         </aside>
         <main class="game-area">
@@ -706,27 +735,29 @@
                 </div>
             </div>
             <div class="canvas-wrapper">
-                <canvas id="gameCanvas"></canvas>
+                <div class="danger-phase" id="dangerPhase" role="status">☣️ OUTBREAK ACCELERATION ☣️</div>
+                <canvas id="gameCanvas" role="img" aria-label="좀비 아레나 생존 시뮬레이션"></canvas>
                 <div class="copyright">© 2025 Euiyun Edwin Kim</div>
             </div>
         </main>
     </div>
-    <div class="modal" id="helpModal">
+    <div class="modal" id="helpModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="helpTitle">
         <div class="modal-content">
-            <h2 class="modal-title" data-i18n="helpTitle">🧟 좀비 아레나 게임</h2>
+            <h2 class="modal-title" id="helpTitle" data-i18n="helpTitle">🧟 좀비 아레나 게임</h2>
             <div class="help-section"><h3 data-i18n="helpRulesTitle">🎮 게임 규칙</h3><p data-i18n="helpRules">참여자들이 아레나에서 좀비를 피해 생존합니다. 최종 생존자 수만큼 남으면 게임 종료!</p></div>
             <div class="help-section"><h3 data-i18n="helpMovementTitle">🏃 이동 시스템</h3><p data-i18n="helpMovement">• 인간이 좀비를 보면 반대 방향으로 전력 질주<br>• 좀비는 시야가 좁지만 인간보다 멀리 봅니다<br>• 초기 좀비는 한 번 물면 죽습니다</p></div>
             <div class="help-section"><h3 data-i18n="helpShrinkTitle">🔥 영역 축소</h3><p data-i18n="helpShrink">• 시간이 지나면 영역이 축소됩니다<br>• 좀비가 10마리를 초과하면 오래된 좀비부터 굶어 죽습니다</p></div>
-            <button class="modal-btn" id="closeHelpBtn" data-i18n="understood">이해했습니다!</button>
+            <button class="modal-btn" id="closeHelpBtn" type="button" data-i18n="understood">이해했습니다!</button>
         </div>
     </div>
-    <div class="winner-overlay" id="winnerOverlay">
-        <div class="winner-title" data-i18n="finalSurvivor">🏆 최후의 생존자! 🏆</div>
+    <div class="winner-overlay" id="winnerOverlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="resultHeadline winnerName">
+        <div class="winner-title" id="resultHeadline" data-i18n="finalSurvivor">🏆 최후의 생존자! 🏆</div>
         <div class="winner-name" id="winnerName"></div>
         <div class="winner-stats" id="winnerStats"></div>
-        <button class="modal-btn" id="closeWinnerBtn" data-i18n="confirm">확인</button>
+        <button class="modal-btn" id="closeWinnerBtn" type="button" data-i18n="confirm">확인</button>
     </div>
-    <div class="toast" id="toast"></div>
+    <canvas id="celebCanvas" aria-hidden="true"></canvas>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script>
 /**
  * Zombie Arena (좀비 아레나)
@@ -752,19 +783,41 @@
  * ------------------------------------------------------------
  */
 
+const MAX_PARTICIPANTS = 30;
+const FIXED_DT = 1 / 60;
+let activePhysicsRandom = Math.random;
+
+function physicsRandom() {
+    return activePhysicsRandom();
+}
+
 class SoundManager {
     constructor() {
         this.ctx = null;
-        this.enabled = true;
+        try {
+            this.enabled = localStorage.getItem('zombie-arena-sound') !== 'off';
+        } catch (error) {
+            this.enabled = true;
+        }
         this.setupToggleButton();
+    }
+
+    syncToggleButton() {
+        const btn = document.getElementById('soundToggle');
+        if (!btn) return;
+        btn.textContent = this.enabled ? '🔊' : '🔇';
+        btn.setAttribute('aria-pressed', String(this.enabled));
+        btn.setAttribute('aria-label', this.enabled ? '소리 끄기' : '소리 켜기');
     }
 
     setupToggleButton() {
         const btn = document.getElementById('soundToggle');
         if (btn) {
+            this.syncToggleButton();
             btn.onclick = () => {
                 this.enabled = !this.enabled;
-                btn.textContent = this.enabled ? '🔊' : '🔇';
+                try { localStorage.setItem('zombie-arena-sound', this.enabled ? 'on' : 'off'); } catch (error) { /* 저장 불가 환경 */ }
+                this.syncToggleButton();
                 if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
                     this.ctx.resume();
                 }
@@ -774,7 +827,9 @@ class SoundManager {
 
     init() {
         if (this.ctx) return;
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        this.ctx = new AudioContextClass();
     }
 
     playStart() {
@@ -849,7 +904,7 @@ class SoundManager {
         if (!this.enabled || !this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        osc.type = 'brown' || 'sine'; 
+        osc.type = 'sine';
         osc.frequency.setValueAtTime(100, this.ctx.currentTime);
         osc.frequency.linearRampToValueAtTime(20, this.ctx.currentTime + 0.8);
         gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
@@ -866,10 +921,12 @@ const i18n = {
         title: '좀비 아레나', participants: '참여자 명단',
         participantsPlaceholder: '이름을 입력하세요\n예: 철수, 영희, 민수',
         hint: '쉼표 또는 줄바꿈으로 구분', initialZombies: '🧟 초기 좀비 수',
+        maxParticipants: '참여자는 최대 30명까지 등록할 수 있습니다.',
         survivors: '🏆 최종 생존자 수', start: '🎮 시작', infectionOrder: '🏆 감염 순서',
         rankingPlaceholder: '게임을 시작하면<br>감염 순서가 표시됩니다',
         copyResult: '결과 복사', github: 'GitHub 저장소', coffee: '개발자에게 커피 사주기 ☕',
         finalSurvivor: '최후의 생존자!', survivalTime: '생존 시간: {time}초', confirm: '확인',
+        timeoutWinner: '⏱️ 제한 시간 생존자!',
         helpTitle: '🧟 좀비 아레나 게임', helpRulesTitle: '🎮 게임 규칙',
         helpRules: '참여자들이 아레나에서 좀비를 피해 생존합니다. 최종 생존자 수만큼 남으면 게임 종료!',
         helpMovementTitle: '🏃 이동 시스템',
@@ -891,10 +948,12 @@ const i18n = {
         title: 'Zombie Arena', participants: 'Participants',
         participantsPlaceholder: 'Enter names\nEx: John, Jane, Mike',
         hint: 'Separate by comma or newline', initialZombies: '🧟 Initial Zombies',
+        maxParticipants: 'You can register up to 30 participants.',
         survivors: '🏆 Final Survivors', start: '🎮 Start', infectionOrder: '🏆 Infection Order',
         rankingPlaceholder: 'Start the game to see<br>the infection order',
         copyResult: 'Copy Result', github: 'GitHub Repository', coffee: 'Buy Developer a Coffee ☕',
         finalSurvivor: 'Final Survivor!', survivalTime: 'Survival Time: {time}s', confirm: 'OK',
+        timeoutWinner: '⏱️ Time-limit Survivors!',
         helpTitle: '🧟 Zombie Arena Game', helpRulesTitle: '🎮 Game Rules',
         helpRules: 'Participants survive in the arena while avoiding zombies. Game ends when only the final survivors remain!',
         helpMovementTitle: '🏃 Movement System',
@@ -916,10 +975,12 @@ const i18n = {
         title: '僵尸竞技场', participants: '参与者名单',
         participantsPlaceholder: '输入姓名\n例：小明，小红，小刚',
         hint: '用逗号或换行分隔', initialZombies: '🧟 初始僵尸数',
+        maxParticipants: '最多可登记30名参与者。',
         survivors: '🏆 最终幸存者数', start: '🎮 开始', infectionOrder: '🏆 感染顺序',
         rankingPlaceholder: '开始游戏后<br>将显示感染顺序',
         copyResult: '复制结果', github: 'GitHub 仓库', coffee: '请开发者喝咖啡 ☕',
         finalSurvivor: '最后的幸存者！', survivalTime: '生存时间：{time}秒', confirm: '确定',
+        timeoutWinner: '⏱️ 限时幸存者！',
         helpTitle: '🧟 僵尸竞技场游戏', helpRulesTitle: '🎮 游戏规则',
         helpRules: '参与者在竞技场中躲避僵尸生存。当只剩下最终幸存者数量时游戏结束！',
         helpMovementTitle: '🏃 移动系统',
@@ -966,9 +1027,11 @@ class ZombieSurvival {
         this.participants = []; this.entities = []; this.deadZombies = [];
         this.infectedOrder = []; this.notifications = [];
         this.isRunning = false; this.gameStarted = false;
-        this.startTime = 0; this.endTime = 0;
         this.gameTimeSeconds = 0;
         this.lastTimestamp = 0;
+        this.accumulator = 0; this.animationId = null; this.resultTimer = null;
+        this.rankingElapsed = 0; this.startToken = 0;
+        this.maxGameTime = 75;
         this.zombieCount = 3; this.survivorCount = 1;
         this.entityRadius = 10; this.maxZombies = 10;
         this.humanWalkSpeed = 0.6; this.humanRunSpeed = 3.75;
@@ -982,7 +1045,13 @@ class ZombieSurvival {
         this.targetRadius = 0; this.targetCenterX = 0; this.targetCenterY = 0;
         this.shrinkPhase = 0; this.shrinkTimer = 0;
         this.shrinkInterval = 600; this.shrinkWarningTime = 180; this.isShrinking = false;
+        this.lastShrinkBeepSecond = -1; this.shake = 0;
         this.sound = new SoundManager();
+        this.backgroundCache = document.createElement('canvas');
+        this.floorCache = document.createElement('canvas');
+        this.celebCanvas = document.getElementById('celebCanvas');
+        this.celebCtx = this.celebCanvas.getContext('2d');
+        this.celebrationParticles = []; this.celebrationAnimationId = null;
         // Load zombie images (3 types)
         this.zombieImages = [];
         this.zombieImagesLoaded = [false, false, false];
@@ -998,13 +1067,78 @@ class ZombieSurvival {
     
     get zombieNames() { return t('zombieNames'); }
     
-    setupCanvas() {
+    setupCanvas(preserveArena = false) {
         const wrapper = this.canvas.parentElement;
-        this.canvas.width = wrapper.clientWidth; this.canvas.height = wrapper.clientHeight;
-        this.centerX = this.canvas.width / 2; this.centerY = this.canvas.height / 2;
-        this.currentRadius = Math.min(this.canvas.width, this.canvas.height) / 2 - 15;
-        this.targetRadius = this.currentRadius;
-        this.targetCenterX = this.centerX; this.targetCenterY = this.centerY;
+        const oldWidth = this.canvas.width;
+        const oldHeight = this.canvas.height;
+        const nextWidth = Math.max(320, wrapper.clientWidth);
+        const nextHeight = Math.max(420, wrapper.clientHeight);
+        this.canvas.width = nextWidth;
+        this.canvas.height = nextHeight;
+        this.celebCanvas.width = window.innerWidth;
+        this.celebCanvas.height = window.innerHeight;
+
+        this.arenaScale = Math.max(0.78, Math.min(1.35, Math.min(nextWidth, nextHeight) / 700));
+        this.entityRadius = 10 * this.arenaScale;
+        this.humanWalkSpeed = 0.6 * this.arenaScale;
+        this.humanRunSpeed = 3.75 * this.arenaScale;
+        this.zombieWalkSpeed = 0.5 * this.arenaScale;
+        this.zombieChaseSpeed = 3.0 * this.arenaScale;
+        this.zombieDetectRange = 250 * this.arenaScale;
+        this.humanDetectRange = this.zombieDetectRange * 0.9;
+
+        if (preserveArena && oldWidth > 0 && oldHeight > 0) {
+            const scaleX = nextWidth / oldWidth;
+            const scaleY = nextHeight / oldHeight;
+            const radiusScale = Math.min(scaleX, scaleY);
+            for (const entity of this.entities) { entity.x *= scaleX; entity.y *= scaleY; }
+            for (const dead of this.deadZombies) { dead.x *= scaleX; dead.y *= scaleY; }
+            this.centerX *= scaleX; this.centerY *= scaleY;
+            this.targetCenterX *= scaleX; this.targetCenterY *= scaleY;
+            this.currentRadius *= radiusScale; this.targetRadius *= radiusScale;
+        } else {
+            this.centerX = nextWidth / 2; this.centerY = nextHeight / 2;
+            this.currentRadius = Math.max(75, Math.min(nextWidth, nextHeight) / 2 - 18);
+            this.targetRadius = this.currentRadius;
+            this.targetCenterX = this.centerX; this.targetCenterY = this.centerY;
+        }
+        this.buildCanvasCaches();
+    }
+
+    buildCanvasCaches() {
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+        this.backgroundCache.width = width; this.backgroundCache.height = height;
+        this.floorCache.width = width; this.floorCache.height = height;
+
+        const bg = this.backgroundCache.getContext('2d');
+        const sky = bg.createRadialGradient(width * 0.72, height * 0.12, 0, width * 0.5, height * 0.5, Math.max(width, height));
+        sky.addColorStop(0, '#201557'); sky.addColorStop(0.45, '#090b25'); sky.addColorStop(1, '#040510');
+        bg.fillStyle = sky; bg.fillRect(0, 0, width, height);
+        const moonRadius = Math.max(20, Math.min(width, height) * 0.045);
+        const moon = bg.createRadialGradient(width * 0.8, height * 0.1, 0, width * 0.8, height * 0.1, moonRadius * 2.4);
+        moon.addColorStop(0, 'rgba(205,225,255,.92)'); moon.addColorStop(.4, 'rgba(130,170,255,.24)'); moon.addColorStop(1, 'transparent');
+        bg.fillStyle = moon; bg.beginPath(); bg.arc(width * 0.8, height * 0.1, moonRadius * 2.4, 0, Math.PI * 2); bg.fill();
+        bg.fillStyle = 'rgba(26,14,52,.9)';
+        for (let index = 0; index < 18; index++) {
+            const x = (index / 17) * width;
+            const graveHeight = 12 + (index % 4) * 5;
+            bg.fillRect(x - 5, height - graveHeight - 6, 10, graveHeight);
+            bg.beginPath(); bg.arc(x, height - graveHeight - 6, 5, Math.PI, 0); bg.fill();
+        }
+
+        const floor = this.floorCache.getContext('2d');
+        floor.fillStyle = '#0c1131'; floor.fillRect(0, 0, width, height);
+        const tile = Math.max(28, 42 * this.arenaScale);
+        for (let row = -1; row < Math.ceil(height / tile) + 1; row++) {
+            for (let column = -1; column < Math.ceil(width / tile) + 1; column++) {
+                const x = column * tile + (row % 2 ? tile * 0.5 : 0);
+                const y = row * tile;
+                floor.fillStyle = (row + column) % 3 === 0 ? 'rgba(79,69,145,.13)' : 'rgba(20,37,86,.2)';
+                floor.fillRect(x + 1, y + 1, tile - 2, tile - 2);
+                floor.strokeStyle = 'rgba(107,118,190,.09)'; floor.strokeRect(x + 1, y + 1, tile - 2, tile - 2);
+            }
+        }
     }
     
     bindEvents() {
@@ -1012,49 +1146,63 @@ class ZombieSurvival {
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                const oldW = this.canvas.width, oldH = this.canvas.height;
-                this.setupCanvas();
-                if (!this.isRunning) this.redistributeEntities(oldW, oldH);
-                this.draw();
+                const preserveArena = this.isRunning || this.gameStarted || Boolean(this.resultTimer);
+                if (preserveArena) {
+                    this.setupCanvas(true); this.draw(); this.updateUI();
+                } else {
+                    this.reset(false, true);
+                }
             }, 100);
         });
     }
     
-    redistributeEntities(oldW, oldH) {
-        const scaleX = this.canvas.width / oldW, scaleY = this.canvas.height / oldH;
-        for (const e of this.entities) { e.x *= scaleX; e.y *= scaleY; }
-    }
+    setParticipants(names) { this.participants = names.filter(n => n.trim()).slice(0, MAX_PARTICIPANTS); this.reset(); }
     
-    setParticipants(names) { this.participants = names.filter(n => n.trim()); this.reset(); }
-    
-    reset() {
+    reset(preserveRandom = false, includeZombies = true) {
+        if (!preserveRandom) {
+            this.startToken++;
+            activePhysicsRandom = Math.random;
+        }
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+        if (this.resultTimer) clearTimeout(this.resultTimer);
+        this.resultTimer = null;
+        this.stopCelebration();
         this.isRunning = false; this.gameStarted = false;
         this.entities = []; this.deadZombies = []; this.infectedOrder = []; this.notifications = [];
-        this.startTime = 0; this.endTime = 0;
         this.gameTimeSeconds = 0;
-        this.lastTimestamp = 0;
+        this.lastTimestamp = 0; this.accumulator = 0; this.rankingElapsed = 0;
         this.shrinkPhase = 0; this.shrinkTimer = 0; this.isShrinking = false;
-        this.setupCanvas(); this.setupEntities(false);
+        this.lastShrinkBeepSecond = -1; this.shake = 0;
+        this.setupCanvas(); this.setupEntities(includeZombies);
         this.draw(); this.updateUI(); this.updateRanking();
         document.getElementById('shrinkWarning').style.display = 'none';
         document.getElementById('timerDisplay').textContent = '00:00';
+        document.getElementById('dangerPhase').classList.remove('show');
+        const overlay = document.getElementById('winnerOverlay');
+        overlay.classList.remove('show'); overlay.setAttribute('aria-hidden', 'true');
+        document.querySelector('.container').inert = false;
     }
     
     setupEntities(includeZombies = true) {
         this.entities = [];
-        const shuffled = [...this.participants].sort(() => Math.random() - 0.5);
+        const shuffled = [...this.participants];
+        for (let index = shuffled.length - 1; index > 0; index--) {
+            const swapIndex = Math.floor(physicsRandom() * (index + 1));
+            [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+        }
         const totalCount = includeZombies ? shuffled.length + this.zombieCount : shuffled.length;
         const positions = this.generateSpacedPositions(totalCount);
         
         for (let i = 0; i < shuffled.length; i++) {
             this.entities.push({
                 name: shuffled[i], x: positions[i].x, y: positions[i].y, vx: 0, vy: 0,
-                angle: Math.random() * Math.PI * 2, isZombie: false, isRunning: false, runTimer: 0,
+                index: i, angle: physicsRandom() * Math.PI * 2, isZombie: false, isRunning: false, runTimer: 0,
                 emoji: this.humanEmojis[i % this.humanEmojis.length],
-                targetAngle: Math.random() * Math.PI * 2, wanderTimer: Math.random() * 120,
+                targetAngle: physicsRandom() * Math.PI * 2, wanderTimer: physicsRandom() * 120,
                 hasTarget: false, isInitialZombie: false, health: 100,
                 isTransforming: false, transformTimer: 0, eatingTimer: 0, zombieKills: 0,
-                zombifiedAt: 0, helpTimer: 0, spottedTimer: 0
+                zombifiedAt: 0, helpTimer: 0, spottedTimer: 0, deathTimer: 0
             });
         }
         
@@ -1063,12 +1211,12 @@ class ZombieSurvival {
                 const pos = positions[shuffled.length + i];
                 this.entities.push({
                     name: this.zombieNames[i] || ('Zombie ' + (i+1)),
-                    x: pos.x, y: pos.y, vx: 0, vy: 0, angle: Math.random() * Math.PI * 2,
+                    index: shuffled.length + i, x: pos.x, y: pos.y, vx: 0, vy: 0, angle: physicsRandom() * Math.PI * 2,
                     isZombie: true, isRunning: false, runTimer: 0, color: '#666',
-                    targetAngle: Math.random() * Math.PI * 2, wanderTimer: Math.random() * 120,
+                    targetAngle: physicsRandom() * Math.PI * 2, wanderTimer: physicsRandom() * 120,
                     hasTarget: false, isInitialZombie: true, health: 100,
                     isTransforming: false, transformTimer: 0, eatingTimer: 0, zombieKills: 0,
-                    zombifiedAt: 0, helpTimer: 0, spottedTimer: 0,
+                    zombifiedAt: 0, helpTimer: 0, spottedTimer: 0, deathTimer: 0,
                     zombieImageIndex: i % 3 // 순서대로 좀비 이미지 (0, 1, 2, 0, 1, 2, ...)
                 });
             }
@@ -1080,8 +1228,8 @@ class ZombieSurvival {
         for (let i = 0; i < count; i++) {
             let bestPos = null, bestMinDist = 0;
             for (let attempt = 0; attempt < 50; attempt++) {
-                const angle = Math.random() * Math.PI * 2;
-                const dist = Math.random() * (this.currentRadius - padding);
+                const angle = physicsRandom() * Math.PI * 2;
+                const dist = physicsRandom() * Math.max(1, this.currentRadius - padding);
                 const pos = { x: this.centerX + Math.cos(angle) * dist, y: this.centerY + Math.sin(angle) * dist };
                 let minDistToOthers = Infinity;
                 for (const other of positions) {
@@ -1091,7 +1239,7 @@ class ZombieSurvival {
                 if (minDistToOthers > bestMinDist) { bestMinDist = minDistToOthers; bestPos = pos; }
                 if (minDistToOthers >= 50) break;
             }
-            positions.push(bestPos || { x: this.centerX + (Math.random()-0.5)*this.currentRadius, y: this.centerY + (Math.random()-0.5)*this.currentRadius });
+            positions.push(bestPos || { x: this.centerX + (physicsRandom()-0.5)*this.currentRadius, y: this.centerY + (physicsRandom()-0.5)*this.currentRadius });
         }
         return positions;
     }
@@ -1106,40 +1254,108 @@ class ZombieSurvival {
         }
         while (this.notifications.length > 5) this.notifications.shift();
     }
-    
-    start() {
-        if (this.participants.length < 2) { alert(t('minParticipants')); return; }
+
+    async start() {
+        if (this.isRunning || this.resultTimer || this.participants.length < 2) return false;
+        const token = ++this.startToken;
         this.sound.init();
-        this.reset(); this.setupEntities(true);
+        this.setControlsDisabled(true);
+        activePhysicsRandom = Math.random;
+        this.reset(true, true);
         this.gameStarted = true; this.isRunning = true;
-        this.startTime = Date.now(); this.endTime = 0;
         this.gameTimeSeconds = 0;
-        this.lastTimestamp = performance.now();
+        this.lastTimestamp = 0; this.accumulator = 0;
         this.setControlsDisabled(true); this.draw();
         this.sound.playStart();
-        requestAnimationFrame((ts) => this.gameLoop(ts));
+        this.animationId = requestAnimationFrame((ts) => this.gameLoop(ts));
+        return true;
     }
     
-    stop() { this.isRunning = false; this.setControlsDisabled(false); }
+    stop() {
+        this.startToken++;
+        this.isRunning = false;
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+        if (this.resultTimer) clearTimeout(this.resultTimer);
+        this.resultTimer = null;
+        this.setControlsDisabled(false);
+    }
     
     setControlsDisabled(disabled) {
-        document.getElementById('zombieCount').disabled = disabled;
-        document.getElementById('survivorCount').disabled = disabled;
+        ['participants', 'zombieCount', 'survivorCount', 'langSelect', 'startBtn'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.disabled = disabled;
+        });
     }
     
     gameLoop(timestamp) {
         if (!this.isRunning) return;
-        
-        const dt = (timestamp - this.lastTimestamp) / 1000;
+        if (!this.lastTimestamp) this.lastTimestamp = timestamp;
+        const frameDt = Math.min((timestamp - this.lastTimestamp) / 1000, 0.1);
         this.lastTimestamp = timestamp;
-        
-        // Limit dt to prevent massive jumps when tab is inactive
-        const cappedDt = Math.min(dt, 0.1);
-        
-        this.update(cappedDt); this.draw(); this.updateUI();
-        const humans = this.entities.filter(e => !e.isZombie && !e.isTransforming);
-        if (humans.length <= this.survivorCount && this.isRunning) { this.endGame(humans); return; }
-        requestAnimationFrame((ts) => this.gameLoop(ts));
+        this.accumulator += frameDt;
+
+        let steps = 0;
+        while (this.accumulator >= FIXED_DT && steps < 6 && this.isRunning) {
+            this.update(FIXED_DT);
+            this.accumulator -= FIXED_DT;
+            steps++;
+            const humans = this.entities.filter(entity => !entity.isZombie && !entity.isTransforming);
+            if (humans.length <= this.survivorCount) {
+                this.scheduleEnd(humans, 'complete');
+                break;
+            }
+            if (this.gameTimeSeconds >= this.maxGameTime) {
+                this.finishByTimeout();
+                break;
+            }
+        }
+        if (steps === 6) this.accumulator = 0;
+        this.draw(); this.updateUI();
+
+        const phase = document.getElementById('dangerPhase');
+        phase.textContent = this.gameTimeSeconds >= 40 ? '☠️ FINAL PANIC · MAX OUTBREAK ☠️' : '☣️ OUTBREAK ACCELERATION ☣️';
+        phase.classList.toggle('show', this.gameTimeSeconds >= 10 && this.isRunning);
+        if (this.isRunning) this.animationId = requestAnimationFrame((ts) => this.gameLoop(ts));
+    }
+
+    scheduleEnd(winners, reason = 'complete') {
+        if (this.resultTimer) return;
+        this.isRunning = false;
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+        this.animationId = null;
+        document.getElementById('dangerPhase').classList.remove('show');
+        document.getElementById('shrinkWarning').style.display = 'none';
+        for (const entity of this.entities) {
+            if (!entity.isTransforming) continue;
+            entity.isTransforming = false; entity.isZombie = true; entity.zombifiedAt = this.gameTimeSeconds;
+        }
+        this.updateRanking();
+        this.draw();
+        this.resultTimer = setTimeout(() => {
+            this.resultTimer = null;
+            this.endGame(winners, reason);
+        }, 950);
+    }
+
+    finishByTimeout() {
+        const humans = this.entities.filter(entity => !entity.isZombie && !entity.isTransforming);
+        const zombies = this.entities.filter(entity => entity.isZombie);
+        const safetyScore = human => {
+            const nearestZombie = zombies.length
+                ? Math.min(...zombies.map(zombie => Math.hypot(human.x - zombie.x, human.y - zombie.y)))
+                : this.currentRadius;
+            const centerDistance = Math.hypot(human.x - this.centerX, human.y - this.centerY);
+            return nearestZombie + Math.max(0, this.currentRadius - centerDistance) * 0.2;
+        };
+        humans.sort((a, b) => (safetyScore(b) - safetyScore(a)) || (a.index - b.index));
+        const winners = humans.slice(0, this.survivorCount);
+        humans.slice(this.survivorCount).forEach((human, index) => {
+            human.isZombie = true;
+            human.zombieImageIndex = Math.floor(physicsRandom() * 3);
+            this.infectedOrder.push({ name: human.name, time: this.gameTimeSeconds + index * 0.001, cause: t('zoneOut') });
+        });
+        this.scheduleEnd(winners, 'timeout');
     }
     
     getWallAvoidanceAngle(entity) {
@@ -1161,7 +1377,7 @@ class ZombieSurvival {
             const cross = dx * (this.centerY - human.y) - dy * (this.centerX - human.x);
             escapeAngle = toCenter + (cross > 0 ? Math.PI / 2 : -Math.PI / 2);
         }
-        return escapeAngle + (Math.random() - 0.5) * 0.3;
+        return escapeAngle + (physicsRandom() - 0.5) * 0.3;
     }
     
     update(dt) {
@@ -1169,11 +1385,12 @@ class ZombieSurvival {
         this.gameTimeSeconds += dt;
         
         this.updateShrinking(dt); this.updateTransformations(dtScale);
-        this.updateNotifications(dtScale); this.updateDeadZombies(dtScale);
-        
+        this.updateNotifications(dtScale); this.updateDeadZombies(dtScale); this.updateTimedDeaths(dtScale);
+        this.checkZombieLimit();
+        this.shake = Math.max(0, this.shake - dtScale * 0.6);
+
         const humans = this.entities.filter(e => !e.isZombie && !e.isTransforming);
         const zombies = this.entities.filter(e => e.isZombie);
-        this.checkZombieLimit();
         
         for (const entity of this.entities) {
             if (entity.isTransforming) continue;
@@ -1203,6 +1420,19 @@ class ZombieSurvival {
             }
         }
         this.checkInfections(humans, zombies); this.handleCollisions(dtScale);
+    }
+
+    updateTimedDeaths(dtScale) {
+        for (let index = this.entities.length - 1; index >= 0; index--) {
+            const entity = this.entities[index];
+            if (!entity.isZombie || entity.deathTimer <= 0) continue;
+            entity.deathTimer -= dtScale;
+            if (entity.deathTimer <= 0) {
+                this.sound.playDeath();
+                this.deadZombies.push({ ...entity, fadeTimer: 60 });
+                this.entities.splice(index, 1);
+            }
+        }
     }
     
     checkZombieLimit() {
@@ -1245,6 +1475,7 @@ class ZombieSurvival {
         if (entity.isTransforming || entity.isZombie) return;
         entity.isTransforming = true; entity.transformTimer = 60;
         entity.vx = 0; entity.vy = 0;
+        this.shake = Math.max(this.shake, 8 * this.arenaScale);
 
         if (infector) {
             this.sound.playInfect();
@@ -1254,18 +1485,12 @@ class ZombieSurvival {
             this.addNotification(t('infectMessage', { attacker: infector.name, victim: entity.name }));
 
             if (infector.isInitialZombie && infector.zombieKills >= 1) {
-                const inf = infector;
-                setTimeout(() => {
-                    this.deadZombies.push({ ...inf, fadeTimer: 60 });
-                    const idx = this.entities.indexOf(inf);
-                    if (idx > -1) this.entities.splice(idx, 1);
-                }, 500);
+                infector.deathTimer = Math.max(infector.deathTimer, 30);
             }
         } else {
-            // 감염자가 없는 경우 (영역 이탈 등) 랜덤 이미지
-            entity.zombieImageIndex = Math.floor(Math.random() * 3);
+            entity.zombieImageIndex = Math.floor(physicsRandom() * 3);
         }
-        this.infectedOrder.push({ name: entity.name, time: this.gameTimeSeconds * 1000, cause: cause });
+        this.infectedOrder.push({ name: entity.name, time: this.gameTimeSeconds, cause: cause });
         this.updateRanking();
     }
     
@@ -1275,17 +1500,21 @@ class ZombieSurvival {
         const warning = document.getElementById('shrinkWarning');
         if (this.shrinkTimer > this.shrinkInterval - this.shrinkWarningTime && this.shrinkTimer < this.shrinkInterval) {
             warning.style.display = 'block';
-            if (Math.floor(this.shrinkTimer) % 60 === 0) this.sound.playShrink();
-        } else { warning.style.display = 'none'; }
+            const countdownSecond = Math.ceil((this.shrinkInterval - this.shrinkTimer) / 60);
+            if (countdownSecond !== this.lastShrinkBeepSecond) {
+                this.lastShrinkBeepSecond = countdownSecond;
+                this.sound.playShrink();
+            }
+        } else { warning.style.display = 'none'; this.lastShrinkBeepSecond = -1; }
         
         if (this.shrinkTimer >= this.shrinkInterval) {
             this.shrinkTimer = 0; this.shrinkPhase++;
             const maxOffset = this.currentRadius * 0.3;
-            const offsetAngle = Math.random() * Math.PI * 2;
-            const offsetDist = Math.random() * maxOffset;
+            const offsetAngle = physicsRandom() * Math.PI * 2;
+            const offsetDist = physicsRandom() * maxOffset;
             this.targetCenterX = this.centerX + Math.cos(offsetAngle) * offsetDist;
             this.targetCenterY = this.centerY + Math.sin(offsetAngle) * offsetDist;
-            const minRadius = Math.min(50, this.currentRadius * 0.5);
+            const minRadius = Math.max(this.entityRadius * 6, 64 * this.arenaScale);
             const shrinkAmount = Math.min(30 + this.shrinkPhase * 15, this.currentRadius * 0.3);
             this.targetRadius = Math.max(minRadius, this.currentRadius - shrinkAmount);
             const margin = this.targetRadius + 10;
@@ -1318,6 +1547,9 @@ class ZombieSurvival {
     
     updateZombie(zombie, humans, dtScale) {
         if (humans.length === 0) return;
+        const infectedCount = this.infectedOrder.length;
+        const escalation = 1 + Math.min(0.85, Math.max(0, this.gameTimeSeconds - 10) * 0.012)
+            + Math.min(0.18, infectedCount * 0.012);
         const wallAngle = this.getWallAvoidanceAngle(zombie);
         if (wallAngle !== null && !zombie.hasTarget) zombie.targetAngle = wallAngle;
         
@@ -1342,21 +1574,21 @@ class ZombieSurvival {
             while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
             while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
             zombie.angle += angleDiff * (1 - Math.pow(0.88, dtScale)); // Approx 0.12 per frame at 60fps
-            zombie.vx = Math.cos(zombie.angle) * this.zombieChaseSpeed;
-            zombie.vy = Math.sin(zombie.angle) * this.zombieChaseSpeed;
+            zombie.vx = Math.cos(zombie.angle) * this.zombieChaseSpeed * escalation;
+            zombie.vy = Math.sin(zombie.angle) * this.zombieChaseSpeed * escalation;
         } else {
             zombie.hasTarget = false; zombie.wanderTimer -= dtScale;
             zombie.spottedTimer = 0;
             if (zombie.wanderTimer <= 0) {
-                zombie.targetAngle = wallAngle !== null ? wallAngle : Math.random() * Math.PI * 2;
-                zombie.wanderTimer = 60 + Math.random() * 120;
+                zombie.targetAngle = wallAngle !== null ? wallAngle : physicsRandom() * Math.PI * 2;
+                zombie.wanderTimer = 60 + physicsRandom() * 120;
             }
             let angleDiff = zombie.targetAngle - zombie.angle;
             while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
             while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
             zombie.angle += angleDiff * (1 - Math.pow(0.97, dtScale)); // Approx 0.03 per frame at 60fps
-            zombie.vx = Math.cos(zombie.angle) * this.zombieWalkSpeed;
-            zombie.vy = Math.sin(zombie.angle) * this.zombieWalkSpeed;
+            zombie.vx = Math.cos(zombie.angle) * this.zombieWalkSpeed * Math.min(escalation, 1.45);
+            zombie.vy = Math.sin(zombie.angle) * this.zombieWalkSpeed * Math.min(escalation, 1.45);
         }
     }
     
@@ -1390,8 +1622,8 @@ class ZombieSurvival {
         } else {
             human.isRunning = false; human.wanderTimer -= dtScale;
             if (human.wanderTimer <= 0) {
-                human.targetAngle = wallAngle !== null ? wallAngle : Math.random() * Math.PI * 2;
-                human.wanderTimer = 60 + Math.random() * 120;
+                human.targetAngle = wallAngle !== null ? wallAngle : physicsRandom() * Math.PI * 2;
+                human.wanderTimer = 60 + physicsRandom() * 120;
             }
             let angleDiff = human.targetAngle - human.angle;
             while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
@@ -1435,31 +1667,44 @@ class ZombieSurvival {
     
     draw() {
         const ctx = this.ctx;
-        ctx.fillStyle = '#0a0f0a'; ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        ctx.fillStyle = 'rgba(255, 0, 0, 0.15)'; ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
+        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        ctx.drawImage(this.backgroundCache, 0, 0);
+
         ctx.save();
-        ctx.beginPath(); ctx.arc(this.centerX, this.centerY, this.currentRadius, 0, Math.PI * 2);
-        ctx.fillStyle = '#111a11'; ctx.fill(); ctx.clip();
-        ctx.strokeStyle = 'rgba(100, 255, 100, 0.08)'; ctx.lineWidth = 1;
-        for (let x = 0; x < this.canvas.width; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, this.canvas.height); ctx.stroke(); }
-        for (let y = 0; y < this.canvas.height; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(this.canvas.width, y); ctx.stroke(); }
-        ctx.restore();
-        
-        ctx.beginPath(); ctx.arc(this.centerX, this.centerY, this.currentRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = this.isShrinking ? '#ff4444' : 'rgba(100, 255, 100, 0.5)';
-        ctx.lineWidth = this.isShrinking ? 4 : 2; ctx.stroke();
-        
-        if (this.shrinkTimer > this.shrinkInterval - this.shrinkWarningTime) {
-            ctx.beginPath(); ctx.arc(this.targetCenterX, this.targetCenterY, this.targetRadius, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(255, 100, 100, 0.5)'; ctx.setLineDash([5, 5]); ctx.stroke(); ctx.setLineDash([]);
+        if (this.shake > 0) {
+            ctx.translate(Math.sin(this.gameTimeSeconds * 97) * this.shake, Math.cos(this.gameTimeSeconds * 113) * this.shake * 0.65);
         }
-        
+        ctx.beginPath(); ctx.arc(this.centerX, this.centerY, this.currentRadius, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(this.floorCache, 0, 0);
+        const arenaGlow = ctx.createRadialGradient(this.centerX, this.centerY, 0, this.centerX, this.centerY, this.currentRadius);
+        arenaGlow.addColorStop(0, 'rgba(72,55,154,.08)');
+        arenaGlow.addColorStop(.68, 'rgba(5,10,34,.12)');
+        arenaGlow.addColorStop(1, 'rgba(0,0,10,.72)');
+        ctx.fillStyle = arenaGlow; ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
         for (const dead of this.deadZombies) this.drawDeadZombie(dead);
         const humans = this.entities.filter(e => !e.isZombie);
         const zombies = this.entities.filter(e => e.isZombie);
-        for (const e of humans) this.drawEntity(e);
-        for (const e of zombies) this.drawEntity(e);
+        for (const entity of humans) this.drawEntity(entity);
+        for (const entity of zombies) this.drawEntity(entity);
+        ctx.restore();
+
+        ctx.save();
+        ctx.shadowColor = this.isShrinking ? '#ff2f52' : '#ff345d';
+        ctx.shadowBlur = this.isShrinking ? 34 : 24;
+        ctx.beginPath(); ctx.arc(this.centerX, this.centerY, this.currentRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = this.isShrinking ? '#ff244e' : '#ff4169';
+        ctx.lineWidth = this.isShrinking ? 7 : 5; ctx.stroke();
+        ctx.shadowBlur = 0;
+        ctx.beginPath(); ctx.arc(this.centerX, this.centerY, Math.max(1, this.currentRadius - 7), 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(115,145,255,.55)'; ctx.lineWidth = 1.5; ctx.stroke();
+        
+        if (this.shrinkTimer > this.shrinkInterval - this.shrinkWarningTime) {
+            ctx.beginPath(); ctx.arc(this.targetCenterX, this.targetCenterY, this.targetRadius, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255, 138, 159, .72)'; ctx.setLineDash([7, 7]); ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]);
+        }
+        ctx.restore();
         this.drawNotifications();
     }
     
@@ -1540,8 +1785,8 @@ class ZombieSurvival {
             if (!entity.hasTarget && entity.eatingTimer <= 0) {
                 ctx.rotate(entity.angle);
                 const fovRad = (this.zombieFovAngle / 2) * (Math.PI / 180);
-                ctx.fillStyle = 'rgba(255, 50, 50, 0.08)';
-                ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, this.zombieDetectRange, -fovRad, fovRad); ctx.closePath(); ctx.fill();
+                ctx.fillStyle = 'rgba(255, 65, 105, 0.035)';
+                ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, this.zombieDetectRange * .72, -fovRad, fovRad); ctx.closePath(); ctx.fill();
                 ctx.rotate(-entity.angle);
             }
             // 좀비 이미지 그리기 (1.5배 크기, 해당 이미지 인덱스 사용)
@@ -1555,12 +1800,6 @@ class ZombieSurvival {
                 ctx.fillText('🧟', 0, 0);
             }
         } else {
-            // 시야 범위 그리기
-            ctx.rotate(entity.angle);
-            const fovRad = (this.humanFovAngle / 2) * (Math.PI / 180);
-            ctx.fillStyle = 'rgba(255, 255, 100, 0.05)';
-            ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, this.humanDetectRange, -fovRad, fovRad); ctx.closePath(); ctx.fill();
-            ctx.rotate(-entity.angle);
             // 얼굴 이모지 그리기 (선명하게)
             ctx.globalAlpha = 1;
             ctx.fillStyle = '#ffffff';
@@ -1579,8 +1818,8 @@ class ZombieSurvival {
         const currentSize = entity.isZombie ? baseImgSize * zombieScale : baseImgSize;
 
         if (entity.helpTimer > 0 && !entity.isZombie) {
-            const shake = Math.sin(Date.now() / 30) * 3;
-            const helpY = y - currentSize/2 - 10 + shake, helpX = x + Math.sin(Date.now() / 50) * 2;
+            const helpBounce = Math.sin(this.gameTimeSeconds * 18) * 3;
+            const helpY = y - currentSize/2 - 10 + helpBounce, helpX = x + Math.sin(this.gameTimeSeconds * 12) * 2;
             ctx.font = 'bold 14px "Noto Sans KR"'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
             ctx.shadowColor = 'rgba(255, 0, 0, 0.3)'; ctx.shadowBlur = 3;
             ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)'; ctx.lineWidth = 3; ctx.strokeText('Help!!', helpX, helpY);
@@ -1608,58 +1847,108 @@ class ZombieSurvival {
         ctx.fillStyle = entity.isZombie ? '#ff6666' : '#fff'; ctx.fillText(shortName, x, y + currentSize/2 + 5);
     }
     
-    endGame(winners) {
+    endGame(winners, reason = 'complete') {
         this.isRunning = false;
         this.setControlsDisabled(false);
         document.getElementById('shrinkWarning').style.display = 'none';
         this.updateUI();
         if (winners && winners.length > 0) {
             this.sound.playWin();
-            const survivalTime = this.gameTimeSeconds.toFixed(1);
+            const survivalTime = this.gameTimeSeconds.toFixed(3);
             const winnerNames = winners.map(w => w.name).join(', ');
+            const headline = document.getElementById('resultHeadline');
+            headline.textContent = reason === 'timeout' ? t('timeoutWinner') : t('finalSurvivor');
             document.getElementById('winnerName').textContent = winnerNames;
             document.getElementById('winnerStats').textContent = t('survivalTime', { time: survivalTime });
-            document.getElementById('winnerOverlay').classList.add('show');
+            const overlay = document.getElementById('winnerOverlay');
+            overlay.classList.add('show'); overlay.setAttribute('aria-hidden', 'false');
+            document.querySelector('.container').inert = true;
+            this.startCelebration();
+            document.getElementById('closeWinnerBtn').focus();
         }
         this.updateRanking();
+    }
+
+    startCelebration() {
+        this.stopCelebration();
+        const colors = ['#ff4169', '#a86bff', '#55d9ff', '#ffe05d', '#65ff9c'];
+        this.celebrationParticles = Array.from({ length: 150 }, (_, index) => ({
+            x: this.celebCanvas.width * (0.2 + Math.random() * 0.6),
+            y: this.celebCanvas.height * (0.32 + Math.random() * 0.16),
+            vx: (Math.random() - 0.5) * 9,
+            vy: -4 - Math.random() * 8,
+            gravity: 0.12 + Math.random() * 0.08,
+            rotation: Math.random() * Math.PI,
+            spin: (Math.random() - 0.5) * 0.25,
+            size: 4 + Math.random() * 7,
+            color: colors[index % colors.length], life: 1
+        }));
+        const animate = () => {
+            const ctx = this.celebCtx;
+            ctx.clearRect(0, 0, this.celebCanvas.width, this.celebCanvas.height);
+            let alive = false;
+            for (const particle of this.celebrationParticles) {
+                if (particle.life <= 0) continue;
+                alive = true;
+                particle.x += particle.vx; particle.y += particle.vy;
+                particle.vy += particle.gravity; particle.rotation += particle.spin; particle.life -= 0.008;
+                ctx.save(); ctx.globalAlpha = Math.max(0, particle.life); ctx.translate(particle.x, particle.y); ctx.rotate(particle.rotation);
+                ctx.fillStyle = particle.color; ctx.fillRect(-particle.size / 2, -particle.size / 4, particle.size, particle.size / 2); ctx.restore();
+            }
+            if (alive) this.celebrationAnimationId = requestAnimationFrame(animate);
+            else this.stopCelebration();
+        };
+        this.celebrationAnimationId = requestAnimationFrame(animate);
+    }
+
+    stopCelebration() {
+        if (this.celebrationAnimationId) cancelAnimationFrame(this.celebrationAnimationId);
+        this.celebrationAnimationId = null; this.celebrationParticles = [];
+        if (this.celebCtx) this.celebCtx.clearRect(0, 0, this.celebCanvas.width, this.celebCanvas.height);
     }
     
     updateRanking() {
         const list = document.getElementById('rankingList');
+        list.replaceChildren();
         if (this.infectedOrder.length === 0 && !this.isRunning) {
-            list.innerHTML = '<div class="ranking-placeholder">' + t('rankingPlaceholder') + '</div>'; return;
+            const placeholder = document.createElement('div');
+            placeholder.className = 'ranking-placeholder';
+            placeholder.textContent = t('rankingPlaceholder').replace('<br>', '\n');
+            list.appendChild(placeholder); return;
         }
-        let html = '';
-        
-        // 생존자 먼저 (상단)
+        const appendRow = (className, rank, name, status) => {
+            const row = document.createElement('div'); row.className = `ranking-item ${className}`;
+            const rankNode = document.createElement('span'); rankNode.className = 'ranking-rank'; rankNode.textContent = rank;
+            const nameNode = document.createElement('span'); nameNode.className = 'ranking-name'; nameNode.textContent = name;
+            const statusNode = document.createElement('span'); statusNode.className = 'ranking-status'; statusNode.textContent = status;
+            row.append(rankNode, nameNode, statusNode); list.appendChild(row);
+        };
+
         const survivors = this.entities.filter(e => !e.isZombie && !e.isTransforming);
         survivors.forEach(survivor => {
             const isWinner = survivors.length <= this.survivorCount && !this.isRunning;
-            html += '<div class="ranking-item ' + (isWinner ? 'winner' : 'survivor') + '"><span class="ranking-rank">' + (isWinner ? '🏆' : '🧑') + '</span><span class="ranking-name">' + survivor.name + '</span><span class="ranking-status">' + (isWinner ? t('winner') : t('survivor')) + '</span></div>';
+            appendRow(isWinner ? 'winner' : 'survivor', isWinner ? '🏆' : '🧑', survivor.name, isWinner ? t('winner') : t('survivor'));
         });
-        
-        // 구분선
+
         if (survivors.length > 0 && this.infectedOrder.length > 0) {
-            html += '<div class="ranking-divider"></div>';
+            const divider = document.createElement('div'); divider.className = 'ranking-divider'; list.appendChild(divider);
         }
-        
-        // 감염된 순서 (역순 - 최근 감염자가 위로)
+
         const reversedInfected = [...this.infectedOrder].reverse();
         reversedInfected.forEach((infected) => {
             const originalIdx = this.infectedOrder.indexOf(infected);
-            const time = (infected.time / 1000).toFixed(1);
-            html += '<div class="ranking-item infected"><span class="ranking-rank">' + (originalIdx + 1) + '</span><span class="ranking-name">🧟 ' + infected.name + '</span><span class="ranking-status">' + time + 's</span></div>';
+            appendRow('infected', String(originalIdx + 1), `🧟 ${infected.name}`, `${infected.time.toFixed(3)}s`);
         });
-        
-        // 초기 좀비 (최하단)
-        const initialZombies = this.entities.filter(e => e.isInitialZombie);
+
+        const initialZombies = [...this.entities, ...this.deadZombies].filter((entity, index, all) =>
+            entity.isInitialZombie && all.findIndex(candidate => candidate.name === entity.name) === index
+        );
         if (initialZombies.length > 0) {
-            html += '<div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0; padding-top: 6px; font-size: 0.6rem; color: #666;">' + t('initialZombie') + '</div>';
+            const label = document.createElement('div'); label.className = 'ranking-divider-label'; label.textContent = t('initialZombie'); list.appendChild(label);
             initialZombies.forEach(zombie => {
-                html += '<div class="ranking-item infected" style="opacity: 0.6;"><span class="ranking-rank">🧟</span><span class="ranking-name">' + zombie.name + '</span><span class="ranking-status">-</span></div>';
+                appendRow('infected initial', '🧟', zombie.name, '—');
             });
         }
-        list.innerHTML = html;
     }
     
     updateUI() {
@@ -1676,8 +1965,7 @@ class ZombieSurvival {
     }
     
     getResultText() {
-        const endTimeToUse = this.endTime || Date.now();
-        const elapsed = this.startTime ? ((endTimeToUse - this.startTime) / 1000).toFixed(1) : 0;
+        const elapsed = this.gameTimeSeconds.toFixed(3);
         let result = t('resultTitle') + '\n━━━━━━━━━━━━━━\n' + t('gameTime', { time: elapsed }) + '\n\n';
         const survivors = this.entities.filter(e => !e.isZombie && !e.isTransforming);
         if (survivors.length > 0) {
@@ -1688,7 +1976,7 @@ class ZombieSurvival {
         if (this.infectedOrder.length > 0) {
             result += t('infectionOrderResult') + '\n';
             this.infectedOrder.forEach((infected, idx) => {
-                const time = (infected.time / 1000).toFixed(1);
+                const time = infected.time.toFixed(3);
                 result += '   ' + (idx + 1) + '. ' + infected.name + ' (' + time + 's)\n';
             });
         }
@@ -1704,10 +1992,22 @@ function showToast(message) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    currentLang = localStorage.getItem('zombie-arena-lang') || detectLanguage();
+    const readStorage = (key, fallback = '') => {
+        try { return localStorage.getItem(key) ?? fallback; } catch (error) { return fallback; }
+    };
+    const saveStorage = (key, value) => {
+        try { localStorage.setItem(key, value); } catch (error) { /* 비공개 모드 등 저장 불가 환경 */ }
+    };
+    const clampInteger = (value, min, max, fallback) => {
+        const parsed = Number.parseInt(value, 10);
+        return Number.isFinite(parsed) ? Math.max(min, Math.min(max, parsed)) : fallback;
+    };
+
+    currentLang = readStorage('zombie-arena-lang', detectLanguage());
+    if (!i18n[currentLang]) currentLang = 'en';
     document.getElementById('langSelect').value = currentLang;
     updateUI18n();
-    
+
     const canvas = document.getElementById('gameCanvas');
     const game = new ZombieSurvival(canvas);
     const participantsInput = document.getElementById('participants');
@@ -1715,81 +2015,137 @@ document.addEventListener('DOMContentLoaded', () => {
     const zombieValueDisplay = document.getElementById('zombieValue');
     const survivorCountSlider = document.getElementById('survivorCount');
     const survivorValueDisplay = document.getElementById('survivorValue');
-    
+    const helpModal = document.getElementById('helpModal');
+    const winnerOverlay = document.getElementById('winnerOverlay');
+    let participantUpdateTimer = null;
+    let lastFocus = null;
+
+    zombieCountSlider.value = clampInteger(readStorage('zombie-arena-zombie-count', '3'), 1, 10, 3);
+    survivorCountSlider.value = clampInteger(readStorage('zombie-arena-survivor-count', '1'), 1, 5, 1);
+    zombieValueDisplay.textContent = zombieCountSlider.value;
+    survivorValueDisplay.textContent = survivorCountSlider.value;
+    game.zombieCount = Number(zombieCountSlider.value);
+    game.survivorCount = Number(survivorCountSlider.value);
+    participantsInput.value = readStorage('zombie-arena-participants', participantsInput.value);
+
     document.getElementById('langSelect').addEventListener('change', (e) => {
         currentLang = e.target.value;
-        localStorage.setItem('zombie-arena-lang', currentLang);
+        saveStorage('zombie-arena-lang', currentLang);
         updateUI18n(); game.updateRanking();
     });
-    
+
     function parseParticipants(text) {
         const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
         const result = [];
-        const nameCount = {};
-        for (const name of names) {
-            const match = name.match(/^(.+)\*(\d+)$/);
+        const nameCount = Object.create(null);
+        let truncated = false;
+        const appendName = rawName => {
+            if (result.length >= MAX_PARTICIPANTS) { truncated = true; return; }
+            const name = rawName.slice(0, 32);
+            nameCount[name] = (nameCount[name] || 0) + 1;
+            result.push(nameCount[name] === 1 ? name : `${name}(${nameCount[name]})`);
+        };
+        for (let nameIndex = 0; nameIndex < names.length; nameIndex++) {
+            const rawName = names[nameIndex];
+            const match = rawName.match(/^(.+)\*(\d+)$/);
             if (match) {
                 const baseName = match[1].trim();
-                const count = parseInt(match[2]);
-                for (let i = 0; i < count; i++) {
-                    nameCount[baseName] = (nameCount[baseName] || 0) + 1;
-                    if (nameCount[baseName] === 1) {
-                        result.push(baseName);
-                    } else {
-                        result.push(`${baseName}(${nameCount[baseName]})`);
-                    }
-                }
+                const count = Math.min(MAX_PARTICIPANTS, Math.max(1, Number.parseInt(match[2], 10) || 1));
+                for (let index = 0; index < count; index++) appendName(baseName);
             } else {
-                nameCount[name] = (nameCount[name] || 0) + 1;
-                if (nameCount[name] === 1) {
-                    result.push(name);
-                } else {
-                    result.push(`${name}(${nameCount[name]})`);
-                }
+                appendName(rawName);
+            }
+            if (result.length >= MAX_PARTICIPANTS) {
+                truncated = truncated || nameIndex < names.length - 1
+                    || Boolean(match && Number.parseInt(match[2], 10) > MAX_PARTICIPANTS);
+                break;
             }
         }
-        return result;
+        return { participants: result, truncated };
     }
-    function updateGame() { game.setParticipants(parseParticipants(participantsInput.value)); }
-    
+    function updateGame() {
+        const parsed = parseParticipants(participantsInput.value);
+        game.setParticipants(parsed.participants);
+        return parsed;
+    }
+
     participantsInput.addEventListener('input', () => {
-        updateGame();
-        localStorage.setItem('zombie-arena-participants', participantsInput.value);
+        saveStorage('zombie-arena-participants', participantsInput.value);
+        clearTimeout(participantUpdateTimer);
+        participantUpdateTimer = setTimeout(updateGame, 120);
     });
-    
+
     zombieCountSlider.addEventListener('input', () => {
         zombieValueDisplay.textContent = zombieCountSlider.value;
-        game.zombieCount = parseInt(zombieCountSlider.value);
+        game.zombieCount = Number(zombieCountSlider.value);
+        saveStorage('zombie-arena-zombie-count', zombieCountSlider.value);
         if (!game.isRunning) game.reset();
     });
-    
+
     survivorCountSlider.addEventListener('input', () => {
         survivorValueDisplay.textContent = survivorCountSlider.value;
-        game.survivorCount = parseInt(survivorCountSlider.value);
+        game.survivorCount = Number(survivorCountSlider.value);
+        saveStorage('zombie-arena-survivor-count', survivorCountSlider.value);
+        if (!game.isRunning) game.updateRanking();
     });
-    
-    document.getElementById('startBtn').addEventListener('click', () => {
-        const participants = parseParticipants(participantsInput.value);
+
+    document.getElementById('startBtn').addEventListener('click', async () => {
+        clearTimeout(participantUpdateTimer);
+        const parsed = parseParticipants(participantsInput.value);
+        const participants = parsed.participants;
+        if (parsed.truncated) showToast(t('maxParticipants'));
         if (participants.length < 2) { alert(t('minParticipants')); return; }
         if (game.survivorCount >= participants.length) { alert(t('survivorError')); return; }
-        game.setParticipants(participants); game.start();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        game.setParticipants(participants);
+        try {
+            const started = await game.start();
+            if (started) window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (error) {
+            console.error(error); game.stop(); showToast('게임을 시작하지 못했습니다.');
+        }
     });
-    
+
     document.getElementById('resetBtn').addEventListener('click', () => { game.stop(); game.reset(); });
-    document.getElementById('helpBtn').addEventListener('click', () => document.getElementById('helpModal').classList.add('show'));
-    document.getElementById('closeHelpBtn').addEventListener('click', () => document.getElementById('helpModal').classList.remove('show'));
-    document.getElementById('helpModal').addEventListener('click', (e) => { if (e.target.id === 'helpModal') document.getElementById('helpModal').classList.remove('show'); });
-    document.getElementById('closeWinnerBtn').addEventListener('click', () => document.getElementById('winnerOverlay').classList.remove('show'));
-    
-    document.getElementById('copyResultBtn').addEventListener('click', () => {
-        navigator.clipboard.writeText(game.getResultText()).then(() => showToast(t('copied'))).catch(() => showToast(t('copyFailed')));
+    const closeHelp = () => {
+        helpModal.classList.remove('show'); helpModal.setAttribute('aria-hidden', 'true');
+        document.querySelector('.container').inert = false;
+        if (lastFocus) lastFocus.focus();
+    };
+    document.getElementById('helpBtn').addEventListener('click', event => {
+        lastFocus = event.currentTarget; helpModal.classList.add('show'); helpModal.setAttribute('aria-hidden', 'false');
+        document.querySelector('.container').inert = true;
+        document.getElementById('closeHelpBtn').focus();
     });
-    
-    const saved = localStorage.getItem('zombie-arena-participants');
-    if (saved) { participantsInput.value = saved; updateGame(); }
-    
-    game.draw();
+    document.getElementById('closeHelpBtn').addEventListener('click', closeHelp);
+    helpModal.addEventListener('click', event => { if (event.target === helpModal) closeHelp(); });
+    const closeWinner = () => {
+        winnerOverlay.classList.remove('show'); winnerOverlay.setAttribute('aria-hidden', 'true'); game.stopCelebration();
+        document.querySelector('.container').inert = false;
+        document.getElementById('startBtn').focus();
+    };
+    document.getElementById('closeWinnerBtn').addEventListener('click', closeWinner);
+    document.addEventListener('keydown', event => {
+        if (event.key !== 'Escape') return;
+        if (helpModal.classList.contains('show')) closeHelp();
+        else if (winnerOverlay.classList.contains('show')) closeWinner();
+    });
+
+    document.getElementById('copyResultBtn').addEventListener('click', async () => {
+        const result = game.getResultText();
+        try {
+            if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(result);
+            else {
+                const fallback = document.createElement('textarea'); fallback.value = result; fallback.style.position = 'fixed'; fallback.style.opacity = '0';
+                document.body.appendChild(fallback); fallback.select();
+                if (!document.execCommand('copy')) throw new Error('copy failed');
+                fallback.remove();
+            }
+            showToast(t('copied'));
+        } catch (error) { showToast(t('copyFailed')); }
+    });
+
+    updateGame(); game.draw();
+    if (new URLSearchParams(location.search).has('qa')) window.__zombieArenaGame = game;
 });
     </script>
 </body>

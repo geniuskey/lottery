@@ -6,7 +6,7 @@
   "emoji": "🪐",
   "category": "서바이벌",
   "description": "중력장 안에서 궤도를 그리며 끝까지 살아남거나 안정적인 궤도를 유지하는 참가자가 승리하는 물리 기반 추첨 게임입니다.",
-  "features": ["🌍 최후의 1인 서바이벌", "🧬 Seed 기반 정밀 물리"],
+  "features": ["🌍 최후의 1인 서바이벌", "🎲 매 경기 무작위 정밀 물리"],
   "color": "purple",
   "badge": "NEW",
   "version": "1.0.0",
@@ -522,23 +522,6 @@
             user-select: none;
         }
 
-        /* Seed Info Overlay */
-        .seed-info {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            border: 1px solid var(--glass-border);
-            color: var(--accent-cyan);
-            pointer-events: none;
-            z-index: 100;
-        }
-
         /* Kill Feed */
         .kill-feed {
             position: absolute;
@@ -1023,7 +1006,6 @@
                     <select id="winCondition">
                         <option value="survival" selected>A. 최후의 생존자 (Survival Time)</option>
                     </select>
-                    <input type="text" id="manualSeed" placeholder="커스텀 Seed (비워두면 자동)">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 12px; color: #888;">당첨 인원:</span>
                         <input type="number" id="winnerCount" value="1" min="1" max="10" style="width: 60px;">
@@ -1087,7 +1069,6 @@
 
         <main class="main-content" id="gameArea">
             <div id="gameTimer">0.00s</div>
-            <div id="seedDisplay" class="seed-info" style="display: none;">HASH: N/A</div>
             <div id="killFeed" class="kill-feed"></div>
             <canvas id="gameCanvas"></canvas>
             <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
@@ -1204,15 +1185,8 @@
         }
 
         /**
-         * 1. Utilities & Seeding
+         * 1. Utilities
          */
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
         function showToast(message) {
             const toast = document.getElementById('toast');
             const toastText = toast.querySelector('.toast-text');
@@ -1283,21 +1257,9 @@
             }
         }
 
-        class DeterministicRNG {
-            constructor(seedStr) {
-                this.seed = this.hashString(seedStr);
-            }
-            hashString(str) {
-                let hash = 0;
-                for (let i = 0; i < str.length; i++) {
-                    hash = ((hash << 5) - hash) + str.charCodeAt(i);
-                    hash |= 0;
-                }
-                return hash;
-            }
+        class RandomSource {
             next() {
-                this.seed = (this.seed * 16807) % 2147483647;
-                return (this.seed - 1) / 2147483646;
+                return Math.random();
             }
             range(min, max) {
                 return min + this.next() * (max - min);
@@ -1532,7 +1494,7 @@
             }
 
 
-            async start() {
+            start() {
                 const input = document.getElementById('participantsInput').value;
                 const names = this.parseParticipants(input);
                 if (names.length === 0) return alert("참여자를 입력해주세요.");
@@ -1549,13 +1511,7 @@
                 this.lastTime = performance.now();
                 this.winCondition = document.getElementById('winCondition').value;
 
-                const manualSeed = document.getElementById('manualSeed').value;
-                const seedBase = manualSeed || (names.join('') + Date.now());
-                const fullHash = await sha256(seedBase);
-                this.rng = new DeterministicRNG(fullHash);
-
-                document.getElementById('seedDisplay').innerText = "HASH: " + fullHash.substring(0, 16).toUpperCase();
-                document.getElementById('seedDisplay').style.display = "block";
+                this.rng = new RandomSource();
 
                 this.particles = names.map(name => {
                     const angle = this.rng.range(0, Math.PI * 2);
@@ -1949,7 +1905,6 @@
                 this.lastTime = 0;
                 document.getElementById('startBtn').disabled = false;
                 document.getElementById('liveStatus').style.display = "none";
-                document.getElementById('seedDisplay').style.display = "none";
                 document.getElementById('rankingList').innerHTML = '<div style="text-align: center; color: #555; font-size: 13px; margin-top: 20px;">참여자를 입력하고 시작하세요</div>';
                 document.getElementById('resultOverlay').classList.remove('active');
                 document.getElementById('killFeed').innerHTML = ""; // Clear feed on reset
@@ -2072,7 +2027,7 @@
 
         // Help Modal (Simple alert for brevity, or full modal if needed)
         document.getElementById('helpBtn').onclick = () => {
-            alert("🪐 중력 궤도 생존 추첨 가이드\n\n1. 참여자를 입력합니다 (쉼표/줄바꿈 구분).\n2. 당첨 규칙을 선택합니다.\n   - 서바이벌: 태양에 충돌하거나 튕겨나가지 않고 생존\n   - 안정성: 궤도가 얼마나 일정한 원형인가\n   - 타겟: 특정 궤도 범위(하늘색)에 오래 머물기\n3. 시작 버튼을 누르면 Seed 기반 물리 시뮬레이션이 진행됩니다.");
+            alert("🪐 중력 궤도 생존 추첨 가이드\n\n1. 참여자를 입력합니다 (쉼표/줄바꿈 구분).\n2. 당첨 규칙을 선택합니다.\n   - 서바이벌: 태양에 충돌하거나 튕겨나가지 않고 생존\n   - 안정성: 궤도가 얼마나 일정한 원형인가\n   - 타겟: 특정 궤도 범위(하늘색)에 오래 머물기\n3. 시작 버튼을 누르면 매번 새로운 무작위 물리 시뮬레이션이 진행됩니다.");
         };
     </script>
     <div id="toast">

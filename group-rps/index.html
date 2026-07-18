@@ -1,972 +1,959 @@
-<!DOCTYPE html>
 <!--
 @game-meta
 {
-  "id": "rps-lottery",
+  "id": "group-rps",
   "title": "단체 가위바위보",
-  "emoji": "✊",
-  "category": "토너먼트",
-  "description": "선생님과 학생들이 가위바위보로 대결! 최후의 생존자를 가려내는 서바이벌 추첨 게임",
-  "features": ["🎓 교실 테마", "🏆 PvP 모드"],
-  "color": "rps",
-  "badge": "NEW",
-  "version": "1.0.0",
-  "updated": "2025-01-01",
-  "author": {
-    "name": "Euiyun Edwin Kim",
-    "email": "geniuskey@gmail.com",
-    "github": "geniuskey"
+  "description": "네온 아레나에서 심판과 대결하고 결승 PvP로 최종 당첨자를 가리는 단체 가위바위보",
+  "category": "tournament",
+  "icon": "✊",
+  "features": ["stadium", "team", "pvp", "random"],
+  "tags": ["가위바위보", "단체게임", "토너먼트", "추첨", "아레나"],
+  "version": "1.1.0",
+  "author": "Euiyun Edwin Kim",
+  "created": "2025-01-01",
+  "updated": "2026-07-17",
+  "technology": ["HTML5", "CSS3", "JavaScript", "Web Audio API", "Canvas API"],
+  "requirements": {
+    "minParticipants": 2,
+    "maxParticipants": 30,
+    "recommendedParticipants": "6-20"
+  },
+  "settings": {
+    "winnerCount": true,
+    "soundEnabled": true
   },
   "urls": {
-    "service": "https://geniuskey.github.io/lottery/rps-lottery/",
+    "service": "https://geniuskey.github.io/lottery/group-rps/",
     "repository": "https://github.com/geniuskey/lottery"
-  },
-  "license": "MIT",
-  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+  }
 }
 @end-game-meta
 -->
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GFTNV73W8L');
-  </script>
-
-  <title>단체 가위바위보 - 추첨 게임 포털</title>
-
-  <!-- SEO 기본 -->
-  <meta name="description" content="선생님과 학생들이 가위바위보로 대결! 최후의 생존자를 가려내는 온라인 서바이벌 추첨 게임. 교실 테마로 즐거운 추첨 시간을 가지세요.">
-  <meta name="author" content="Euiyun Edwin Kim">
-  <meta name="keywords" content="단체 가위바위보, 가위바위보 게임, 추첨 게임, 온라인 추첨, 랜덤 선택, 레크리에이션, 교실 게임">
-  
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="추첨 게임 포털">
-  <meta property="og:title" content="✊ 단체 가위바위보 - 실시간 서바이벌 추첨">
-  <meta property="og:description" content="선생님의 가위바위보 공격에서 살아남으세요! 교실 테마의 재미있는 서바이벌 게임.">
-  <meta property="og:url" content="https://geniuskey.github.io/lottery/group-rps/">
-  <meta property="og:image" content="https://geniuskey.github.io/lottery/og-image.png">
-  
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="✊ 단체 가위바위보 - 실시간 서바이벌 추첨">
-  <meta name="twitter:description" content="선생님의 가위바위보 공격에서 살아남으세요! 교실 테마의 재미있는 서바이벌 게임.">
-  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/og-image.png">
-  
-  <!-- Canonical & Favicon -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#090b25">
+  <meta name="description" content="네온 아레나에서 매번 새롭게 펼쳐지는 단체 가위바위보 추첨 게임">
+  <title>단체 가위바위보 | PLAYPICK</title>
   <link rel="canonical" href="https://geniuskey.github.io/lottery/group-rps/">
-  <link rel="icon" type="image/svg+xml"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✊</text></svg>">
-  <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#1a1a2e">
-  
-  <!-- Favicon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✊</text></svg>">
-  
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="단체 가위바위보 | PLAYPICK">
+  <meta property="og:description" content="심판 라운드와 결승 PvP로 당첨자를 가리는 네온 아레나 추첨">
+  <meta property="og:url" content="https://geniuskey.github.io/lottery/group-rps/">
+  <meta property="og:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/group-rps.webp">
+  <meta property="og:site_name" content="PLAYPICK">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="단체 가위바위보 | PLAYPICK">
+  <meta name="twitter:description" content="같은 시드라면 언제나 같은 결과가 나오는 단체 가위바위보">
+  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/group-rps.webp">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { min-height: 100%; }
+    :root {
+      --ink: #f8f8ff; --muted: #a7a9c7; --panel: rgba(11,13,42,.94);
+      --panel-soft: rgba(255,255,255,.065); --line: rgba(255,255,255,.13);
+      --cyan: #42d9ff; --blue: #4588ff; --gold: #ffc640; --pink: #f058ff;
+      --green: #4fffb0; --danger: #ff507f; --sidebar: 336px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: #07091e; }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      height: 100vh;
-      display: flex;
-      padding: 0; /* 제거: 20px -> 0 */
-      gap: 0;    /* 제거: 20px -> 0 */
-      overflow: hidden;
-      touch-action: manipulation;
+      min-height: 100dvh; display: flex; overflow: hidden; color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      word-break: keep-all;
     }
-    .sidebar {
-      width: 320px; min-width: 280px; max-width: 320px;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      padding: 24px;
-      display: flex; flex-direction: column; gap: 16px;
-      border-radius: 0; /* 제거: 24px -> 0 */
-      border: none;     /* 제거 */
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
-      overflow: hidden;
+    button, input, textarea { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, textarea:focus-visible {
+      outline: 3px solid rgba(66,217,255,.75); outline-offset: 2px;
     }
-    .sidebar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      flex-shrink: 0;
-      gap: 10px;
+    .control-panel {
+      width: var(--sidebar); flex: 0 0 var(--sidebar); height: 100dvh; display: flex;
+      flex-direction: column; gap: 14px; padding: 22px 20px 18px; overflow-y: auto;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(69,136,255,.18), transparent 28%),
+        radial-gradient(circle at 95% 20%, rgba(240,88,255,.12), transparent 26%), var(--panel);
+      border-right: 1px solid var(--line); box-shadow: 18px 0 45px rgba(0,0,0,.3);
+      z-index: 20; scrollbar-width: thin; scrollbar-color: rgba(66,217,255,.4) transparent;
     }
+    .brand-row { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      width: 43px; height: 43px; border-radius: 14px; display: grid; place-items: center;
+      font-size: 1.35rem; background: linear-gradient(145deg,var(--blue),var(--pink));
+      box-shadow: 0 8px 24px rgba(69,136,255,.28), inset 0 1px rgba(255,255,255,.4);
+    }
+    .brand-copy { min-width: 0; flex: 1; }
+    .eyebrow { margin: 0 0 2px; color: var(--cyan); font-size: .66rem; font-weight: 900; letter-spacing: .18em; }
+    h1 { margin: 0; font-size: 1.28rem; letter-spacing: -.04em; }
+    .icon-btn {
+      width: 39px; height: 39px; display: grid; place-items: center; flex: 0 0 auto;
+      border: 1px solid var(--line); border-radius: 12px; background: var(--panel-soft);
+      cursor: pointer; transition: transform .18s, background .18s, border-color .18s;
+    }
+    .icon-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,.11); border-color: rgba(66,217,255,.45); }
+    .field { display: grid; gap: 7px; }
+    .field-label { display: flex; align-items: center; justify-content: space-between; color: #d7d8ed; font-size: .79rem; font-weight: 800; }
+    .field-label small { color: var(--muted); font-weight: 600; }
+    textarea {
+      width: 100%; color: #fff; border: 1px solid var(--line); background: rgba(255,255,255,.055);
+      border-radius: 13px; transition: border-color .18s, background .18s;
+    }
+    textarea { min-height: 74px; max-height: 145px; resize: vertical; padding: 11px 12px; line-height: 1.45; font-size: .86rem; }
+    textarea:hover, textarea:focus { border-color: rgba(66,217,255,.48); background: rgba(255,255,255,.08); }
+    .input-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: .7rem; }
+    .winner-control { display: grid; grid-template-columns: 1fr 44px; align-items: center; gap: 10px; }
+    input[type="range"] { width: 100%; accent-color: var(--cyan); cursor: pointer; }
+    .winner-value {
+      height: 38px; display: grid; place-items: center; border-radius: 11px; color: var(--cyan);
+      background: rgba(66,217,255,.12); font-weight: 900; border: 1px solid rgba(66,217,255,.18);
+    }
+    .action-row { display: grid; grid-template-columns: 1fr 54px; gap: 8px; }
+    .primary-btn, .reset-btn { height: 50px; border: 0; border-radius: 14px; cursor: pointer; font-weight: 950; transition: transform .18s,filter .18s,opacity .18s; }
+    .primary-btn { color: #07091e; background: linear-gradient(105deg,var(--cyan),#6a77ff 54%,var(--pink)); box-shadow: 0 12px 30px rgba(66,217,255,.22); }
+    .reset-btn { background: rgba(255,255,255,.1); border: 1px solid var(--line); font-size: 1.1rem; }
+    .primary-btn:hover:not(:disabled), .reset-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.08); }
+    button:disabled, input:disabled, textarea:disabled { cursor: not-allowed; opacity: .48; }
+    .live-card {
+      min-height: 150px; display: flex; flex-direction: column; padding: 13px;
+      border: 1px solid var(--line); border-radius: 15px; background: rgba(3,5,25,.43);
+    }
+    .live-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px; font-size: .78rem; font-weight: 900; }
+    .live-title span:last-child { color: var(--green); font: 800 .67rem ui-monospace,monospace; }
+    .ranking { display: grid; gap: 5px; max-height: 230px; overflow-y: auto; padding-right: 2px; }
+    .rank-item {
+      display: grid; grid-template-columns: 26px minmax(0,1fr) auto; align-items: center; gap: 7px;
+      min-height: 31px; padding: 5px 8px; border-radius: 9px; color: #dfe0f2;
+      background: rgba(255,255,255,.055); border-left: 3px solid var(--cyan); font-size: .76rem;
+    }
+    .rank-item.eliminated { opacity: .45; border-color: #7a7b91; }
+    .rank-item.winner { color: #fff2ba; border-color: var(--gold); background: rgba(255,198,64,.1); }
+    .rank-icon { text-align: center; }
+    .rank-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 750; }
+    .rank-state { color: var(--muted); font-size: .65rem; }
+    .panel-footer { margin-top: auto; display: flex; justify-content: center; gap: 8px; padding-top: 2px; }
+    .footer-link { color: var(--muted); text-decoration: none; }
 
-    .header-btns {
-      display: flex;
-      gap: 8px;
-      flex-shrink: 0;
+    .arena {
+      position: relative; flex: 1; min-width: 0; height: 100dvh; overflow: hidden; isolation: isolate;
+      background:
+        radial-gradient(ellipse at 50% 88%,rgba(255,198,64,.24),transparent 25%),
+        radial-gradient(circle at 10% 28%,rgba(69,136,255,.28),transparent 27%),
+        radial-gradient(circle at 90% 28%,rgba(240,88,255,.27),transparent 27%),
+        linear-gradient(#080a27 0 48%,#151146 48% 66%,#08091f 66%);
     }
-
-    .help-btn, .sound-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
+    .arena::before {
+      content: ""; position: absolute; inset: 0; z-index: -3; opacity: .55;
+      background-image:
+        linear-gradient(115deg,transparent 4%,rgba(66,217,255,.16) 4.3%,transparent 5%),
+        linear-gradient(65deg,transparent 11%,rgba(240,88,255,.15) 11.3%,transparent 12%),
+        radial-gradient(circle,rgba(255,255,255,.68) 0 1px,transparent 1.5px);
+      background-size: 38% 100%,40% 100%,33px 33px;
     }
-
-    .help-btn:hover, .sound-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: #4facfe;
-      transform: translateY(-2px);
+    .arena::after {
+      content: ""; position: absolute; left: -10%; right: -10%; top: 50%; height: 22%; z-index: -2;
+      transform: perspective(600px) rotateX(61deg); border: 2px solid rgba(66,217,255,.25); border-radius: 50%;
+      background: repeating-radial-gradient(ellipse,transparent 0 25px,rgba(66,217,255,.1) 26px 27px),
+        linear-gradient(90deg,rgba(69,136,255,.12),rgba(255,198,64,.13),rgba(240,88,255,.12));
+      box-shadow: 0 0 80px rgba(66,217,255,.18), inset 0 0 70px rgba(255,198,64,.12);
     }
-
-    .sidebar h2 { 
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-      margin: 0;
-      white-space: nowrap;
-      letter-spacing: -0.8px;
+    .light-beam {
+      position: absolute; top: -16%; width: 21%; height: 70%; opacity: .34; z-index: -1; filter: blur(4px);
+      clip-path: polygon(42% 0,58% 0,100% 100%,0 100%); transform-origin: 50% 0;
+      animation: sweep 5s ease-in-out infinite alternate;
     }
-
-    .sidebar h2 .title-emoji {
-      filter: drop-shadow(0 0 5px rgba(79, 172, 254, 0.5));
-      -webkit-text-fill-color: initial;
-      background: none;
+    .beam-left { left: 7%; background: linear-gradient(rgba(66,217,255,.7),transparent); transform: rotate(12deg); }
+    .beam-right { right: 7%; background: linear-gradient(rgba(240,88,255,.65),transparent); transform: rotate(-12deg); animation-delay: -2.5s; }
+    @keyframes sweep { to { transform: rotate(-9deg) translateX(10%); } }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+    .arena-top { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); width: min(660px,70%); z-index: 4; text-align: center; }
+    .arena-kicker { color: var(--cyan); font: 900 .64rem ui-monospace,monospace; letter-spacing: .25em; text-shadow: 0 0 14px var(--cyan); }
+    .scoreboard {
+      position: relative; margin-top: 7px; padding: 12px 24px 13px; border: 1px solid rgba(255,255,255,.2);
+      border-radius: 16px; background: linear-gradient(180deg,rgba(25,25,74,.92),rgba(7,8,29,.94));
+      box-shadow: 0 15px 40px rgba(0,0,0,.38),inset 0 0 25px rgba(66,217,255,.06),0 0 25px rgba(66,217,255,.09); overflow: hidden;
     }
-
-    .sidebar h2 .title-text {
-      /* 프리미엄 금속 광택 효과 */
-      background: linear-gradient(
-        to right, 
-        #4facfe 0%, 
-        #fff 45%, 
-        #fff 55%, 
-        #4facfe 100%
-      );
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shine 5s linear infinite;
-      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+    .scoreboard::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .2; background: repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.08) 3px 4px); }
+    .score-main { position: relative; min-height: 34px; display: grid; place-items: center; font-size: clamp(1.22rem,2.3vw,2rem); font-weight: 1000; letter-spacing: -.045em; text-shadow: 0 0 24px rgba(66,217,255,.4); }
+    .score-proof { position: relative; margin-top: 4px; color: #aeb3d2; font: 700 .61rem ui-monospace,monospace; letter-spacing: .05em; }
+    .round-chip {
+      position: absolute; top: 22px; right: 22px; z-index: 6; min-width: 90px; padding: 9px 13px;
+      border: 1px solid rgba(255,198,64,.35); border-radius: 99px; color: #fff0af; background: rgba(10,10,38,.8);
+      text-align: center; font: 900 .72rem ui-monospace,monospace; box-shadow: 0 0 24px rgba(255,198,64,.12);
     }
-
-    @keyframes shine {
-      to { background-position: 200% center; }
+    .phase-banner {
+      position: absolute; top: 113px; left: 50%; z-index: 7; transform: translate(-50%,-18px); padding: 8px 18px;
+      border: 1px solid rgba(255,80,127,.4); border-radius: 99px; color: #ffd8e3; background: rgba(77,7,40,.88);
+      font-size: .72rem; font-weight: 950; opacity: 0; pointer-events: none; transition: opacity .25s,transform .25s;
+      box-shadow: 0 0 28px rgba(255,80,127,.22);
     }
-    .sidebar label { font-weight: 600; color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
-    .sidebar textarea {
-      width: 100%; height: 80px; padding: 12px;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px; resize: none; font-size: 0.95rem;
-      background: rgba(255, 255, 255, 0.05); color: #fff;
-      transition: all 0.3s ease; flex-shrink: 0;
+    .phase-banner.show { opacity: 1; transform: translate(-50%,0); }
+    .team-towers {
+      position: absolute; top: 16%; left: 5%; right: 5%; height: 28%; display: grid;
+      grid-template-columns: repeat(3,1fr); align-items: end; gap: 6%; z-index: 1; pointer-events: none;
     }
-    .sidebar textarea::placeholder { color: rgba(255, 255, 255, 0.3); }
-    .sidebar textarea:focus { border-color: #4facfe; outline: none; background: rgba(255, 255, 255, 0.1); }
-    .settings-group { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
-    .slider-container { display: flex; align-items: center; gap: 12px; }
-    .slider-container input[type="range"] {
-      flex: 1; height: 6px; -webkit-appearance: none; appearance: none;
-      background: rgba(255, 255, 255, 0.1); border-radius: 3px; outline: none;
+    .team-tower { display: grid; justify-items: center; align-content: end; filter: drop-shadow(0 18px 22px rgba(0,0,0,.4)); }
+    .team-gesture { position: relative; z-index: 2; font-size: clamp(2.5rem,5.3vw,5.2rem); line-height: 1; filter: drop-shadow(0 0 20px var(--team)); transform: translateY(10%); }
+    .tower-name {
+      position: relative; z-index: 3; margin-bottom: -9px; padding: 5px 13px;
+      border: 1px solid color-mix(in srgb,var(--team) 65%,white); border-radius: 99px; color: white;
+      background: color-mix(in srgb,var(--team) 28%,#090a28); font: 900 clamp(.56rem,1vw,.76rem) ui-monospace,monospace;
+      letter-spacing: .12em; box-shadow: 0 0 18px color-mix(in srgb,var(--team) 48%,transparent);
     }
-    .slider-container input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none; appearance: none; width: 20px; height: 20px;
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(79, 172, 254, 0.4);
+    .podium {
+      width: min(170px,78%); height: clamp(45px,7vw,78px); border-radius: 20px 20px 9px 9px; border: 2px solid var(--team);
+      transform: perspective(320px) rotateX(11deg);
+      background: linear-gradient(90deg,transparent,color-mix(in srgb,var(--team) 22%,transparent),transparent),linear-gradient(#222453,#0a0b2a);
+      box-shadow: 0 0 28px color-mix(in srgb,var(--team) 32%,transparent),inset 0 0 20px rgba(255,255,255,.08);
     }
-    .slider-container input[type="range"]::-moz-range-thumb {
-      width: 20px; height: 20px; border: none;
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      border-radius: 50%; cursor: pointer;
+    .team-rock { --team: var(--blue); }
+    .team-paper { --team: var(--gold); transform: translateY(-11%); }
+    .team-scissors { --team: var(--pink); }
+    .referee {
+      position: absolute; top: 35%; left: 50%; z-index: 5; transform: translate(-50%,-50%);
+      display: grid; justify-items: center; pointer-events: none; transition: transform .25s;
     }
-    .slider-value {
-      min-width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-      background: rgba(255, 255, 255, 0.1); border-radius: 10px;
-      color: #4facfe; font-weight: 700; font-size: 1.1rem;
+    .referee.active { transform: translate(-50%,-54%) scale(1.08); }
+    .referee-move {
+      width: 58px; height: 58px; display: grid; place-items: center; margin-bottom: -7px; border: 2px solid var(--gold);
+      border-radius: 50%; background: rgba(7,8,30,.92); font-size: 2rem; box-shadow: 0 0 28px rgba(255,198,64,.5);
+      opacity: 0; transform: scale(.4); transition: opacity .2s,transform .28s cubic-bezier(.175,.885,.32,1.275);
     }
-    .btn-group { display: flex; gap: 10px; flex-shrink: 0; }
-    .btn { flex: 1; padding: 14px 20px; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
-    .btn-start { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #1a1a2e; }
-    .btn-start:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4); }
-    .btn-start:disabled { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.3); cursor: not-allowed; transform: none; box-shadow: none; }
-    .btn-reset { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); flex: 0 0 54px; }
-    .btn-reset:hover { background: rgba(255, 255, 255, 0.2); }
-    .ranking-board { flex: 1; background: rgba(0, 0, 0, 0.2); border-radius: 16px; padding: 12px; overflow-y: auto; min-height: 0; }
-    .ranking-board h3 { font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-    .ranking-list { display: flex; flex-direction: column; gap: 4px; }
-    .ranking-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; font-size: 0.85rem; color: #fff; }
-    .ranking-item.winner { background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 179, 71, 0.3) 100%); border: 1px solid rgba(255, 215, 0, 0.5); }
-    .ranking-item.eliminated { background: rgba(255, 107, 107, 0.1); color: rgba(255, 255, 255, 0.4); text-decoration: line-through; }
-    .ranking-item.alive { background: rgba(78, 205, 196, 0.15); border-left: 3px solid #4ecdc4; }
-    .rank-badge { width: 22px; height: 22px; border-radius: 6px; background: rgba(255, 255, 255, 0.1); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; }
-    .ranking-item.winner .rank-badge { background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%); color: #1a1a2e; }
-    .ranking-item.eliminated .rank-badge { background: rgba(255, 107, 107, 0.3); }
-    .sidebar-footer { display: flex; justify-content: center; gap: 12px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; }
-    .icon-btn { width: 44px; height: 44px; border: none; border-radius: 12px; background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.6); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; text-decoration: none; position: relative; }
-    .icon-btn:hover { background: rgba(79, 172, 254, 0.3); color: #4facfe; transform: translateY(-2px); }
-    .icon-btn[data-tooltip]:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; white-space: nowrap; margin-bottom: 8px; }
-    .game-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; position: relative; }
-    .classroom { flex: 1; border-radius: 0; position: relative; overflow: hidden; }
-    .sky { position: absolute; top: 0; left: 0; right: 0; height: 30%; background: linear-gradient(180deg, #87CEEB 0%, #a8d8ea 100%); }
-    .platform { position: absolute; top: 30%; left: 0; right: 0; height: 12%; background: linear-gradient(180deg, #98D8C8 0%, #7fc8b8 100%); }
-    .floor { position: absolute; top: 42%; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, #C4A484 0%, #B8956E 100%); }
-    
-    .blackboard { position: absolute; top: 2%; left: 50%; transform: translateX(-50%); width: min(500px, 70%); height: 22%; background: linear-gradient(180deg, #2d5016 0%, #1e3a0f 100%); border: clamp(8px, 1.5vw, 12px) solid #8B4513; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.3); z-index: 10; padding: 10px; }
-    .blackboard::before { content: ''; position: absolute; bottom: -12%; left: 50%; transform: translateX(-50%); width: 25%; height: 8%; background: #8B4513; border-radius: 3px; }
-    .blackboard-text { color: #fff; font-size: clamp(1.5rem, 4vw, 3.5rem); font-weight: 900; text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5); text-align: center; line-height: 1.2; }
-    .blackboard-text.small { font-size: clamp(1rem, 2.5vw, 1.8rem); }
-    .blackboard-text.shout { color: #ffeb3b; animation: shout-pulse 0.4s ease; }
-    @keyframes shout-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-    
-    .teacher-area { position: absolute; top: 26%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 5; transition: opacity 0.5s ease; }
-    .teacher-area.hidden { opacity: 0; pointer-events: none; }
-    .teacher { width: clamp(50px, 8vw, 70px); height: clamp(65px, 10vw, 90px); position: relative; display: flex; flex-direction: column; align-items: center; }
-    .teacher-head { font-size: clamp(28px, 5vw, 40px); z-index: 2; line-height: 1; }
-    .teacher-body { width: 70%; height: 50%; background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%); border-radius: 10px 10px 15px 15px; position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; }
-    .teacher-rps { font-size: clamp(24px, 4vw, 40px); filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.4)); animation: bounce 0.3s ease; }
-    @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-    
-    .students-area { position: absolute; top: 44%; left: 2%; right: 2%; bottom: 2%; display: grid; justify-items: center; align-items: start; overflow: hidden; }
-    .student { display: flex; flex-direction: column; align-items: center; transition: all 0.5s ease; }
-    .student.eliminated { opacity: 0.4; filter: grayscale(100%); }
-    .student-desk { position: relative; display: flex; flex-direction: column; align-items: center; }
-    .student-name { font-size: var(--name-size, 0.85rem); color: #fff; background: rgba(0, 0, 0, 0.6); padding: 2px 6px; border-radius: 4px; white-space: nowrap; max-width: var(--name-width, 70px); overflow: hidden; text-overflow: ellipsis; font-weight: 600; z-index: 200; margin-bottom: 2px; }
-    .student-head { font-size: var(--head-size, 24px); line-height: 1; z-index: 1; position: relative; }
-    .student-body { position: relative; z-index: 10; }
-    .student-torso { width: var(--torso-width, 30px); height: var(--torso-height, 22px); background: var(--student-color, #4a90d9); border-radius: 6px 6px 0 0; display: flex; align-items: center; justify-content: center; }
-    .student-rps { font-size: var(--rps-size, 20px); filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.4)); animation: bounce 0.3s ease; position: relative; z-index: 100; }
-    .desk { width: var(--desk-width, 50px); height: var(--desk-height, 25px); background: linear-gradient(180deg, #DEB887 0%, #C4954B 100%); border-radius: 4px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); }
-    .round-indicator { position: absolute; top: 2%; right: 2%; background: rgba(0, 0, 0, 0.6); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; z-index: 50; backdrop-filter: blur(10px); }
-    .copyright { position: absolute; bottom: 10px; right: 15px; font-size: 0.7rem; color: rgba(255, 255, 255, 0.25); pointer-events: none; user-select: none; z-index: 50; }
-    .winner-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 200; animation: fade-in 0.3s ease; }
-    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-    .winner-display { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 40px 60px; border-radius: 24px; text-align: center; box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); animation: winner-pop 0.5s ease; max-width: 90%; }
-    .winner-display h2 { font-size: 1.8rem; color: #fff; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 12px; }
-    .winner-display h2 .trophy { font-size: 2.5rem; }
-    .winner-list { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 30px; }
-    .winner-name { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 12px 28px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; color: #1a1a2e; box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3); }
-    .winner-confirm-btn { background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); padding: 14px 50px; border-radius: 14px; font-size: 1rem; font-weight: 700; color: #fff; cursor: pointer; transition: all 0.3s ease; }
-    .winner-confirm-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: rgba(255, 255, 255, 0.4); transform: translateY(-2px); }
-    @keyframes winner-pop { 0% { transform: scale(0.8); opacity: 0; } 70% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
-    .confetti { position: absolute; width: 10px; height: 10px; pointer-events: none; z-index: 300; }
-    @media (max-width: 768px) {
-      body { 
-        flex-direction: column-reverse; 
-        padding: 0; /* Remove body padding */
-        gap: 0; 
-        overflow-y: auto; 
-        height: auto; 
-      } 
-      .sidebar { 
-        width: 100%; 
-        min-width: 100%; 
-        max-width: 100%; 
-        height: auto;
-        max-height: none; 
-        padding: 20px; 
-        border-radius: 0; /* Square corners */
-        border: none;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-      } 
-      .sidebar textarea { height: 60px; } 
-      .ranking-board { 
-        min-height: 150px; 
-        max-height: 250px;
-      } 
-      .game-area { 
-        flex: none; 
-        width: 100%;
-        height: 75vh; 
-        min-height: 500px;
-        padding: 0;
-      }
-      .classroom {
-        border-radius: 0; /* Square corners */
-        box-shadow: none;
-      }
+    .referee-move.show { opacity: 1; transform: scale(1); }
+    .referee-avatar {
+      width: 52px; height: 52px; display: grid; place-items: center; border: 2px solid rgba(255,255,255,.32);
+      border-radius: 50% 50% 45% 45%; background: linear-gradient(145deg,#fff0cf,#dca66f); font-size: 1.75rem;
+      box-shadow: 0 12px 24px rgba(0,0,0,.35);
     }
-    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); color: white; padding: 14px 28px; border-radius: 12px; z-index: 1000; animation: toast-in 0.3s ease; backdrop-filter: blur(10px); }
-    @keyframes toast-in { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-    .empty-state { color: rgba(255, 255, 255, 0.4); font-size: 0.85rem; text-align: center; padding: 20px; line-height: 1.6; }
-    
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; transition: all 0.3s ease; }
-    ::-webkit-scrollbar-thumb:hover { background: #4facfe; }
+    .referee-label { margin-top: 5px; padding: 4px 9px; border-radius: 99px; color: #13142d; background: var(--gold); font: 950 .55rem ui-monospace,monospace; letter-spacing: .12em; }
+    .players-area {
+      position: absolute; z-index: 5; left: 3.2%; right: 3.2%; top: 45%; bottom: 7%; display: grid;
+      grid-template-columns: repeat(var(--cols,6),minmax(0,1fr)); grid-auto-rows: minmax(0,1fr);
+      gap: clamp(4px,.7vw,10px); align-items: center; justify-items: center; padding: clamp(5px,1vw,13px);
+      border: 1px solid rgba(255,255,255,.1); border-radius: 28px;
+      background: linear-gradient(180deg,rgba(13,14,49,.68),rgba(5,6,25,.88));
+      box-shadow: inset 0 0 60px rgba(69,136,255,.08),0 20px 40px rgba(0,0,0,.28); overflow: hidden;
+    }
+    .player-card {
+      --player-color: var(--cyan); position: relative; width: min(100%,112px); height: min(100%,92px); min-height: 48px;
+      display: grid; grid-template-rows: 1fr auto; justify-items: center; align-items: end; padding: 5px 4px 4px;
+      border: 1px solid color-mix(in srgb,var(--player-color) 38%,transparent); border-radius: 13px 13px 7px 7px;
+      background: radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--player-color) 23%,transparent),transparent 45%),linear-gradient(180deg,rgba(36,38,85,.92),rgba(10,11,40,.96));
+      box-shadow: 0 5px 13px rgba(0,0,0,.28),inset 0 -3px color-mix(in srgb,var(--player-color) 42%,transparent);
+      transition: opacity .35s,filter .35s,transform .35s,border-color .35s;
+    }
+    .player-card::after { content: ""; position: absolute; left: 12%; right: 12%; bottom: -4px; height: 5px; border-radius: 50%; background: var(--player-color); filter: blur(4px); opacity: .65; }
+    .player-card.reveal { transform: translateY(-7px) scale(1.04); border-color: var(--player-color); }
+    .player-card.eliminated { opacity: .22; filter: grayscale(1); transform: scale(.88); }
+    .player-card.winner { opacity: 1; border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 0 23px rgba(255,198,64,.4),inset 0 -3px rgba(255,198,64,.8); }
+    .player-figure { position: relative; display: grid; justify-items: center; align-self: center; min-height: 28px; }
+    .player-emoji { font-size: clamp(1.05rem,2vw,1.6rem); filter: drop-shadow(0 3px 2px rgba(0,0,0,.35)); }
+    .move-bubble {
+      position: absolute; left: 50%; bottom: 55%; width: clamp(29px,3.3vw,42px); aspect-ratio: 1;
+      display: grid; place-items: center; border: 1px solid rgba(255,255,255,.55); border-radius: 50%;
+      background: rgba(8,9,35,.95); font-size: clamp(1rem,2vw,1.55rem);
+      box-shadow: 0 0 19px color-mix(in srgb,var(--player-color) 55%,transparent);
+      opacity: 0; transform: translate(-50%,10px) scale(.4); transition: opacity .2s,transform .26s cubic-bezier(.175,.885,.32,1.275);
+    }
+    .move-bubble.show { opacity: 1; transform: translate(-50%,0) scale(1); }
+    .player-name {
+      position: relative; z-index: 2; width: 100%; padding: 3px 4px; color: #f4f4ff; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap; text-align: center; font-size: clamp(.55rem,.9vw,.72rem); font-weight: 850;
+    }
+    .arena-credit { position: absolute; right: 15px; bottom: 11px; z-index: 3; color: rgba(255,255,255,.3); font-size: .58rem; }
+    .arena.shake { animation: arena-shake .35s linear; }
+    @keyframes arena-shake { 0%,100%{transform:translate(0)} 20%{transform:translate(-7px,2px)} 45%{transform:translate(6px,-3px)} 70%{transform:translate(-3px,2px)} }
+    #celebrationCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 70; pointer-events: none; display: none; }
+    .result-overlay {
+      position: fixed; inset: 0; z-index: 80; display: none; place-items: center; padding: 20px;
+      background: rgba(3,4,20,.58); backdrop-filter: blur(18px) saturate(1.25);
+    }
+    .result-overlay.show { display: grid; animation: fade-in .35s ease; }
+    @keyframes fade-in { from { opacity: 0; } }
+    .result-card {
+      width: min(560px,100%); max-height: min(740px,90dvh); overflow-y: auto; padding: 28px;
+      border: 1px solid rgba(255,255,255,.22); border-radius: 26px; text-align: center;
+      background: radial-gradient(circle at 50% 0%,rgba(255,198,64,.2),transparent 32%),linear-gradient(145deg,rgba(25,27,76,.96),rgba(8,9,31,.96));
+      box-shadow: 0 28px 80px rgba(0,0,0,.56),0 0 50px rgba(255,198,64,.12);
+    }
+    .result-trophy { font-size: 3.7rem; filter: drop-shadow(0 0 25px rgba(255,198,64,.7)); }
+    .result-eyebrow { margin-top: 7px; color: var(--gold); font: 950 .7rem ui-monospace,monospace; letter-spacing: .22em; }
+    .result-card h2 { margin: 6px 0 16px; font-size: clamp(1.5rem,4vw,2.25rem); letter-spacing: -.06em; }
+    .winner-list { display: grid; gap: 7px; margin: 0 0 17px; }
+    .winner-pill {
+      display: grid; grid-template-columns: 35px 1fr 45px; align-items: center; gap: 8px; padding: 9px 12px;
+      border: 1px solid rgba(255,198,64,.28); border-radius: 13px; color: #fff5c9;
+      background: rgba(255,198,64,.08); text-align: left; font-weight: 900;
+    }
+    .winner-pill span:last-child { color: var(--muted); text-align: right; font: 700 .65rem ui-monospace,monospace; }
+    .result-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-bottom: 13px; }
+    .stat { padding: 10px 5px; border-radius: 11px; background: rgba(255,255,255,.06); }
+    .stat strong { display: block; color: var(--cyan); font-size: 1rem; }
+    .stat span { color: var(--muted); font-size: .62rem; }
+    .result-proof { padding: 9px; border-radius: 10px; color: #bec1dd; background: rgba(0,0,0,.22); font: 700 .62rem/1.45 ui-monospace,monospace; overflow-wrap: anywhere; }
+    .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
+    .secondary-btn { height: 45px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.08); cursor: pointer; font-weight: 850; }
+    .secondary-btn.accent { color: #07091e; border: 0; background: linear-gradient(110deg,var(--gold),#ff8a5c); }
+    dialog {
+      width: min(520px,calc(100% - 32px)); color: #f8f8ff; border: 1px solid rgba(255,255,255,.2);
+      border-radius: 22px; padding: 0; background: linear-gradient(145deg,#191b4b,#090a27); box-shadow: 0 30px 90px rgba(0,0,0,.65);
+    }
+    dialog::backdrop { background: rgba(2,3,17,.7); backdrop-filter: blur(8px); }
+    .help-content { padding: 25px; }
+    .help-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .help-head h2 { margin: 0; }
+    .help-content ol { margin: 18px 0; padding-left: 22px; color: #d5d7eb; line-height: 1.7; font-size: .88rem; }
+    .help-note { padding: 11px; border-radius: 11px; color: #ffe39b; background: rgba(255,198,64,.08); font-size: .77rem; }
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; z-index: 100; max-width: calc(100% - 32px); padding: 10px 16px;
+      border: 1px solid rgba(66,217,255,.3); border-radius: 99px; color: #fff; background: rgba(10,12,42,.94);
+      box-shadow: 0 12px 35px rgba(0,0,0,.4); opacity: 0; transform: translate(-50%,14px);
+      pointer-events: none; transition: .23s; font-size: .78rem; font-weight: 800;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+    @media (max-width:1020px) {
+      :root { --sidebar: 300px; }
+      .control-panel { padding-inline: 16px; }
+      .team-towers { left: 2%; right: 2%; gap: 2%; }
+      .players-area { left: 2%; right: 2%; }
+    }
+    @media (max-width:760px) {
+      body { display: block; overflow-x: hidden; overflow-y: auto; }
+      .control-panel { width: 100%; height: auto; min-height: auto; padding: 16px; border-right: 0; border-bottom: 1px solid var(--line); overflow: visible; }
+      textarea { min-height: 66px; max-height: 110px; }
+      .live-card { min-height: 120px; }
+      .ranking { max-height: 150px; }
+      .panel-footer { margin-top: 0; }
+      .arena { width: 100%; height: 790px; min-height: 790px; }
+      .arena-top { top: 15px; width: calc(100% - 112px); }
+      .scoreboard { padding: 9px 12px 10px; }
+      .score-main { min-height: 29px; font-size: 1.1rem; }
+      .round-chip { top: 16px; right: 9px; min-width: 84px; padding: 8px 9px; }
+      .phase-banner { top: 94px; }
+      .team-towers { top: 15%; height: 25%; }
+      .team-gesture { font-size: clamp(2rem,11vw,3.5rem); }
+      .podium { width: 84%; height: 50px; }
+      .referee { top: 35%; }
+      .players-area { top: 43%; bottom: 5%; border-radius: 18px; }
+      .player-card { width: 100%; height: min(100%,78px); }
+      .arena-credit { bottom: 5px; }
+    }
+    @media (max-width:420px) {
+      .control-panel { padding-inline: 13px; }
+      .team-towers { left: 1%; right: 1%; }
+      .tower-name { padding-inline: 8px; letter-spacing: .05em; }
+      .players-area { padding: 5px; gap: 4px; }
+      .result-card { padding: 22px 16px; }
+    }
+    /* Let live standings consume the remaining sidebar height and anchor utility actions. */
+    .live-card { flex: 1; min-height: 0; }
+    .ranking { flex: 1; min-height: 0; max-height: none; align-content: start; }
+    .panel-footer { flex: none; margin-top: 0; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.08); }
+    .panel-footer .icon-btn { color: var(--muted); }
+    .panel-footer .icon-btn:hover { color: #fff; }
+    .panel-footer .icon-btn svg { display: block; width: 18px; height: 18px; }
+    @media (max-width:760px) {
+      .live-card { flex: none; min-height: 150px; max-height: 260px; }
+      .ranking { max-height: none; }
+      .panel-footer { padding-bottom: max(2px,env(safe-area-inset-bottom)); }
+    }
   </style>
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <h2><span class="title-emoji">✊</span> <span class="title-text">단체 가위바위보</span></h2>
-      <div class="header-btns">
-        <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
-        <button class="help-btn" id="helpBtn">?</button>
+  <aside class="control-panel" aria-label="게임 설정">
+    <div class="brand-row">
+      <div class="brand-mark" aria-hidden="true">✊</div>
+      <div class="brand-copy"><p class="eyebrow">PLAYPICK ARENA</p><h1>단체 가위바위보</h1></div>
+      <button class="icon-btn" id="soundBtn" type="button" aria-label="소리 끄기" title="소리 켜기/끄기">🔊</button>
+      <button class="icon-btn" id="helpBtn" type="button" aria-label="게임 도움말" title="도움말">?</button>
+    </div>
+    <label class="field">
+      <span class="field-label">참가자 <small>이름*인원 지원</small></span>
+      <textarea id="participants" maxlength="1000" spellcheck="false" aria-describedby="participantHint">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+      <span class="input-meta" id="participantHint"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 30</strong></span>
+    </label>
+    <div class="field">
+      <label class="field-label" for="winnerCount">🏆 최종 당첨자 수 <small>최대 10명</small></label>
+      <div class="winner-control">
+        <input id="winnerCount" type="range" min="1" max="5" value="1">
+        <output class="winner-value" id="winnerValue" for="winnerCount">1</output>
       </div>
     </div>
-    <div class="settings-group">
-      <label for="participants">참여자</label>
-      <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+    <div class="action-row">
+      <button class="primary-btn" id="startBtn" type="button">🎮 아레나 입장</button>
+      <button class="reset-btn" id="resetBtn" type="button" aria-label="게임 초기화" title="초기화">↺</button>
     </div>
-    <div class="settings-group">
-      <label>🏆 최종 생존자 수</label>
-      <div class="slider-container">
-        <input type="range" id="winnerCount" min="1" max="10" value="1">
-        <div class="slider-value" id="winnerValue">1</div>
-      </div>
-    </div>
-    <div class="btn-group">
-      <button class="btn btn-start" id="startBtn">🎮 시작</button>
-      <button class="btn btn-reset" id="resetBtn">↺</button>
-    </div>
-    <div class="ranking-board">
-      <h3>📊 실시간 현황</h3>
-      <div class="ranking-list" id="rankingList">
-        <div class="empty-state">참여자를 입력하고<br>게임을 시작하세요!</div>
-      </div>
-    </div>
-    <div class="sidebar-footer">
-      <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-      </a>
-      <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-      </button>
-      <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
-      </a>
-      <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
-      </a>
-    </div>
+    <section class="live-card" aria-labelledby="liveTitle">
+      <div class="live-title" id="liveTitle"><span>📊 실시간 현황</span><span id="liveState">READY</span></div>
+      <div class="ranking" id="rankingList" aria-live="polite"></div>
+    </section>
+    <nav class="panel-footer" aria-label="바로가기">
+      <a class="icon-btn footer-link" href="../" aria-label="추첨 포털 홈" title="추첨 포털 홈"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></a>
+      <button class="icon-btn" id="copyResultBtn" type="button" aria-label="결과 복사" title="결과 복사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+      <a class="icon-btn footer-link" href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer" aria-label="GitHub 저장소" title="GitHub 저장소"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg></a>
+      <a class="icon-btn footer-link" href="https://buymeacoffee.com/euiyun" target="_blank" rel="noopener noreferrer" aria-label="커피 사주기" title="커피 사주기"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg></a>
+    </nav>
   </aside>
-  <main class="game-area">
-    <div class="classroom" id="classroom">
-      <div class="sky"></div>
-      <div class="platform"></div>
-      <div class="floor"></div>
-      
-      <div class="blackboard">
-        <div class="blackboard-text" id="blackboardText">가위바위보!</div>
+  <main class="arena" id="arena">
+    <div class="light-beam beam-left"></div><div class="light-beam beam-right"></div>
+    <header class="arena-top">
+      <div class="arena-kicker">RANDOM RPS CHAMPIONSHIP</div>
+      <div class="scoreboard">
+        <div class="score-main" id="scoreText" aria-live="assertive">선수들이 입장을 기다립니다</div>
+        <div class="score-proof" id="arenaProof">RANDOM DRAW · READY</div>
       </div>
-      <div class="teacher-area" id="teacherArea">
-        <div class="teacher">
-          <div class="teacher-head" id="teacherHead">🤓</div>
-          <div class="teacher-body" id="teacherBody"></div>
-        </div>
-      </div>
-      <div class="students-area" id="studentsArea"></div>
-      <div class="round-indicator" id="roundIndicator" style="display: none;">라운드 <span id="roundNumber">1</span></div>
-      <div class="copyright">© 2025 Euiyun Edwin Kim</div>
+    </header>
+    <div class="round-chip" id="roundIndicator">ROUND <span id="roundNumber">0</span></div>
+    <div class="phase-banner" id="phaseBanner">⚡ SPEED UP · 결승 모드</div>
+    <div class="team-towers" aria-hidden="true">
+      <div class="team-tower team-rock"><div class="team-gesture">✊</div><div class="tower-name">ROCK</div><div class="podium"></div></div>
+      <div class="team-tower team-paper"><div class="team-gesture">🖐️</div><div class="tower-name">PAPER</div><div class="podium"></div></div>
+      <div class="team-tower team-scissors"><div class="team-gesture">✌️</div><div class="tower-name">SCISSORS</div><div class="podium"></div></div>
     </div>
+    <div class="referee" id="referee" aria-label="아레나 심판">
+      <div class="referee-move" id="refereeMove"></div><div class="referee-avatar" aria-hidden="true">😎</div>
+      <div class="referee-label">ARENA JUDGE</div>
+    </div>
+    <section class="players-area" id="playersArea" aria-label="참가 선수"></section>
+    <div class="arena-credit">© 2026 Euiyun Edwin Kim · PLAYPICK</div>
   </main>
+  <canvas id="celebrationCanvas" aria-hidden="true"></canvas>
+  <section class="result-overlay" id="resultOverlay" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <div class="result-card">
+      <div class="result-trophy" aria-hidden="true">🏆</div>
+      <div class="result-eyebrow">ARENA CHAMPION</div><h2 id="resultTitle">최종 당첨자</h2>
+      <div class="winner-list" id="winnerList"></div>
+      <div class="result-stats">
+        <div class="stat"><strong id="resultRounds">0</strong><span>ROUNDS</span></div>
+        <div class="stat"><strong id="resultTime">0.000s</strong><span>SIM TIME</span></div>
+        <div class="stat"><strong id="resultPlayers">0</strong><span>PLAYERS</span></div>
+      </div>
+      <div class="result-actions">
+        <button class="secondary-btn" id="resultCloseBtn" type="button">경기장 보기</button>
+        <button class="secondary-btn accent" id="resultCopyBtn" type="button">결과 복사</button>
+      </div>
+    </div>
+  </section>
+  <dialog id="helpDialog" aria-labelledby="helpTitle">
+    <div class="help-content">
+      <div class="help-head"><h2 id="helpTitle">게임 방법</h2><button class="icon-btn" id="helpCloseBtn" type="button" aria-label="도움말 닫기">✕</button></div>
+      <ol>
+        <li>참가자와 당첨자 수를 입력합니다.</li>
+        <li>예선에서는 심판에게 진 선수만 탈락합니다.</li>
+        <li>생존자가 줄면 결승 PvP가 시작되고 승리 팀이 당첨됩니다.</li>
+        <li>무승부가 이어지면 무작위 서든데스로 경기를 마무리합니다.</li>
+      </ol>
+      <div class="help-note">각 경기를 시작할 때 새로운 무작위 흐름이 만들어지므로 같은 참가자와 설정으로도 결과가 달라질 수 있습니다.</div>
+    </div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
   <script>
-    // Copyright (c) 2025 Euiyun Edwin Kim (geniuskey@gmail.com)
-    class SoundManager {
-      constructor() {
-        this.ctx = null;
-        this.enabled = true;
-        this.setupToggleButton();
-      }
-      setupToggleButton() {
-        const btn = document.getElementById('soundToggle');
-        if (btn) {
-          btn.onclick = () => {
-            this.enabled = !this.enabled;
-            btn.textContent = this.enabled ? '🔊' : '🔇';
-            if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
-              this.ctx.resume();
-            }
-          };
-        }
-      }
-      init() {
-        if (this.ctx) return;
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      playStart() {
-        if (!this.enabled || !this.ctx) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
-        osc.connect(gain); gain.connect(this.ctx.destination);
-        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
-      }
-      playShout() {
-        if (!this.enabled || !this.ctx) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(400, this.ctx.currentTime);
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
-        osc.connect(gain); gain.connect(this.ctx.destination);
-        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
-      }
-      playReveal() {
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(600, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.15);
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
-        osc.connect(gain); gain.connect(this.ctx.destination);
-        osc.start(); osc.stop(this.ctx.currentTime + 0.15);
-      }
-      playEliminate() {
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
-        osc.frequency.linearRampToValueAtTime(50, this.ctx.currentTime + 0.3);
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.3);
-        osc.connect(gain); gain.connect(this.ctx.destination);
-        osc.start(); osc.stop(this.ctx.currentTime + 0.3);
-      }
-      playWin() {
-        if (!this.enabled || !this.ctx) return;
-        this.init();
-        const notes = [261.63, 329.63, 392.00, 523.25]; // C, E, G, C
-        notes.forEach((freq, i) => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.15);
-          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.15);
-          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.15 + 0.05);
-          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.15 + 0.5);
-          osc.connect(gain); gain.connect(this.ctx.destination);
-          osc.start(this.ctx.currentTime + i * 0.15);
-          osc.stop(this.ctx.currentTime + i * 0.15 + 0.5);
-        });
-      }
-    }
-
-    const RPS = ['✊', '✌️', '🖐️'];
-    const HAPPY_EMOJIS = ['😊', '😄', '😁', '🙂', '😎', '🤗', '😋', '🥳', '😃', '🤩'];
-    const SAD_EMOJIS = ['😢', '😭', '😿', '🥺', '😞', '😔'];
-    const COLORS = ['#4facfe', '#f093fb', '#4ecdc4', '#ffeaa7', '#fd79a8', '#74b9ff', '#a29bfe', '#55efc4', '#fab1a0', '#81ecec', '#ff7675', '#fdcb6e', '#e17055', '#00b894', '#6c5ce7'];
-    
-    let participants = [], alivePlayers = [], eliminatedPlayers = [], winners = [], gameRunning = false, gameStopped = false, currentRound = 0, pvpMode = false;
-    let renderTimeout = null;
-    const sound = new SoundManager();
-    const speeds = { shout: 500, show: 1000, result: 1200 };
-    const $ = id => document.getElementById(id);
-    const participantsInput = $('participants'), winnerCountInput = $('winnerCount'), winnerValue = $('winnerValue');
-    const startBtn = $('startBtn'), resetBtn = $('resetBtn'), rankingList = $('rankingList');
-    const studentsArea = $('studentsArea'), teacherArea = $('teacherArea'), blackboardText = $('blackboardText');
-    const roundIndicator = $('roundIndicator'), roundNumber = $('roundNumber'), classroom = $('classroom'), copyResultBtn = $('copyResultBtn');
-    const teacherHead = $('teacherHead'), teacherBody = $('teacherBody');
-
-    winnerCountInput.addEventListener('input', () => { winnerValue.textContent = winnerCountInput.value; });
-
-    function init() { renderStudents(); updateRanking(); }
-    function parseParticipants() {
-      const t = participantsInput.value.trim();
-      if (!t) return [];
-      const names = t.split(/[,\n]/).map(n => n.trim()).filter(n => n);
-      const result = [];
-      const nameCount = {};
-      for (const name of names) {
-        const match = name.match(/^(.+)\*(\d+)$/);
-        if (match) {
-          const baseName = match[1].trim();
-          const count = parseInt(match[2]);
-          for (let i = 0; i < count; i++) {
-            nameCount[baseName] = (nameCount[baseName] || 0) + 1;
-            if (nameCount[baseName] === 1) {
-              result.push(baseName);
-            } else {
-              result.push(`${baseName}(${nameCount[baseName]})`);
-            }
+    (() => {
+      'use strict';
+      const GAME_VERSION = '1.1.0';
+      const MAX_PARTICIPANTS = 30;
+      const MAX_NAME_LENGTH = 32;
+      const STORAGE_PREFIX = 'playpick-group-rps-';
+      const QA_MODE = new URLSearchParams(location.search).has('qa');
+      const TIME_SCALE = QA_MODE ? 0.018 : 1;
+      const MOVES = [{ key:'ROCK',icon:'✊' },{ key:'PAPER',icon:'🖐️' },{ key:'SCISSORS',icon:'✌️' }];
+      const AVATARS = ['😀','😃','😄','😁','😆','😎','🤩','🥳','🦊','🐯','🐸','🐵'];
+      const PLAYER_COLORS = ['#4588ff','#ffc640','#f058ff','#42d9ff','#4fffb0','#ff6a8d'];
+      const $ = id => document.getElementById(id);
+      const els = {
+        participants:$('participants'), participantCount:$('participantCount'), winnerCount:$('winnerCount'), winnerValue:$('winnerValue'),
+        startBtn:$('startBtn'), resetBtn:$('resetBtn'), soundBtn:$('soundBtn'), helpBtn:$('helpBtn'),
+        rankingList:$('rankingList'), liveState:$('liveState'), copyResultBtn:$('copyResultBtn'),
+        arena:$('arena'), scoreText:$('scoreText'), arenaProof:$('arenaProof'), roundNumber:$('roundNumber'),
+        phaseBanner:$('phaseBanner'), referee:$('referee'), refereeMove:$('refereeMove'), playersArea:$('playersArea'),
+        resultOverlay:$('resultOverlay'), winnerList:$('winnerList'), resultRounds:$('resultRounds'),
+        resultTime:$('resultTime'), resultPlayers:$('resultPlayers'),
+        resultCloseBtn:$('resultCloseBtn'), resultCopyBtn:$('resultCopyBtn'), helpDialog:$('helpDialog'),
+        helpCloseBtn:$('helpCloseBtn'), toast:$('toast'), celebrationCanvas:$('celebrationCanvas')
+      };
+      const state = {
+        players:[], winners:[], eliminated:[], audit:[], round:0, simulatedMs:0, running:false,
+        phase:'READY', rng:Math.random, visualRng:Math.random, initialCount:0, staleRounds:0,
+        token:0, pending:new Map(), inputTimer:0, toastTimer:0, celebrationFrame:0, lastResult:''
+      };
+      const storage = {
+        get(key,fallback='') { try { return localStorage.getItem(STORAGE_PREFIX + key) ?? fallback; } catch { return fallback; } },
+        set(key,value) { try { localStorage.setItem(STORAGE_PREFIX + key,String(value)); } catch {} }
+      };
+      const sound = {
+        enabled:storage.get('sound','true') !== 'false', context:null,
+        init() {
+          if (!this.enabled) return;
+          if (!this.context) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) this.context = new AudioContext();
           }
-        } else {
-          nameCount[name] = (nameCount[name] || 0) + 1;
-          if (nameCount[name] === 1) {
-            result.push(name);
-          } else {
-            result.push(`${name}(${nameCount[name]})`);
-          }
+          if (this.context?.state === 'suspended') this.context.resume();
+        },
+        tone(frequency,duration=.08,type='sine',volume=.045,delay=0) {
+          if (!this.enabled) return;
+          this.init();
+          if (!this.context) return;
+          const at = this.context.currentTime + delay;
+          const oscillator = this.context.createOscillator();
+          const gain = this.context.createGain();
+          oscillator.type = type;
+          oscillator.frequency.setValueAtTime(frequency,at);
+          gain.gain.setValueAtTime(volume,at);
+          gain.gain.exponentialRampToValueAtTime(.0001,at + duration);
+          oscillator.connect(gain).connect(this.context.destination);
+          oscillator.start(at); oscillator.stop(at + duration);
+        },
+        chant(step) { this.tone(260 + step * 95,.1,'square',.028); },
+        reveal() { this.tone(560,.12,'triangle',.055); this.tone(820,.1,'sine',.04,.06); },
+        eliminate() { this.tone(180,.24,'sawtooth',.045); },
+        win() { [523,659,784,1047].forEach((note,index) => this.tone(note,.3,'triangle',.05,index * .11)); }
+      };
+      function setSoundUi() {
+        els.soundBtn.textContent = sound.enabled ? '🔊' : '🔇';
+        els.soundBtn.setAttribute('aria-label',sound.enabled ? '소리 끄기' : '소리 켜기');
+      }
+      function parseParticipants(value=els.participants.value) {
+        const output = [];
+        for (const rawToken of value.split(/[,\n]/)) {
+          if (output.length >= MAX_PARTICIPANTS) break;
+          const token = rawToken.trim();
+          if (!token) continue;
+          const match = token.match(/^(.*?)(?:\*(\d+))?$/);
+          const rawName = (match?.[1] || '').trim();
+          if (!rawName) continue;
+          const name = rawName.slice(0,MAX_NAME_LENGTH);
+          const requested = match?.[2] ? Number.parseInt(match[2],10) : 1;
+          const count = Math.max(1,Math.min(Number.isFinite(requested) ? requested : 1,MAX_PARTICIPANTS - output.length));
+          for (let i=0; i<count && output.length<MAX_PARTICIPANTS; i+=1) output.push(name);
         }
+        return output;
       }
-      return result;
-    }
-    function randomHappyEmoji() { return HAPPY_EMOJIS[Math.floor(Math.random() * HAPPY_EMOJIS.length)]; }
-    function randomSadEmoji() { return SAD_EMOJIS[Math.floor(Math.random() * SAD_EMOJIS.length)]; }
-
-    function calculateOptimalGrid(count, areaWidth, areaHeight) {
-      let bestCols = 1, bestRows = count, bestCellSize = 0;
-      
-      for (let cols = 1; cols <= count; cols++) {
-        const rows = Math.ceil(count / cols);
-        const cellWidth = areaWidth / cols;
-        const cellHeight = areaHeight / rows;
-        const maxSizeByWidth = cellWidth * 0.8;
-        const maxSizeByHeight = cellHeight / 2.0;
-        const cellSize = Math.min(maxSizeByWidth, maxSizeByHeight);
-        
-        if (cellSize > bestCellSize) {
-          bestCellSize = cellSize;
-          bestCols = cols;
-          bestRows = rows;
-        }
+      function makePlayers(names) {
+        return names.map((name,index) => ({ id:index,name,status:'active',move:null,eliminatedRound:null,qualifiedRound:null }));
       }
-      
-      return { cols: bestCols, rows: bestRows, cellSize: Math.min(55, Math.max(18, bestCellSize)) };
-    }
-
-    function renderStudents() {
-      if (renderTimeout) {
-        clearTimeout(renderTimeout);
-        renderTimeout = null;
+      function activePlayers() { return state.players.filter(player => player.status === 'active'); }
+      function remainingSlots() { return Math.max(0,Number(els.winnerCount.value) - state.winners.length); }
+      function beats(moveA,moveB) { return (moveA - moveB + 3) % 3 === 1; }
+      function losingMoveAgainst(move) { return (move + 2) % 3; }
+      function columnsFor(count) { if (count<=4) return count; if (count<=8) return 4; if (count<=15) return 5; return 6; }
+      function createPlayerCard(player) {
+        const card = document.createElement('article');
+        card.className = 'player-card'; card.id = `player-${player.id}`;
+        card.style.setProperty('--player-color',PLAYER_COLORS[player.id % PLAYER_COLORS.length]);
+        card.dataset.status = player.status;
+        const figure = document.createElement('div'); figure.className = 'player-figure';
+        const emoji = document.createElement('span'); emoji.className = 'player-emoji'; emoji.textContent = AVATARS[player.id % AVATARS.length];
+        const bubble = document.createElement('span'); bubble.className = 'move-bubble'; bubble.setAttribute('aria-hidden','true');
+        figure.append(emoji,bubble);
+        const name = document.createElement('div'); name.className = 'player-name'; name.textContent = player.name; name.title = player.name;
+        card.append(figure,name); return card;
       }
-      
-      studentsArea.innerHTML = '';
-      
-      participants = parseParticipants();
-      alivePlayers = [...participants];
-      eliminatedPlayers = []; 
-      winners = []; 
-      currentRound = 0; 
-      pvpMode = false;
-      teacherArea.classList.remove('hidden');
-      teacherHead.textContent = '🤓';
-      teacherBody.innerHTML = '';
-      
-      if (participants.length === 0) {
-        updateRanking();
-        return;
-      }
-      
-      renderTimeout = setTimeout(() => {
-        const area = studentsArea.getBoundingClientRect();
-        const areaWidth = area.width - 20;
-        const areaHeight = area.height - 20;
-        
-        if (areaWidth <= 0 || areaHeight <= 0) return;
-        
-        const grid = calculateOptimalGrid(participants.length, areaWidth, areaHeight);
-        const baseSize = grid.cellSize;
-        
-        studentsArea.style.gridTemplateColumns = `repeat(${grid.cols}, 1fr)`;
-        studentsArea.style.gridTemplateRows = `repeat(${grid.rows}, 1fr)`;
-        studentsArea.style.padding = '10px';
-        studentsArea.style.alignItems = 'center';
-        
-        const s = {
-          deskWidth: baseSize,
-          deskHeight: baseSize * 0.4,
-          torsoWidth: baseSize * 0.6,
-          torsoHeight: baseSize * 0.45,
-          headSize: baseSize * 0.6,
-          rpsSize: baseSize * 0.9,
-          nameSize: '0.85rem',
-          nameWidth: baseSize + 15
-        };
-
+      function renderPlayers() {
+        els.playersArea.replaceChildren();
+        els.playersArea.style.setProperty('--cols',columnsFor(state.players.length || 1));
         const fragment = document.createDocumentFragment();
-        
-        participants.forEach((name, i) => {
-          const el = document.createElement('div');
-          el.className = 'student';
-          el.id = `student-${i}`;
-          el.style.setProperty('--desk-width', s.deskWidth + 'px');
-          el.style.setProperty('--desk-height', s.deskHeight + 'px');
-          el.style.setProperty('--torso-width', s.torsoWidth + 'px');
-          el.style.setProperty('--torso-height', s.torsoHeight + 'px');
-          el.style.setProperty('--head-size', s.headSize + 'px');
-          el.style.setProperty('--rps-size', s.rpsSize + 'px');
-          el.style.setProperty('--name-size', s.nameSize);
-          el.style.setProperty('--name-width', s.nameWidth + 'px');
-          el.style.setProperty('--student-color', COLORS[i % COLORS.length]);
-          
-          const emoji = randomHappyEmoji();
-          el.innerHTML = `<div class="student-desk">
-            <div class="student-name">${name}</div>
-            <div class="student-head">${emoji}</div>
-            <div class="student-body"><div class="student-torso"></div></div>
-            <div class="desk"></div>
-          </div>`;
-          fragment.appendChild(el);
+        state.players.forEach(player => fragment.appendChild(createPlayerCard(player)));
+        els.playersArea.appendChild(fragment); syncPlayerCards();
+      }
+      function syncPlayerCards() {
+        state.players.forEach(player => {
+          const card = $(`player-${player.id}`);
+          if (!card) return;
+          card.classList.toggle('eliminated',player.status === 'eliminated');
+          card.classList.toggle('winner',player.status === 'winner');
+          card.dataset.status = player.status;
+          const bubble = card.querySelector('.move-bubble');
+          bubble.textContent = player.move == null ? '' : MOVES[player.move].icon;
+          bubble.classList.toggle('show',player.move != null);
         });
-        
-        studentsArea.appendChild(fragment);
-        updateRanking();
-      }, 50);
-    }
-
-    function updateRanking() {
-      if (participants.length === 0) { 
-        rankingList.innerHTML = '<div class="empty-state">참여자를 입력하고<br>게임을 시작하세요!</div>'; 
-        return; 
       }
-      let h = '';
-      winners.forEach(n => { h += `<div class="ranking-item winner"><span class="rank-badge">🏆</span><span>${n}</span></div>`; });
-      alivePlayers.forEach(n => { if (!winners.includes(n)) h += `<div class="ranking-item alive"><span class="rank-badge">✓</span><span>${n}</span></div>`; });
-      [...eliminatedPlayers].reverse().forEach(n => { h += `<div class="ranking-item eliminated"><span class="rank-badge">✗</span><span>${n}</span></div>`; });
-      rankingList.innerHTML = h;
-    }
-
-    function setBlackboardText(text, small = false) {
-      blackboardText.textContent = text;
-      blackboardText.classList.toggle('small', small);
-    }
-
-    function showShout(t) { setBlackboardText(t); blackboardText.classList.add('shout'); setTimeout(() => blackboardText.classList.remove('shout'), 400); }
-    
-    function showTeacherRPS(i) {
-      teacherBody.innerHTML = `<div class="teacher-rps">${RPS[i]}</div>`;
-    }
-    
-    function clearTeacherRPS() {
-      teacherBody.innerHTML = '';
-    }
-    
-    function showStudentRPS(si, ri) {
-      const s = $(`student-${si}`); if (!s) return;
-      const torso = s.querySelector('.student-torso');
-      if (torso) {
-        torso.innerHTML = `<div class="student-rps">${RPS[ri]}</div>`;
+      function renderRanking() {
+        els.rankingList.replaceChildren();
+        const ordered = [
+          ...state.players.filter(player => player.status === 'winner'),
+          ...state.players.filter(player => player.status === 'active'),
+          ...state.players.filter(player => player.status === 'eliminated').reverse()
+        ];
+        const fragment = document.createDocumentFragment();
+        ordered.forEach((player,index) => {
+          const item = document.createElement('div'); item.className = `rank-item ${player.status}`;
+          const icon = document.createElement('span'); icon.className = 'rank-icon';
+          icon.textContent = player.status === 'winner' ? '🏆' : player.status === 'eliminated' ? '✕' : '●';
+          const name = document.createElement('span'); name.className = 'rank-name'; name.textContent = player.name;
+          const status = document.createElement('span'); status.className = 'rank-state';
+          status.textContent = player.status === 'winner' ? `W${player.qualifiedRound}` :
+            player.status === 'eliminated' ? `R${player.eliminatedRound}` : `#${index + 1}`;
+          item.append(icon,name,status); fragment.appendChild(item);
+        });
+        els.rankingList.appendChild(fragment);
       }
-    }
-    
-    function clearAllRPS() { 
-      clearTeacherRPS();
-      document.querySelectorAll('.student-torso').forEach(t => t.innerHTML = '');
-    }
-    
-    function setStudentSad(i) {
-      const s = $(`student-${i}`); if (!s) return;
-      s.classList.add('eliminated');
-      const head = s.querySelector('.student-head');
-      if (head) head.textContent = randomSadEmoji();
-    }
-
-    function checkRPS(p, t) {
-      if (p === t) return 'draw';
-      if ((p === 0 && t === 1) || (p === 1 && t === 2) || (p === 2 && t === 0)) return 'win';
-      return 'lose';
-    }
-
-    function sleep(ms) { 
-      return new Promise(r => {
-        const check = () => {
-          if (gameStopped) {
-            r();
-          } else {
-            setTimeout(r, ms);
-          }
+      function updatePreview() {
+        if (state.running) return;
+        const names = parseParticipants();
+        const maxWinners = Math.max(1,Math.min(10,names.length - 1 || 1));
+        els.winnerCount.max = String(maxWinners);
+        if (Number(els.winnerCount.value) > maxWinners) els.winnerCount.value = String(maxWinners);
+        els.winnerValue.value = els.winnerCount.value; els.winnerValue.textContent = els.winnerCount.value;
+        els.participantCount.textContent = `${names.length} / ${MAX_PARTICIPANTS}`;
+        state.players = makePlayers(names); state.winners = []; state.eliminated = [];
+        renderPlayers(); renderRanking();
+        els.liveState.textContent = names.length >= 2 ? 'READY' : 'NEED 2+';
+      }
+      function setControlsLocked(locked) {
+        els.participants.disabled = locked;
+        els.winnerCount.disabled = locked; els.startBtn.disabled = locked;
+      }
+      function setScore(message) { els.scoreText.textContent = message; }
+      function setPhase(phase,message='') {
+        state.phase = phase; els.liveState.textContent = phase;
+        if (message) { els.phaseBanner.textContent = message; els.phaseBanner.classList.add('show'); }
+        else els.phaseBanner.classList.remove('show');
+      }
+      function showMoves(players,refereeMove=null) {
+        players.forEach(player => {
+          const card = $(`player-${player.id}`);
+          if (card) { card.classList.add('reveal'); card.querySelector('.move-bubble')?.classList.add('show'); }
+        });
+        if (refereeMove != null) {
+          els.refereeMove.textContent = MOVES[refereeMove].icon;
+          els.refereeMove.classList.add('show'); els.referee.classList.add('active');
+        } else {
+          els.refereeMove.classList.remove('show'); els.referee.classList.remove('active');
+        }
+      }
+      function clearMovePresentation() {
+        state.players.forEach(player => { player.move = null; });
+        document.querySelectorAll('.player-card').forEach(card => card.classList.remove('reveal'));
+        document.querySelectorAll('.move-bubble').forEach(bubble => { bubble.classList.remove('show'); bubble.textContent = ''; });
+        els.refereeMove.classList.remove('show'); els.refereeMove.textContent = ''; els.referee.classList.remove('active');
+      }
+      function shakeArena() {
+        els.arena.classList.remove('shake'); void els.arena.offsetWidth; els.arena.classList.add('shake');
+      }
+      function pace(baseMs) {
+        const eliminatedRatio = state.initialCount ? state.eliminated.length / state.initialCount : 0;
+        return Math.round(baseMs * Math.max(.5,1 - state.round * .035 - eliminatedRatio * .18));
+      }
+      function cancelRun() {
+        state.token += 1;
+        state.pending.forEach((resolve,timeout) => { clearTimeout(timeout); resolve(false); });
+        state.pending.clear();
+      }
+      function pause(baseMs,token) {
+        const duration = pace(baseMs); state.simulatedMs += duration;
+        return new Promise(resolve => {
+          const timeout = setTimeout(() => { state.pending.delete(timeout); resolve(token === state.token); },
+            Math.max(1,Math.round(duration * TIME_SCALE)));
+          state.pending.set(timeout,resolve);
+        });
+      }
+      function pauseExact(duration,token) {
+        state.simulatedMs += duration;
+        return new Promise(resolve => {
+          const timeout = setTimeout(() => { state.pending.delete(timeout); resolve(token === state.token); },
+            Math.max(1,Math.round(duration * TIME_SCALE)));
+          state.pending.set(timeout,resolve);
+        });
+      }
+      function shuffle(items,rng=state.rng) {
+        const copy = [...items];
+        for (let i=copy.length - 1; i>0; i-=1) {
+          const j = Math.floor(rng() * (i + 1)); [copy[i],copy[j]] = [copy[j],copy[i]];
+        }
+        return copy;
+      }
+      function markEliminated(players) {
+        players.forEach(player => {
+          player.status = 'eliminated'; player.eliminatedRound = state.round; state.eliminated.push(player);
+        });
+        if (players.length) { sound.eliminate(); shakeArena(); }
+        syncPlayerCards(); renderRanking();
+      }
+      function markWinners(players) {
+        players.forEach(player => {
+          player.status = 'winner'; player.qualifiedRound = state.round; state.winners.push(player);
+        });
+        syncPlayerCards(); renderRanking();
+      }
+      function activeAndResolvedChoices() {
+        return state.players.filter(player => player.move != null).map(player => ({ id:player.id,move:MOVES[player.move].key }));
+      }
+      function auditRound({ phase,forced,refereeMove=null,winners=[],eliminated=[],note='' }) {
+        state.audit.push({
+          round:state.round,phase,forced,referee:refereeMove == null ? null : MOVES[refereeMove].key,
+          winners:winners.map(player => player.id), eliminated:eliminated.map(player => player.id),
+          choices:activeAndResolvedChoices(),timeMs:state.simulatedMs,note
+        });
+      }
+      async function refereeRound(token) {
+        state.round += 1; els.roundNumber.textContent = state.round;
+        setPhase(state.round >= 4 ? 'ACCEL' : 'QUALIFIER',state.round >= 4 ? '⚡ SPEED UP · 예선 가속' : '');
+        clearMovePresentation();
+        const chants = ['가위…','바위…','보!'];
+        for (let index=0; index<chants.length; index+=1) {
+          setScore(chants[index]); sound.chant(index);
+          if (!await pause(280,token)) return false;
+        }
+        const contenders = activePlayers(); const slots = remainingSlots();
+        const judgeMove = Math.floor(state.rng() * 3);
+        contenders.forEach(player => { player.move = Math.floor(state.rng() * 3); });
+        let losers = contenders.filter(player => beats(judgeMove,player.move));
+        const allowed = contenders.length - slots; let forced = false;
+        if (!losers.length || losers.length > allowed) { state.staleRounds += 1; losers = []; }
+        else state.staleRounds = 0;
+        if (state.staleRounds >= 2 && allowed > 0) {
+          forced = true; state.staleRounds = 0;
+          const dropCount = 1 + Math.floor(state.rng() * Math.min(3,allowed));
+          losers = shuffle(contenders).slice(0,dropCount);
+          const loserIds = new Set(losers.map(player => player.id));
+          contenders.forEach(player => { player.move = loserIds.has(player.id) ? losingMoveAgainst(judgeMove) : judgeMove; });
+          setPhase('SUDDEN','⚠️ 무승부 돌파 · 서든데스');
+        }
+        syncPlayerCards(); showMoves(contenders,judgeMove); sound.reveal();
+        setScore(`심판 ${MOVES[judgeMove].icon} · 전원 공개!`);
+        if (!await pause(620,token)) return false;
+        if (!losers.length) {
+          setScore('무승부! 다시 승부합니다');
+          auditRound({ phase:'REFEREE',forced:false,refereeMove:judgeMove,note:'DRAW' });
+          if (!await pause(480,token)) return false;
+          return true;
+        }
+        markEliminated(losers);
+        setScore(`${losers.length}명 탈락 · ${activePlayers().length}명 생존`);
+        auditRound({ phase:'REFEREE',forced,refereeMove:judgeMove,eliminated:losers });
+        if (!await pause(650,token)) return false;
+        return true;
+      }
+      function resolvePvpGroups(contenders) {
+        const used = [...new Set(contenders.map(player => player.move))];
+        if (used.length !== 2) return null;
+        const winningMove = beats(used[0],used[1]) ? used[0] : used[1];
+        return {
+          winners:contenders.filter(player => player.move === winningMove),
+          losers:contenders.filter(player => player.move !== winningMove), winningMove
         };
-        check();
-      });
-    }
-
-    async function playTeacherRound() {
-      if (gameStopped) return 'stopped';
-      
-      const wc = parseInt(winnerCountInput.value);
-      currentRound++; roundNumber.textContent = currentRound;
-      
-      for (const t of ['가위!', '바위!', '보!']) { 
-        if (gameStopped) return 'stopped';
-        showShout(t); 
-        sound.playShout();
-        await sleep(speeds.shout); 
       }
-      
-      if (gameStopped) return 'stopped';
-      
-      const tc = Math.floor(Math.random() * 3);
-      sound.playReveal();
-      showTeacherRPS(tc);
-      setBlackboardText(RPS[tc]);
-      
-      const pc = {}, ai = participants.map((n, i) => alivePlayers.includes(n) ? i : -1).filter(i => i !== -1);
-      ai.forEach(i => { const c = Math.floor(Math.random() * 3); pc[i] = c; showStudentRPS(i, c); });
-      
-      await sleep(speeds.show);
-      if (gameStopped) return 'stopped';
-      
-      const losers = [];
-      ai.forEach(i => { if (checkRPS(pc[i], tc) === 'lose') losers.push(i); });
-      
-      const rem = alivePlayers.length - losers.length;
-      if (rem < wc && losers.length > 0) {
-        setBlackboardText('무효! 다시!');
-        await sleep(speeds.result);
-        clearAllRPS();
-        return 'continue';
-      }
-      
-      if (losers.length > 0) sound.playEliminate();
-      losers.forEach(i => {
-        const n = participants[i];
-        alivePlayers = alivePlayers.filter(x => x !== n);
-        eliminatedPlayers.push(n);
-        setStudentSad(i);
-      });
-      updateRanking();
-      
-      if (losers.length === 0) setBlackboardText('무승부!');
-      else if (losers.length === 1) setBlackboardText(`${participants[losers[0]]} 탈락!`);
-      else setBlackboardText(`${losers.length}명 탈락!`);
-      
-      await sleep(speeds.result);
-      if (gameStopped) return 'stopped';
-      clearAllRPS();
-      
-      if (alivePlayers.length <= wc) { winners = [...alivePlayers]; return 'end'; }
-      if (alivePlayers.length <= wc + 2) return 'pvp';
-      return 'continue';
-    }
-
-    async function playPvPRound() {
-      if (gameStopped) return 'stopped';
-      
-      const wc = parseInt(winnerCountInput.value);
-      currentRound++; roundNumber.textContent = currentRound;
-      
-      for (const t of ['가위!', '바위!', '보!']) { 
-        if (gameStopped) return 'stopped';
-        showShout(t); 
-        sound.playShout();
-        await sleep(speeds.shout); 
-      }
-      
-      if (gameStopped) return 'stopped';
-      
-      const ai = participants.map((n, i) => alivePlayers.includes(n) ? i : -1).filter(i => i !== -1);
-      const pc = {};
-      ai.forEach(i => { const c = Math.floor(Math.random() * 3); pc[i] = c; showStudentRPS(i, c); });
-      sound.playReveal();
-      
-      await sleep(speeds.show);
-      if (gameStopped) return 'stopped';
-      
-      const counts = [0, 0, 0];
-      ai.forEach(i => counts[pc[i]]++);
-      
-      let winningChoice = -1;
-      const hasRock = counts[0] > 0, hasScissors = counts[1] > 0, hasPaper = counts[2] > 0;
-      
-      if ((hasRock && hasScissors && hasPaper) || 
-          (hasRock && !hasScissors && !hasPaper) ||
-          (!hasRock && hasScissors && !hasPaper) ||
-          (!hasRock && !hasScissors && hasPaper)) {
-        setBlackboardText('무승부!');
-        await sleep(speeds.result);
-        clearAllRPS();
-        return 'continue';
-      }
-      
-      if (hasRock && hasScissors) winningChoice = 0;
-      else if (hasScissors && hasPaper) winningChoice = 1;
-      else if (hasPaper && hasRock) winningChoice = 2;
-      
-      const roundWinners = ai.filter(i => pc[i] === winningChoice);
-      const roundLosers = ai.filter(i => pc[i] !== winningChoice);
-      
-      const spotsLeft = wc - winners.length;
-      
-      if (roundWinners.length <= spotsLeft) {
-        if (roundLosers.length > 0) sound.playEliminate();
-        roundWinners.forEach(i => {
-          const n = participants[i];
-          if (!winners.includes(n)) {
-            winners.push(n);
-            alivePlayers = alivePlayers.filter(x => x !== n);
-          }
-        });
-        roundLosers.forEach(i => {
-          const n = participants[i];
-          alivePlayers = alivePlayers.filter(x => x !== n);
-          if (!eliminatedPlayers.includes(n) && !winners.includes(n)) {
-            eliminatedPlayers.push(n);
-            setStudentSad(i);
-          }
-        });
-        updateRanking();
-        
-        if (roundWinners.length === 1) setBlackboardText(`${participants[roundWinners[0]]} 생존 확정!`);
-        else setBlackboardText(`${roundWinners.length}명 생존 확정!`);
-        
-        await sleep(speeds.result);
-        if (gameStopped) return 'stopped';
-        clearAllRPS();
-        
-        if (winners.length >= wc || alivePlayers.length === 0) return 'end';
-        return 'continue';
-      } else {
-        if (roundLosers.length > 0) sound.playEliminate();
-        roundLosers.forEach(i => {
-          const n = participants[i];
-          alivePlayers = alivePlayers.filter(x => x !== n);
-          eliminatedPlayers.push(n);
-          setStudentSad(i);
-        });
-        updateRanking();
-        
-        if (roundLosers.length === 1) setBlackboardText(`${participants[roundLosers[0]]} 탈락!`);
-        else if (roundLosers.length > 1) setBlackboardText(`${roundLosers.length}명 탈락!`);
-        
-        await sleep(speeds.result);
-        if (gameStopped) return 'stopped';
-        clearAllRPS();
-        
-        if (alivePlayers.length <= wc - winners.length) {
-          alivePlayers.forEach(n => { if (!winners.includes(n)) winners.push(n); });
-          alivePlayers = [];
-          updateRanking();
-          return 'end';
+      async function pvpRound(token) {
+        state.round += 1; els.roundNumber.textContent = state.round;
+        setPhase('FINAL PVP','🔥 FINAL PvP · 생존자 맞대결'); clearMovePresentation();
+        setScore('결승전 · 가위 바위 보!'); sound.chant(2);
+        if (!await pause(430,token)) return false;
+        const contenders = activePlayers(); const slots = remainingSlots();
+        contenders.forEach(player => { player.move = Math.floor(state.rng() * 3); });
+        let groups = resolvePvpGroups(contenders); let forced = false;
+        if (!groups) state.staleRounds += 1; else state.staleRounds = 0;
+        if (state.staleRounds >= 2) {
+          forced = true; state.staleRounds = 0;
+          const ordered = shuffle(contenders);
+          const winnerSize = Math.min(slots,Math.max(1,Math.floor(ordered.length / 2)));
+          const winnerIds = new Set(ordered.slice(0,winnerSize).map(player => player.id));
+          const winningMove = Math.floor(state.rng() * 3);
+          contenders.forEach(player => {
+            player.move = winnerIds.has(player.id) ? winningMove : losingMoveAgainst(winningMove);
+          });
+          groups = resolvePvpGroups(contenders);
+          setPhase('SUDDEN PVP','⚠️ FINAL · 시드 서든데스');
         }
-        return 'continue';
-      }
-    }
-
-    function showWinnerDisplay() {
-      const o = document.createElement('div'); o.className = 'winner-overlay'; o.id = 'winnerOverlay';
-      o.innerHTML = `<div class="winner-display"><h2><span class="trophy">🏆</span> 최종 생존자 <span class="trophy">🏆</span></h2><div class="winner-list">${winners.map(n => `<div class="winner-name">${n}</div>`).join('')}</div><button class="winner-confirm-btn" id="winnerConfirmBtn">확인</button></div>`;
-      classroom.appendChild(o); createConfetti(); setBlackboardText('축하합니다!');
-      sound.playWin();
-      $('winnerConfirmBtn').addEventListener('click', closeWinnerDisplay);
-    }
-
-    function closeWinnerDisplay() { const o = $('winnerOverlay'); if (o) o.remove(); }
-
-    function createConfetti() {
-      const colors = ['#4facfe', '#00f2fe', '#f093fb', '#ffeaa7', '#fd79a8', '#55efc4'], cr = classroom.getBoundingClientRect();
-      for (let i = 0; i < 80; i++) {
-        setTimeout(() => {
-          if (gameStopped) return;
-          const c = document.createElement('div'); c.className = 'confetti';
-          c.style.left = Math.random() * 100 + '%'; c.style.top = '0';
-          c.style.background = colors[Math.floor(Math.random() * colors.length)];
-          c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-          c.style.width = (Math.random() * 8 + 4) + 'px'; c.style.height = (Math.random() * 8 + 4) + 'px';
-          classroom.appendChild(c);
-          const dur = Math.random() * 2000 + 2000, endX = (Math.random() - 0.5) * 150;
-          c.animate([{ transform: 'translateY(0) rotate(0deg)', opacity: 1 }, { transform: `translateY(${cr.height}px) translateX(${endX}px) rotate(720deg)`, opacity: 0 }], { duration: dur, easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)' }).onfinish = () => c.remove();
-        }, i * 25);
-      }
-    }
-
-    async function startGame() {
-      if (gameRunning) return;
-      closeWinnerDisplay();
-      document.querySelectorAll('.confetti').forEach(e => e.remove());
-      
-      participants = parseParticipants();
-      const wc = parseInt(winnerCountInput.value);
-      
-      if (participants.length < 2) { showToast('최소 2명의 참여자가 필요합니다!'); return; }
-      if (wc >= participants.length) { showToast('생존자 수는 참여자 수보다 적어야 합니다!'); return; }
-      
-      sound.init();
-      sound.playStart();
-      gameRunning = true;
-      gameStopped = false;
-      startBtn.disabled = true;
-      roundIndicator.style.display = 'block';
-      pvpMode = false;
-      
-      renderStudents();
-      await sleep(150);
-      
-      let result = 'continue';
-      
-      while (result === 'continue' && !gameStopped) {
-        result = await playTeacherRound();
-      }
-      
-      if (result === 'pvp' && !gameStopped) {
-        teacherArea.classList.add('hidden');
-        setBlackboardText('이제부터 참여자끼리 대결!', true);
-        await sleep(2000);
-        
-        result = 'continue';
-        while (result === 'continue' && !gameStopped) {
-          result = await playPvPRound();
+        syncPlayerCards(); showMoves(contenders); sound.reveal();
+        if (!groups) {
+          setScore('결승 무승부 · 한 번 더!');
+          auditRound({ phase:'PVP',forced:false,note:'DRAW' });
+          if (!await pause(560,token)) return false;
+          return true;
         }
+        const { winners:roundWinners,losers:roundLosers,winningMove } = groups;
+        setScore(`${MOVES[winningMove].icon} 승리 팀 ${roundWinners.length}명!`);
+        if (!await pause(520,token)) return false;
+        if (roundWinners.length <= slots) {
+          markWinners(roundWinners);
+          if (roundWinners.length === slots) markEliminated(roundLosers);
+          auditRound({
+            phase:'PVP',forced,winners:roundWinners,
+            eliminated:roundWinners.length === slots ? roundLosers : [],
+            note:roundWinners.length === slots ? 'FILLED' : 'QUALIFIED'
+          });
+        } else {
+          markEliminated(roundLosers);
+          auditRound({ phase:'PVP',forced,eliminated:roundLosers,note:'NARROWED' });
+        }
+        if (!await pause(620,token)) return false;
+        return true;
       }
-      
-      if (result === 'end' && !gameStopped) showWinnerDisplay();
-      
-      gameRunning = false;
-      startBtn.disabled = false;
-    }
-
-    function resetGame() {
-      gameStopped = true;
-      gameRunning = false;
-      currentRound = 0; 
-      winners = []; 
-      eliminatedPlayers = []; 
-      pvpMode = false;
-      
-      closeWinnerDisplay();
-      document.querySelectorAll('.confetti').forEach(e => e.remove());
-      roundIndicator.style.display = 'none';
-      setBlackboardText('가위바위보!');
-      teacherArea.classList.remove('hidden');
-      teacherHead.textContent = '🤓';
-      clearAllRPS();
-      renderStudents();
-      startBtn.disabled = false;
-    }
-
-    function copyResults() {
-      if (winners.length === 0 && eliminatedPlayers.length === 0) { showToast('아직 게임 결과가 없습니다!'); return; }
-      let r = '✊ 단체 가위바위보 결과\n━━━━━━━━━━━━━━━\n';
-      if (winners.length > 0) r += `🏆 최종 생존자: ${winners.join(', ')}\n`;
-      r += `📊 총 ${currentRound}라운드 진행\n👥 참여자: ${participants.length}명\n`;
-      if (eliminatedPlayers.length > 0) r += `❌ 탈락: ${eliminatedPlayers.join(', ')}\n`;
-      navigator.clipboard.writeText(r).then(() => showToast('결과가 복사되었습니다!')).catch(() => showToast('복사에 실패했습니다.'));
-    }
-
-    function showToast(m) { const e = document.querySelector('.toast'); if (e) e.remove(); const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 2500); }
-
-    let inputTimeout = null;
-    participantsInput.addEventListener('input', () => {
-      if (gameRunning) return;
-      if (inputTimeout) clearTimeout(inputTimeout);
-      inputTimeout = setTimeout(() => {
-        renderStudents();
-      }, 300);
-    });
-
-            startBtn.addEventListener('click', () => {
-                startGame();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });    resetBtn.addEventListener('click', resetGame);
-    copyResultBtn.addEventListener('click', copyResults);
-    window.addEventListener('resize', () => { if (!gameRunning) renderStudents(); });
-    init();
+      function finalizeRemaining() {
+        const slots = remainingSlots(); const contenders = activePlayers();
+        if (slots > 0 && contenders.length) markWinners(contenders.slice(0,slots));
+        activePlayers().forEach(player => markEliminated([player]));
+      }
+      async function runTournament(token) {
+        while (activePlayers().length > remainingSlots() && state.round < 60) {
+          const contenders = activePlayers(); const slots = remainingSlots();
+          const continued = contenders.length <= slots + 3 || state.round >= 6
+            ? await pvpRound(token) : await refereeRound(token);
+          if (!continued || token !== state.token) return;
+        }
+        if (token !== state.token) return;
+        finalizeRemaining(); setPhase('CHAMPION'); setScore('우승자가 결정되었습니다');
+        els.arenaProof.textContent = `RANDOM RUN · ${formatTime(state.simulatedMs)}`;
+        state.lastResult = buildResultText(); sound.win();
+        if (!await pauseExact(950,token) || token !== state.token) return;
+        finishGame();
+      }
+      function formatTime(ms) { return `${(ms / 1000).toFixed(3)}s`; }
+      function buildResultText() {
+        return [
+          '🏆 PLAYPICK 단체 가위바위보 결과',
+          ...state.winners.map((winner,index) => `${index + 1}. ${winner.name}`),'',
+          `라운드: ${state.round}`,`시뮬레이션 시간: ${formatTime(state.simulatedMs)}`,`버전: ${GAME_VERSION}`
+        ].join('\\n');
+      }
+      function renderResult() {
+        els.winnerList.replaceChildren(); const fragment = document.createDocumentFragment();
+        state.winners.forEach((winner,index) => {
+          const row = document.createElement('div'); row.className = 'winner-pill';
+          const rank = document.createElement('span'); rank.textContent = `${index + 1}`;
+          const name = document.createElement('span'); name.textContent = winner.name;
+          const round = document.createElement('span'); round.textContent = `R${winner.qualifiedRound}`;
+          row.append(rank,name,round); fragment.appendChild(row);
+        });
+        els.winnerList.appendChild(fragment);
+        els.resultRounds.textContent = state.round; els.resultTime.textContent = formatTime(state.simulatedMs);
+        els.resultPlayers.textContent = state.initialCount;
+      }
+      function finishGame() {
+        state.running = false; setControlsLocked(false); els.startBtn.textContent = '🎮 다시 경기';
+        renderResult(); startCelebration(); els.resultOverlay.classList.add('show');
+        els.resultCloseBtn.focus({ preventScroll:true });
+      }
+      function resetGame({ keepPreview=true }={}) {
+        cancelRun(); state.running = false; state.winners = []; state.eliminated = []; state.audit = [];
+        state.round = 0; state.simulatedMs = 0; state.staleRounds = 0; state.lastResult = '';
+        els.roundNumber.textContent = '0';
+        els.arenaProof.textContent = 'RANDOM DRAW · READY'; els.resultOverlay.classList.remove('show');
+        els.phaseBanner.classList.remove('show'); stopCelebration(); clearMovePresentation(); setControlsLocked(false);
+        els.startBtn.textContent = '🎮 아레나 입장'; setScore('선수들이 입장을 기다립니다'); setPhase('READY');
+        if (keepPreview) updatePreview();
+      }
+      function saveSettings() {
+        storage.set('participants',els.participants.value); storage.set('winner-count',els.winnerCount.value);
+      }
+      async function startGame() {
+        if (state.running) return;
+        clearTimeout(state.inputTimer);
+        const names = parseParticipants(); const winnerCount = Number.parseInt(els.winnerCount.value,10);
+        if (names.length < 2) { toast('참가자를 2명 이상 입력해주세요.'); els.participants.focus(); return; }
+        if (winnerCount < 1 || winnerCount >= names.length) { toast('당첨자 수는 참가자 수보다 적어야 합니다.'); return; }
+        sound.init(); cancelRun(); const token = state.token;
+        state.running = true; state.round = 0; state.simulatedMs = 0; state.winners = []; state.eliminated = [];
+        state.audit = []; state.staleRounds = 0; state.rng = Math.random; state.visualRng = Math.random; state.initialCount = names.length;
+        state.players = makePlayers(names); saveSettings(); setControlsLocked(true);
+        els.resultOverlay.classList.remove('show'); stopCelebration(); els.startBtn.textContent = '경기 진행 중…';
+        els.roundNumber.textContent = '0'; setPhase('PREPARING'); setScore('이번 경기의 대진을 무작위로 정하는 중…');
+        renderPlayers(); renderRanking();
+        els.arenaProof.textContent = 'RANDOM DRAW · NEW RUN';
+        setScore(`${names.length}명 · ${winnerCount}개의 우승석`); setPhase('LOCKED');
+        if (!await pause(620,token)) return;
+        await runTournament(token);
+      }
+      async function copyResult() {
+        if (!state.lastResult) { toast('완료된 경기 결과가 없습니다.'); return; }
+        try { await navigator.clipboard.writeText(state.lastResult); }
+        catch {
+          const textarea = document.createElement('textarea'); textarea.value = state.lastResult;
+          textarea.style.position = 'fixed'; textarea.style.opacity = '0'; document.body.appendChild(textarea);
+          textarea.select(); document.execCommand('copy'); textarea.remove();
+        }
+        toast('결과와 검증 해시를 복사했습니다.');
+      }
+      function toast(message) {
+        clearTimeout(state.toastTimer); els.toast.textContent = message; els.toast.classList.add('show');
+        state.toastTimer = setTimeout(() => els.toast.classList.remove('show'),2200);
+      }
+      function resizeCelebrationCanvas() {
+        const canvas = els.celebrationCanvas; const dpr = Math.min(window.devicePixelRatio || 1,2);
+        canvas.width = Math.round(innerWidth * dpr); canvas.height = Math.round(innerHeight * dpr);
+        canvas.style.width = `${innerWidth}px`; canvas.style.height = `${innerHeight}px`;
+        canvas.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+      }
+      function startCelebration() {
+        stopCelebration();
+        const canvas = els.celebrationCanvas; const context = canvas.getContext('2d');
+        const rng = state.visualRng;
+        resizeCelebrationCanvas(); canvas.style.display = 'block';
+        const colors = ['#42d9ff','#4588ff','#ffc640','#f058ff','#4fffb0','#ff507f'];
+        const particles = Array.from({ length:120 },(_,index) => ({
+          x:innerWidth * (.18 + rng() * .64), y:innerHeight * (.3 + rng() * .13),
+          vx:(rng() - .5) * (260 + rng() * 300), vy:-180 - rng() * 390, gravity:420 + rng() * 170,
+          rotation:rng() * Math.PI, vr:(rng() - .5) * 9, size:4 + rng() * 8,
+          color:colors[index % colors.length], life:2.8 + rng() * 2
+        }));
+        let lastTime = performance.now(); let elapsed = 0;
+        const frame = now => {
+          const dt = Math.min((now - lastTime) / 1000,.05); lastTime = now; elapsed += dt;
+          context.clearRect(0,0,innerWidth,innerHeight);
+          particles.forEach(particle => {
+            particle.life -= dt; if (particle.life <= 0) return;
+            particle.vy += particle.gravity * dt; particle.x += particle.vx * dt;
+            particle.y += particle.vy * dt; particle.rotation += particle.vr * dt;
+            context.save(); context.globalAlpha = Math.min(1,particle.life); context.translate(particle.x,particle.y);
+            context.rotate(particle.rotation); context.fillStyle = particle.color;
+            context.fillRect(-particle.size,-particle.size * .38,particle.size * 2,particle.size * .76); context.restore();
+          });
+          if (elapsed < 5.5) state.celebrationFrame = requestAnimationFrame(frame); else stopCelebration();
+        };
+        state.celebrationFrame = requestAnimationFrame(frame);
+      }
+      function stopCelebration() {
+        if (state.celebrationFrame) cancelAnimationFrame(state.celebrationFrame);
+        state.celebrationFrame = 0;
+        const context = els.celebrationCanvas.getContext('2d');
+        context.clearRect(0,0,els.celebrationCanvas.width,els.celebrationCanvas.height);
+        els.celebrationCanvas.style.display = 'none';
+      }
+      function restoreSettings() {
+        const savedParticipants = storage.get('participants'); const savedWinnerCount = storage.get('winner-count');
+        if (savedParticipants) els.participants.value = savedParticipants;
+        if (savedWinnerCount) els.winnerCount.value = savedWinnerCount;
+      }
+      els.participants.addEventListener('input',() => {
+        storage.set('participants',els.participants.value); clearTimeout(state.inputTimer);
+        state.inputTimer = setTimeout(updatePreview,180);
+      });
+      els.winnerCount.addEventListener('input',() => {
+        els.winnerValue.value = els.winnerCount.value; els.winnerValue.textContent = els.winnerCount.value;
+        storage.set('winner-count',els.winnerCount.value);
+      });
+      els.startBtn.addEventListener('click',startGame);
+      els.resetBtn.addEventListener('click',() => resetGame());
+      els.soundBtn.addEventListener('click',() => {
+        sound.enabled = !sound.enabled; storage.set('sound',sound.enabled); setSoundUi();
+        if (sound.enabled) { sound.init(); sound.tone(620,.1); }
+      });
+      els.helpBtn.addEventListener('click',() => els.helpDialog.showModal());
+      els.helpCloseBtn.addEventListener('click',() => els.helpDialog.close());
+      els.helpDialog.addEventListener('click',event => { if (event.target === els.helpDialog) els.helpDialog.close(); });
+      els.resultCloseBtn.addEventListener('click',() => { els.resultOverlay.classList.remove('show'); stopCelebration(); });
+      els.copyResultBtn.addEventListener('click',copyResult);
+      els.resultCopyBtn.addEventListener('click',copyResult);
+      window.addEventListener('resize',() => {
+        if (els.celebrationCanvas.style.display === 'block') resizeCelebrationCanvas();
+      },{ passive:true });
+      if (QA_MODE) {
+        window.__GROUP_RPS_QA__ = {
+          start:startGame, reset:() => resetGame(),
+          snapshot:() => ({
+            running:state.running, phase:state.phase,
+            winners:state.winners.map(player => ({ id:player.id,name:player.name,round:player.qualifiedRound })),
+            eliminated:state.eliminated.map(player => ({ id:player.id,name:player.name,round:player.eliminatedRound })),
+            round:state.round, simulatedMs:state.simulatedMs, audit:structuredClone(state.audit),
+            players:state.players.map(player => ({ id:player.id,name:player.name,status:player.status })),
+            pendingTimers:state.pending.size, resultOpen:els.resultOverlay.classList.contains('show'),
+            overflowX:document.documentElement.scrollWidth - document.documentElement.clientWidth
+          })
+        };
+      }
+      restoreSettings(); setSoundUi(); updatePreview();
+    })();
   </script>
 </body>
 </html>

@@ -295,25 +295,6 @@
             min-height: 100px;
         }
 
-        .seed-card {
-            padding: 10px; border: 1px solid rgba(0, 212, 255, 0.16); border-radius: 10px;
-            background: rgba(2, 8, 28, 0.45);
-        }
-        .seed-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .seed-heading label { color: rgba(255,255,255,.76); font-size: .78rem; font-weight: 700; }
-        .seed-heading small { color: rgba(255,255,255,.36); font-size: .62rem; }
-        .seed-row { display: flex; gap: 6px; margin-top: 7px; }
-        .seed-input {
-            width: 100%; min-width: 0; padding: 8px 9px; border: 1px solid rgba(255,255,255,.12); border-radius: 7px;
-            background: rgba(0,0,0,.24); color: #fff; font: 700 .72rem monospace; text-transform: uppercase;
-        }
-        .seed-refresh {
-            flex: 0 0 34px; border: 1px solid rgba(0,212,255,.24); border-radius: 7px;
-            background: rgba(0,212,255,.08); color: var(--accent-cyan); cursor: pointer; font-weight: 900;
-        }
-        .seed-proof { display: flex; justify-content: space-between; margin-top: 7px; color: rgba(255,255,255,.34); font-size: .58rem; }
-        .seed-proof code { color: var(--accent-cyan); font-size: .62rem; }
-
         .button-group {
             display: flex;
             gap: 6px;
@@ -337,7 +318,7 @@
             flex: 1;
             white-space: nowrap;
         }
-        .btn:disabled, textarea:disabled, select:disabled, .seed-input:disabled, .seed-refresh:disabled {
+        .btn:disabled, textarea:disabled, select:disabled {
             opacity: .48; cursor: not-allowed; transform: none !important;
         }
 
@@ -1180,18 +1161,6 @@
                     </label>
                 </div>
 
-                <div class="seed-card">
-                    <div class="seed-heading">
-                        <label for="gameSeed">재현 시드</label>
-                        <small>같은 환경 = 같은 결과</small>
-                    </div>
-                    <div class="seed-row">
-                        <input class="seed-input" id="gameSeed" type="text" maxlength="64" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="seedProof">
-                        <button class="seed-refresh" id="seedRefresh" type="button" aria-label="새 재현 시드 만들기" title="새 시드 만들기">↻</button>
-                    </div>
-                    <div class="seed-proof" id="seedProof"><span>RUN HASH</span><code id="seedHash">계산 전</code></div>
-                </div>
-
                 <div class="button-group">
                     <button class="btn btn-secondary" id="shuffleBtn" type="button">🔀 섞기</button>
                     <button class="btn btn-primary" id="startBtn" type="button">▶️ 시작!</button>
@@ -1230,7 +1199,6 @@
 
         <main class="game-area">
             <div class="canvas-wrapper">
-                <div class="run-proof" id="runProof">HASH: —</div>
                 <div class="map-badge" id="mapBadge">🌀 CHAOS ARENA</div>
                 <div class="race-phase" id="racePhase" role="status">🔥 FINAL LAP 가속 🔥</div>
                 <canvas id="gameCanvas" role="img" aria-label="구슬 올림픽 물리 레이스 경기장"></canvas>
@@ -1267,8 +1235,6 @@
                 • <strong>핀볼</strong> - 핀볼 머신 스타일<br>
                 • <strong>깔때기</strong> - 여러 단계의 깔때기 구조</p>
 
-                <h3>🔐 재현 가능한 경기</h3>
-                <p>같은 참가자·맵·승리 규칙·화면 크기·시드는 같은 자동 경기 결과를 만듭니다. 경기 중 화면 크기가 바뀌거나 강제 종료하면 RUN HASH에 표시됩니다.</p>
             </div>
         </div>
     </div>
@@ -1278,7 +1244,6 @@
         <div class="result-header">
             <div class="winner-label" id="winnerLabel">🏆 1등!</div>
             <div class="winner-name" id="winnerName">-</div>
-            <div class="result-proof" id="resultProof">RUN HASH: —</div>
         </div>
         <div class="final-rankings">
             <div class="final-rankings-title">🏁 최종 순위</div>
@@ -1293,55 +1258,6 @@
     <script>
         const MAX_PARTICIPANTS = 30;
         const FIXED_DT = 1 / 120;
-        let activePhysicsRandom = Math.random;
-
-        function mulberry32(seed) {
-            let value = seed >>> 0;
-            return () => {
-                value += 0x6D2B79F5;
-                let result = value;
-                result = Math.imul(result ^ (result >>> 15), result | 1);
-                result ^= result + Math.imul(result ^ (result >>> 7), result | 61);
-                return ((result ^ (result >>> 14)) >>> 0) / 4294967296;
-            };
-        }
-
-        function fallbackHash(input) {
-            let hash = 2166136261;
-            for (let index = 0; index < input.length; index++) {
-                hash ^= input.charCodeAt(index);
-                hash = Math.imul(hash, 16777619);
-            }
-            return hash >>> 0;
-        }
-
-        function generateSeed() {
-            if (window.crypto?.getRandomValues) {
-                const values = new Uint32Array(2);
-                window.crypto.getRandomValues(values);
-                return `${values[0].toString(36)}-${values[1].toString(36)}`.toUpperCase();
-            }
-            return `${Date.now().toString(36)}-${Math.floor(Math.random() * 1e9).toString(36)}`.toUpperCase();
-        }
-
-        async function createRunSeed(material) {
-            let hashHex = '';
-            if (window.crypto?.subtle && window.TextEncoder) {
-                try {
-                    const bytes = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(material));
-                    hashHex = Array.from(new Uint8Array(bytes), byte => byte.toString(16).padStart(2, '0')).join('');
-                } catch (error) { /* 제한된 로컬 환경에서는 아래 폴백 사용 */ }
-            }
-            if (!hashHex) {
-                hashHex = Array.from({ length: 8 }, (_, index) => fallbackHash(`${index}:${material}`).toString(16).padStart(8, '0')).join('');
-            }
-            return { hashHex, random: mulberry32(parseInt(hashHex.slice(0, 8), 16) >>> 0) };
-        }
-
-        function physicsRandom() {
-            return activePhysicsRandom();
-        }
-
         // ===== SoundManager =====
         class SoundManager {
             constructor() {
@@ -1493,7 +1409,7 @@
         class Ball {
             constructor(x, y, radius, color, name, initialVelY = 0, scale = 1) {
                 this.pos = new Vector2(x, y);
-                this.vel = new Vector2((physicsRandom() - 0.5) * 50 * scale, initialVelY);  // 초기 Y 속도 + 약간의 X 랜덤
+                this.vel = new Vector2((Math.random() - 0.5) * 50 * scale, initialVelY);  // 초기 Y 속도 + 약간의 X 랜덤
                 this.radius = radius;
                 this.color = color;
                 this.name = name;
@@ -1568,8 +1484,8 @@
 
             // 막혔을 때 랜덤 힘 적용 - 스케일 적용
             unstuck() {
-                const angle = physicsRandom() * Math.PI * 2;
-                const force = (150 + physicsRandom() * 100) * this.scale;
+                const angle = Math.random() * Math.PI * 2;
+                const force = (150 + Math.random() * 100) * this.scale;
                 this.vel.x += Math.cos(angle) * force;
                 this.vel.y += Math.sin(angle) * force - 50 * this.scale;  // 약간 위로
                 this.stuckTime = 0;
@@ -1578,8 +1494,8 @@
 
             // 핑퐁 탈출 - 더 강하게 아래로 - 스케일 적용
             escapePingPong() {
-                const angle = Math.PI / 2 + (physicsRandom() - 0.5) * Math.PI * 0.5;  // 대략 아래 방향
-                const force = (300 + physicsRandom() * 150) * this.scale;
+                const angle = Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 0.5;  // 대략 아래 방향
+                const force = (300 + Math.random() * 150) * this.scale;
                 this.vel.x = Math.cos(angle) * force;
                 this.vel.y = Math.sin(angle) * force + 200 * this.scale;  // 강하게 아래로
                 this.posHistory = [];
@@ -1616,7 +1532,7 @@
                 this.y = y;
                 this.length = length;
                 this.speed = speed;
-                this.angle = physicsRandom() * Math.PI * 2;
+                this.angle = Math.random() * Math.PI * 2;
                 this.color = '#ffd700';
             }
 
@@ -1739,7 +1655,7 @@
                 this.obstacles.push(obs);
             }
             
-            // 가장 앞서가는 공(아직 도착 안 한 공 중 가장 아래에 있는 공) 찾기
+            // 아직 레이싱 중인 공 가운데 현재 순위가 가장 높은 공 찾기
             getLeadingBall() {
                 let leader = null;
                 let maxY = -Infinity;
@@ -1752,15 +1668,15 @@
                 return leader;
             }
             
-            updateCamera() {
+            updateCamera(dt) {
                 const leader = this.getLeadingBall();
                 if (leader) {
                     // 리더가 화면의 상단 1/3 지점에 오도록 카메라 이동
                     const targetY = leader.pos.y - this.viewHeight * 0.35;
-                    // 부드러운 카메라 이동
-                    if (targetY > this.cameraY) this.cameraY += (targetY - this.cameraY) * 0.08;
-                    // 범위 제한
-                    this.cameraY = Math.max(0, Math.min(this.cameraY, this.height - this.viewHeight));
+                    const clampedTargetY = Math.max(0, Math.min(targetY, this.height - this.viewHeight));
+                    // 완주자가 생긴 뒤에도 다음 선두를 따라 위/아래 양방향으로 부드럽게 이동
+                    const followRate = 1 - Math.exp(-5 * dt);
+                    this.cameraY += (clampedTargetY - this.cameraY) * followRate;
                 }
             }
 
@@ -1826,7 +1742,7 @@
                 this.obstacles = this.obstacles.filter(obs => !(obs.type === 'peg' && obs.hit));
                 
                 // 카메라 업데이트
-                this.updateCamera();
+                this.updateCamera(dt);
             }
 
             collideWalls(ball) {
@@ -2459,10 +2375,6 @@
                 this.rankingElapsed = 0;
                 this.resultTimer = null;
                 this.firstWins = true;  // true: 먼저 들어온 순서가 1등, false: 나중에 들어온 순서가 1등
-                this.currentSeed = '';
-                this.currentRunHash = '';
-                this.runMode = 'AUTO';
-                this.startToken = 0;
                 this.renderScale = 1;
                 this.lastResultText = '';
                 this.backgroundCache = document.createElement('canvas');
@@ -2495,8 +2407,6 @@
                 if ((this.isRunning || this.resultTimer) && this.world) {
                     this.renderScale = this.canvas.width / this.world.width;
                     this.world.viewHeight = this.canvas.height / this.renderScale;
-                    if (!this.runMode.includes('RESIZED')) this.runMode += ' · RESIZED';
-                    this.renderRunProof();
                     this.draw();
                 } else {
                     this.setupWorld();
@@ -2559,16 +2469,13 @@
                 list.replaceChildren(placeholder);
             }
 
-            renderRunProof() {
-                const shortHash = this.currentRunHash ? this.currentRunHash.slice(0, 12).toUpperCase() : '—';
-                document.getElementById('runProof').textContent = `HASH: ${shortHash}${this.currentRunHash ? ` · ${this.runMode}` : ''}`;
-                document.getElementById('seedHash').textContent = shortHash;
+            renderMapBadge() {
                 const mapLabels = { chaos: '🌀 CHAOS ARENA', pinball: '🎰 PINBALL STADIUM', funnel: '🔻 FUNNEL CIRCUIT' };
                 document.getElementById('mapBadge').textContent = mapLabels[this.mapType] || this.mapType.toUpperCase();
             }
 
             setControlsDisabled(disabled) {
-                ['participants', 'mapSelect', 'firstWinsToggle', 'shuffleBtn', 'startBtn', 'gameSeed', 'seedRefresh'].forEach(id => {
+                ['participants', 'mapSelect', 'firstWinsToggle', 'shuffleBtn', 'startBtn'].forEach(id => {
                     const element = document.getElementById(id);
                     if (element) element.disabled = disabled;
                 });
@@ -2590,32 +2497,24 @@
                     document.getElementById('liveIndicator').style.display = 'none';
                     this.setPlaceholder('게임을 시작하면 순위가 표시됩니다');
                 }
-                this.currentRunHash = '';
-                this.runMode = 'AUTO';
-                this.renderRunProof();
+                this.renderMapBadge();
                 this.setupWorld();
                 this.draw();
             }
 
             shuffle() {
                 for (let i = this.participants.length - 1; i > 0; i--) {
-                    const j = Math.floor(physicsRandom() * (i + 1));
+                    const j = Math.floor(Math.random() * (i + 1));
                     [this.participants[i], this.participants[j]] = [this.participants[j], this.participants[i]];
                 }
                 this.setupWorld();
                 this.draw();
             }
 
-            setupWorld(preserveRandom = false) {
+            setupWorld() {
                 const w = this.canvas.width;
                 const viewH = this.canvas.height;
                 const scale = this.getScale();
-
-                if (!preserveRandom) {
-                    this.startToken++;
-                    const seed = document.getElementById('gameSeed')?.value.trim() || 'PLAYPICK';
-                    activePhysicsRandom = mulberry32(fallbackHash(JSON.stringify({ seed, participants: this.participants, map: this.mapType, firstWins: this.firstWins, viewport: [w, viewH] })));
-                }
 
                 this.world = new PhysicsWorld(w, viewH);
                 this.renderScale = 1;
@@ -2671,53 +2570,26 @@
                 const startArea = w * 0.6;
                 const startX = (w - startArea) / 2;
                 this.participants.forEach((name, i) => {
-                    const initialVelY = (150 + physicsRandom() * 100) * scale;
-                    const x = startX + physicsRandom() * startArea;
-                    const y = (-20 - physicsRandom() * 80 - i * 8) * scale;  // 시작 위치도 스케일 적용
+                    const initialVelY = (150 + Math.random() * 100) * scale;
+                    const x = startX + Math.random() * startArea;
+                    const y = (-20 - Math.random() * 80 - i * 8) * scale;  // 시작 위치도 스케일 적용
                     const color = this.colors[i % this.colors.length];
                     const ball = new Ball(x, y, ballRadius, color, name, initialVelY, scale);
                     ball.index = i;
                     this.world.addBall(ball);
                 });
-                this.renderRunProof();
-            }
-
-            async configureRun() {
-                const seedInput = document.getElementById('gameSeed');
-                if (!seedInput.value.trim()) seedInput.value = generateSeed();
-                this.currentSeed = seedInput.value.trim();
-                const material = JSON.stringify({
-                    game: 'marble-olympics-2.1',
-                    seed: this.currentSeed,
-                    participants: this.participants,
-                    map: this.mapType,
-                    firstWins: this.firstWins,
-                    viewport: [this.canvas.width, this.canvas.height]
-                });
-                const seeded = await createRunSeed(material);
-                this.currentRunHash = seeded.hashHex;
-                activePhysicsRandom = seeded.random;
-                this.runMode = 'AUTO';
-                this.renderRunProof();
             }
 
             async start() {
                 if (this.isRunning || this.resultTimer || this.participants.length < 2) return false;
-                const token = ++this.startToken;
                 sound.init();
                 sound.playStart();
                 this.setControlsDisabled(true);
-                await this.configureRun();
-                if (token !== this.startToken) {
-                    this.currentRunHash = '';
-                    this.renderRunProof();
-                    return false;
-                }
 
                 if (this.resultTimer) clearTimeout(this.resultTimer);
                 this.resultTimer = null;
                 this.isRunning = true;
-                this.setupWorld(true);
+                this.setupWorld();
                 this.lastTimestamp = 0;
                 this.accumulator = 0;
                 this.rankingElapsed = 0;
@@ -2775,20 +2647,15 @@
                     ball.progress = Math.max(0, Math.min(100, (ball.pos.y / this.world.finishLine) * 100));
                     this.world.rankings.push(ball);
                 });
-                this.runMode = this.runMode.includes('RESIZED') ? 'FORCED · RESIZED' : 'FORCED';
-                this.renderRunProof();
                 this.updateRankings();
                 this.draw();
                 this.scheduleWinner('forced');
             }
 
             reset() {
-                this.startToken++;
                 if (this.resultTimer) clearTimeout(this.resultTimer);
                 this.resultTimer = null;
                 this.stop();
-                this.currentRunHash = '';
-                this.runMode = 'AUTO';
                 this.setupWorld();
                 this.draw();
                 this.setPlaceholder('게임을 시작하면 순위가 표시됩니다');
@@ -2857,8 +2724,6 @@
                     ball.progress = Math.max(0, Math.min(100, (ball.pos.y / this.world.finishLine) * 100));  // 진행률 저장
                     this.world.rankings.push(ball);
                 });
-                this.runMode = this.runMode.includes('RESIZED') ? 'TIMEOUT · RESIZED' : 'TIMEOUT';
-                this.renderRunProof();
                 this.updateRankings();
                 this.scheduleWinner('timeout');
             }
@@ -2947,8 +2812,6 @@
                 const label = reason === 'timeout' ? '⏱️ 시간 초과!' : reason === 'forced' ? '⏹ 경기 종료!' : '🏆 1등!';
                 document.getElementById('winnerLabel').textContent = label;
                 document.getElementById('winnerName').textContent = winner.name;
-                document.getElementById('resultProof').textContent = `RUN HASH: ${this.currentRunHash.slice(0, 16).toUpperCase()} · ${this.runMode}`;
-                
                 // 전체 순위 표시
                 const finalList = document.getElementById('finalRankingList');
                 finalList.replaceChildren();
@@ -2960,8 +2823,7 @@
                 const firstTimeInSec = firstFinisher?.finishTime ?? 60;
 
                 // 결과 텍스트 생성 (복사용)
-                const shortHash = this.currentRunHash.slice(0, 16).toUpperCase();
-                this.lastResultText = `🏅 구슬 올림픽 결과\nRUN HASH: ${shortHash} · ${this.runMode}\nSEED: ${this.currentSeed}\nMAP: ${this.mapType.toUpperCase()}\n`;
+                this.lastResultText = `🏅 구슬 올림픽 결과\nMAP: ${this.mapType.toUpperCase()}\n`;
                 this.lastResultText += `${this.firstWins ? '(먼저 도착 = 1등)' : '(나중 도착 = 1등)'}\n\n`;
 
                 rankings.forEach((ball, i) => {
@@ -3464,8 +3326,6 @@
             const helpBtn = document.getElementById('helpBtn');
             const helpModal = document.getElementById('helpModal');
             const closeHelpBtn = document.getElementById('closeHelpBtn');
-            const seedInput = document.getElementById('gameSeed');
-            const seedRefresh = document.getElementById('seedRefresh');
             const winnerOverlay = document.getElementById('winnerOverlay');
             let helpReturnFocus = null;
 
@@ -3495,18 +3355,13 @@
 
             function updateGame() {
                 const { participants } = parseParticipants(participantsInput.value);
-                game.currentRunHash = '';
-                game.currentSeed = seedInput.value.trim();
-                game.runMode = 'AUTO';
                 game.setParticipants(participants);
-                game.renderRunProof();
             }
             
             // localStorage 키
             const STORAGE_KEY_PARTICIPANTS = 'marble-olympics-participants';
             const STORAGE_KEY_FIRST_WINS = 'marble-olympics-first-wins';
             const STORAGE_KEY_MAP = 'marble-olympics-map';
-            const STORAGE_KEY_SEED = 'marble-olympics-seed';
 
             const saveSetting = (key, value) => {
                 try { localStorage.setItem(key, value); } catch (error) { /* 저장 불가 환경 */ }
@@ -3523,7 +3378,6 @@
                 const savedMap = loadSetting(STORAGE_KEY_MAP);
                 if (savedParticipants) participantsInput.value = savedParticipants;
                 if (savedMap && ['chaos', 'pinball', 'funnel'].includes(savedMap)) mapSelect.value = savedMap;
-                seedInput.value = loadSetting(STORAGE_KEY_SEED) || generateSeed();
                 game.mapType = mapSelect.value;
                 if (savedFirstWins !== null) firstWinsToggle.checked = savedFirstWins === 'true';
                 game.firstWins = firstWinsToggle.checked;
@@ -3572,7 +3426,6 @@
                 if (game.isRunning) {
                     game.reset();
                 } else {
-                    game.currentRunHash = '';
                     game.setupWorld();
                     game.draw();
                 }
@@ -3604,23 +3457,12 @@
                     return;
                 }
                 const names = [...parsed.participants];
-                const random = mulberry32(fallbackHash(`${seedInput.value}:shuffle:${JSON.stringify(names)}`));
                 for (let index = names.length - 1; index > 0; index--) {
-                    const swapIndex = Math.floor(random() * (index + 1));
+                    const swapIndex = Math.floor(Math.random() * (index + 1));
                     [names[index], names[swapIndex]] = [names[swapIndex], names[index]];
                 }
                 participantsInput.value = names.join(', ');
                 saveParticipants();
-                updateGame();
-            });
-
-            seedInput.addEventListener('input', () => {
-                saveSetting(STORAGE_KEY_SEED, seedInput.value);
-                updateGame();
-            });
-            seedRefresh.addEventListener('click', () => {
-                seedInput.value = generateSeed();
-                saveSetting(STORAGE_KEY_SEED, seedInput.value);
                 updateGame();
             });
 
@@ -3638,10 +3480,7 @@
                 game.setParticipants(parsed.participants);
                 try {
                     const started = await game.start();
-                    if (started) {
-                        saveSetting(STORAGE_KEY_SEED, seedInput.value);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
+                    if (started) window.scrollTo({ top: 0, behavior: 'smooth' });
                 } catch (error) {
                     game.setControlsDisabled(false);
                     game.showToast('경기를 시작하지 못했습니다. 다시 시도해 주세요.');

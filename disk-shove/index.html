@@ -2,1888 +2,1354 @@
 @game-meta
 {
   "id": "disk-shove",
-  "title": "원판 밀치기",
+  "title": "네온 원판 밀치기",
   "emoji": "🥏",
-  "category": "서바이벌",
-  "description": "원형 아레나에서 밀려나지 않고 살아남아라! 부스터로 상대를 밀어내는 스릴 넘치는 서바이벌!",
-  "features": ["🔥 부스터 시스템", "⭕ 원형 아레나"],
+  "category": "survival",
+  "description": "좁아지는 네온 아레나에서 무작위 압력파와 충돌을 버티는 원판 서바이벌",
+  "features": ["고정 스텝 물리", "매 경기 무작위 진행", "원판 캐싱", "압력파 기록"],
+  "tags": ["원판", "서바이벌", "물리", "추첨", "네온"],
   "color": "pink",
-  "version": "1.1.0",
-  "updated": "2025-01-15",
+  "version": "1.2.2",
+  "created": "2025-01-15",
+  "updated": "2026-07-17",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
     "github": "geniuskey"
+  },
+  "requirements": {
+    "minParticipants": 2,
+    "maxParticipants": 30,
+    "recommendedParticipants": "4-18"
+  },
+  "settings": {
+    "winnerCount": true,
+    "tempo": true,
+    "soundEnabled": true
   },
   "urls": {
     "service": "https://geniuskey.github.io/lottery/disk-shove/",
     "repository": "https://github.com/geniuskey/lottery"
   },
   "license": "MIT",
-  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+  "copyright": "© 2026 Euiyun Edwin Kim. Licensed under the MIT License."
 }
 @end-game-meta
 -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-GFTNV73W8L');
-    </script>
-
-    <title>원판 밀치기 - 추첨 게임 포털</title>
-
-    <!-- SEO 기본 -->
-    <meta name="description" content="좁아지는 원형 아레나에서 살아남으세요! 부스터를 사용하여 상대를 밀어내고 최후의 승자가 되는 온라인 서바이벌 추첨 게임.">
-    <meta name="keywords" content="원판 밀치기, 밀치기 게임, 서바이벌 게임, 추첨 게임, 온라인 추첨, 랜덤 선택, 레크리에이션">
-    <meta name="author" content="Euiyun Edwin Kim">
-    <meta name="robots" content="index, follow">
-
-    <!-- Open Graph -->
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="추첨 게임 포털">
-    <meta property="og:title" content="🥏 원판 밀치기 - 극한의 서바이벌">
-    <meta property="og:description" content="상대를 밀어내고 원판 위에서 끝까지 버티세요! 실시간 물리 엔진 기반의 짜릿한 추첨 게임.">
-    <meta property="og:url" content="https://geniuskey.github.io/lottery/disk-shove/">
-    <meta property="og:image" content="https://geniuskey.github.io/lottery/og-image.png">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="🥏 원판 밀치기 - 극한의 서바이벌">
-    <meta name="twitter:description" content="상대를 밀어내고 원판 위에서 끝까지 버티세요! 실시간 물리 엔진 기반의 짜릿한 추첨 게임.">
-    <meta name="twitter:image" content="https://geniuskey.github.io/lottery/og-image.png">
-
-    <!-- Canonical & Favicon -->
-    <link rel="canonical" href="https://geniuskey.github.io/lottery/disk-shove/">
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥏</text></svg>">
-
-    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --bg-dark: #0a0a0f;
-            --bg-card: rgba(20, 20, 35, 0.95);
-            --accent: #ff6b35;
-            --accent-glow: rgba(255, 107, 53, 0.5);
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0b0;
-            --border: rgba(255, 255, 255, 0.1);
-            --success: #4ade80;
-            --danger: #ef4444;
-            --warning: #fbbf24;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 107, 53, 0.3);
-            border-radius: 10px;
-            transition: 0.3s;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent);
-        }
-
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            overflow: hidden;
-            touch-action: manipulation;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 320px;
-            min-width: 320px;
-            background: var(--bg-card);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            backdrop-filter: blur(20px);
-        }
-
-        .sidebar-header {
-            padding: 24px 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .sidebar-header h1 {
-            font-family: 'Noto Sans KR', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex: 1;
-            white-space: nowrap;
-            letter-spacing: -0.8px;
-        }
-
-        .sidebar-header h1 .emoji {
-            filter: drop-shadow(0 0 5px rgba(255, 107, 53, 0.5));
-            -webkit-text-fill-color: initial;
-            background: none;
-        }
-
-        .sidebar-header h1 .title-text {
-            /* 프리미엄 금속 광택 효과 */
-            background: linear-gradient(
-                to right, 
-                var(--accent) 0%, 
-                #fff 45%, 
-                #fff 55%, 
-                var(--accent) 100%
-            );
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shine 5s linear infinite;
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
-        }
-
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        .header-btns {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .help-btn, .sound-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .help-btn:hover, .sound-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: var(--text-primary);
-            transform: translateY(-2px);
-        }
-
-        .sidebar-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            min-height: 0;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            flex-shrink: 0;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .input-group textarea {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 0.95rem;
-            resize: vertical;
-            min-height: 80px;
-            transition: all 0.3s;
-        }
-
-        .input-group textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        .settings-group {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-            flex-shrink: 0;
-        }
-
-        .settings-group h3 {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .setting-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-
-        .setting-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .setting-row span {
-            font-size: 0.9rem;
-        }
-
-        .setting-row select,
-        .setting-row input[type="number"] {
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 0.9rem;
-            min-width: 100px;
-        }
-
-        .setting-row select option {
-            background: #1a1a2e;
-            color: var(--text-primary);
-            padding: 8px;
-        }
-
-        .setting-row select:focus,
-        .setting-row input[type="number"]:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-shrink: 0;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 14px 20px;
-            border: none;
-            border-radius: 10px;
-            font-family: 'Black Han Sans', sans-serif;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #ff9f6b);
-            color: white;
-            box-shadow: 0 4px 15px var(--accent-glow);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--accent-glow);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            flex: 0 0 50px;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        /* Ranking Board */
-        .ranking-board {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 16px;
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .ranking-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-
-        .ranking-header h3 {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .alive-count {
-            font-size: 0.8rem;
-            color: var(--success);
-            background: rgba(74, 222, 128, 0.1);
-            padding: 4px 10px;
-            border-radius: 20px;
-        }
-
-        .ranking-list {
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .ranking-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 12px;
-            border-radius: 8px;
-            margin-bottom: 6px;
-            background: rgba(255, 255, 255, 0.03);
-            transition: all 0.3s;
-        }
-
-        .ranking-item.eliminated {
-            opacity: 0.4;
-            background: rgba(239, 68, 68, 0.1);
-        }
-
-        .ranking-item.winner {
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(255, 159, 107, 0.1));
-            border: 1px solid var(--accent);
-        }
-
-        .ranking-item.boosting {
-            animation: boostPulse 0.5s ease;
-        }
-
-        @keyframes boostPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); background: rgba(255, 107, 53, 0.3); }
-        }
-
-        .rank-badge {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-right: 10px;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .rank-badge.gold {
-            background: linear-gradient(135deg, #ffd700, #ffb700);
-            color: #000;
-        }
-
-        .rank-badge.silver {
-            background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
-            color: #000;
-        }
-
-        .rank-badge.bronze {
-            background: linear-gradient(135deg, #cd7f32, #b8702e);
-            color: #000;
-        }
-
-        .player-emoji {
-            font-size: 1.3rem;
-            margin-right: 10px;
-        }
-
-        .player-name {
-            flex: 1;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .player-status {
-            font-size: 0.75rem;
-            padding: 3px 8px;
-            border-radius: 10px;
-            background: rgba(74, 222, 128, 0.2);
-            color: var(--success);
-        }
-
-        .player-status.out {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--danger);
-        }
-
-        .player-status.boost {
-            background: rgba(251, 191, 36, 0.2);
-            color: var(--warning);
-            animation: boostGlow 0.5s infinite alternate;
-        }
-
-        @keyframes boostGlow {
-            from { box-shadow: 0 0 5px rgba(251, 191, 36, 0.3); }
-            to { box-shadow: 0 0 15px rgba(251, 191, 36, 0.6); }
-        }
-
-        /* Sidebar Footer */
-        .sidebar-footer {
-            padding: 16px 20px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .icon-btn {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            text-decoration: none;
-        }
-
-        .icon-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            transform: translateY(-2px);
-        }
-
-        .icon-btn[data-tooltip]:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 6px 10px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            margin-bottom: 8px;
-        }
-
-        /* Main Game Area */
-        .main-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .copyright {
-            position: absolute;
-            bottom: 10px;
-            right: 15px;
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.25);
-            pointer-events: none;
-            user-select: none;
-        }
-
-        .arena-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #gameCanvas {
-            width: 100%;
-            height: 100%;
-        }
-
-        .game-info {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 20px;
-            z-index: 10;
-        }
-
-        .info-badge {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            backdrop-filter: blur(10px);
-        }
-
-        .info-badge.time {
-            font-family: 'Black Han Sans', sans-serif;
-            font-size: 1.2rem;
-        }
-
-        /* Winner Overlay */
-        .winner-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-        }
-
-        .winner-overlay.show {
-            display: flex;
-        }
-
-        .winner-content {
-            text-align: center;
-            animation: winnerPop 0.5s ease;
-        }
-
-        @keyframes winnerPop {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .winner-emoji {
-            font-size: 8rem;
-            animation: winnerBounce 1s infinite;
-        }
-
-        @keyframes winnerBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .winner-title {
-            font-family: 'Black Han Sans', sans-serif;
-            font-size: 3rem;
-            margin: 20px 0;
-        }
-
-        .winner-title .title-emoji {
-            background: none;
-            -webkit-background-clip: initial;
-            -webkit-text-fill-color: initial;
-            background-clip: initial;
-        }
-
-        .winner-title .title-text {
-            background: linear-gradient(135deg, #ffd700, var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .winner-name {
-            font-size: 2rem;
-            color: var(--text-primary);
-            margin-bottom: 30px;
-        }
-
-        .close-overlay-btn {
-            padding: 15px 40px;
-            background: linear-gradient(135deg, var(--accent), #ff9f6b);
-            border: none;
-            border-radius: 30px;
-            color: white;
-            font-family: 'Black Han Sans', sans-serif;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .close-overlay-btn:hover {
-            transform: scale(1.05);
-        }
-
-        /* Confetti */
-        .confetti {
-            position: fixed;
-            pointer-events: none;
-            z-index: 999;
-        }
-
-        /* KO Log */
-        .ko-log {
-            position: absolute;
-            top: 80px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            z-index: 50;
-            pointer-events: none;
-            align-items: flex-end;
-            max-height: 50vh;
-            overflow: hidden;
-        }
-
-        .ko-log-item {
-            background: rgba(0, 0, 0, 0.75);
-            border-right: 4px solid var(--danger);
-            padding: 8px 16px;
-            border-radius: 4px;
-            color: #eee;
-            font-size: 0.9rem;
-            animation: logSlideIn 0.3s ease-out forwards;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            white-space: nowrap;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        @keyframes logSlideIn {
-            from { transform: translateX(50px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* Help Modal */
-        .help-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1001;
-            backdrop-filter: blur(5px);
-        }
-
-        .help-modal.show {
-            display: flex;
-        }
-
-        .help-content {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 450px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            animation: modalPop 0.3s ease;
-        }
-
-        @keyframes modalPop {
-            0% { transform: scale(0.9); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .help-content h2 {
-            font-family: 'Black Han Sans', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: var(--accent);
-        }
-
-        .help-content h3 {
-            font-size: 1rem;
-            margin: 16px 0 8px;
-            color: var(--text-primary);
-        }
-
-        .help-content p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 12px;
-        }
-
-        .help-content .close-help-btn {
-            width: 100%;
-            padding: 12px;
-            margin-top: 20px;
-            background: linear-gradient(135deg, var(--accent), #ff9f6b);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-family: 'Black Han Sans', sans-serif;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .help-content .close-help-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column-reverse; /* Game area on top */
-                overflow-y: auto;
-                height: auto;
-            }
-
-            .sidebar {
-                width: 100%;
-                min-width: 100%;
-                height: auto;
-                max-height: none;
-                border-right: none;
-                border-top: 1px solid var(--border); /* Divider on top of sidebar */
-            }
-
-            .sidebar-content {
-                overflow-y: visible;
-            }
-
-            .main-area {
-                width: 100%;
-                height: auto;
-                aspect-ratio: 1 / 1;
-                flex: none;
-                background: #000;
-            }
-
-            .arena-container {
-                width: 100%;
-                height: 100%;
-            }
-
-            .game-info {
-                top: 15px;
-                gap: 10px;
-                z-index: 20;
-            }
-
-            .info-badge {
-                display: none; 
-                background: rgba(20, 20, 35, 0.6); /* More transparent */
-                backdrop-filter: blur(8px);
-            }
-
-            .info-badge.time {
-                display: flex;
-                padding: 6px 16px;
-                font-size: 1.1rem;
-                border-color: rgba(255, 255, 255, 0.15);
-            }
-
-            .ko-log {
-                top: 60px;
-                right: 10px;
-            }
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            transition: all 0.3s;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent);
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>네온 원판 밀치기 | PLAYPICK</title>
+  <meta name="description" content="좁아지는 네온 아레나에서 무작위 충돌과 압력파를 버티는 원판 서바이벌 추첨 게임입니다.">
+  <meta name="keywords" content="원판 밀치기,서바이벌 추첨,물리 게임,랜덤 추첨,PLAYPICK">
+  <meta name="author" content="Euiyun Edwin Kim">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#090826">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PLAYPICK">
+  <meta property="og:title" content="🥏 네온 원판 밀치기">
+  <meta property="og:description" content="무작위 진행과 고정 스텝 물리로 펼쳐지는 네온 디스크 서바이벌">
+  <meta property="og:url" content="https://geniuskey.github.io/lottery/disk-shove/">
+  <meta property="og:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/disk-shove.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="🥏 네온 원판 밀치기">
+  <meta name="twitter:description" content="부딪히고, 밀어내고, 끝까지 살아남으세요.">
+  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/disk-shove.webp">
+  <link rel="canonical" href="https://geniuskey.github.io/lottery/disk-shove/">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      color-scheme: dark;
+      --panel: 336px;
+      --ink: #fbfaff;
+      --muted: #aaa8c8;
+      --line: rgba(255,255,255,.12);
+      --cyan: #29ddff;
+      --pink: #ff4f91;
+      --orange: #ff9e3d;
+      --gold: #ffd75e;
+      --green: #55f2b0;
+      --danger: #ff5577;
+    }
+    * { box-sizing: border-box; }
+    html,body { width: 100%; min-height: 100%; margin: 0; }
+    body {
+      display: flex;
+      overflow: hidden;
+      color: var(--ink);
+      background: #050517;
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+    }
+    button,input,select,textarea { color: inherit; font: inherit; }
+    button,a,select { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }
+    .control-panel {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      flex: 0 0 var(--panel);
+      width: var(--panel);
+      height: 100dvh;
+      min-height: 620px;
+      flex-direction: column;
+      gap: 13px;
+      padding: 18px;
+      overflow: hidden auto;
+      border-right: 1px solid rgba(125,104,255,.3);
+      background:
+        radial-gradient(circle at 12% 0%,rgba(255,79,145,.15),transparent 25%),
+        linear-gradient(180deg,#11102e 0%,#080821 64%,#07071b 100%);
+      box-shadow: 18px 0 60px rgba(0,0,0,.24);
+    }
+    .brand-row,.header-actions,.field-head,.setting-head,.ranking-head,.panel-footer { display: flex; align-items: center; }
+    .brand-row { justify-content: space-between; gap: 12px; }
+    .brand { display: grid; grid-template-columns: 45px minmax(0,1fr); align-items: center; gap: 10px; min-width: 0; }
+    .brand-icon {
+      display: grid;
+      width: 45px;
+      height: 45px;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 14px;
+      background: linear-gradient(145deg,var(--pink),#814bff 55%,var(--cyan));
+      box-shadow: inset 0 1px rgba(255,255,255,.35),0 9px 25px rgba(255,79,145,.27);
+      font-size: 1.45rem;
+    }
+    .brand small { display: block; color: var(--cyan); font: 900 .57rem ui-monospace,monospace; letter-spacing: .18em; }
+    .brand h1 { margin: 3px 0 0; overflow: hidden; font-size: 1.17rem; letter-spacing: -.055em; text-overflow: ellipsis; white-space: nowrap; }
+    .header-actions { gap: 7px; }
+    .icon-button,.footer-button {
+      display: grid;
+      width: 39px;
+      height: 39px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.07);
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform .18s,border-color .18s,background .18s;
+    }
+    .icon-button:hover,.footer-button:hover { border-color: rgba(41,221,255,.45); background: rgba(41,221,255,.1); transform: translateY(-1px); }
+    .field { display: grid; gap: 7px; }
+    .field-head { justify-content: space-between; gap: 8px; color: #e9e8f5; font-size: .75rem; font-weight: 850; }
+    .field-head span:last-child { color: var(--muted); font-size: .64rem; }
+    textarea,input,select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.065);
+      transition: border-color .18s,background .18s;
+    }
+    textarea:hover,input:hover,select:hover { border-color: rgba(41,221,255,.33); }
+    textarea { min-height: 70px; max-height: 122px; padding: 11px 12px; resize: vertical; font-size: .76rem; font-weight: 730; line-height: 1.6; }
+    .field-note { display: flex; justify-content: space-between; color: #9290b3; font-size: .62rem; }
+    .field-note strong { color: var(--cyan); }
+    input,select { height: 41px; padding: 0 10px; font-size: .72rem; font-weight: 800; }
+    .settings {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(3,4,24,.42);
+    }
+    .setting { display: grid; gap: 6px; }
+    .setting label { color: #bbb9d4; font-size: .63rem; font-weight: 800; }
+    .button-row { display: grid; grid-template-columns: minmax(0,1fr) 52px; gap: 8px; }
+    .primary-button,.reset-button,.result-button {
+      height: 50px;
+      border: 0;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 950;
+      transition: transform .18s,filter .18s,opacity .18s;
+    }
+    .primary-button {
+      color: #08091b;
+      background: linear-gradient(105deg,var(--cyan),#8d6dff 55%,var(--pink));
+      box-shadow: 0 12px 28px rgba(76,127,255,.22),inset 0 1px rgba(255,255,255,.38);
+    }
+    .primary-button:hover:not(:disabled) { transform: translateY(-2px); filter: saturate(1.15); }
+    .primary-button:disabled { cursor: wait; opacity: .62; }
+    .reset-button { border: 1px solid var(--line); background: rgba(255,255,255,.075); font-size: 1.12rem; }
+    .ranking-card {
+      display: flex;
+      min-height: 172px;
+      flex: 1 1 200px;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(2,3,20,.52);
+    }
+    .ranking-head { justify-content: space-between; padding: 11px 12px 9px; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .ranking-head strong { font-size: .72rem; }
+    .alive-pill { padding: 4px 8px; border-radius: 99px; color: var(--green); background: rgba(85,242,176,.09); font: 850 .58rem ui-monospace,monospace; }
+    .ranking-list { display: grid; align-content: start; gap: 5px; padding: 8px; overflow: hidden auto; }
+    .ranking-empty { padding: 28px 12px; color: #8987a8; text-align: center; font-size: .69rem; line-height: 1.6; }
+    .ranking-item { display: grid; grid-template-columns: 23px 23px minmax(0,1fr) auto; align-items: center; gap: 5px; min-height: 31px; padding: 4px 7px; border-radius: 9px; background: rgba(255,255,255,.045); font-size: .66rem; }
+    .ranking-item.boost { background: rgba(255,215,94,.11); box-shadow: inset 0 0 0 1px rgba(255,215,94,.18); }
+    .ranking-item.out { opacity: .43; }
+    .rank { display: grid; width: 21px; height: 21px; place-items: center; border-radius: 7px; color: #b9b6d4; background: rgba(255,255,255,.06); font: 900 .58rem ui-monospace,monospace; }
+    .ranking-name { overflow: hidden; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+    .ranking-status { color: var(--muted); font: 800 .52rem ui-monospace,monospace; }
+    .ranking-status.hot { color: var(--gold); }
+    .ranking-status.out { color: var(--danger); }
+    .panel-footer { justify-content: center; gap: 8px; margin-top: auto; padding-top: 2px; }
+    .footer-button { width: 38px; height: 38px; color: #c3c1d6; }
+    .game-area {
+      position: relative;
+      width: calc(100% - var(--panel));
+      height: 100dvh;
+      min-height: 620px;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 50% 46%,rgba(15,75,120,.28),transparent 31%),
+        radial-gradient(circle at 86% 78%,rgba(255,57,137,.23),transparent 30%),
+        radial-gradient(circle at 12% 20%,rgba(33,192,255,.16),transparent 27%),
+        linear-gradient(145deg,#07142c,#090720 55%,#1b0731);
+    }
+    .game-area::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      opacity: .48;
+      background-image:
+        radial-gradient(circle,#fff 0 1px,transparent 1.6px),
+        radial-gradient(circle,#7fe8ff 0 1px,transparent 1.5px);
+      background-position: 0 0,37px 71px;
+      background-size: 82px 82px,113px 113px;
+      mask-image: linear-gradient(to bottom,#000,transparent 92%);
+    }
+    .game-area::after {
+      content: "";
+      position: absolute;
+      inset: auto -8% -20% 8%;
+      z-index: -1;
+      height: 50%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse,rgba(54,37,119,.8),rgba(7,5,29,0) 68%);
+      filter: blur(14px);
+    }
+    .arena-head { position: absolute; top: 18px; left: 24px; z-index: 8; }
+    .arena-kicker { color: var(--cyan); font: 900 .58rem ui-monospace,monospace; letter-spacing: .18em; }
+    .arena-head h2 { margin: 5px 0 2px; font-size: clamp(1.15rem,2.1vw,1.8rem); letter-spacing: -.055em; }
+    .arena-proof { color: #9d9abb; font: 750 .57rem ui-monospace,monospace; }
+    .hud { position: absolute; top: 16px; right: 18px; z-index: 8; display: grid; grid-template-columns: repeat(3,84px); gap: 7px; }
+    .hud-item { padding: 8px 5px; border: 1px solid var(--line); border-radius: 13px; background: rgba(6,5,28,.68); backdrop-filter: blur(12px); text-align: center; }
+    .hud-item strong { display: block; color: var(--gold); font: 950 .93rem ui-monospace,monospace; }
+    .hud-item span { color: #8e8bad; font: 800 .5rem ui-monospace,monospace; letter-spacing: .08em; }
+    .danger-banner {
+      position: absolute;
+      top: 89px;
+      left: 50%;
+      z-index: 9;
+      padding: 7px 14px;
+      border: 1px solid rgba(255,85,119,.38);
+      border-radius: 99px;
+      color: #ffd7df;
+      background: rgba(63,7,31,.76);
+      box-shadow: 0 0 24px rgba(255,85,119,.18);
+      opacity: 0;
+      transform: translate(-50%,-8px);
+      transition: .3s;
+      font: 900 .62rem ui-monospace,monospace;
+      pointer-events: none;
+    }
+    .danger-banner.show { opacity: 1; transform: translate(-50%,0); }
+    .arena-stage { position: absolute; inset: 78px 18px 62px; display: grid; place-items: center; }
+    .arena-machine {
+      --arena-size: 680px;
+      position: relative;
+      width: var(--arena-size);
+      height: var(--arena-size);
+      filter: drop-shadow(0 26px 40px rgba(0,0,0,.46));
+    }
+    .arena-machine::before {
+      content: "";
+      position: absolute;
+      inset: 1.5%;
+      border: clamp(13px,2.1vw,24px) solid #181645;
+      border-radius: 50%;
+      box-shadow:
+        inset 0 0 0 3px #2be0ff,
+        inset 0 0 24px rgba(43,224,255,.62),
+        0 0 0 4px #47348d,
+        0 0 0 7px #ff4f91,
+        0 0 28px rgba(255,79,145,.48);
+      pointer-events: none;
+    }
+    .arena-machine::after {
+      content: "";
+      position: absolute;
+      inset: 9.2%;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 50%;
+      box-shadow: inset 0 0 44px rgba(0,0,0,.55);
+      pointer-events: none;
+    }
+    #gameCanvas { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; }
+    .rail-node { position: absolute; top: 50%; left: 50%; width: 19px; height: 31px; border: 2px solid rgba(255,255,255,.26); border-radius: 7px; background: linear-gradient(#ff7ab0,#9f3cff); box-shadow: 0 0 12px var(--pink); transform: translate(-50%,-50%) rotate(var(--a)) translateY(calc(var(--arena-size) * -.487)); }
+    .rail-node:nth-child(even) { background: linear-gradient(#55efff,#1670ff); box-shadow: 0 0 12px var(--cyan); }
+    .stage-shadow { position: absolute; left: 50%; bottom: 1.5%; width: 72%; height: 7%; border-radius: 50%; background: rgba(0,0,0,.55); filter: blur(15px); transform: translateX(-50%); }
+    .crystal { position: absolute; z-index: -1; opacity: .8; filter: drop-shadow(0 0 15px currentColor); }
+    .crystal-a { left: 3%; bottom: 8%; color: #19dfff; font-size: 4.3rem; transform: rotate(-20deg); }
+    .crystal-b { right: 5%; top: 20%; color: #ff5c9e; font-size: 3.8rem; transform: rotate(17deg); }
+    .crystal-c { right: 13%; bottom: 4%; color: #9c63ff; font-size: 2.8rem; }
+    .event-callout {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      z-index: 8;
+      width: min(560px,calc(100% - 24px));
+      padding: 9px 15px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: #d8d6e8;
+      background: rgba(4,4,24,.7);
+      backdrop-filter: blur(12px);
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transform: translateX(-50%);
+      font-size: .72rem;
+      font-weight: 800;
+    }
+    .event-callout.hot { border-color: rgba(255,85,119,.4); color: #ffe0e6; box-shadow: 0 0 28px rgba(255,85,119,.13); }
+    .copyright { position: absolute; right: 10px; bottom: 5px; color: rgba(255,255,255,.24); font-size: .52rem; }
+    #celebrationCanvas { position: fixed; inset: 0; z-index: 70; display: none; width: 100%; height: 100%; pointer-events: none; }
+    .result-overlay { position: fixed; inset: 0; z-index: 80; display: none; place-items: center; padding: 20px; background: rgba(3,2,18,.58); backdrop-filter: blur(18px) saturate(1.2); }
+    .result-overlay.show { display: grid; animation: fade-in .34s ease; }
+    @keyframes fade-in { from { opacity: 0; } }
+    .result-card { width: min(590px,100%); max-height: 90dvh; padding: 27px; overflow-y: auto; border: 1px solid rgba(255,255,255,.22); border-radius: 27px; background: radial-gradient(circle at 50% 0%,rgba(41,221,255,.18),transparent 30%),linear-gradient(145deg,rgba(34,26,89,.97),rgba(8,7,31,.98)); box-shadow: 0 30px 90px rgba(0,0,0,.65),0 0 50px rgba(255,79,145,.15); text-align: center; }
+    .result-icon { font-size: 3.8rem; filter: drop-shadow(0 0 22px rgba(255,215,94,.65)); }
+    .result-eyebrow { margin-top: 4px; color: var(--cyan); font: 900 .62rem ui-monospace,monospace; letter-spacing: .2em; }
+    .result-card h2 { margin: 7px 0 15px; font-size: clamp(1.55rem,4vw,2.25rem); letter-spacing: -.06em; }
+    .winner-list { display: grid; gap: 7px; }
+    .winner-row { display: grid; grid-template-columns: 36px 30px minmax(0,1fr) auto; align-items: center; gap: 7px; padding: 9px 11px; border: 1px solid rgba(255,215,94,.22); border-radius: 12px; background: rgba(255,215,94,.07); text-align: left; font-weight: 900; }
+    .winner-row span:last-child { color: var(--muted); font: 750 .56rem ui-monospace,monospace; }
+    .result-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin: 14px 0 11px; }
+    .result-stat { padding: 9px 4px; border-radius: 11px; background: rgba(255,255,255,.055); }
+    .result-stat strong { display: block; color: var(--pink); font-size: .95rem; }
+    .result-stat span { color: var(--muted); font-size: .57rem; }
+    .result-proof { padding: 9px; border-radius: 10px; color: #c4c1d9; background: rgba(0,0,0,.22); overflow-wrap: anywhere; font: 700 .58rem/1.5 ui-monospace,monospace; }
+    .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+    .result-button { height: 44px; border: 1px solid var(--line); background: rgba(255,255,255,.075); }
+    .result-button.accent { color: #08091b; border: 0; background: linear-gradient(105deg,var(--cyan),var(--pink)); }
+    dialog { width: min(540px,calc(100% - 28px)); max-height: 86dvh; padding: 0; overflow-y: auto; border: 1px solid rgba(255,255,255,.2); border-radius: 22px; color: var(--ink); background: linear-gradient(145deg,#261f62,#080725); box-shadow: 0 30px 90px rgba(0,0,0,.65); }
+    dialog::backdrop { background: rgba(2,2,15,.72); backdrop-filter: blur(8px); }
+    .help-content { padding: 24px; }
+    .help-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .help-head h2 { margin: 0; }
+    .help-content ol { padding-left: 21px; color: #d5d2e8; font-size: .79rem; line-height: 1.75; }
+    .help-note { padding: 11px; border-radius: 11px; color: #ffe49a; background: rgba(255,215,94,.075); font-size: .72rem; line-height: 1.55; }
+    .toast { position: fixed; left: 50%; bottom: 22px; z-index: 100; max-width: calc(100% - 28px); padding: 10px 16px; border: 1px solid rgba(41,221,255,.35); border-radius: 99px; background: rgba(8,7,35,.96); box-shadow: 0 12px 36px rgba(0,0,0,.45); opacity: 0; pointer-events: none; transform: translate(-50%,12px); transition: .22s; font-size: .73rem; font-weight: 850; }
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+    @media (max-width: 1080px) {
+      :root { --panel: 300px; }
+      .control-panel { padding-inline: 14px; }
+      .hud { grid-template-columns: repeat(3,72px); }
+      .arena-head { left: 17px; }
+    }
+    @media (max-width: 760px) {
+      html { overflow-x: hidden; }
+      body { display: block; overflow-x: hidden; overflow-y: auto; }
+      .control-panel { width: 100%; height: auto; min-height: 0; padding: 15px; overflow: visible; border-right: 0; border-bottom: 1px solid var(--line); }
+      textarea { min-height: 64px; max-height: 100px; }
+      .ranking-card { min-height: 130px; max-height: 205px; }
+      .ranking-list { max-height: 150px; }
+      .panel-footer { margin-top: 0; }
+      .game-area { width: 100%; height: 790px; min-height: 790px; }
+      .arena-head { top: 12px; left: 10px; max-width: calc(100% - 225px); }
+      .arena-head h2 { margin-top: 3px; font-size: .97rem; }
+      .arena-kicker,.arena-proof { font-size: .48rem; }
+      .hud { top: 10px; right: 8px; grid-template-columns: repeat(3,67px); gap: 4px; }
+      .hud-item { padding: 6px 2px; }
+      .hud-item strong { font-size: .77rem; }
+      .danger-banner { top: 73px; }
+      .arena-stage { inset: 76px 4px 67px; }
+      .crystal { opacity: .45; }
+      .event-callout { bottom: 13px; }
+      .copyright { display: none; }
+    }
+    @media (max-width: 390px) {
+      .control-panel { padding-inline: 11px; }
+      .game-area { height: 730px; min-height: 730px; }
+      .arena-head { max-width: 150px; }
+      .hud { grid-template-columns: repeat(3,58px); }
+      .result-card { padding: 21px 14px; }
+      .winner-row { grid-template-columns: 30px 26px minmax(0,1fr); }
+      .winner-row span:last-child { display: none; }
+    }
+    /* Let survival radar consume the remaining sidebar height and anchor utility actions. */
+    .ranking-card { min-height: 0; max-height: none; flex: 1; }
+    .ranking-list { flex: 1; min-height: 0; max-height: none; }
+    .panel-footer { flex: none; margin-top: 0; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.08); }
+    .footer-button:hover { color: #fff; }
+    .footer-button svg { display: block; width: 18px; height: 18px; }
+    @media (max-width:760px) {
+      .ranking-card { min-height: 150px; max-height: 260px; flex: none; }
+      .ranking-list { max-height: none; }
+      .panel-footer { padding-bottom: max(2px,env(safe-area-inset-bottom)); }
+    }
+  </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h1><span class="emoji">🥊</span> <span class="title-text">원판 밀치기</span></h1>
-            <div class="header-btns">
-                <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
-                <button class="help-btn" id="helpBtn" data-tooltip="도움말">?</button>
-            </div>
-        </div>
-
-        <div class="sidebar-content">
-            <div class="input-group">
-                <label>👥 참여자 명단</label>
-                <textarea id="participantsInput" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
-            </div>
-
-            <div class="settings-group">
-                <h3>⚙️ 게임 설정</h3>
-                <div class="setting-row">
-                    <span>🏆 우승자 수</span>
-                    <select id="winnerCount">
-                        <option value="1" selected>1명</option>
-                        <option value="2">2명</option>
-                        <option value="3">3명</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn btn-primary" id="startBtn">🎮 시작</button>
-                <button class="btn btn-secondary" id="resetBtn">↺</button>
-            </div>
-
-            <div class="ranking-board">
-                <div class="ranking-header">
-                    <h3>🏅 실시간 랭킹</h3>
-                    <span class="alive-count" id="aliveCount">생존: 0명</span>
-                </div>
-                <div class="ranking-list" id="rankingList">
-                    <div style="color: var(--text-secondary); text-align: center; padding: 30px; font-size: 0.9rem;">
-                        게임을 시작하면<br>랭킹이 표시됩니다
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="sidebar-footer">
-            <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            </a>
-            <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-            </button>
-            <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
-            </a>
-            <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
-            </a>
-        </div>
-    </aside>
-
-    <main class="main-area">
-        <div class="game-info">
-            <div class="info-badge time" id="gameTimer">⏱️ 00:00</div>
-        </div>
-
-        <div class="ko-log" id="koLog"></div>
-
-        <div class="arena-container">
-            <canvas id="gameCanvas"></canvas>
-        </div>
-
-        <div class="copyright">© 2025 Euiyun Edwin Kim.</div>
-    </main>
-
-    <div class="winner-overlay" id="winnerOverlay">
-        <div class="winner-content">
-            <div class="winner-emoji" id="winnerEmoji">🏆</div>
-            <div class="winner-title"><span class="title-emoji">🎉</span> <span class="title-text">게임 종료!</span></div>
-            <div class="winner-name" id="winnerNames">우승자</div>
-            <button class="close-overlay-btn" id="closeOverlay">확인</button>
-        </div>
+  <aside class="control-panel" aria-label="게임 설정">
+    <div class="brand-row">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">🥏</div>
+        <div><small>PLAYPICK COLLISION</small><h1>네온 원판 밀치기</h1></div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-button" id="soundButton" type="button" aria-label="소리 끄기">🔊</button>
+        <button class="icon-button" id="helpButton" type="button" aria-label="도움말">?</button>
+      </div>
     </div>
 
-    <div class="help-modal" id="helpModal">
-        <div class="help-content">
-            <h2>🥊 원판 밀치기 도움말</h2>
-            
-            <h3>🎯 게임 목표</h3>
-            <p>원판 위에서 다른 참여자들을 밀어내고 끝까지 살아남으세요! 원판 밖으로 떨어지면 탈락입니다.</p>
-            
-            <h3>⚙️ 게임 규칙</h3>
-            <p>• 참여자들은 공처럼 서로 부딪히며 밀어냅니다<br>
-            • 모든 참여자는 중앙으로 끌리는 힘을 받습니다<br>
-            • 주기적으로 부스터가 발동되어 강하게 돌진합니다<br>
-            • 시간이 지날수록 원판이 점점 작아집니다</p>
-            
-            <h3>💨 부스터</h3>
-            <p>설정된 주기마다 각 참여자가 랜덤 시점에 부스터를 사용합니다. 부스터 사용 시 황금색으로 빛나며 강력한 밀어내기가 가능합니다.</p>
-            
-            <h3>🏆 승리 조건</h3>
-            <p>설정된 우승자 수만큼 남을 때까지 게임이 진행됩니다.</p>
-            
-            <button class="close-help-btn" id="closeHelpBtn">확인</button>
-        </div>
+    <div class="field">
+      <div class="field-head"><label for="participants">참가자</label><span>이름*인원 지원</span></div>
+      <textarea id="participants" maxlength="1800" spellcheck="false">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+      <div class="field-note"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 30</strong></div>
     </div>
 
-    <script>
-        // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
-        
-        class SoundManager {
-            constructor() {
-                this.ctx = null;
-                this.enabled = true;
-                this.setupToggleButton();
-            }
+    <div class="settings">
+      <div class="setting">
+        <label for="winnerCount">🏆 생존자</label>
+        <select id="winnerCount">
+          <option value="1">1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option><option value="5">5명</option>
+        </select>
+      </div>
+      <div class="setting">
+        <label for="tempo">⚡ 압력파 템포</label>
+        <select id="tempo">
+          <option value="rapid">급속</option><option value="standard" selected>표준</option><option value="cinematic">시네마틱</option>
+        </select>
+      </div>
+    </div>
 
-            setupToggleButton() {
-                const btn = document.getElementById('soundToggle');
-                if (btn) {
-                    btn.onclick = () => {
-                        this.enabled = !this.enabled;
-                        btn.textContent = this.enabled ? '🔊' : '🔇';
-                        if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
-                            this.ctx.resume();
-                        }
-                    };
-                }
-            }
+    <div class="button-row">
+      <button class="primary-button" id="startButton" type="button">⚡ 배틀 시작</button>
+      <button class="reset-button" id="resetButton" type="button" aria-label="게임 초기화">↺</button>
+    </div>
 
-            init() {
-                if (this.ctx) return;
-                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-            }
+    <section class="ranking-card" aria-label="실시간 생존 현황">
+      <div class="ranking-head"><strong>🏅 생존 레이더</strong><span class="alive-pill" id="aliveCount">READY</span></div>
+      <div class="ranking-list" id="rankingList"></div>
+    </section>
 
-            playStart() {
-                if (!this.enabled || !this.ctx) return;
-                this.init();
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(100, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(440, this.ctx.currentTime + 0.5);
-                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
-                osc.connect(gain); gain.connect(this.ctx.destination);
-                osc.start(); osc.stop(this.ctx.currentTime + 0.5);
-            }
+    <nav class="panel-footer" aria-label="바로가기">
+      <a class="footer-button" href="../" aria-label="추첨 포털 홈" title="추첨 포털 홈"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></a>
+      <button class="footer-button" id="copyButton" type="button" aria-label="결과 복사" title="결과 복사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+      <a class="footer-button" href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer" aria-label="GitHub 저장소" title="GitHub 저장소"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg></a>
+      <a class="footer-button" href="https://buymeacoffee.com/euiyun" target="_blank" rel="noopener noreferrer" aria-label="커피 사주기" title="커피 사주기"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg></a>
+    </nav>
+  </aside>
 
-            playBump() {
-                if (!this.enabled || !this.ctx) return;
-                this.init();
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(150, this.ctx.currentTime);
-                osc.frequency.linearRampToValueAtTime(100, this.ctx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
-                osc.connect(gain); gain.connect(this.ctx.destination);
-                osc.start(); osc.stop(this.ctx.currentTime + 0.1);
-            }
+  <main class="game-area" id="gameArea">
+    <header class="arena-head">
+      <div class="arena-kicker">RANDOM IMPACT ARENA</div>
+      <h2 id="arenaTitle">네온 아레나가 도전자를 기다립니다</h2>
+      <div class="arena-proof" id="arenaProof">FIXED 60HZ · RANDOM READY</div>
+    </header>
+    <div class="hud" aria-label="게임 상태">
+      <div class="hud-item"><strong id="timerValue">0.000</strong><span>TIME</span></div>
+      <div class="hud-item"><strong id="aliveValue">0</strong><span>ALIVE</span></div>
+      <div class="hud-item"><strong id="phaseValue">READY</strong><span>MODE</span></div>
+    </div>
+    <div class="danger-banner" id="dangerBanner">⚠ CENTER PULSE · 압력파 가속 ⚠</div>
+    <span class="crystal crystal-a" aria-hidden="true">♢</span>
+    <span class="crystal crystal-b" aria-hidden="true">◆</span>
+    <span class="crystal crystal-c" aria-hidden="true">✦</span>
+    <div class="arena-stage">
+      <div class="stage-shadow"></div>
+      <div class="arena-machine" id="arenaMachine">
+        <canvas id="gameCanvas" aria-label="원판 밀치기 게임 화면"></canvas>
+        <div id="railNodes" aria-hidden="true"></div>
+      </div>
+    </div>
+    <div class="event-callout" id="eventCallout" aria-live="polite">참가자를 확인한 뒤 배틀을 시작해주세요</div>
+    <div class="copyright">© 2026 Euiyun Edwin Kim · PLAYPICK</div>
+  </main>
 
-            playBoost() {
-                if (!this.enabled || !this.ctx) return;
-                this.init();
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(200, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
-                osc.connect(gain); gain.connect(this.ctx.destination);
-                osc.start(); osc.stop(this.ctx.currentTime + 0.3);
-            }
+  <canvas id="celebrationCanvas"></canvas>
+  <section class="result-overlay" id="resultOverlay" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <div class="result-card">
+      <div class="result-icon">🏆</div>
+      <div class="result-eyebrow">ARENA SURVIVORS</div>
+      <h2 id="resultTitle">네온 아레나 생존자</h2>
+      <div class="winner-list" id="winnerList"></div>
+      <div class="result-stats">
+        <div class="result-stat"><strong id="resultTime">0.000s</strong><span>정밀 기록</span></div>
+        <div class="result-stat"><strong id="resultImpacts">0</strong><span>충돌 수</span></div>
+        <div class="result-stat"><strong id="resultWaves">0</strong><span>압력파</span></div>
+      </div>
+      <div class="result-actions">
+        <button class="result-button" id="resultCopyButton" type="button">결과 복사</button>
+        <button class="result-button accent" id="resultCloseButton" type="button">아레나로</button>
+      </div>
+    </div>
+  </section>
 
-            playFall() {
-                if (!this.enabled || !this.ctx) return;
-                this.init();
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(400, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.5);
-                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.5);
-                osc.connect(gain); gain.connect(this.ctx.destination);
-                osc.start(); osc.stop(this.ctx.currentTime + 0.5);
-            }
+  <dialog id="helpDialog">
+    <div class="help-content">
+      <div class="help-head"><h2>🥏 게임 방법</h2><button class="icon-button" id="helpCloseButton" type="button" aria-label="닫기">×</button></div>
+      <ol>
+        <li>참가자와 생존자 수, 압력파 템포를 정합니다.</li>
+        <li>원판들은 상대를 향해 강하게 대시하며, 대시 충돌은 더 큰 넉백과 함께 <strong>팡!</strong> 하고 터집니다.</li>
+        <li>원판의 절반 이상이 림 밖으로 밀려나면 즉시 탈락하며, 중앙 압력파는 30초 뒤부터 남은 승부를 가속합니다.</li>
+        <li>물리와 압력파 순서는 배틀을 시작할 때마다 새롭게 무작위로 정해집니다.</li>
+        <li>마지막 압력파 뒤 1초의 정적이 흐른 후 최종 결과가 공개됩니다.</li>
+      </ol>
+      <div class="help-note">성능 안내: 아레나와 원판 몸체는 별도 캔버스에 미리 렌더링되며, 프레임 간격은 최대 0.1초로 제한됩니다.</div>
+    </div>
+  </dialog>
+  <div class="toast" id="toast" role="status"></div>
 
-            playWin() {
-                if (!this.enabled || !this.ctx) return;
-                this.init();
-                const notes = [523.25, 659.25, 783.99, 1046.50];
-                notes.forEach((freq, i) => {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
-                    gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
-                    gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
-                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.1 + 0.4);
-                    osc.connect(gain); gain.connect(this.ctx.destination);
-                    osc.start(this.ctx.currentTime + i * 0.1);
-                    osc.stop(this.ctx.currentTime + i * 0.1 + 0.4);
-                });
-            }
+  <script>
+    (() => {
+      'use strict';
+      const GAME_VERSION = '1.2.2';
+      const MAX_PARTICIPANTS = 30;
+      const MAX_NAME_LENGTH = 30;
+      const STORAGE_PREFIX = 'playpick-disk-shove-';
+      const QA_MODE = new URLSearchParams(location.search).has('qa');
+      const FIXED_DT = 1 / 60;
+      const SIMULATION_RATE = QA_MODE ? 36 : 1;
+      const MAX_STEPS = QA_MODE ? 420 : 8;
+      const PULSE_START_TIME = 30;
+      const TAU = Math.PI * 2;
+      const LOGICAL_SIZE = 1000;
+      const CENTER = LOGICAL_SIZE / 2;
+      const TEMPOS = {
+        rapid:{ first:2.5,interval:1.28,ringGap:3.2,label:'RAPID' },
+        standard:{ first:3.2,interval:1.8,ringGap:4,label:'STANDARD' },
+        cinematic:{ first:4,interval:2.35,ringGap:4.8,label:'CINEMA' }
+      };
+      const COLORS = ['#23dfff','#ff5b91','#9b63ff','#ffac42','#52e3a5','#4f87ff','#f06dff','#ffd35c','#23c6c8','#ff725d'];
+      const EMOJIS = ['😎','😤','🤩','😼','🤖','👻','🦊','🐯','🐸','🦄','🥷','🧙','👽','🐼','🦁','🐲','🦸','🎃','🐰','🐵','🐨','🧛','🧚','🐶','😺','🤠','🥳','😀','🦹','💀'];
+      const byId = id => document.getElementById(id);
+      const els = {
+        participants:byId('participants'),participantCount:byId('participantCount'),
+        winnerCount:byId('winnerCount'),tempo:byId('tempo'),startButton:byId('startButton'),resetButton:byId('resetButton'),soundButton:byId('soundButton'),helpButton:byId('helpButton'),
+        rankingList:byId('rankingList'),aliveCount:byId('aliveCount'),copyButton:byId('copyButton'),gameArea:byId('gameArea'),arenaMachine:byId('arenaMachine'),railNodes:byId('railNodes'),
+        gameCanvas:byId('gameCanvas'),arenaTitle:byId('arenaTitle'),arenaProof:byId('arenaProof'),timerValue:byId('timerValue'),aliveValue:byId('aliveValue'),phaseValue:byId('phaseValue'),
+        dangerBanner:byId('dangerBanner'),eventCallout:byId('eventCallout'),celebrationCanvas:byId('celebrationCanvas'),resultOverlay:byId('resultOverlay'),winnerList:byId('winnerList'),
+        resultTime:byId('resultTime'),resultImpacts:byId('resultImpacts'),resultWaves:byId('resultWaves'),resultCopyButton:byId('resultCopyButton'),
+        resultCloseButton:byId('resultCloseButton'),helpDialog:byId('helpDialog'),helpCloseButton:byId('helpCloseButton'),toast:byId('toast')
+      };
+      const state = {
+        players:[],previewPlayers:[],winners:[],fate:[],eliminationQueue:[],eliminationOrder:[],audit:[],particles:[],rings:[],bursts:[],sprites:new Map(),
+        running:false,phase:'READY',token:0,frame:0,lastTimestamp:0,accumulator:0,simTime:0,nextElimination:0,nextRingOut:0,winnerCount:1,tempo:'standard',
+        arenaRadius:408,outcomeRng:Math.random,physicsRng:Math.random,visualRng:Math.random,impactCount:0,dashImpactCount:0,waveCount:0,shake:0,uiClock:0,revealAt:0,
+        pending:new Map(),runResolve:null,inputTimer:0,toastTimer:0,celebrationFrame:0,celebrationParticles:[],lastResult:'',backgroundCache:null
+      };
+      const storage = {
+        get(key,fallback='') { try { return localStorage.getItem(STORAGE_PREFIX + key) ?? fallback; } catch { return fallback; } },
+        set(key,value) { try { localStorage.setItem(STORAGE_PREFIX + key,String(value)); } catch {} }
+      };
+      const sound = {
+        enabled:storage.get('sound','true') !== 'false',context:null,lastImpact:-1,
+        init() {
+          if (!this.enabled) return;
+          if (!this.context) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) this.context = new AudioContext();
+          }
+          if (this.context?.state === 'suspended') this.context.resume();
+        },
+        tone(frequency,duration=.08,type='sine',volume=.035,delay=0) {
+          if (!this.enabled) return;
+          this.init();
+          if (!this.context) return;
+          const now = this.context.currentTime + delay;
+          const oscillator = this.context.createOscillator();
+          const gain = this.context.createGain();
+          oscillator.type = type;
+          oscillator.frequency.setValueAtTime(frequency,now);
+          gain.gain.setValueAtTime(volume,now);
+          gain.gain.exponentialRampToValueAtTime(.0001,now + duration);
+          oscillator.connect(gain).connect(this.context.destination);
+          oscillator.start(now); oscillator.stop(now + duration);
+        },
+        start() { [180,280,440].forEach((note,index) => this.tone(note,.2,'sawtooth',.034,index * .08)); },
+        impact(intensity,dashImpact=false) {
+          if (state.simTime - this.lastImpact < .055) return;
+          this.lastImpact = state.simTime;
+          this.tone(105 + Math.min(150,intensity * .32),dashImpact ? .08 : .055,'square',dashImpact ? .032 : .018);
+          if (dashImpact) {
+            this.tone(52,.13,'sawtooth',.035);
+            this.tone(680 + Math.min(260,intensity),.045,'triangle',.02,.018);
+          }
+        },
+        wave() { this.tone(95,.28,'sawtooth',.05); this.tone(460,.16,'triangle',.026,.08); },
+        finish() { [523,659,784,1047].forEach((note,index) => this.tone(note,.32,'triangle',.045,index * .11)); }
+      };
+
+      function setSoundUi() {
+        els.soundButton.textContent = sound.enabled ? '🔊' : '🔇';
+        els.soundButton.setAttribute('aria-label',sound.enabled ? '소리 끄기' : '소리 켜기');
+      }
+      function clamp(value,min,max) { return Math.max(min,Math.min(max,value)); }
+      function lerp(from,to,amount) { return from + (to - from) * amount; }
+      function formatTime(seconds) { return `${seconds.toFixed(3)}s`; }
+      function setPhase(phase) { state.phase = phase; els.phaseValue.textContent = phase; }
+      function showToast(message) {
+        clearTimeout(state.toastTimer);
+        els.toast.textContent = message;
+        els.toast.classList.add('show');
+        state.toastTimer = setTimeout(() => els.toast.classList.remove('show'),1800);
+      }
+      function parseParticipants(value=els.participants.value) {
+        const names = [];
+        for (const raw of value.split(/[\n,]/)) {
+          if (names.length >= MAX_PARTICIPANTS) break;
+          const token = raw.trim();
+          if (!token) continue;
+          const match = token.match(/^(.*?)(?:\*(\d+))?$/);
+          const rawName = (match?.[1] || '').trim();
+          if (!rawName) continue;
+          const name = rawName.slice(0,MAX_NAME_LENGTH);
+          const requested = match?.[2] ? Number.parseInt(match[2],10) : 1;
+          const count = clamp(Number.isFinite(requested) ? requested : 1,1,MAX_PARTICIPANTS - names.length);
+          for (let index=0;index<count && names.length<MAX_PARTICIPANTS;index+=1) names.push(name);
         }
-
-        const EMOJIS = ['😀', '😎', '🤠', '🥳', '😺', '🐶', '🐰', '🦊', '🐻', '🐼', '🐨', '🦁', '🐯', '🐸', '🐵', '🐔', '🦄', '🐲', '👻', '🤖', '👽', '🎃', '💀', '🦸', '🧙', '🧛', '🧜', '🧚', '🦹', '🥷'];
-        
-        class PhysicsEngine {
-            constructor(canvas, soundManager) {
-                this.canvas = canvas;
-                this.ctx = canvas.getContext('2d');
-                this.sound = soundManager;
-                this.players = [];
-                this.centerX = 0;
-                this.centerY = 0;
-                this.arenaRadius = 0;
-                this.friction = 0.985;
-                this.bounceFactor = 1.0;
-                this.centerAttraction = 0.12;
-                
-                // 원판 축소 관련
-                this.initialArenaRadius = 0;
-                this.minArenaRadius = 80; // 최소 크기
-                this.shrinkRate = 0.03; // 초당 축소율 (2배 증가)
-                this.speedMultiplier = 1;
-            }
-
-            resize() {
-                const container = this.canvas.parentElement;
-                const size = Math.min(container.clientWidth, container.clientHeight);
-                this.canvas.width = size * window.devicePixelRatio;
-                this.canvas.height = size * window.devicePixelRatio;
-                this.canvas.style.width = size + 'px';
-                this.canvas.style.height = size + 'px';
-                this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-                
-                this.centerX = size / 2;
-                this.centerY = size / 2;
-                this.arenaRadius = (size / 2) - 40;
-                this.initialArenaRadius = this.arenaRadius;
-                this.minArenaRadius = size * 0.15; // 화면 크기에 비례
-
-                // Update existing players' radius on resize
-                const isMobile = window.innerWidth <= 768;
-                for (const player of this.players) {
-                    player.radius = isMobile ? 18 : 25;
-                }
-            }
-
-            addPlayer(player) {
-                const angle = Math.random() * Math.PI * 2;
-                const dist = Math.random() * (this.arenaRadius * 0.5);
-                
-                const isMobile = window.innerWidth <= 768;
-                player.x = this.centerX + Math.cos(angle) * dist;
-                player.y = this.centerY + Math.sin(angle) * dist;
-                player.vx = (Math.random() - 0.5) * 4;
-                player.vy = (Math.random() - 0.5) * 4;
-                player.radius = isMobile ? 18 : 25; // Smaller radius on mobile
-                player.alive = true;
-                player.boosting = false;
-                player.boostCooldown = 0;
-                player.nextBoostTime = Math.random() * 3000 + 2000;
-                player.eliminatedAt = null;
-                
-                // 떨어지는 애니메이션용
-                player.falling = false;
-                player.fallProgress = 0;
-                player.fallStartX = 0;
-                player.fallStartY = 0;
-                
-                this.players.push(player);
-            }
-
-            update(deltaTime, boostInterval, gameTime) {
-                const dtScale = (deltaTime / 16.666) * this.speedMultiplier;
-                
-                // 원판 축소
-                if (this.arenaRadius > this.minArenaRadius) {
-                    // shrinkRate is approx pixels per frame at 60fps in original code? 
-                    // original: this.arenaRadius -= this.shrinkRate * dt * 0.05; 
-                    // where dt was ms. 16.6 * 0.05 = 0.83.
-                    this.arenaRadius -= this.shrinkRate * dtScale * 0.8; 
-                    if (this.arenaRadius < this.minArenaRadius) {
-                        this.arenaRadius = this.minArenaRadius;
-                    }
-                }
-                
-                for (const player of this.players) {
-                    if (!player.alive && !player.falling) continue;
-                    
-                    if (player.falling) {
-                        player.fallProgress += dtScale * 0.03; // Adjusted from 0.002 * 16.6
-                        
-                        const distFromCenter = Math.sqrt(
-                            Math.pow(player.x - this.centerX, 2) + 
-                            Math.pow(player.y - this.centerY, 2)
-                        );
-                        
-                        if (distFromCenter > 0) {
-                            const outwardX = (player.x - this.centerX) / distFromCenter;
-                            const outwardY = (player.y - this.centerY) / distFromCenter;
-                            player.x += outwardX * dtScale * 1.3; // Adjusted from 0.08 * 16.6
-                            player.y += outwardY * dtScale * 1.3;
-                        }
-                        
-                        if (player.fallProgress >= 1) {
-                            player.alive = false;
-                            player.falling = false;
-                        }
-                        continue;
-                    }
-                    
-                    const toCenterX = this.centerX - player.x;
-                    const toCenterY = this.centerY - player.y;
-                    const distToCenter = Math.sqrt(toCenterX * toCenterX + toCenterY * toCenterY);
-                    
-                    if (distToCenter > 0) {
-                        const attractionForce = this.centerAttraction * (distToCenter / this.arenaRadius) * dtScale;
-                        player.vx += (toCenterX / distToCenter) * attractionForce;
-                        player.vy += (toCenterY / distToCenter) * attractionForce;
-                    }
-                    
-                    player.vx += (Math.random() - 0.5) * 0.5 * dtScale;
-                    player.vy += (Math.random() - 0.5) * 0.5 * dtScale;
-                    
-                    player.boostCooldown -= deltaTime * this.speedMultiplier;
-                    player.nextBoostTime -= deltaTime * this.speedMultiplier;
-                    
-                    if (player.nextBoostTime <= 0 && player.boostCooldown <= 0) {
-                        this.activateBoost(player);
-                        player.nextBoostTime = boostInterval * 1000 + Math.random() * 2000;
-                    }
-                    
-                    if (player.boosting) {
-                        player.boostDuration -= deltaTime * this.speedMultiplier;
-                        if (player.boostDuration <= 0) {
-                            player.boosting = false;
-                        }
-                    }
-                    
-                    player.x += player.vx * dtScale * 0.8; // Adjusted from 0.05 * 16.6
-                    player.y += player.vy * dtScale * 0.8;
-                    
-                    const currentFriction = Math.pow(this.friction, dtScale);
-                    player.vx *= currentFriction;
-                    player.vy *= currentFriction;
-                    
-                    const distFromCenter = Math.sqrt(
-                        Math.pow(player.x - this.centerX, 2) + 
-                        Math.pow(player.y - this.centerY, 2)
-                    );
-                    
-                    if (distFromCenter + player.radius * 0.5 > this.arenaRadius && !player.falling) {
-                        player.falling = true;
-                        player.fallProgress = 0;
-                        player.eliminatedAt = gameTime;
-                        this.sound.playFall();
-
-                        // Add to top-right log with a random funny message
-                        const messages = [
-                            "탈락! 📦",
-                            "아웃! 🍎",
-                            "우주 미아! 🌌",
-                            "자유 낙하! 🪂",
-                            "강제 퇴장! 🚪",
-                            "바닥 청소! 🧹",
-                            "안녕히! 👋",
-                            "실종! ✨"
-                        ];
-                        const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-                        const log = document.getElementById('koLog');
-                        const logItem = document.createElement('div');
-                        logItem.className = 'ko-log-item';
-                        logItem.innerHTML = `<span style="font-size:1.2rem;">${player.emoji}</span> <span style="font-weight:bold;color:#fff;">${player.name}</span>: ${randomMsg}`;
-                        log.insertBefore(logItem, log.firstChild);
-                        
-                        // Keep only recent logs
-                        while (log.children.length > 5) {
-                            log.removeChild(log.lastChild);
-                        }
-                        
-                        const outwardX = (player.x - this.centerX) / distFromCenter;
-                        const outwardY = (player.y - this.centerY) / distFromCenter;
-                        player.vx = outwardX * 5;
-                        player.vy = outwardY * 5;
-                    }
-                }
-                
-                this.handleCollisions(dtScale);
-            }
-
-            activateBoost(player) {
-                player.boosting = true;
-                player.boostDuration = 300;
-                player.boostCooldown = 5000;
-                this.sound.playBoost();
-
-                // 다른 생존 플레이어를 타겟으로 선택
-                const otherPlayers = this.players.filter(p => p !== player && p.alive && !p.falling);
-                let angle;
-
-                if (otherPlayers.length > 0) {
-                    // 랜덤하게 타겟 선택
-                    const target = otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
-                    // 타겟 방향 계산
-                    const baseAngle = Math.atan2(target.y - player.y, target.x - player.x);
-                    // +-30도 (약 0.52 라디안) 오차 추가
-                    const errorAngle = (Math.random() - 0.5) * (Math.PI / 3); // +-30도
-                    angle = baseAngle + errorAngle;
-                } else {
-                    // 다른 플레이어가 없으면 중심 방향으로
-                    angle = Math.atan2(this.centerY - player.y, this.centerX - player.x);
-                }
-
-                const boostPower = 15 + Math.random() * 10;
-                player.vx += Math.cos(angle) * boostPower;
-                player.vy += Math.sin(angle) * boostPower;
-            }
-
-            handleCollisions(dtScale) {
-                // 여러 번 반복하여 겹침 완전 해소
-                for (let iter = 0; iter < 5; iter++) {
-                    for (let i = 0; i < this.players.length; i++) {
-                        for (let j = i + 1; j < this.players.length; j++) {
-                            const p1 = this.players[i];
-                            const p2 = this.players[j];
-                            
-                            if (!p1.alive || !p2.alive || p1.falling || p2.falling) continue;
-                            
-                            const dx = p2.x - p1.x;
-                            const dy = p2.y - p1.y;
-                            const dist = Math.sqrt(dx * dx + dy * dy);
-                            const minDist = p1.radius + p2.radius;
-                            
-                            if (dist < minDist && dist > 0.001) {
-                                const overlap = minDist - dist;
-                                const nx = dx / dist;
-                                const ny = dy / dist;
-                                
-                                // 완전히 분리 (dtScale 고려)
-                                const separationFactor = (overlap / 2 + 0.1) * Math.min(1, dtScale);
-                                const separationX = separationFactor * nx;
-                                const separationY = separationFactor * ny;
-                                p1.x -= separationX;
-                                p1.y -= separationY;
-                                p2.x += separationX;
-                                p2.y += separationY;
-                                
-                                const dvx = p1.vx - p2.vx;
-                                const dvy = p1.vy - p2.vy;
-                                const dvn = dvx * nx + dvy * ny;
-                                
-                                if (dvn > 0) {
-                                    this.sound.playBump();
-                                    const m1 = p1.boosting ? 2.0 : 1.0;
-                                    const m2 = p2.boosting ? 2.0 : 1.0;
-                                    const totalMass = m1 + m2;
-                                    
-                                    const impulse = (2 * dvn * this.bounceFactor) / totalMass;
-                                    
-                                    p1.vx -= impulse * m2 * nx;
-                                    p1.vy -= impulse * m2 * ny;
-                                    p2.vx += impulse * m1 * nx;
-                                    p2.vy += impulse * m1 * ny;
-                                    
-                                    // 충돌 시 약간의 추가 반발력
-                                    const bounceBoost = 1.5 * Math.min(1, dtScale);
-                                    p1.vx -= nx * bounceBoost;
-                                    p1.vy -= ny * bounceBoost;
-                                    p2.vx += nx * bounceBoost;
-                                    p2.vy += ny * bounceBoost;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            render() {
-                const size = this.canvas.width / window.devicePixelRatio;
-                this.ctx.clearRect(0, 0, size, size);
-                
-                // Draw arena
-                this.drawArena(size);
-                
-                // Draw players
-                for (const player of this.players) {
-                    this.drawPlayer(player);
-                }
-            }
-
-            drawArena(size) {
-                // 바깥쪽 배경 (우주/어둠 - 떨어지는 공간)
-                this.ctx.fillStyle = '#050508';
-                this.ctx.fillRect(0, 0, size, size);
-                
-                // 뚫린 구멍 효과 (중앙에 그라데이션)
-                const holeGradient = this.ctx.createRadialGradient(
-                    this.centerX, this.centerY, this.arenaRadius * 0.3,
-                    this.centerX, this.centerY, this.arenaRadius + 80
-                );
-                holeGradient.addColorStop(0, '#0a0a12');
-                holeGradient.addColorStop(0.7, '#050508');
-                holeGradient.addColorStop(1, '#000003');
-                
-                this.ctx.beginPath();
-                this.ctx.arc(this.centerX, this.centerY, this.arenaRadius + 80, 0, Math.PI * 2);
-                this.ctx.fillStyle = holeGradient;
-                this.ctx.fill();
-                
-                // 축소 진행률 계산
-                const shrinkProgress = 1 - (this.arenaRadius - this.minArenaRadius) / (this.initialArenaRadius - this.minArenaRadius);
-                const warningIntensity = Math.min(shrinkProgress * 1.5, 1);
-                
-                // 원판 테두리 (링 모양)
-                const ringWidth = 12;
-                
-                // 외곽 링 - 축소될수록 붉어지는 글로우
-                this.ctx.beginPath();
-                this.ctx.arc(this.centerX, this.centerY, this.arenaRadius + ringWidth/2, 0, Math.PI * 2);
-                const glowR = Math.floor(255);
-                const glowG = Math.floor(107 * (1 - warningIntensity * 0.7));
-                const glowB = Math.floor(53 * (1 - warningIntensity * 0.8));
-                this.ctx.strokeStyle = `rgba(${glowR}, ${glowG}, ${glowB}, 0.4)`;
-                this.ctx.lineWidth = ringWidth + 15;
-                this.ctx.stroke();
-                
-                // 메인 링 - 축소될수록 붉어짐
-                const ringGradient = this.ctx.createLinearGradient(
-                    this.centerX - this.arenaRadius, this.centerY - this.arenaRadius,
-                    this.centerX + this.arenaRadius, this.centerY + this.arenaRadius
-                );
-                const mainR = 255;
-                const mainG = Math.floor(107 + (1 - warningIntensity) * 50);
-                const mainB = Math.floor(53 * (1 - warningIntensity * 0.5));
-                ringGradient.addColorStop(0, `rgb(${mainR}, ${mainG}, ${mainB})`);
-                ringGradient.addColorStop(0.5, `rgb(${mainR}, ${Math.floor(mainG * 1.3)}, ${Math.floor(mainB * 1.2)})`);
-                ringGradient.addColorStop(1, `rgb(${mainR}, ${mainG}, ${mainB})`);
-                
-                this.ctx.beginPath();
-                this.ctx.arc(this.centerX, this.centerY, this.arenaRadius, 0, Math.PI * 2);
-                this.ctx.strokeStyle = ringGradient;
-                this.ctx.lineWidth = ringWidth;
-                this.ctx.stroke();
-                
-                // 내부 링 하이라이트
-                this.ctx.beginPath();
-                this.ctx.arc(this.centerX, this.centerY, this.arenaRadius - ringWidth/2 + 2, 0, Math.PI * 2);
-                this.ctx.strokeStyle = `rgba(255, 255, 255, ${0.2 - warningIntensity * 0.1})`;
-                this.ctx.lineWidth = 2;
-                this.ctx.stroke();
-                
-                // 원판 바닥 (플레이어가 서 있는 영역)
-                const floorGradient = this.ctx.createRadialGradient(
-                    this.centerX, this.centerY, 0,
-                    this.centerX, this.centerY, this.arenaRadius - ringWidth/2
-                );
-                // 축소될수록 약간 붉은 빛
-                const floorTint = warningIntensity * 0.3;
-                floorGradient.addColorStop(0, `rgb(${26 + floorTint * 30}, ${26 - floorTint * 10}, ${46 - floorTint * 20})`);
-                floorGradient.addColorStop(0.6, `rgb(${22 + floorTint * 25}, ${33 - floorTint * 15}, ${62 - floorTint * 25})`);
-                floorGradient.addColorStop(0.9, `rgb(${15 + floorTint * 20}, ${52 - floorTint * 25}, ${96 - floorTint * 40})`);
-                floorGradient.addColorStop(1, `rgb(${10 + floorTint * 15}, ${22 - floorTint * 10}, ${40 - floorTint * 20})`);
-                
-                this.ctx.beginPath();
-                this.ctx.arc(this.centerX, this.centerY, this.arenaRadius - ringWidth/2, 0, Math.PI * 2);
-                this.ctx.fillStyle = floorGradient;
-                this.ctx.fill();
-                
-                // 바닥 패턴 (동심원) - 개수 동적 조절
-                const numRings = Math.max(2, Math.floor((this.arenaRadius - ringWidth) / 60));
-                for (let i = 1; i <= numRings; i++) {
-                    this.ctx.beginPath();
-                    this.ctx.arc(this.centerX, this.centerY, (this.arenaRadius - ringWidth) * (i / (numRings + 1)), 0, Math.PI * 2);
-                    this.ctx.strokeStyle = `rgba(255, ${107 - warningIntensity * 50}, 53, ${0.08 + i * 0.02})`;
-                    this.ctx.lineWidth = 1;
-                    this.ctx.setLineDash([8, 8]);
-                    this.ctx.stroke();
-                    this.ctx.setLineDash([]);
-                }
-                
-                // 축소 경고 펄스 효과 (50% 이상 축소시)
-                if (shrinkProgress > 0.5) {
-                    const pulseIntensity = (Math.sin(Date.now() * 0.005) + 1) / 2 * (shrinkProgress - 0.5) * 2;
-                    this.ctx.beginPath();
-                    this.ctx.arc(this.centerX, this.centerY, this.arenaRadius + 5, 0, Math.PI * 2);
-                    this.ctx.strokeStyle = `rgba(255, 50, 50, ${pulseIntensity * 0.5})`;
-                    this.ctx.lineWidth = 3;
-                    this.ctx.stroke();
-                }
-            }
-
-            drawPlayer(player) {
-                // 완전히 탈락하면 그리지 않음
-                if (!player.alive && !player.falling) return;
-                
-                // 떨어지는 중이면 크기와 투명도 조절
-                let scale = 1;
-                let alpha = 1;
-                
-                if (player.falling) {
-                    scale = 1 - player.fallProgress * 0.8; // 20%까지 작아짐
-                    alpha = 1 - player.fallProgress; // 완전히 투명해짐
-                    if (scale < 0.1) scale = 0.1;
-                    if (alpha < 0) alpha = 0;
-                }
-                
-                const currentRadius = player.radius * scale;
-                
-                // Shadow (더 선명한 그림자)
-                if (!player.falling) {
-                    this.ctx.beginPath();
-                    this.ctx.arc(player.x + 4, player.y + 4, currentRadius, 0, Math.PI * 2);
-                    this.ctx.fillStyle = `rgba(0, 0, 0, ${0.4 * alpha})`;
-                    this.ctx.fill();
-                }
-                
-                // Player body - 3D 공 효과
-                this.ctx.beginPath();
-                this.ctx.arc(player.x, player.y, currentRadius, 0, Math.PI * 2);
-                
-                // 그라데이션으로 공처럼 보이게
-                const bodyGradient = this.ctx.createRadialGradient(
-                    player.x - currentRadius * 0.3, player.y - currentRadius * 0.3, 0,
-                    player.x, player.y, currentRadius
-                );
-                
-                if (player.boosting && !player.falling) {
-                    bodyGradient.addColorStop(0, `rgba(255, 230, 150, ${0.95 * alpha})`);
-                    bodyGradient.addColorStop(0.5, `rgba(255, 191, 36, ${0.9 * alpha})`);
-                    bodyGradient.addColorStop(1, `rgba(255, 107, 53, ${0.8 * alpha})`);
-                    
-                    // Boost glow
-                    this.ctx.shadowColor = '#fbbf24';
-                    this.ctx.shadowBlur = 25;
-                } else if (player.falling) {
-                    // 떨어지는 중 - 붉은 색으로 변함
-                    bodyGradient.addColorStop(0, `rgba(150, 80, 80, ${alpha})`);
-                    bodyGradient.addColorStop(0.5, `rgba(100, 50, 50, ${alpha})`);
-                    bodyGradient.addColorStop(1, `rgba(60, 30, 30, ${alpha})`);
-                    this.ctx.shadowBlur = 0;
-                } else {
-                    bodyGradient.addColorStop(0, `rgba(100, 100, 130, ${alpha})`);
-                    bodyGradient.addColorStop(0.5, `rgba(60, 60, 90, ${alpha})`);
-                    bodyGradient.addColorStop(1, `rgba(30, 30, 50, ${alpha})`);
-                    this.ctx.shadowBlur = 0;
-                }
-                
-                this.ctx.fillStyle = bodyGradient;
-                this.ctx.fill();
-                this.ctx.shadowBlur = 0;
-                
-                // Border (더 선명한 테두리)
-                if (player.falling) {
-                    this.ctx.strokeStyle = `rgba(239, 68, 68, ${alpha * 0.8})`;
-                } else if (player.boosting) {
-                    this.ctx.strokeStyle = '#fbbf24';
-                } else {
-                    this.ctx.strokeStyle = `rgba(255, 255, 255, ${0.5 * alpha})`;
-                }
-                this.ctx.lineWidth = 3 * scale;
-                this.ctx.stroke();
-                
-                // 하이라이트 (공의 반사광) - 떨어지는 중 아닐 때만
-                if (!player.falling) {
-                    this.ctx.beginPath();
-                    this.ctx.arc(player.x - currentRadius * 0.35, player.y - currentRadius * 0.35, currentRadius * 0.25, 0, Math.PI * 2);
-                    this.ctx.fillStyle = `rgba(255, 255, 255, ${0.4 * alpha})`;
-                    this.ctx.fill();
-                }
-                
-                // Emoji
-                this.ctx.font = `${currentRadius * 1.1}px Arial`;
-                this.ctx.textAlign = 'center';
-                this.ctx.textBaseline = 'middle';
-                this.ctx.globalAlpha = alpha;
-                this.ctx.fillText(player.emoji, player.x, player.y);
-                this.ctx.globalAlpha = 1;
-                
-                // Name tag - 떨어지는 중 아닐 때만
-                if (!player.falling) {
-                    const isMobile = window.innerWidth <= 768;
-                    this.ctx.font = isMobile ? 'bold 12px "Noto Sans KR"' : 'bold 16px "Noto Sans KR"';
-                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-                    this.ctx.fillText(player.name, player.x, player.y + currentRadius + (isMobile ? 14 : 18));
-                }
-            }
-
-            getAlivePlayers() {
-                return this.players.filter(p => p.alive && !p.falling);
-            }
-
-            reset() {
-                this.players = [];
-                this.arenaRadius = this.initialArenaRadius;
-            }
-        }
-
-        // Game Controller
-        class Game {
-            constructor() {
-                this.canvas = document.getElementById('gameCanvas');
-                this.sound = new SoundManager();
-                this.physics = new PhysicsEngine(this.canvas, this.sound);
-                this.isRunning = false;
-                this.startTime = 0;
-                this.gameTimeSeconds = 0;
-                this.lastTimestamp = 0;
-                this.animationId = null;
-                this.winners = [];
-                this.eliminationOrder = [];
-                
-                this.init();
-            }
-
-            init() {
-                this.physics.resize();
-                window.addEventListener('resize', () => this.physics.resize());
-                
-                document.getElementById('startBtn').addEventListener('click', () => {
-            this.start();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        const totals = new Map();
+        names.forEach(name => totals.set(name,(totals.get(name) || 0) + 1));
+        const seen = new Map();
+        return names.map((name,id) => {
+          const ordinal = (seen.get(name) || 0) + 1;
+          seen.set(name,ordinal);
+          return { id,name,label:totals.get(name) > 1 ? `${name} ${ordinal}` : name };
         });
-                document.getElementById('resetBtn').addEventListener('click', () => this.reset());
-                document.getElementById('closeOverlay').addEventListener('click', () => this.closeWinnerOverlay());
-                document.getElementById('copyResultBtn').addEventListener('click', () => this.copyResults());
-                
-                // 도움말 모달
-                document.getElementById('helpBtn').addEventListener('click', () => {
-                    document.getElementById('helpModal').classList.add('show');
-                });
-                document.getElementById('closeHelpBtn').addEventListener('click', () => {
-                    document.getElementById('helpModal').classList.remove('show');
-                });
-                document.getElementById('helpModal').addEventListener('click', (e) => {
-                    if (e.target.id === 'helpModal') {
-                        document.getElementById('helpModal').classList.remove('show');
-                    }
-                });
-                
-                this.physics.render();
-            }
-
-            parseParticipants(text) {
-                const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
-                const result = [];
-                for (const name of names) {
-                    const match = name.match(/^(.+)\*(\d+)$/);
-                    if (match) {
-                        const baseName = match[1].trim();
-                        const count = parseInt(match[2]);
-                        for (let i = 0; i < count; i++) result.push(baseName);
-                    } else {
-                        result.push(name);
-                    }
-                }
-                return result;
-            }
-
-            start() {
-                const input = document.getElementById('participantsInput').value;
-                const names = this.parseParticipants(input);
-                
-                this.sound.init();
-
-                if (names.length < 2) {
-                    alert('최소 2명 이상의 참여자가 필요합니다!');
-                    return;
-                }
-                
-                const winnerCount = parseInt(document.getElementById('winnerCount').value);
-                if (names.length <= winnerCount) {
-                    alert(`참여자 수(${names.length}명)가 우승자 수(${winnerCount}명)보다 많아야 합니다!`);
-                    return;
-                }
-                
-                this.reset();
-                this.physics.resize();
-                this.physics.speedMultiplier = 1;
-                this.sound.playStart();
-                
-                const shuffledEmojis = [...EMOJIS].sort(() => Math.random() - 0.5);
-                
-                names.forEach((name, i) => {
-                    this.physics.addPlayer({
-                        name: name,
-                        emoji: shuffledEmojis[i % shuffledEmojis.length]
-                    });
-                });
-                
-                this.isRunning = true;
-                this.startTime = Date.now();
-                this.gameTimeSeconds = 0;
-                this.lastTimestamp = performance.now();
-                this.winners = [];
-                this.eliminationOrder = [];
-                
-                document.getElementById('startBtn').disabled = true;
-                
-                requestAnimationFrame((ts) => this.gameLoop(ts));
-            }
-
-            gameLoop(timestamp) {
-                if (!this.isRunning) return;
-                
-                const deltaTime = timestamp - this.lastTimestamp;
-                this.lastTimestamp = timestamp;
-                
-                // Limit dt to prevent glitches
-                const cappedDt = Math.min(deltaTime, 100);
-                this.gameTimeSeconds += cappedDt / 1000;
-                
-                const boostInterval = 5; // 기본값 5초 사용
-                
-                this.physics.update(cappedDt, boostInterval, this.gameTimeSeconds);
-                this.physics.render();
-                this.updateUI();
-                
-                const alivePlayers = this.physics.getAlivePlayers();
-                const winnerCount = parseInt(document.getElementById('winnerCount').value);
-                
-                // Track eliminations
-                const eliminated = this.physics.players.filter(p => !p.alive && !this.eliminationOrder.includes(p));
-                eliminated.sort((a, b) => b.eliminatedAt - a.eliminatedAt);
-                this.eliminationOrder.push(...eliminated);
-                
-                if (alivePlayers.length <= winnerCount) {
-                    this.isRunning = false;
-                    this.winners = alivePlayers;
-                    this.endGame();
-                    return;
-                }
-                
-                this.animationId = requestAnimationFrame((ts) => this.gameLoop(ts));
-            }
-
-            updateUI() {
-                // Timer
-                const elapsed = Math.floor(this.gameTimeSeconds);
-                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-                const seconds = (elapsed % 60).toString().padStart(2, '0');
-                document.getElementById('gameTimer').textContent = `⏱️ ${minutes}:${seconds}`;
-                
-                // Alive count
-                const alivePlayers = this.physics.getAlivePlayers();
-                document.getElementById('aliveCount').textContent = `생존: ${alivePlayers.length}명`;
-                
-                // Ranking
-                this.updateRanking();
-            }
-
-            updateRanking() {
-                const rankingList = document.getElementById('rankingList');
-                const allPlayers = [...this.physics.players];
-                
-                // Sort: alive first (by distance to center), then eliminated (by elimination time)
-                allPlayers.sort((a, b) => {
-                    if (a.alive && !b.alive) return -1;
-                    if (!a.alive && b.alive) return 1;
-                    
-                    if (a.alive && b.alive) {
-                        const distA = Math.sqrt(Math.pow(a.x - this.physics.centerX, 2) + Math.pow(a.y - this.physics.centerY, 2));
-                        const distB = Math.sqrt(Math.pow(b.x - this.physics.centerX, 2) + Math.pow(b.y - this.physics.centerY, 2));
-                        return distA - distB;
-                    }
-                    
-                    return b.eliminatedAt - a.eliminatedAt;
-                });
-                
-                rankingList.innerHTML = allPlayers.map((player, index) => {
-                    const rankClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '';
-                    const statusClass = !player.alive ? 'eliminated' : this.winners.includes(player) ? 'winner' : '';
-                    const boostClass = player.boosting ? 'boosting' : '';
-                    
-                    let statusText = '';
-                    if (!player.alive) {
-                        statusText = '<span class="player-status out">탈락</span>';
-                    } else if (player.boosting) {
-                        statusText = '<span class="player-status boost">💨 부스트!</span>';
-                    } else {
-                        statusText = '<span class="player-status">생존</span>';
-                    }
-                    
-                    return `
-                        <div class="ranking-item ${statusClass} ${boostClass}">
-                            <div class="rank-badge ${rankClass}">${index + 1}</div>
-                            <span class="player-emoji">${player.emoji}</span>
-                            <span class="player-name">${player.name}</span>
-                            ${statusText}
-                        </div>
-                    `;
-                }).join('');
-            }
-
-            endGame() {
-                document.getElementById('startBtn').disabled = false;
-                this.sound.playWin();
-                
-                // Show winner overlay
-                const winnerNames = this.winners.map(p => `${p.emoji} ${p.name}`).join(', ');
-                document.getElementById('winnerNames').textContent = winnerNames;
-                document.getElementById('winnerEmoji').textContent = this.winners[0]?.emoji || '🏆';
-                document.getElementById('winnerOverlay').classList.add('show');
-                
-                this.createConfetti();
-            }
-
-            closeWinnerOverlay() {
-                document.getElementById('winnerOverlay').classList.remove('show');
-            }
-
-            reset() {
-                this.isRunning = false;
-                if (this.animationId) {
-                    cancelAnimationFrame(this.animationId);
-                }
-                
-                this.physics.reset();
-                this.physics.render();
-                this.winners = [];
-                this.eliminationOrder = [];
-                document.getElementById('koLog').innerHTML = '';
-                
-                document.getElementById('gameTimer').textContent = '⏱️ 00:00';
-                document.getElementById('aliveCount').textContent = '생존: 0명';
-                document.getElementById('startBtn').disabled = false;
-                document.getElementById('rankingList').innerHTML = `
-                    <div style="color: var(--text-secondary); text-align: center; padding: 30px; font-size: 0.9rem;">
-                        게임을 시작하면<br>랭킹이 표시됩니다
-                    </div>
-                `;
-            }
-
-            copyResults() {
-                if (this.winners.length === 0 && this.physics.players.length === 0) {
-                    alert('복사할 결과가 없습니다!');
-                    return;
-                }
-                
-                const allPlayers = [...this.physics.players];
-                allPlayers.sort((a, b) => {
-                    if (a.alive && !b.alive) return -1;
-                    if (!a.alive && b.alive) return 1;
-                    return 0;
-                });
-                
-                let result = '🥊 원판 밀치기 추첨 결과\n';
-                result += '═══════════════════\n\n';
-                
-                if (this.winners.length > 0) {
-                    result += '🏆 우승자\n';
-                    this.winners.forEach((p, i) => {
-                        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
-                        result += `${medal} ${p.emoji} ${p.name}\n`;
-                    });
-                    result += '\n';
-                }
-                
-                if (this.eliminationOrder.length > 0) {
-                    result += '💀 탈락 순서\n';
-                    this.eliminationOrder.reverse().forEach((p, i) => {
-                        result += `${i + 1}. ${p.emoji} ${p.name}\n`;
-                    });
-                }
-                
-                navigator.clipboard.writeText(result).then(() => {
-                    const btn = document.getElementById('copyResultBtn');
-                    btn.style.background = 'rgba(74, 222, 128, 0.2)';
-                    setTimeout(() => btn.style.background = '', 1000);
-                });
-            }
-
-            createConfetti() {
-                const colors = ['#ff6b35', '#ffd700', '#4ade80', '#60a5fa', '#f472b6'];
-                
-                for (let i = 0; i < 100; i++) {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.cssText = `
-                        position: fixed;
-                        width: ${Math.random() * 10 + 5}px;
-                        height: ${Math.random() * 10 + 5}px;
-                        background: ${colors[Math.floor(Math.random() * colors.length)]};
-                        left: ${Math.random() * 100}vw;
-                        top: -20px;
-                        border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
-                        animation: confettiFall ${Math.random() * 2 + 2}s linear forwards;
-                        transform: rotate(${Math.random() * 360}deg);
-                    `;
-                    document.body.appendChild(confetti);
-                    
-                    setTimeout(() => confetti.remove(), 4000);
-                }
-                
-                const style = document.createElement('style');
-                style.textContent = `
-                    @keyframes confettiFall {
-                        to {
-                            top: 100vh;
-                            transform: rotate(${Math.random() * 720}deg) translateX(${Math.random() * 200 - 100}px);
-                        }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
+      }
+      function updateWinnerOptions(count) {
+        const maximum = Math.max(1,Math.min(5,count - 1 || 1));
+        [...els.winnerCount.options].forEach(option => { option.disabled = Number(option.value) > maximum; });
+        if (Number(els.winnerCount.value) > maximum) els.winnerCount.value = String(maximum);
+      }
+      function saveSettings() {
+        storage.set('participants',els.participants.value);
+        storage.set('winner-count',els.winnerCount.value);
+        storage.set('tempo',els.tempo.value);
+      }
+      function restoreSettings() {
+        const participants = storage.get('participants');
+        const winners = storage.get('winner-count');
+        const tempo = storage.get('tempo');
+        if (participants) els.participants.value = participants;
+        if (winners) els.winnerCount.value = winners;
+        if (tempo && TEMPOS[tempo]) els.tempo.value = tempo;
+      }
+      function shuffle(items,rng) {
+        const result = [...items];
+        for (let index=result.length-1;index>0;index-=1) {
+          const pick = Math.floor(rng() * (index + 1));
+          [result[index],result[pick]] = [result[pick],result[index]];
         }
+        return result;
+      }
+      function cancelPending() {
+        state.pending.forEach((resolve,timeout) => { clearTimeout(timeout); resolve(false); });
+        state.pending.clear();
+      }
+      function delay(ms,token) {
+        return new Promise(resolve => {
+          const realMs = Math.max(1,Math.round(ms * (QA_MODE ? .02 : 1)));
+          const timeout = setTimeout(() => {
+            state.pending.delete(timeout);
+            resolve(token === state.token);
+          },realMs);
+          state.pending.set(timeout,resolve);
+        });
+      }
+      function cancelRun() {
+        state.token += 1;
+        cancelAnimationFrame(state.frame);
+        state.frame = 0;
+        cancelPending();
+        if (state.runResolve) state.runResolve(false);
+        state.runResolve = null;
+      }
+      function setControlsLocked(locked) {
+        [els.participants,els.winnerCount,els.tempo,els.startButton].forEach(element => { element.disabled = locked; });
+      }
+      function buildRailNodes() {
+        els.railNodes.replaceChildren();
+        const fragment = document.createDocumentFragment();
+        for (let index=0;index<12;index+=1) {
+          const node = document.createElement('span');
+          node.className = 'rail-node';
+          node.style.setProperty('--a',`${index * 30}deg`);
+          fragment.appendChild(node);
+        }
+        els.railNodes.appendChild(fragment);
+      }
+      function arenaSize() {
+        const rect = els.gameArea.getBoundingClientRect();
+        const mobile = rect.width <= 760;
+        return Math.floor(Math.max(300,Math.min(rect.width * (mobile ? .91 : .72),rect.height * (mobile ? .68 : .79),730)));
+      }
+      function resizeCanvas() {
+        const size = arenaSize();
+        els.arenaMachine.style.setProperty('--arena-size',`${size}px`);
+        const dpr = Math.min(devicePixelRatio || 1,2);
+        els.gameCanvas.width = Math.round(size * dpr);
+        els.gameCanvas.height = Math.round(size * dpr);
+        buildRailNodes();
+        draw();
+      }
+      function makeBackgroundCache() {
+        const cache = document.createElement('canvas');
+        cache.width = LOGICAL_SIZE;
+        cache.height = LOGICAL_SIZE;
+        const context = cache.getContext('2d');
+        const outer = context.createRadialGradient(CENTER - 120,CENTER - 150,30,CENTER,CENTER,470);
+        outer.addColorStop(0,'#172e58'); outer.addColorStop(.48,'#0c1c43'); outer.addColorStop(1,'#070b25');
+        context.fillStyle = outer;
+        context.beginPath(); context.arc(CENTER,CENTER,464,0,TAU); context.fill();
+        context.strokeStyle = 'rgba(70,218,255,.15)'; context.lineWidth = 2;
+        for (let radius=120;radius<=390;radius+=90) { context.beginPath(); context.arc(CENTER,CENTER,radius,0,TAU); context.stroke(); }
+        context.strokeStyle = 'rgba(149,119,255,.12)'; context.lineWidth = 1;
+        for (let angle=0;angle<TAU;angle+=Math.PI/6) {
+          context.beginPath(); context.moveTo(CENTER + Math.cos(angle)*90,CENTER + Math.sin(angle)*90); context.lineTo(CENTER + Math.cos(angle)*430,CENTER + Math.sin(angle)*430); context.stroke();
+        }
+        context.fillStyle = 'rgba(32,219,255,.16)';
+        for (let index=0;index<52;index+=1) {
+          const angle = index * 2.399963;
+          const radius = 72 + (index * 53 % 330);
+          context.beginPath(); context.arc(CENTER + Math.cos(angle)*radius,CENTER + Math.sin(angle)*radius,index % 5 === 0 ? 2 : 1,0,TAU); context.fill();
+        }
+        state.backgroundCache = cache;
+      }
+      function createDiskSprite(color) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 128; canvas.height = 128;
+        const context = canvas.getContext('2d');
+        context.shadowColor = color; context.shadowBlur = 17;
+        const gradient = context.createRadialGradient(45,34,5,64,67,54);
+        gradient.addColorStop(0,'#ffffff'); gradient.addColorStop(.12,color); gradient.addColorStop(.66,color); gradient.addColorStop(1,'#17173a');
+        context.fillStyle = gradient;
+        context.beginPath(); context.ellipse(64,66,52,44,0,0,TAU); context.fill();
+        context.shadowBlur = 0;
+        context.strokeStyle = 'rgba(255,255,255,.52)'; context.lineWidth = 4;
+        context.beginPath(); context.ellipse(64,61,45,34,0,0,TAU); context.stroke();
+        context.fillStyle = 'rgba(255,255,255,.34)';
+        context.beginPath(); context.ellipse(46,37,16,8,-.35,0,TAU); context.fill();
+        return canvas;
+      }
+      function spriteFor(color) {
+        if (!state.sprites.has(color)) state.sprites.set(color,createDiskSprite(color));
+        return state.sprites.get(color);
+      }
+      function previewPlayers() {
+        const parsed = parseParticipants();
+        const count = parsed.length;
+        return parsed.map((player,index) => {
+          const angle = index * 2.399963 + .35;
+          const radius = count <= 8 ? 175 + (index % 2) * 62 : 105 + Math.sqrt((index + 1) / count) * 220;
+          return { ...player,x:CENTER + Math.cos(angle)*radius,y:CENTER + Math.sin(angle)*radius,r:count > 20 ? 23 : count > 12 ? 27 : 32,color:COLORS[index % COLORS.length],emoji:EMOJIS[index % EMOJIS.length],alive:true,falling:false,boosting:0,vx:0,vy:0 };
+        });
+      }
+      function renderLobby() {
+        if (state.running) return;
+        state.previewPlayers = previewPlayers();
+        updateWinnerOptions(state.previewPlayers.length);
+        els.participantCount.textContent = `${state.previewPlayers.length} / ${MAX_PARTICIPANTS}`;
+        els.aliveValue.textContent = state.previewPlayers.length;
+        els.aliveCount.textContent = state.previewPlayers.length ? `READY ${state.previewPlayers.length}` : 'READY';
+        renderRanking(state.previewPlayers);
+        draw();
+      }
+      function buildPlayers(parsed) {
+        const count = parsed.length;
+        const shuffledEmoji = shuffle(EMOJIS,state.visualRng);
+        state.players = parsed.map((player,index) => {
+          const angle = index * 2.399963 + state.physicsRng() * .3;
+          const radial = 85 + Math.sqrt((index + .5) / count) * 235;
+          const speed = 32 + state.physicsRng() * 34;
+          return {
+            ...player,x:CENTER + Math.cos(angle)*radial,y:CENTER + Math.sin(angle)*radial,
+            vx:Math.cos(angle + Math.PI/2)*speed,vy:Math.sin(angle + Math.PI/2)*speed,
+            r:count > 22 ? 22 : count > 14 ? 25 : count > 8 ? 29 : 34,
+            color:COLORS[index % COLORS.length],emoji:shuffledEmoji[index % shuffledEmoji.length],
+            alive:true,falling:false,fallProgress:0,boosting:0,boostAt:.45 + state.physicsRng()*1.05,steerAt:.3 + state.physicsRng(),steerAngle:state.physicsRng()*TAU,
+            collisionCooldown:0,knockback:0,hitFlash:0,eliminatedAt:null
+          };
+        });
+        const fateIds = shuffle(state.players.map(player => player.id),state.outcomeRng);
+        state.fate = fateIds.map(id => state.players.find(player => player.id === id));
+        const eliminationCount = count - state.winnerCount;
+        state.eliminationQueue = state.fate.slice(0,eliminationCount);
+        state.winners = state.fate.slice(eliminationCount).reverse();
+      }
+      function activePlayers() { return state.players.filter(player => player.alive); }
+      function difficulty() {
+        if (!state.players.length) return 0;
+        const timePressure = clamp((state.simTime - 8) / 30,0,1);
+        const lossPressure = 1 - activePlayers().length / state.players.length;
+        return clamp(timePressure * .72 + lossPressure * .95,0,1.55);
+      }
+      function spawnImpact(x,y,color,intensity,dashImpact=false) {
+        if (state.particles.length <= 90) {
+          const count = clamp(Math.round(intensity / 28) + (dashImpact ? 3 : 0),3,10);
+          for (let index=0;index<count;index+=1) {
+            const angle = state.visualRng() * TAU;
+            const speed = 55 + state.visualRng() * Math.min(dashImpact ? 240 : 170,intensity * 1.15);
+            state.particles.push({ x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:.24 + state.visualRng()*.3,maxLife:.54,size:2 + state.visualRng()*(dashImpact ? 6 : 4),color });
+          }
+        }
+        if (dashImpact) {
+          if (state.bursts.length >= 12) state.bursts.shift();
+          state.bursts.push({ x,y,color,life:.46,maxLife:.46,radius:20,text:'팡~!' });
+        }
+      }
+      function triggerBoost(player,level) {
+        const targets = activePlayers().filter(other => other !== player);
+        let angle = player.steerAngle;
+        if (targets.length) {
+          targets.sort((left,right) => Math.hypot(left.x-player.x,left.y-player.y) - Math.hypot(right.x-player.x,right.y-player.y));
+          const targetPool = targets.slice(0,Math.min(3,targets.length));
+          const target = targetPool[Math.floor(state.physicsRng() * targetPool.length)];
+          const lead = .18 + state.physicsRng() * .16;
+          angle = Math.atan2(target.y + target.vy*lead - player.y,target.x + target.vx*lead - player.x) + (state.physicsRng() - .5) * .22;
+        }
+        const power = 205 + level * 68 + state.physicsRng() * 62;
+        player.vx += Math.cos(angle) * power;
+        player.vy += Math.sin(angle) * power;
+        player.steerAngle = angle;
+        player.boosting = .68;
+        player.boostAt = (1.35 + state.physicsRng() * 1.5) / (1 + level * .34);
+      }
+      function handleCollision(a,b) {
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const distanceSquared = dx*dx + dy*dy;
+        const minimum = a.r + b.r;
+        if (distanceSquared >= minimum*minimum || distanceSquared < .0001) return;
+        const distance = Math.sqrt(distanceSquared);
+        const nx = dx / distance;
+        const ny = dy / distance;
+        const overlap = minimum - distance;
+        a.x -= nx * overlap * .5; a.y -= ny * overlap * .5;
+        b.x += nx * overlap * .5; b.y += ny * overlap * .5;
+        const relative = (b.vx - a.vx)*nx + (b.vy - a.vy)*ny;
+        if (relative > 0) return;
+        const aDashing = a.boosting > 0;
+        const bDashing = b.boosting > 0;
+        const aApproach = a.vx*nx + a.vy*ny;
+        const bApproach = -(b.vx*nx + b.vy*ny);
+        const dashImpact = aDashing || bDashing;
+        const boost = dashImpact ? 1.48 : 1;
+        const impulse = -(1.04 * boost) * relative;
+        a.vx -= nx * impulse; a.vy -= ny * impulse;
+        b.vx += nx * impulse; b.vy += ny * impulse;
+        let impact = Math.abs(relative) * boost;
+        let dashAttacker = null;
+        if (dashImpact) {
+          dashAttacker = aDashing && (!bDashing || aApproach >= bApproach) ? a : b;
+          const defender = dashAttacker === a ? b : a;
+          const hitX = dashAttacker === a ? nx : -nx;
+          const hitY = dashAttacker === a ? ny : -ny;
+          const shove = clamp(94 + impact * .3,108,182);
+          defender.vx += hitX * shove; defender.vy += hitY * shove;
+          dashAttacker.vx -= hitX * shove * .13; dashAttacker.vy -= hitY * shove * .13;
+          defender.knockback = Math.max(defender.knockback,.38);
+          defender.hitFlash = Math.max(defender.hitFlash,.24);
+          impact += shove * .35;
+        }
+        if (impact > (dashImpact ? 32 : 45) && a.collisionCooldown <= 0 && b.collisionCooldown <= 0) {
+          state.impactCount += 1;
+          if (dashImpact) state.dashImpactCount += 1;
+          a.collisionCooldown = b.collisionCooldown = .09;
+          state.shake = Math.max(state.shake,clamp(impact / (dashImpact ? 55 : 80),dashImpact ? 3 : 1.5,dashImpact ? 8 : 5));
+          spawnImpact((a.x+b.x)/2,(a.y+b.y)/2,dashAttacker?.color || a.color,impact,dashImpact);
+          sound.impact(impact,dashImpact);
+        }
+      }
+      function lockWinners() {
+        const fateRank = new Map(state.fate.map((player,index) => [player.id,index]));
+        state.winners = activePlayers().sort((a,b) => fateRank.get(b.id) - fateRank.get(a.id));
+      }
+      function eliminatePlayer(player,cause) {
+        if (!player?.alive || activePlayers().length <= state.winnerCount) return false;
+        const pressure = cause === 'pressure-wave';
+        player.alive = false;
+        player.falling = true;
+        player.fallProgress = 0;
+        player.eliminatedAt = Number(state.simTime.toFixed(6));
+        let angle = Math.atan2(player.y - CENTER,player.x - CENTER);
+        if (!Number.isFinite(angle) || Math.hypot(player.x-CENTER,player.y-CENTER) < 30) angle = state.outcomeRng() * TAU;
+        const exitSpeed = pressure ? 470 : clamp(Math.hypot(player.vx,player.vy) * 1.08,390,560);
+        player.vx = Math.cos(angle) * exitSpeed;
+        player.vy = Math.sin(angle) * exitSpeed;
+        state.eliminationOrder.push(player);
+        if (pressure) {
+          state.waveCount += 1;
+          state.rings.push({ radius:72,life:.72,maxLife:.72,color:player.color });
+          state.shake = 9;
+        } else {
+          state.shake = Math.max(state.shake,7);
+          spawnImpact(player.x,player.y,player.color,220,true);
+          sound.impact(260,true);
+        }
+        state.audit.push({
+          order:state.eliminationOrder.length,wave:pressure ? state.waveCount : null,playerId:player.id,label:player.label,
+          scheduledAt:pressure ? Number(state.nextElimination.toFixed(6)) : null,eliminatedAt:player.eliminatedAt,
+          timeMs:Math.round(state.simTime * 1000),aliveAfter:activePlayers().length,cause
+        });
+        els.eventCallout.textContent = pressure
+          ? `💥 압력파 ${state.waveCount} · ${player.label} 아레나 이탈`
+          : `💨 RING OUT · ${player.label} 원판이 림 밖으로 밀려났습니다`;
+        els.eventCallout.classList.add('hot');
+        els.arenaTitle.textContent = `${player.label} 원판이 밀려났습니다`;
+        if (pressure) sound.wave();
+        const survivors = activePlayers().length;
+        if (survivors <= state.winnerCount) {
+          lockWinners();
+          setPhase('SUSPENSE');
+          state.revealAt = state.simTime + 1;
+          els.arenaTitle.textContent = '최종 생존 신호를 확인합니다…';
+          els.eventCallout.textContent = '1초의 정적 · 생존자 검증 중';
+          els.dangerBanner.classList.remove('show');
+        } else if (pressure) {
+          const ratio = survivors / state.players.length;
+          const level = difficulty();
+          state.nextElimination += TEMPOS[state.tempo].interval * (.45 + .55 * ratio) / (1 + level * .24);
+        }
+        return true;
+      }
+      function ejectNext() {
+        const player = state.eliminationQueue.find(candidate => candidate.alive);
+        if (player) eliminatePlayer(player,'pressure-wave');
+      }
+      function updateParticles(dt) {
+        state.particles.forEach(particle => {
+          particle.life -= dt; particle.x += particle.vx*dt; particle.y += particle.vy*dt;
+          particle.vx *= Math.pow(.965,dt*60); particle.vy *= Math.pow(.965,dt*60);
+        });
+        state.particles = state.particles.filter(particle => particle.life > 0);
+        state.rings.forEach(ring => { ring.life -= dt; ring.radius += dt * 520; });
+        state.rings = state.rings.filter(ring => ring.life > 0);
+        state.bursts.forEach(burst => { burst.life -= dt; burst.radius += dt * 250; });
+        state.bursts = state.bursts.filter(burst => burst.life > 0);
+        state.players.filter(player => player.falling && player.fallProgress < 1).forEach(player => {
+          player.fallProgress = Math.min(1,player.fallProgress + dt * 1.15);
+          player.x += player.vx * dt; player.y += player.vy * dt;
+          player.vx *= Math.pow(.992,dt*60); player.vy *= Math.pow(.992,dt*60);
+        });
+      }
+      function updatePhysics(dt) {
+        const level = difficulty();
+        state.arenaRadius = lerp(408,294,clamp(state.simTime / 44,0,.92));
+        const players = activePlayers();
+        players.forEach(player => {
+          player.collisionCooldown = Math.max(0,player.collisionCooldown - dt);
+          player.boosting = Math.max(0,player.boosting - dt);
+          player.knockback = Math.max(0,player.knockback - dt);
+          player.hitFlash = Math.max(0,player.hitFlash - dt);
+          player.boostAt -= dt;
+          player.steerAt -= dt;
+          if (player.steerAt <= 0) {
+            player.steerAt = .55 + state.physicsRng() * .8;
+            player.steerAngle = state.physicsRng() * TAU;
+          }
+          if (player.boostAt <= 0) triggerBoost(player,level);
+          const dx = CENTER - player.x;
+          const dy = CENTER - player.y;
+          const distance = Math.max(1,Math.hypot(dx,dy));
+          const attraction = 8 + level * 7;
+          player.vx += dx / distance * attraction * dt;
+          player.vy += dy / distance * attraction * dt;
+          player.vx += Math.cos(player.steerAngle) * (5 + level * 3) * dt;
+          player.vy += Math.sin(player.steerAngle) * (5 + level * 3) * dt;
+          const damping = Math.pow(.996 - level*.0005,dt*60);
+          player.vx *= damping; player.vy *= damping;
+          const speed = Math.hypot(player.vx,player.vy);
+          const maxSpeed = player.boosting > 0 ? 382 + level * 72 : player.knockback > 0 ? 398 + level * 52 : 220 + level * 55;
+          if (speed > maxSpeed) { player.vx = player.vx / speed * maxSpeed; player.vy = player.vy / speed * maxSpeed; }
+          player.x += player.vx * dt; player.y += player.vy * dt;
+        });
+        for (let left=0;left<players.length;left+=1) {
+          for (let right=left+1;right<players.length;right+=1) handleCollision(players[left],players[right]);
+        }
+        const ringOuts = players.filter(player => {
+          const radial = Math.hypot(player.x-CENTER,player.y-CENTER);
+          return player.alive && radial > state.arenaRadius - player.r * .45;
+        }).sort((a,b) => {
+          const aExcess = Math.hypot(a.x-CENTER,a.y-CENTER) - (state.arenaRadius - a.r*.45);
+          const bExcess = Math.hypot(b.x-CENTER,b.y-CENTER) - (state.arenaRadius - b.r*.45);
+          return bExcess - aExcess || a.id - b.id;
+        });
+        const openSlots = Math.max(0,activePlayers().length - state.winnerCount);
+        if (openSlots > 0 && ringOuts.length && state.simTime + .000001 >= state.nextRingOut) {
+          if (eliminatePlayer(ringOuts[0],'dash-ring-out')) {
+            const gapScale = state.simTime < PULSE_START_TIME ? 1 : .28;
+            state.nextRingOut = state.simTime + TEMPOS[state.tempo].ringGap * gapScale;
+          }
+        }
+        ringOuts.filter(player => player.alive).forEach(player => {
+          const dx = player.x - CENTER;
+          const dy = player.y - CENTER;
+          const radial = Math.max(1,Math.hypot(dx,dy));
+          const nx = dx / radial;
+          const ny = dy / radial;
+          const rim = state.arenaRadius - player.r * .45;
+          player.x = CENTER + nx * rim;
+          player.y = CENTER + ny * rim;
+          const outward = player.vx*nx + player.vy*ny;
+          if (outward > 0) { player.vx -= nx*outward*1.62; player.vy -= ny*outward*1.62; }
+        });
+        updateParticles(dt);
+      }
+      function update(dt,token) {
+        if (token !== state.token) return;
+        state.simTime += dt;
+        state.uiClock += dt;
+        if (state.phase === 'SUSPENSE') {
+          updateParticles(dt);
+          if (state.simTime + .000001 >= state.revealAt) finishGame();
+          return;
+        }
+        updatePhysics(dt);
+        if (state.simTime + .000001 >= state.nextElimination) ejectNext();
+        if (state.uiClock >= .12) { state.uiClock = 0; updateUi(); }
+      }
+      function loop(timestamp,token) {
+        if (!state.running || token !== state.token) return;
+        if (!state.lastTimestamp) state.lastTimestamp = timestamp;
+        const elapsed = Math.min((timestamp - state.lastTimestamp) / 1000,.1);
+        state.lastTimestamp = timestamp;
+        state.accumulator += elapsed * SIMULATION_RATE;
+        let steps = 0;
+        while (state.accumulator >= FIXED_DT && steps < MAX_STEPS && state.running) {
+          update(FIXED_DT,token);
+          state.accumulator -= FIXED_DT;
+          steps += 1;
+        }
+        if (steps === MAX_STEPS) state.accumulator = Math.min(state.accumulator,FIXED_DT);
+        draw();
+        if (state.running) state.frame = requestAnimationFrame(next => loop(next,token));
+      }
+      function drawFace(context,player,radius,alpha) {
+        context.save();
+        context.globalAlpha = alpha;
+        context.fillStyle = '#111127';
+        const y = player.y - radius*.08;
+        const eyeGap = radius*.27;
+        const eyeR = Math.max(2.2,radius*.09);
+        context.beginPath(); context.arc(player.x-eyeGap,y,eyeR,0,TAU); context.arc(player.x+eyeGap,y,eyeR,0,TAU); context.fill();
+        context.strokeStyle = '#111127'; context.lineWidth = Math.max(1.5,radius*.06); context.lineCap = 'round';
+        context.beginPath();
+        if (player.falling) context.arc(player.x,player.y+radius*.22,radius*.12,0,TAU);
+        else context.arc(player.x,player.y+radius*.12,radius*.22,.12*Math.PI,.88*Math.PI);
+        context.stroke();
+        if (player.boosting > 0) {
+          context.beginPath(); context.moveTo(player.x-eyeGap-radius*.12,y-radius*.16); context.lineTo(player.x-eyeGap+radius*.08,y-radius*.08); context.moveTo(player.x+eyeGap-radius*.08,y-radius*.08); context.lineTo(player.x+eyeGap+radius*.12,y-radius*.16); context.stroke();
+        }
+        context.restore();
+      }
+      function drawPlayer(context,player) {
+        if (player.falling && player.fallProgress >= 1) return;
+        const scale = player.falling ? Math.max(.15,1 - player.fallProgress*.75) : 1;
+        const alpha = player.falling ? Math.max(0,1 - player.fallProgress) : 1;
+        const radius = player.r * scale;
+        if (player.boosting > 0 && !player.falling) {
+          const speed = Math.hypot(player.vx,player.vy) || 1;
+          const nx = player.vx/speed, ny = player.vy/speed;
+          const trail = context.createLinearGradient(player.x-nx*80,player.y-ny*80,player.x,player.y);
+          trail.addColorStop(0,'transparent'); trail.addColorStop(1,player.color);
+          context.strokeStyle = trail; context.lineWidth = radius*.75; context.lineCap = 'round';
+          context.beginPath(); context.moveTo(player.x-nx*70,player.y-ny*70); context.lineTo(player.x-nx*8,player.y-ny*8); context.stroke();
+        }
+        context.globalAlpha = alpha;
+        context.drawImage(spriteFor(player.color),player.x-radius*1.34,player.y-radius*1.34,radius*2.68,radius*2.68);
+        if (player.hitFlash > 0 && !player.falling) {
+          context.globalAlpha = clamp(player.hitFlash * 4,0,1);
+          context.strokeStyle = '#fff'; context.lineWidth = 7;
+          context.beginPath(); context.arc(player.x,player.y,radius+8,0,TAU); context.stroke();
+        }
+        drawFace(context,player,radius,alpha);
+        context.globalAlpha = alpha;
+        context.font = `800 ${clamp(player.r*.47,11,15)}px Inter, sans-serif`;
+        context.textAlign = 'center'; context.textBaseline = 'top';
+        context.lineWidth = 4; context.strokeStyle = 'rgba(4,5,25,.86)';
+        context.strokeText(player.label,player.x,player.y+radius*.9,player.r*5.8);
+        context.fillStyle = '#fff'; context.fillText(player.label,player.x,player.y+radius*.9,player.r*5.8);
+        context.globalAlpha = 1;
+      }
+      function draw() {
+        const canvas = els.gameCanvas;
+        const context = canvas.getContext('2d');
+        if (!canvas.width || !canvas.height) return;
+        const scale = canvas.width / LOGICAL_SIZE;
+        context.setTransform(1,0,0,1,0,0);
+        context.clearRect(0,0,canvas.width,canvas.height);
+        const shakeX = state.shake ? (state.visualRng?.() - .5) * state.shake : 0;
+        const shakeY = state.shake ? (state.visualRng?.() - .5) * state.shake : 0;
+        state.shake *= .84;
+        context.setTransform(scale,0,0,scale,shakeX*scale,shakeY*scale);
+        if (state.backgroundCache) context.drawImage(state.backgroundCache,0,0);
+        context.save();
+        const edge = context.createRadialGradient(CENTER,CENTER,state.arenaRadius-22,CENTER,CENTER,state.arenaRadius+15);
+        edge.addColorStop(0,'rgba(41,221,255,0)'); edge.addColorStop(.72,'rgba(41,221,255,.08)'); edge.addColorStop(.84,'rgba(41,221,255,.95)'); edge.addColorStop(1,'rgba(255,79,145,0)');
+        context.fillStyle = edge; context.beginPath(); context.arc(CENTER,CENTER,state.arenaRadius+18,0,TAU); context.fill();
+        context.strokeStyle = difficulty() > .7 ? 'rgba(255,79,145,.85)' : 'rgba(41,221,255,.64)';
+        context.lineWidth = 4; context.setLineDash([17,10]); context.lineDashOffset = -state.simTime*35;
+        context.beginPath(); context.arc(CENTER,CENTER,state.arenaRadius,0,TAU); context.stroke(); context.restore();
+        state.rings.forEach(ring => {
+          context.globalAlpha = ring.life / ring.maxLife;
+          context.strokeStyle = ring.color; context.lineWidth = 12 * ring.life / ring.maxLife;
+          context.beginPath(); context.arc(CENTER,CENTER,ring.radius,0,TAU); context.stroke();
+        });
+        context.globalAlpha = 1;
+        const players = state.running || state.players.length ? state.players : state.previewPlayers;
+        [...players].sort((a,b) => a.y - b.y).forEach(player => drawPlayer(context,player));
+        state.particles.forEach(particle => {
+          context.globalAlpha = clamp(particle.life / particle.maxLife,0,1);
+          context.fillStyle = particle.color;
+          context.beginPath(); context.arc(particle.x,particle.y,particle.size,0,TAU); context.fill();
+        });
+        state.bursts.forEach(burst => {
+          const progress = 1 - burst.life / burst.maxLife;
+          context.globalAlpha = clamp(burst.life / burst.maxLife,0,1);
+          context.strokeStyle = burst.color; context.lineWidth = 8 * (1-progress) + 2;
+          context.beginPath(); context.arc(burst.x,burst.y,burst.radius,0,TAU); context.stroke();
+          context.font = `900 ${24 + progress*9}px Inter, Pretendard, sans-serif`;
+          context.textAlign = 'center'; context.textBaseline = 'middle';
+          context.lineWidth = 7; context.strokeStyle = 'rgba(7,6,25,.9)';
+          context.strokeText(burst.text,burst.x,burst.y-34-progress*24);
+          context.fillStyle = '#fff4a8'; context.fillText(burst.text,burst.x,burst.y-34-progress*24);
+        });
+        context.globalAlpha = 1;
+      }
+      function renderRanking(players=state.players) {
+        els.rankingList.replaceChildren();
+        if (!players.length) {
+          const empty = document.createElement('div');
+          empty.className = 'ranking-empty';
+          empty.textContent = '참가자를 입력하면 원판 프리뷰가 표시됩니다.';
+          els.rankingList.appendChild(empty);
+          return;
+        }
+        const ordered = [...players].sort((a,b) => {
+          if (a.alive !== b.alive) return a.alive ? -1 : 1;
+          if (!a.alive) return (b.eliminatedAt || 0) - (a.eliminatedAt || 0);
+          return Math.hypot(a.x-CENTER,a.y-CENTER) - Math.hypot(b.x-CENTER,b.y-CENTER);
+        });
+        const fragment = document.createDocumentFragment();
+        ordered.forEach((player,index) => {
+          const item = document.createElement('div');
+          item.className = `ranking-item${player.boosting > 0 ? ' boost' : ''}${player.alive === false ? ' out' : ''}`;
+          const rank = document.createElement('span'); rank.className = 'rank'; rank.textContent = index + 1;
+          const emoji = document.createElement('span'); emoji.textContent = player.emoji || '🥏';
+          const name = document.createElement('span'); name.className = 'ranking-name'; name.textContent = player.label;
+          const status = document.createElement('span');
+          if (player.alive === false) { status.className = 'ranking-status out'; status.textContent = 'OUT'; }
+          else if (player.boosting > 0) { status.className = 'ranking-status hot'; status.textContent = 'BOOST'; }
+          else { status.className = 'ranking-status'; status.textContent = state.running ? 'SAFE' : 'READY'; }
+          item.append(rank,emoji,name,status); fragment.appendChild(item);
+        });
+        els.rankingList.appendChild(fragment);
+      }
+      function updateUi() {
+        const alive = activePlayers().length;
+        els.timerValue.textContent = state.simTime.toFixed(3);
+        els.aliveValue.textContent = alive;
+        els.aliveCount.textContent = `ALIVE ${alive}`;
+        els.arenaProof.textContent = `FIXED 60HZ · R ${Math.round(state.arenaRadius)}`;
+        const pulseActive = state.simTime >= PULSE_START_TIME;
+        const overdrive = pulseActive && difficulty() >= .72 && state.phase !== 'SUSPENSE';
+        els.dangerBanner.classList.toggle('show',overdrive);
+        if (overdrive) setPhase('OVERDRIVE');
+        else if (!pulseActive && state.phase !== 'SUSPENSE') setPhase('DASH');
+        else if (state.phase === 'OVERDRIVE' || state.phase === 'DASH') setPhase('PULSE');
+        renderRanking();
+      }
+      function buildResultText() {
+        return [
+          '🥏 PLAYPICK 네온 원판 밀치기 결과',
+          ...state.winners.map((player,index) => `${index + 1}. ${player.emoji} ${player.label}`),'',
+          `정밀 기록: ${formatTime(state.simTime)}`,`충돌: ${state.impactCount}회`,`압력파: ${state.waveCount}회`,`버전: ${GAME_VERSION}`
+        ].join('\n');
+      }
+      function renderResult() {
+        els.winnerList.replaceChildren();
+        const medals = ['🥇','🥈','🥉','🏅','🏅'];
+        const fragment = document.createDocumentFragment();
+        state.winners.forEach((player,index) => {
+          const row = document.createElement('div'); row.className = 'winner-row';
+          const medal = document.createElement('span'); medal.textContent = medals[index] || '🏅';
+          const emoji = document.createElement('span'); emoji.textContent = player.emoji;
+          const name = document.createElement('span'); name.textContent = player.label;
+          const rank = document.createElement('span'); rank.textContent = index === 0 ? 'CHAMPION' : `SURVIVOR ${index + 1}`;
+          row.append(medal,emoji,name,rank); fragment.appendChild(row);
+        });
+        els.winnerList.appendChild(fragment);
+        els.resultTime.textContent = formatTime(state.simTime);
+        els.resultImpacts.textContent = state.impactCount;
+        els.resultWaves.textContent = state.waveCount;
+      }
+      function finishGame() {
+        if (!state.running) return;
+        state.running = false;
+        cancelAnimationFrame(state.frame); state.frame = 0;
+        setControlsLocked(false);
+        setPhase('COMPLETE');
+        els.startButton.textContent = '⚡ 다시 배틀';
+        els.arenaTitle.textContent = '최종 생존자가 확정되었습니다';
+        els.eventCallout.textContent = `${state.winners.map(player => player.label).join(' · ')} 생존`;
+        els.eventCallout.classList.remove('hot');
+        els.dangerBanner.classList.remove('show');
+        updateUi();
+        setPhase('COMPLETE');
+        state.lastResult = buildResultText();
+        renderResult();
+        startCelebration();
+        els.resultOverlay.classList.add('show');
+        els.resultCloseButton.focus({ preventScroll:true });
+        sound.finish();
+        if (state.runResolve) state.runResolve(true);
+        state.runResolve = null;
+      }
+      async function startGame() {
+        if (state.running) return false;
+        clearTimeout(state.inputTimer);
+        const parsed = parseParticipants();
+        const winnerCount = Number(els.winnerCount.value);
+        if (parsed.length < 2) { showToast('참가자를 2명 이상 입력해주세요.'); els.participants.focus(); return false; }
+        if (winnerCount < 1 || winnerCount >= parsed.length) { showToast('생존자 수는 참가자 수보다 적어야 합니다.'); return false; }
+        cancelRun();
+        const token = state.token;
+        state.running = true;
+        state.players = []; state.winners = []; state.fate = []; state.eliminationQueue = []; state.eliminationOrder = []; state.audit = [];
+        state.particles = []; state.rings = []; state.bursts = []; state.sprites.clear(); state.phase = 'PREPARING'; state.simTime = 0; state.accumulator = 0; state.lastTimestamp = 0;
+        state.winnerCount = winnerCount; state.tempo = els.tempo.value;
+        state.outcomeRng = Math.random; state.physicsRng = Math.random; state.visualRng = Math.random;
+        state.impactCount = 0; state.dashImpactCount = 0; state.waveCount = 0; state.nextRingOut = 0; state.shake = 0; state.uiClock = 0; state.revealAt = 0; state.lastResult = '';
+        saveSettings(); setControlsLocked(true); stopCelebration(); els.resultOverlay.classList.remove('show');
+        els.startButton.textContent = '압력파 준비 중…';
+        els.arenaTitle.textContent = '이번 배틀의 움직임을 정하는 중…'; els.arenaProof.textContent = 'FIXED 60HZ · RANDOMIZING';
+        els.eventCallout.textContent = '무작위 압력파 타임라인 생성 중'; els.eventCallout.classList.remove('hot');
+        setPhase('PREPARING'); sound.lastImpact = -1; sound.init();
+        buildPlayers(parsed);
+        state.nextElimination = PULSE_START_TIME + TEMPOS[state.tempo].first;
+        els.arenaProof.textContent = 'FIXED 60HZ · RANDOM RUN';
+        els.arenaTitle.textContent = `${parsed.length}개 원판 · ${winnerCount}명 생존 미션`;
+        els.eventCallout.textContent = '💨 대시 배틀 시작 · 중앙 펄스는 30초 이후 활성화';
+        els.startButton.textContent = '배틀 진행 중…';
+        els.aliveValue.textContent = parsed.length; els.aliveCount.textContent = `ALIVE ${parsed.length}`;
+        renderRanking(); draw(); sound.start(); setPhase('LOCKED');
+        if (innerWidth <= 760) requestAnimationFrame(() => els.gameArea.scrollIntoView({ behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',block:'start' }));
+        if (!await delay(520,token) || token !== state.token) return false;
+        setPhase('BATTLE');
+        state.lastTimestamp = performance.now();
+        return new Promise(resolve => {
+          state.runResolve = resolve;
+          state.frame = requestAnimationFrame(timestamp => loop(timestamp,token));
+        });
+      }
+      function resetGame() {
+        cancelRun();
+        state.running = false; state.players = []; state.winners = []; state.fate = []; state.eliminationQueue = []; state.eliminationOrder = []; state.audit = [];
+        state.particles = []; state.rings = []; state.bursts = []; state.simTime = 0; state.arenaRadius = 408; state.impactCount = 0; state.dashImpactCount = 0; state.waveCount = 0; state.nextRingOut = 0; state.lastResult = '';
+        setControlsLocked(false); stopCelebration(); els.resultOverlay.classList.remove('show'); els.dangerBanner.classList.remove('show');
+        els.startButton.textContent = '⚡ 배틀 시작';
+        els.arenaTitle.textContent = '네온 아레나가 도전자를 기다립니다'; els.arenaProof.textContent = 'FIXED 60HZ · RANDOM READY';
+        els.timerValue.textContent = '0.000'; els.eventCallout.textContent = '참가자를 확인한 뒤 배틀을 시작해주세요'; els.eventCallout.classList.remove('hot');
+        sound.lastImpact = -1; setPhase('READY'); renderLobby();
+      }
+      async function copyResult() {
+        if (!state.lastResult) { showToast('완료된 배틀 결과가 없습니다.'); return; }
+        try { await navigator.clipboard.writeText(state.lastResult); }
+        catch {
+          const textarea = document.createElement('textarea'); textarea.value = state.lastResult; textarea.style.position = 'fixed'; textarea.style.opacity = '0';
+          document.body.appendChild(textarea); textarea.select(); document.execCommand('copy'); textarea.remove();
+        }
+        showToast('결과를 복사했습니다.');
+      }
+      function resizeCelebration() {
+        const dpr = Math.min(devicePixelRatio || 1,2);
+        els.celebrationCanvas.width = Math.round(innerWidth*dpr); els.celebrationCanvas.height = Math.round(innerHeight*dpr);
+        els.celebrationCanvas.style.width = `${innerWidth}px`; els.celebrationCanvas.style.height = `${innerHeight}px`;
+      }
+      function startCelebration() {
+        stopCelebration(); resizeCelebration(); els.celebrationCanvas.style.display = 'block';
+        const rng = state.visualRng;
+        state.celebrationParticles = Array.from({ length:90 },(_,index) => ({
+          x:rng()*innerWidth,y:-20-rng()*innerHeight*.5,vx:(rng()-.5)*70,vy:80+rng()*170,
+          rotation:rng()*TAU,spin:(rng()-.5)*7,size:5+rng()*8,color:COLORS[index%COLORS.length],shape:rng()>.55?1:0
+        }));
+        let last = performance.now();
+        const frame = timestamp => {
+          const dt = Math.min((timestamp-last)/1000,.05); last=timestamp;
+          const context = els.celebrationCanvas.getContext('2d');
+          const dpr = Math.min(devicePixelRatio || 1,2); context.setTransform(dpr,0,0,dpr,0,0); context.clearRect(0,0,innerWidth,innerHeight);
+          state.celebrationParticles.forEach(particle => {
+            particle.x += particle.vx*dt; particle.y += particle.vy*dt; particle.vy += 80*dt; particle.rotation += particle.spin*dt;
+            if (particle.y > innerHeight+25) particle.y = -20;
+            context.save(); context.translate(particle.x,particle.y); context.rotate(particle.rotation); context.fillStyle=particle.color;
+            if (particle.shape) { context.beginPath(); context.arc(0,0,particle.size*.55,0,TAU); context.fill(); }
+            else context.fillRect(-particle.size/2,-particle.size/3,particle.size,particle.size*.66);
+            context.restore();
+          });
+          state.celebrationFrame=requestAnimationFrame(frame);
+        };
+        state.celebrationFrame=requestAnimationFrame(frame);
+      }
+      function stopCelebration() {
+        cancelAnimationFrame(state.celebrationFrame); state.celebrationFrame=0; state.celebrationParticles=[];
+        els.celebrationCanvas.style.display='none';
+        els.celebrationCanvas.getContext('2d').clearRect(0,0,els.celebrationCanvas.width,els.celebrationCanvas.height);
+      }
 
-        // Initialize game
-        const game = new Game();
-    </script>
+      els.participants.addEventListener('input',() => {
+        storage.set('participants',els.participants.value);
+        clearTimeout(state.inputTimer); state.inputTimer=setTimeout(renderLobby,160);
+      });
+      els.winnerCount.addEventListener('change',saveSettings);
+      els.tempo.addEventListener('change',saveSettings);
+      els.startButton.addEventListener('click',startGame);
+      els.resetButton.addEventListener('click',resetGame);
+      els.soundButton.addEventListener('click',() => { sound.enabled=!sound.enabled; storage.set('sound',sound.enabled); setSoundUi(); if(sound.enabled){sound.init();sound.tone(640,.1);} });
+      els.copyButton.addEventListener('click',copyResult); els.resultCopyButton.addEventListener('click',copyResult);
+      els.resultCloseButton.addEventListener('click',() => { els.resultOverlay.classList.remove('show'); stopCelebration(); });
+      els.helpButton.addEventListener('click',() => els.helpDialog.showModal());
+      els.helpCloseButton.addEventListener('click',() => els.helpDialog.close());
+      els.helpDialog.addEventListener('click',event => { if(event.target===els.helpDialog) els.helpDialog.close(); });
+      let resizeTimer=0;
+      addEventListener('resize',() => { clearTimeout(resizeTimer); resizeTimer=setTimeout(() => { resizeCanvas(); if(els.celebrationCanvas.style.display==='block') resizeCelebration(); },90); },{passive:true});
+      if ('ResizeObserver' in window) {
+        const observer=new ResizeObserver(() => { if(!state.running) resizeCanvas(); }); observer.observe(els.gameArea);
+      }
+      if (QA_MODE) {
+        window.__DISK_SHOVE_QA__ = {
+          start:startGame,reset:resetGame,
+          snapshot:() => ({
+            running:state.running,phase:state.phase,simTime:state.simTime,
+            players:state.players.map(player => ({id:player.id,label:player.label,alive:player.alive,falling:player.falling,eliminatedAt:player.eliminatedAt})),
+            winners:state.winners.map(player => ({id:player.id,label:player.label})),
+            fate:state.fate.map(player => player.id),eliminationOrder:state.eliminationOrder.map(player => player.id),audit:structuredClone(state.audit),
+            impactCount:state.impactCount,dashImpactCount:state.dashImpactCount,waveCount:state.waveCount,burstCount:state.bursts.length,
+            nextElimination:state.nextElimination,nextRingOut:state.nextRingOut,pendingTimers:state.pending.size,animationActive:Boolean(state.frame),
+            resultOpen:els.resultOverlay.classList.contains('show'),overflowX:document.documentElement.scrollWidth-document.documentElement.clientWidth,
+            arenaRadius:state.arenaRadius
+          })
+        };
+      }
+      restoreSettings(); setSoundUi(); makeBackgroundCache(); buildRailNodes(); resizeCanvas(); renderLobby();
+    })();
+  </script>
 </body>
 </html>

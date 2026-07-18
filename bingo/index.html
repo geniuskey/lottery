@@ -2,25 +2,39 @@
 @game-meta
 {
   "id": "bingo",
-  "title": "빙고",
-  "emoji": "🎯",
-  "category": "보드게임",
-  "description": "클래식 빙고를 현대적으로 재해석한 추첨 게임. 5x5 그리드에서 실시간 랭킹 경쟁!",
-  "features": ["📊 실시간 랭킹", "🎨 FLIP 애니메이션"],
+  "title": "빙고 노바",
+  "emoji": "🎱",
+  "category": "classic",
+  "description": "우주 볼 머신이 번호를 호출하고 5×5 카드가 경쟁하는 랜덤 빙고 추첨",
+  "features": ["실시간 카드", "동시 빙고 타이브레이크", "매회 랜덤 카드", "정밀 기록"],
+  "tags": ["빙고", "보드게임", "추첨", "단체게임", "실시간랭킹"],
   "color": "purple",
-  "version": "1.0.0",
-  "updated": "2025-01-15",
+  "version": "1.1.0",
+  "created": "2025-01-15",
+  "updated": "2026-07-17",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
     "github": "geniuskey"
+  },
+  "requirements": {
+    "minParticipants": 2,
+    "maxParticipants": 24,
+    "recommendedParticipants": "4-12"
+  },
+  "settings": {
+    "winnerCount": true,
+    "maxNumber": true,
+    "requiredLines": true,
+    "dynamicSort": true,
+    "soundEnabled": true
   },
   "urls": {
     "service": "https://geniuskey.github.io/lottery/bingo/",
     "repository": "https://github.com/geniuskey/lottery"
   },
   "license": "MIT",
-  "copyright": "© 2025 Euiyun Edwin Kim. Licensed under the MIT License."
+  "copyright": "© 2026 Euiyun Edwin Kim. Licensed under the MIT License."
 }
 @end-game-meta
 -->
@@ -28,1929 +42,1749 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-GFTNV73W8L');
-  </script>
-
-  <title>빙고 - 추첨 게임 포털</title>
-
-  <!-- SEO 기본 -->
-  <meta name="description" content="클래식 빙고를 현대적으로 재해석한 온라인 추첨 게임! 5x5 그리드에서 숫자를 맞추고 실시간 랭킹 경쟁을 즐기세요. 학교, 회사, 이벤트용으로 최고!">
-  <meta name="keywords" content="빙고, 빙고 게임, 온라인 빙고, 추첨 게임, 랜덤 숫자, 빙고 추첨, 실시간 빙고, 레크리에이션 게임">
-  <meta name="author" content="Euiyun Edwin Kim">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0826">
+  <meta name="description" content="매 게임 새로운 카드와 결과를 만드는 우주 테마 실시간 빙고 추첨">
   <meta name="robots" content="index, follow">
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="추첨 게임 포털">
-  <meta property="og:title" content="🎯 빙고 - 실시간 온라인 빙고 추첨">
-  <meta property="og:description" content="5x5 그리드에서 펼쳐지는 박진감 넘치는 빙고 추첨! 실시간 순위 변동과 화려한 애니메이션을 즐기세요.">
-  <meta property="og:url" content="https://geniuskey.github.io/lottery/bingo/">
-  <meta property="og:image" content="https://geniuskey.github.io/lottery/og-image.png">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="🎯 빙고 - 실시간 온라인 빙고 추첨">
-  <meta name="twitter:description" content="5x5 그리드에서 펼쳐지는 박진감 넘치는 빙고 추첨! 실시간 순위 변동과 화려한 애니메이션을 즐기세요.">
-  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/og-image.png">
-
-  <!-- Canonical & Favicon -->
+  <title>빙고 노바 | PLAYPICK</title>
   <link rel="canonical" href="https://geniuskey.github.io/lottery/bingo/">
-  <link rel="icon" type="image/svg+xml"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
-
-  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PLAYPICK">
+  <meta property="og:title" content="빙고 노바 | PLAYPICK">
+  <meta property="og:description" content="우주 볼 머신과 5×5 카드로 즐기는 공정한 실시간 빙고 추첨">
+  <meta property="og:url" content="https://geniuskey.github.io/lottery/bingo/">
+  <meta property="og:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/bingo.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="빙고 노바 | PLAYPICK">
+  <meta name="twitter:description" content="매번 새롭게 구성되는 카드와 호출 기록을 즐기는 빙고">
+  <meta name="twitter:image" content="https://geniuskey.github.io/lottery/assets/thumbnails/bingo.webp">
   <style>
     :root {
-      --bg-dark: #0a0a1a;
-      --bg-sidebar: #12122a;
-      --accent-primary: #00f5d4;
-      --accent-secondary: #ff6b6b;
-      --accent-gold: #ffd93d;
-      --accent-purple: #9b5de5;
-      --text-primary: #ffffff;
-      --text-secondary: #a0a0c0;
-      --border-glow: rgba(0, 245, 212, 0.3);
-      --glass-bg: rgba(255, 255, 255, 0.05);
+      --ink: #faf9ff;
+      --muted: #aaa9c9;
+      --panel: rgba(12, 10, 43, .95);
+      --panel-soft: rgba(255, 255, 255, .065);
+      --line: rgba(255, 255, 255, .13);
+      --cyan: #42dcff;
+      --blue: #5578ff;
+      --purple: #a65cff;
+      --pink: #ff53b7;
+      --orange: #ff9c43;
+      --gold: #ffd45a;
+      --green: #54f6a7;
+      --danger: #ff5e7b;
+      --sidebar: 334px;
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(0, 245, 212, 0.2); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
-
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; background: #06051a; }
     body {
-      font-family: 'Noto Sans KR', sans-serif;
-      background: var(--bg-dark);
-      color: var(--text-primary);
-      min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       overflow: hidden;
-      touch-action: manipulation;
+      color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      word-break: keep-all;
     }
-
-    /* Sidebar */
-    .sidebar {
-      width: 320px;
-      min-width: 320px;
-      background: var(--bg-sidebar);
-      border-right: 1px solid var(--border-glow);
+    button, input, textarea, select { font: inherit; }
+    button, select { color: inherit; }
+    button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+      outline: 3px solid rgba(66, 220, 255, .72);
+      outline-offset: 2px;
+    }
+    .control-panel {
+      width: var(--sidebar);
+      flex: 0 0 var(--sidebar);
+      height: 100dvh;
       display: flex;
       flex-direction: column;
-      padding: 20px;
-      gap: 20px;
-      height: 100vh;
-    }
-
-    .sidebar-header {
-      padding-bottom: 15px;
-      border-bottom: 1px solid var(--border-glow);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-      gap: 10px;
-    }
-
-    .sidebar-header h1 {
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex: 1;
-      white-space: nowrap;
-      letter-spacing: -0.8px;
-    }
-
-    .sidebar-header h1 .logo-emoji {
-      filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
-      -webkit-text-fill-color: initial;
-      background: none;
-    }
-
-    .sidebar-header h1 .title-text {
-      /* 프리미엄 금속 광택 효과 */
-      background: linear-gradient(
-        to right, 
-        var(--accent-primary) 0%, 
-        #fff 45%, 
-        #fff 55%, 
-        var(--accent-primary) 100%
-      );
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shine 5s linear infinite;
-      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
-    }
-
-    @keyframes shine {
-      to { background-position: 200% center; }
-    }
-
-    .header-btns {
-      display: flex;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .help-btn, .sound-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: var(--glass-bg);
-      border: 1px solid var(--border-glow);
-      color: var(--accent-primary);
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .help-btn:hover, .sound-btn:hover {
-      background: rgba(255, 217, 61, 0.1);
-      border-color: var(--accent-primary);
-      transform: translateY(-2px);
-    }
-
-    /* Help Modal */
-    .help-modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.85);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-      padding: 20px;
-    }
-
-    .help-modal-overlay.show {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .help-modal {
-      background: var(--bg-sidebar);
-      border: 2px solid var(--accent-primary);
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 500px;
-      width: 100%;
-      max-height: 80vh;
+      gap: 13px;
+      padding: 20px 19px 16px;
       overflow-y: auto;
-      animation: popIn 0.3s ease;
+      z-index: 20;
+      border-right: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 5% 0%, rgba(85, 120, 255, .19), transparent 26%),
+        radial-gradient(circle at 100% 18%, rgba(255, 83, 183, .11), transparent 28%),
+        var(--panel);
+      box-shadow: 20px 0 50px rgba(0, 0, 0, .35);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(166, 92, 255, .45) transparent;
     }
-
-    .help-modal-header {
+    .brand-row { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      font-size: 1.35rem;
+      background: linear-gradient(145deg, var(--purple), var(--pink) 55%, var(--orange));
+      box-shadow: 0 9px 25px rgba(166, 92, 255, .35), inset 0 1px rgba(255,255,255,.45);
+    }
+    .brand-copy { min-width: 0; flex: 1; }
+    .eyebrow {
+      margin: 0 0 2px;
+      color: var(--cyan);
+      font-size: .62rem;
+      font-weight: 950;
+      letter-spacing: .2em;
+    }
+    h1 { margin: 0; font-size: 1.3rem; letter-spacing: -.05em; }
+    .icon-btn {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel-soft);
+      cursor: pointer;
+      transition: transform .18s, background .18s, border-color .18s;
+    }
+    .icon-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,.11); border-color: rgba(66,220,255,.46); }
+    .field { display: grid; gap: 6px; }
+    .field-label {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid var(--border-glow);
+      color: #dddaf0;
+      font-size: .77rem;
+      font-weight: 850;
     }
-
-    .help-modal-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.5rem;
-      color: var(--accent-primary);
-    }
-
-    .help-close-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--glass-bg);
-      border: 1px solid var(--border-glow);
-      color: var(--text-secondary);
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .help-close-btn:hover {
-      border-color: var(--accent-secondary);
-      color: var(--accent-secondary);
-    }
-
-    .help-section {
-      margin-bottom: 20px;
-    }
-
-    .help-section-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--accent-gold);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .help-section p {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.7;
-      margin-bottom: 8px;
-    }
-
-    .help-section ul {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.7;
-      padding-left: 20px;
-    }
-
-    .help-section li {
-      margin-bottom: 6px;
-    }
-
-    .help-highlight {
-      color: var(--accent-primary);
-      font-weight: 700;
-    }
-
-    .section-title {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .participants-input {
+    .field-label small { color: var(--muted); font-weight: 650; }
+    textarea, select {
       width: 100%;
-      background: var(--glass-bg);
-      border: 1px solid var(--border-glow);
-      border-radius: 12px;
-      padding: 12px;
-      color: var(--text-primary);
-      font-size: 0.95rem;
+      border: 1px solid var(--line);
+      color: #fff;
+      background: rgba(255,255,255,.055);
+      transition: border-color .18s, background .18s;
+    }
+    textarea {
+      min-height: 70px;
+      max-height: 132px;
+      padding: 10px 11px;
       resize: vertical;
-      min-height: 100px;
-      transition: all 0.3s ease;
+      border-radius: 13px;
+      font-size: .83rem;
+      line-height: 1.45;
     }
-
-    .participants-input:focus {
-      outline: none;
-      border-color: var(--accent-primary);
-      box-shadow: 0 0 20px rgba(0, 245, 212, 0.2);
+    textarea:hover, textarea:focus, select:hover, select:focus {
+      border-color: rgba(66,220,255,.48);
+      background: rgba(255,255,255,.08);
     }
-
-    .participants-input::placeholder {
-      color: var(--text-secondary);
-    }
-
-    .sidebar > section:not(.rankings) {
-      flex-shrink: 0;
-    }
-
+    .input-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: .68rem; }
     .settings-card {
-      background: var(--glass-bg);
-      border: 1px solid var(--border-glow);
-      border-radius: 12px;
-      padding: 12px;
-      flex-shrink: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(3,3,23,.33);
     }
-
-    .settings-card .section-title {
-      margin-bottom: 8px;
+    .mini-field { display: grid; gap: 5px; }
+    .mini-field > span { color: var(--muted); font-size: .66rem; font-weight: 750; }
+    select {
+      height: 37px;
+      padding: 0 28px 0 9px;
+      border-radius: 10px;
+      font-size: .76rem;
+      font-weight: 800;
     }
-
-    .settings-card-content {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .setting-item {
+    select option { color: #16142e; }
+    .sort-field {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 4px 0;
-    }
-
-    .setting-item:last-child {
-      padding-bottom: 0;
-    }
-
-    .setting-item:first-child {
-      padding-top: 0;
-    }
-
-    .setting-item label {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-    }
-
-    .setting-item select {
-      background: var(--bg-dark);
-      border: 1px solid var(--border-glow);
-      border-radius: 6px;
-      padding: 6px 10px;
-      color: var(--text-primary);
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
-
-    .setting-item select:focus {
-      outline: none;
-      border-color: var(--accent-primary);
-    }
-
-    /* Toggle Switch */
-    .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 48px;
-      height: 26px;
-      cursor: pointer;
-    }
-
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .toggle-slider {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--glass-bg);
-      border: 1px solid var(--border-glow);
-      border-radius: 26px;
-      transition: all 0.3s ease;
-    }
-
-    .toggle-slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background: var(--text-secondary);
-      border-radius: 50%;
-      transition: all 0.3s ease;
-    }
-
-    .toggle-switch input:checked + .toggle-slider {
-      background: linear-gradient(135deg, var(--accent-primary), #00c4a7);
-      border-color: var(--accent-primary);
-    }
-
-    .toggle-switch input:checked + .toggle-slider:before {
-      transform: translateX(22px);
-      background: var(--bg-dark);
-    }
-
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      flex-shrink: 0;
-    }
-
-    .btn-start {
-      flex: 1;
-      padding: 14px 20px;
-      font-family: 'Black Han Sans', sans-serif;
-      font-size: 1.2rem;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      background: linear-gradient(135deg, var(--accent-primary), #00c4a7);
-      color: var(--bg-dark);
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .btn-start:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 245, 212, 0.4);
-    }
-
-    .btn-start:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .btn-reset {
-      width: 50px;
-      height: 50px;
-      border: 1px solid var(--border-glow);
-      border-radius: 12px;
-      background: var(--glass-bg);
-      color: var(--text-secondary);
-      font-size: 1.3rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .btn-reset:hover {
-      border-color: var(--accent-secondary);
-      color: var(--accent-secondary);
-    }
-
-    /* Rankings */
-    .rankings {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
-
-    .rankings-list {
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding-right: 5px;
-    }
-
-    .rankings-list::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .rankings-list::-webkit-scrollbar-thumb {
-      background: var(--border-glow);
-      border-radius: 2px;
-    }
-
-    .rank-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      background: var(--glass-bg);
+      min-height: 37px;
+      padding: 0 8px;
+      border: 1px solid var(--line);
       border-radius: 10px;
-      border: 1px solid transparent;
-      transition: all 0.3s ease;
+      background: rgba(255,255,255,.04);
     }
-
-    .rank-item.winner {
-      border-color: var(--accent-gold);
-      background: rgba(255, 217, 61, 0.1);
+    .switch { position: relative; width: 38px; height: 22px; }
+    .switch input { position: absolute; opacity: 0; pointer-events: none; }
+    .switch-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 99px;
+      background: #3a3953;
+      cursor: pointer;
+      transition: background .2s;
     }
-
-    .rank-item.bingo {
-      animation: bingoGlow 1s ease infinite alternate;
-    }
-
-    @keyframes bingoGlow {
-      from { box-shadow: 0 0 10px rgba(255, 217, 61, 0.3); }
-      to { box-shadow: 0 0 20px rgba(255, 217, 61, 0.6); }
-    }
-
-    .rank-position {
-      width: 28px;
-      height: 28px;
+    .switch-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 0.85rem;
+      background: #fff;
+      transition: transform .2s;
     }
+    .switch input:checked + .switch-track { background: linear-gradient(90deg,var(--cyan),var(--purple)); }
+    .switch input:checked + .switch-track::after { transform: translateX(16px); }
+    .action-row { display: grid; grid-template-columns: 1fr 54px; gap: 8px; }
+    .primary-btn, .reset-btn {
+      height: 49px;
+      border: 0;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 950;
+      transition: transform .18s, filter .18s, opacity .18s;
+    }
+    .primary-btn {
+      color: #0b0922;
+      background: linear-gradient(105deg,var(--cyan),#7472ff 52%,var(--pink));
+      box-shadow: 0 12px 28px rgba(85,120,255,.22);
+    }
+    .reset-btn { border: 1px solid var(--line); background: rgba(255,255,255,.09); font-size: 1.05rem; }
+    .primary-btn:hover:not(:disabled), .reset-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.08); }
+    button:disabled, input:disabled, textarea:disabled, select:disabled { cursor: not-allowed; opacity: .48; }
+    .ranking-card {
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(3,3,23,.4);
+    }
+    .ranking-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: .76rem; font-weight: 900; }
+    .ranking-title span:last-child { color: var(--green); font: 800 .65rem ui-monospace,monospace; }
+    .ranking-list { display: grid; gap: 5px; max-height: 205px; overflow-y: auto; }
+    .rank-item {
+      display: grid;
+      grid-template-columns: 25px minmax(0,1fr) auto;
+      align-items: center;
+      gap: 7px;
+      min-height: 31px;
+      padding: 5px 7px;
+      border-left: 3px solid var(--purple);
+      border-radius: 9px;
+      color: #e4e1f3;
+      background: rgba(255,255,255,.05);
+      font-size: .73rem;
+    }
+    .rank-item.winner { border-color: var(--gold); color: #fff1ad; background: rgba(255,212,90,.1); }
+    .rank-position { text-align: center; font-weight: 950; }
+    .rank-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; }
+    .rank-progress { color: var(--muted); font: 750 .62rem ui-monospace,monospace; }
+    .panel-footer { margin-top: auto; display: flex; justify-content: center; gap: 8px; }
+    .footer-link { color: var(--muted); text-decoration: none; }
 
-    .rank-position.gold { background: linear-gradient(135deg, #ffd93d, #f0b90b); color: #000; }
-    .rank-position.silver { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #000; }
-    .rank-position.bronze { background: linear-gradient(135deg, #cd7f32, #b8690e); color: #fff; }
-    .rank-position.normal { background: var(--glass-bg); color: var(--text-secondary); }
-
-    .rank-info {
+    .game-area {
+      position: relative;
       flex: 1;
       min-width: 0;
-    }
-
-    .rank-name {
-      font-weight: 700;
-      font-size: 0.95rem;
-      white-space: nowrap;
+      height: 100dvh;
       overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 50% 21%, rgba(166,92,255,.2), transparent 24%),
+        radial-gradient(circle at 12% 15%, rgba(66,220,255,.14), transparent 24%),
+        radial-gradient(circle at 91% 18%, rgba(255,83,183,.13), transparent 23%),
+        linear-gradient(#080621,#0b092d 45%,#07061c);
+    }
+    #cosmicCanvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none; }
+    .stage-shell {
+      position: relative;
+      height: 36%;
+      min-height: 290px;
+      display: grid;
+      grid-template-columns: minmax(220px,1fr) minmax(240px,420px) minmax(220px,1fr);
+      align-items: center;
+      padding: 16px 28px 8px;
+      z-index: 2;
+    }
+    .stage-info { align-self: start; padding-top: 9px; }
+    .stage-kicker {
+      color: var(--cyan);
+      font: 950 .63rem ui-monospace,monospace;
+      letter-spacing: .2em;
+      text-shadow: 0 0 16px rgba(66,220,255,.6);
+    }
+    .stage-title { margin: 5px 0 0; font-size: clamp(1.25rem,2.1vw,2rem); letter-spacing: -.055em; }
+    .stage-proof {
+      display: inline-block;
+      max-width: 100%;
+      margin-top: 7px;
+      padding: 6px 9px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 99px;
+      color: #aaa9c9;
+      background: rgba(5,4,25,.52);
+      font: 750 .6rem ui-monospace,monospace;
       text-overflow: ellipsis;
-    }
-
-    .rank-status {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-
-    .rank-lines {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.85rem;
-      color: var(--accent-primary);
-      font-weight: 700;
-    }
-
-    .rank-lines.bingo-complete {
-      color: var(--accent-gold);
-    }
-
-    /* Sidebar Footer */
-    .sidebar-footer {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      padding-top: 15px;
-      border-top: 1px solid var(--border-glow);
-      flex-shrink: 0;
-    }
-
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      background: var(--glass-bg);
-      border: 1px solid var(--border-glow);
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      position: relative;
-    }
-
-    .icon-btn:hover {
-      border-color: var(--accent-primary);
-      color: var(--accent-primary);
-      transform: translateY(-2px);
-    }
-
-    .icon-btn[data-tooltip]:hover::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--bg-dark);
-      border: 1px solid var(--border-glow);
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 0.75rem;
       white-space: nowrap;
-      z-index: 100;
     }
-
-    /* Main Game Area */
-    .game-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
+    .machine-zone { position: relative; display: grid; justify-items: center; align-content: center; height: 100%; }
+    .machine {
       position: relative;
-      min-height: 0;
+      width: min(230px,54vw);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      transform: translateY(-14px);
+      filter: drop-shadow(0 20px 30px rgba(0,0,0,.42));
     }
-
-    .copyright {
+    .cage-glow {
       position: absolute;
-      bottom: 10px;
-      right: 15px;
-      font-size: 0.7rem;
-      color: rgba(255, 255, 255, 0.25);
-      pointer-events: none;
-      user-select: none;
-      z-index: 10;
-    }
-
-    /* Number Display */
-    .number-display {
-      text-align: center;
-      margin-bottom: 20px;;
-      flex-shrink: 0;
-    }
-
-    .current-number {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 5rem;
-      font-weight: 900;
-      background: linear-gradient(135deg, var(--accent-gold), var(--accent-secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 0 50px rgba(255, 217, 61, 0.5);
-      min-height: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: numberPulse 0.5s ease;
-    }
-
-    @keyframes numberPulse {
-      0% { transform: scale(1.3); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .called-numbers {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-      max-height: 60px;
-      overflow: hidden;
-      margin-top: 10px;
-    }
-
-    .called-number {
-      width: 32px;
-      height: 32px;
-      background: var(--glass-bg);
-      border: 1px solid var(--border-glow);
+      inset: 13%;
       border-radius: 50%;
+      background: radial-gradient(circle,rgba(255,156,67,.18),rgba(166,92,255,.12) 43%,transparent 69%);
+      box-shadow: 0 0 55px rgba(166,92,255,.28);
+    }
+    .cage-ring {
+      position: absolute;
+      inset: 12%;
+      border: 7px solid #f6a642;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px #6c43c3,0 0 25px rgba(255,156,67,.54),inset 0 0 22px rgba(166,92,255,.28);
+    }
+    .cage-ring::before, .cage-ring::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -5%;
+      width: 7px;
+      height: 110%;
+      border-radius: 99px;
+      background: linear-gradient(#ffd273,#d8702f);
+      box-shadow: 0 0 8px rgba(255,156,67,.65);
+      transform: translateX(-50%) rotate(35deg);
+    }
+    .cage-ring::after { transform: translateX(-50%) rotate(-35deg); }
+    .cage-latitude {
+      position: absolute;
+      inset: 27% 9%;
+      border: 6px solid #f6a642;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px #6c43c3,0 0 16px rgba(255,156,67,.48);
+    }
+    .machine-cap {
+      position: absolute;
+      top: 3%;
+      width: 34px;
+      height: 25px;
+      border: 4px solid #f6a642;
+      border-radius: 9px 9px 3px 3px;
+      background: #7946bd;
+      transform: rotate(45deg);
+      box-shadow: 0 0 18px rgba(255,156,67,.42);
+    }
+    .machine-base {
+      position: absolute;
+      bottom: 3%;
+      width: 56%;
+      height: 23%;
+      border: 5px solid #f6a642;
+      border-radius: 22px 22px 10px 10px;
+      background: linear-gradient(#6d42ba,#241960);
+      box-shadow: 0 14px 30px rgba(0,0,0,.42),0 0 22px rgba(166,92,255,.3);
+    }
+    .current-ball {
+      position: relative;
+      z-index: 5;
+      width: 88px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 5px solid rgba(255,255,255,.72);
+      border-radius: 50%;
+      color: #fff;
+      background: radial-gradient(circle at 30% 24%,#ffdf72,#ff8d36 45%,#e3457d 78%);
+      box-shadow: inset -12px -13px 21px rgba(97,20,88,.28),0 0 35px rgba(255,156,67,.72);
+      font: 1000 2.25rem/1 ui-monospace,monospace;
+      text-shadow: 0 3px 0 rgba(0,0,0,.2);
+    }
+    .current-ball.drawing { animation: ball-wobble .18s linear infinite; filter: saturate(.7); }
+    .current-ball.pop { animation: ball-pop .52s cubic-bezier(.175,.885,.32,1.275); }
+    @keyframes ball-wobble { 50% { transform: translate(4px,-3px) rotate(4deg); } }
+    @keyframes ball-pop { 0% { transform: scale(.35) translateY(45px); } 65% { transform: scale(1.18) translateY(-8px); } }
+    .draw-message {
+      position: absolute;
+      bottom: 38px;
+      max-width: 280px;
+      padding: 7px 14px;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 99px;
+      color: #dedbf1;
+      background: rgba(7,5,28,.83);
+      font-size: .72rem;
+      font-weight: 850;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,.25);
+    }
+    .stage-stats { justify-self: end; align-self: start; display: grid; grid-template-columns: repeat(2,92px); gap: 8px; padding-top: 9px; }
+    .stat-chip {
+      padding: 10px 8px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: rgba(5,4,25,.56);
+      text-align: center;
+    }
+    .stat-chip strong { display: block; color: var(--gold); font: 950 1rem ui-monospace,monospace; }
+    .stat-chip span { color: var(--muted); font-size: .58rem; letter-spacing: .08em; }
+    .speed-banner {
+      grid-column: 1/-1;
+      padding: 7px 8px;
+      border: 1px solid rgba(255,94,123,.35);
+      border-radius: 99px;
+      color: #ffd8e0;
+      background: rgba(87,9,44,.7);
+      text-align: center;
+      font-size: .63rem;
+      font-weight: 900;
+      opacity: 0;
+      transform: translateY(-7px);
+      transition: .24s;
+    }
+    .speed-banner.show { opacity: 1; transform: translateY(0); }
+    .history-strip {
+      position: absolute;
+      left: 50%;
+      bottom: 7px;
+      z-index: 4;
+      width: min(760px,70%);
+      min-height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text-secondary);
+      gap: 5px;
+      padding: 5px 9px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 99px;
+      background: rgba(5,4,25,.72);
+      transform: translateX(-50%);
+      overflow: hidden;
     }
-
-    /* Bingo Boards Container */
-    .boards-container {
-      flex: 1;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
-      align-content: flex-start;
-      overflow-y: auto;
-      padding: 10px;
-      padding-bottom: 40px;
-      position: relative;
-      min-height: 0;
+    .history-empty { color: var(--muted); font-size: .68rem; }
+    .history-ball {
+      width: 27px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 50%;
+      color: #fff;
+      background: var(--ball-color,var(--purple));
+      box-shadow: inset -3px -4px rgba(0,0,0,.15),0 0 9px color-mix(in srgb,var(--ball-color) 50%,transparent);
+      font: 900 .62rem ui-monospace,monospace;
     }
-
-    .boards-container::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .boards-container::-webkit-scrollbar-thumb {
-      background: var(--border-glow);
-      border-radius: 3px;
-    }
-
-    /* Bingo Board */
-    .bingo-board {
-      background: var(--glass-bg);
-      border: 2px solid var(--border-glow);
-      border-radius: 16px;
-      padding: 10px;
+    .history-ball:last-child { width: 32px; height: 32px; color: #171126; background: var(--gold); }
+    .boards-panel {
+      position: absolute;
+      z-index: 5;
+      left: 20px;
+      right: 20px;
+      top: max(36%, 290px);
+      bottom: 18px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
-                  border-color 0.3s ease, 
-                  box-shadow 0.3s ease;
-      will-change: transform;
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 25px;
+      background: linear-gradient(180deg,rgba(18,13,57,.82),rgba(6,5,25,.93));
+      box-shadow: inset 0 0 60px rgba(85,120,255,.06),0 22px 50px rgba(0,0,0,.3);
     }
-
-    .bingo-board.winner {
-      border-color: var(--accent-gold);
-      box-shadow: 0 0 30px rgba(255, 217, 61, 0.4);
-    }
-
-    .board-header {
+    .boards-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 8px;
-      width: 100%;
-      gap: 10px;
+      gap: 12px;
+      padding: 11px 15px 8px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
     }
-
-    .player-name {
-      font-family: 'Black Han Sans', sans-serif;
-      font-size: 1.5rem;
-      color: var(--text-primary);
-    }
-
-    .player-status {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .player-status.lines-1 { color: var(--accent-primary); }
-    .player-status.lines-2 { color: var(--accent-purple); }
-    .player-status.lines-3 { color: var(--accent-secondary); }
-    .player-status.bingo { 
-      color: var(--accent-gold); 
-      animation: bingoPulse 0.5s ease infinite alternate;
-    }
-
-    @keyframes bingoPulse {
-      from { text-shadow: 0 0 10px rgba(255, 217, 61, 0.5); }
-      to { text-shadow: 0 0 20px rgba(255, 217, 61, 1); }
-    }
-
-    .board-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 3px;
-    }
-
-    .board-cell {
-      width: var(--cell-size, 36px);
-      height: var(--cell-size, 36px);
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: calc(var(--cell-size, 36px) * 0.4);
-      transition: all 0.3s ease;
-      position: relative;
-    }
-
-    .board-cell.checked {
-      background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
-      border-color: var(--accent-primary);
-      color: var(--bg-dark);
-    }
-
-    .board-cell.checked.new-check {
-      animation: cellCheck 0.4s ease;
-    }
-
-    @keyframes cellCheck {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-
-    .board-cell.bingo-line {
-      background: linear-gradient(135deg, var(--accent-gold), #f0b90b) !important;
-      color: #000 !important;
-      border-color: #fff !important;
-      box-shadow: 0 0 20px var(--accent-gold), inset 0 0 10px rgba(255,255,255,0.5);
-      z-index: 2;
-      transform: scale(1.05);
-    }
-
-    /* Waiting State */
-    .waiting-message {
+    .boards-title { font-size: .76rem; font-weight: 950; }
+    .boards-summary { color: var(--muted); font: 750 .63rem ui-monospace,monospace; }
+    .boards-container {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-secondary);
-      gap: 20px;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(176px,1fr));
+      align-content: start;
+      gap: 9px;
+      padding: 10px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(166,92,255,.52) transparent;
     }
-
-    .waiting-message .icon {
-      font-size: 5rem;
-      animation: float 3s ease-in-out infinite;
+    .lobby-card, .bingo-board {
+      position: relative;
+      min-width: 0;
+      padding: 8px;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 50% 0%,rgba(166,92,255,.12),transparent 42%),
+        linear-gradient(145deg,rgba(35,28,88,.92),rgba(11,9,39,.96));
+      box-shadow: 0 7px 18px rgba(0,0,0,.25);
+      transition: border-color .28s, box-shadow .28s, opacity .28s;
     }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+    .bingo-board.winner {
+      border-color: var(--gold);
+      box-shadow: 0 0 24px rgba(255,212,90,.3),inset 0 0 18px rgba(255,212,90,.06);
     }
-
-    .waiting-message p {
-      font-size: 1.2rem;
-    }
-
-    /* Game Over */
-    .game-over-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-
-    .game-over-overlay.show {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .game-over-content {
-      background: var(--bg-sidebar);
-      border: 2px solid var(--accent-gold);
-      border-radius: 24px;
-      padding: 40px;
-      text-align: center;
-      max-width: 500px;
-      animation: popIn 0.5s ease;
-    }
-
-    @keyframes popIn {
-      0% { transform: scale(0.5); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .game-over-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 2.5rem;
-      color: var(--accent-gold);
-      margin-bottom: 20px;
-    }
-
-    .winners-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 30px;
-    }
-
-    .winner-item {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-size: 1.3rem;
-    }
-
-    .winner-medal {
-      font-size: 1.5rem;
-    }
-
-    .btn-close-overlay {
-      padding: 14px 40px;
-      font-family: 'Black Han Sans', sans-serif;
-      font-size: 1.2rem;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      background: linear-gradient(135deg, var(--accent-gold), #f0b90b);
-      color: var(--bg-dark);
-      transition: all 0.3s ease;
-    }
-
-    .btn-close-overlay:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(255, 217, 61, 0.4);
-    }
-
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--bg-sidebar);
-      border: 1px solid var(--accent-primary);
-      padding: 14px 28px;
-      border-radius: 12px;
-      font-size: 1rem;
-      opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 1001;
-    }
-
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    /* Confetti */
-    .confetti {
-      position: fixed;
-      width: 10px;
-      height: 10px;
-      top: -10px;
-      animation: confettiFall linear forwards;
-      z-index: 999;
-    }
-
-    /* Event Log */
-    .event-log {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      z-index: 50;
-      pointer-events: none;
-      align-items: flex-end;
-      max-height: 40vh;
+    .board-header { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 6px; min-height: 24px; margin-bottom: 6px; }
+    .player-name { overflow: hidden; color: #fff; text-overflow: ellipsis; white-space: nowrap; font-size: .72rem; font-weight: 900; }
+    .player-status { color: var(--cyan); font: 850 .58rem ui-monospace,monospace; }
+    .player-status.winner { color: var(--gold); }
+    .board-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 3px; }
+    .board-cell {
+      position: relative;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
       overflow: hidden;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 5px;
+      color: #c9c7dc;
+      background: rgba(255,255,255,.055);
+      font: 850 clamp(.52rem,.78vw,.69rem) ui-monospace,monospace;
+      transition: color .22s,background .22s,transform .22s,box-shadow .22s;
     }
-
-    .event-log-item {
-      background: rgba(0, 0, 0, 0.7);
-      border-right: 4px solid var(--accent-primary);
-      padding: 6px 12px;
-      border-radius: 4px;
-      color: #ddd;
-      font-size: 0.85rem;
-      animation: log-slide-in 0.3s ease-out forwards;
-      display: flex;
+    .board-cell.checked {
+      color: #0b0922;
+      border-color: rgba(255,255,255,.4);
+      background: var(--cell-color,var(--cyan));
+      box-shadow: inset -3px -4px rgba(0,0,0,.13),0 0 9px color-mix(in srgb,var(--cell-color) 35%,transparent);
+    }
+    .board-cell.free { color: #2e1c53; background: linear-gradient(145deg,var(--gold),#ff9c43); }
+    .board-cell.line { color: #2b1b22; background: var(--gold); box-shadow: 0 0 12px rgba(255,212,90,.55); }
+    .board-cell.hit { animation: cell-hit .48s cubic-bezier(.175,.885,.32,1.275); z-index: 2; }
+    @keyframes cell-hit { 45% { transform: translateY(-7px) scale(1.22); } }
+    .lobby-card { min-height: 104px; display: grid; align-content: center; justify-items: center; gap: 8px; }
+    .lobby-avatar {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 13px;
+      background: linear-gradient(145deg,var(--avatar-color),rgba(255,255,255,.08));
+      font-size: 1.25rem;
+      box-shadow: 0 7px 15px rgba(0,0,0,.24);
+    }
+    .lobby-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .7rem; font-weight: 850; }
+    .lobby-state { color: var(--muted); font: 700 .55rem ui-monospace,monospace; }
+    .game-area.shake { animation: stage-shake .32s linear; }
+    @keyframes stage-shake {
+      0%,100% { transform: translate(0); }
+      24% { transform: translate(-5px,2px); }
+      50% { transform: translate(5px,-2px); }
+      75% { transform: translate(-2px,1px); }
+    }
+    .copyright { position: absolute; right: 10px; bottom: 5px; z-index: 6; color: rgba(255,255,255,.25); font-size: .55rem; }
+    #celebrationCanvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 70; display: none; pointer-events: none; }
+    .result-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(3,2,18,.57);
+      backdrop-filter: blur(18px) saturate(1.25);
+    }
+    .result-overlay.show { display: grid; animation: overlay-in .36s ease; }
+    @keyframes overlay-in { from { opacity: 0; } }
+    .result-card {
+      width: min(570px,100%);
+      max-height: min(740px,90dvh);
+      padding: 27px;
+      overflow-y: auto;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 27px;
+      background:
+        radial-gradient(circle at 50% 0%,rgba(255,212,90,.2),transparent 32%),
+        linear-gradient(145deg,rgba(35,27,90,.97),rgba(9,7,35,.97));
+      box-shadow: 0 30px 90px rgba(0,0,0,.58),0 0 52px rgba(166,92,255,.18);
+      text-align: center;
+    }
+    .result-icon { font-size: 3.7rem; filter: drop-shadow(0 0 24px rgba(255,212,90,.66)); }
+    .result-eyebrow { margin-top: 5px; color: var(--gold); font: 950 .68rem ui-monospace,monospace; letter-spacing: .2em; }
+    .result-card h2 { margin: 7px 0 15px; font-size: clamp(1.5rem,4vw,2.2rem); letter-spacing: -.06em; }
+    .winner-list { display: grid; gap: 7px; margin-bottom: 15px; }
+    .winner-row {
+      display: grid;
+      grid-template-columns: 36px minmax(0,1fr) auto;
       align-items: center;
       gap: 8px;
-      white-space: nowrap;
+      padding: 9px 12px;
+      border: 1px solid rgba(255,212,90,.28);
+      border-radius: 13px;
+      color: #fff2b4;
+      background: rgba(255,212,90,.08);
+      text-align: left;
+      font-weight: 900;
     }
-
-    .event-log-item.bingo-complete {
-      border-right-color: var(--accent-gold);
-      background: rgba(155, 93, 229, 0.4);
+    .winner-row span:last-child { color: var(--muted); font: 750 .62rem ui-monospace,monospace; }
+    .result-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-bottom: 12px; }
+    .result-stat { padding: 10px 5px; border-radius: 11px; background: rgba(255,255,255,.06); }
+    .result-stat strong { display: block; color: var(--cyan); font-size: 1rem; }
+    .result-stat span { color: var(--muted); font-size: .6rem; }
+    .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+    .secondary-btn {
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.08);
+      cursor: pointer;
+      font-weight: 850;
     }
-
-    @keyframes log-slide-in {
-      from { transform: translateX(30px); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+    .secondary-btn.accent { color: #120d2c; border: 0; background: linear-gradient(110deg,var(--gold),var(--orange)); }
+    dialog {
+      width: min(530px,calc(100% - 30px));
+      max-height: 86dvh;
+      padding: 0;
+      overflow-y: auto;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 22px;
+      color: #faf9ff;
+      background: linear-gradient(145deg,#282064,#09072d);
+      box-shadow: 0 30px 90px rgba(0,0,0,.65);
     }
-
-    @keyframes confettiFall {
-      to {
-        top: 100vh;
-        transform: rotate(720deg);
-      }
+    dialog::backdrop { background: rgba(2,2,15,.7); backdrop-filter: blur(8px); }
+    .help-content { padding: 24px; }
+    .help-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .help-head h2 { margin: 0; }
+    .help-content ol { margin: 17px 0; padding-left: 22px; color: #d8d5ea; font-size: .86rem; line-height: 1.75; }
+    .help-note { padding: 11px; border-radius: 11px; color: #ffe69b; background: rgba(255,212,90,.08); font-size: .75rem; line-height: 1.55; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 23px;
+      z-index: 100;
+      max-width: calc(100% - 30px);
+      padding: 10px 16px;
+      border: 1px solid rgba(66,220,255,.32);
+      border-radius: 99px;
+      color: #fff;
+      background: rgba(10,8,40,.95);
+      box-shadow: 0 12px 35px rgba(0,0,0,.42);
+      opacity: 0;
+      transform: translate(-50%,14px);
+      pointer-events: none;
+      transition: .23s;
+      font-size: .76rem;
+      font-weight: 850;
     }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      body {
-        flex-direction: column-reverse;
-        overflow-y: auto;
-        height: auto;
-      }
-
-      .sidebar {
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+    @media (max-width: 1100px) {
+      :root { --sidebar: 300px; }
+      .control-panel { padding-inline: 15px; }
+      .stage-shell { grid-template-columns: minmax(140px,1fr) 260px minmax(130px,1fr); padding-inline: 16px; }
+      .machine { width: 200px; }
+      .current-ball { width: 75px; font-size: 1.9rem; }
+      .stage-stats { grid-template-columns: repeat(2,75px); }
+      .boards-container { grid-template-columns: repeat(auto-fill,minmax(164px,1fr)); }
+    }
+    @media (max-width: 760px) {
+      body { display: block; overflow-x: hidden; overflow-y: auto; }
+      .control-panel {
         width: 100%;
-        min-width: unset;
         height: auto;
-        max-height: none;
-        border-right: none;
-        border-top: 1px solid var(--border-glow);
-        padding: 20px;
+        min-height: 0;
+        padding: 15px;
+        overflow: visible;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
       }
-
-      .rankings {
-        max-height: 250px;
-        min-height: 150px;
+      textarea { min-height: 64px; max-height: 105px; }
+      .ranking-card { min-height: 118px; }
+      .ranking-list { max-height: 145px; }
+      .panel-footer { margin-top: 0; }
+      .game-area { width: 100%; height: 900px; min-height: 900px; }
+      .stage-shell {
+        height: 350px;
+        min-height: 350px;
+        grid-template-columns: 1fr;
+        justify-items: center;
+        padding: 12px 8px 45px;
       }
-
-      .game-area {
-        flex: none;
-        width: 100%;
-        height: 75vh;
-        min-height: 500px;
-        padding: 10px;
-      }
-
-      .current-number {
-        font-size: 3rem;
-        min-height: 60px;
-      }
+      .stage-info { position: absolute; top: 12px; left: 12px; max-width: 55%; padding: 0; }
+      .stage-title { font-size: 1.05rem; }
+      .stage-proof { max-width: 185px; }
+      .machine { width: 205px; margin-top: 19px; }
+      .stage-stats { position: absolute; top: 12px; right: 9px; grid-template-columns: repeat(2,65px); padding: 0; }
+      .stat-chip { padding: 8px 4px; }
+      .speed-banner { display: none; }
+      .history-strip { bottom: 5px; width: calc(100% - 18px); justify-content: flex-start; overflow-x: auto; }
+      .boards-panel { left: 8px; right: 8px; top: 350px; bottom: 9px; border-radius: 18px; }
+      .boards-container { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; padding: 7px; }
+      .board-cell { font-size: clamp(.48rem,2.5vw,.68rem); }
+      .copyright { display: none; }
+    }
+    @media (max-width: 390px) {
+      .control-panel { padding-inline: 12px; }
+      .settings-card { gap: 6px; padding: 8px; }
+      .boards-container { gap: 5px; padding: 5px; }
+      .bingo-board { padding: 6px; }
+      .board-grid { gap: 2px; }
+      .result-card { padding: 21px 15px; }
+    }
+    /* Let live ranking consume the remaining sidebar height and anchor utility actions. */
+    .ranking-card { flex: 1; min-height: 0; max-height: none; }
+    .ranking-list { flex: 1; min-height: 0; max-height: none; align-content: start; }
+    .panel-footer { flex: none; margin-top: 0; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.08); }
+    .panel-footer .icon-btn { color: var(--muted); }
+    .panel-footer .icon-btn:hover { color: #fff; }
+    .panel-footer .icon-btn svg { display: block; width: 18px; height: 18px; }
+    @media (max-width:760px) {
+      .ranking-card { flex: none; min-height: 150px; max-height: 260px; }
+      .ranking-list { max-height: none; }
+      .panel-footer { padding-bottom: max(2px,env(safe-area-inset-bottom)); }
     }
   </style>
 </head>
 <body>
-  <aside class="sidebar">
-    <header class="sidebar-header">
-      <h1><span class="logo-emoji">🎯</span> <span class="title-text">빙고 추첨</span></h1>
-      <div class="header-btns">
-        <button class="sound-btn" id="soundToggle" title="소리 켜기/끄기">🔊</button>
-        <button class="help-btn" id="helpBtn">?</button>
+  <aside class="control-panel" aria-label="빙고 게임 설정">
+    <div class="brand-row">
+      <div class="brand-mark" aria-hidden="true">🎱</div>
+      <div class="brand-copy">
+        <p class="eyebrow">PLAYPICK COSMIC</p>
+        <h1>빙고 노바</h1>
       </div>
-    </header>
+      <button class="icon-btn" id="soundBtn" type="button" aria-label="소리 끄기" title="소리 켜기/끄기">🔊</button>
+      <button class="icon-btn" id="helpBtn" type="button" aria-label="게임 도움말" title="도움말">?</button>
+    </div>
 
-    <section>
-      <div class="section-title">👥 참여자 명단</div>
-      <textarea class="participants-input" id="participantsInput" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
-    </section>
+    <label class="field">
+      <span class="field-label">참가자 <small>이름*인원 지원</small></span>
+      <textarea id="participants" maxlength="1600" spellcheck="false" aria-describedby="participantHint">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+      <span class="input-meta" id="participantHint"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 24</strong></span>
+    </label>
 
-    <section class="settings-card">
-      <div class="section-title">⚙️ 게임 설정</div>
-      <div class="settings-card-content">
-        <div class="setting-item">
-          <label>🏆 우승자 수</label>
-          <select id="winnerCount">
-            <option value="1" selected>1명</option>
-            <option value="2">2명</option>
-            <option value="3">3명</option>
-            <option value="4">4명</option>
-            <option value="5">5명</option>
-          </select>
-        </div>
-        <div class="setting-item">
-          <label>🔢 최대 숫자</label>
-          <select id="maxNumber">
-            <option value="25">25</option>
-            <option value="50" selected>50</option>
-            <option value="75">75</option>
-            <option value="100">100</option>
-          </select>
-        </div>
-        <div class="setting-item">
-          <label>📏 빙고 줄수</label>
-          <select id="bingoLines">
-            <option value="1">1줄</option>
-            <option value="2">2줄</option>
-            <option value="3" selected>3줄</option>
-            <option value="4">4줄</option>
-          </select>
-        </div>
-        <div class="setting-item">
-          <label>🔀 카드 순위정렬</label>
-          <label class="toggle-switch">
-            <input type="checkbox" id="dynamicSortToggle" checked>
-            <span class="toggle-slider"></span>
+    <section class="settings-card" aria-label="세부 설정">
+      <label class="mini-field">
+        <span>🏆 당첨자</span>
+        <select id="winnerCount">
+          <option value="1">1명</option><option value="2">2명</option><option value="3">3명</option>
+          <option value="4">4명</option><option value="5">5명</option>
+        </select>
+      </label>
+      <label class="mini-field">
+        <span>🔢 번호 범위</span>
+        <select id="maxNumber">
+          <option value="25">1–25</option><option value="50" selected>1–50</option>
+          <option value="75">1–75</option><option value="100">1–100</option>
+        </select>
+      </label>
+      <label class="mini-field">
+        <span>📏 승리 조건</span>
+        <select id="requiredLines">
+          <option value="1">1줄</option><option value="2">2줄</option>
+          <option value="3" selected>3줄</option><option value="4">4줄</option>
+        </select>
+      </label>
+      <div class="mini-field">
+        <span>🔀 실시간 정렬</span>
+        <div class="sort-field">
+          <span style="font-size:.68rem;color:var(--muted)">순위순</span>
+          <label class="switch">
+            <input id="dynamicSort" type="checkbox" aria-label="카드를 실시간 순위로 정렬">
+            <span class="switch-track"></span>
           </label>
         </div>
       </div>
     </section>
 
-    <div class="btn-group">
-      <button class="btn-start" id="startBtn">🎮 시작</button>
-      <button class="btn-reset" id="resetBtn">↺</button>
+    <div class="action-row">
+      <button class="primary-btn" id="startBtn" type="button">🚀 추첨 시작</button>
+      <button class="reset-btn" id="resetBtn" type="button" aria-label="게임 초기화" title="초기화">↺</button>
     </div>
 
-    <section class="rankings">
-      <div class="section-title">📊 실시간 랭킹</div>
-      <div class="rankings-list" id="rankingsList">
-        <div class="waiting-message" style="padding: 20px;">
-          <p style="font-size: 0.9rem; color: var(--text-secondary);">게임 시작을 기다리는 중...</p>
-        </div>
-      </div>
+    <section class="ranking-card" aria-labelledby="rankingTitle">
+      <div class="ranking-title" id="rankingTitle"><span>📊 실시간 랭킹</span><span id="liveState">READY</span></div>
+      <div class="ranking-list" id="rankingList" aria-live="polite"></div>
     </section>
 
-    <div class="sidebar-footer">
-      <a href="../" class="icon-btn" data-tooltip="추첨 포탈 홈">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-      </a>
-      <button class="icon-btn" id="copyResultBtn" data-tooltip="결과 복사">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-      </button>
-      <a href="https://github.com/geniuskey/lottery" target="_blank" class="icon-btn" data-tooltip="GitHub 저장소">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
-      </a>
-      <a href="https://buymeacoffee.com/euiyun" target="_blank" class="icon-btn" data-tooltip="커피 사주기 ☕">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg>
-      </a>
-    </div>
+    <nav class="panel-footer" aria-label="바로가기">
+      <a class="icon-btn footer-link" href="../" aria-label="추첨 포털 홈" title="추첨 포털 홈"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></a>
+      <button class="icon-btn" id="copyResultBtn" type="button" aria-label="결과 복사" title="결과 복사"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+      <a class="icon-btn footer-link" href="https://github.com/geniuskey/lottery" target="_blank" rel="noopener noreferrer" aria-label="GitHub 저장소" title="GitHub 저장소"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg></a>
+      <a class="icon-btn footer-link" href="https://buymeacoffee.com/euiyun" target="_blank" rel="noopener noreferrer" aria-label="커피 사주기" title="커피 사주기"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.216 6.415l-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 00-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 00-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 01-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 013.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 01-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 01-4.743.295 37.059 37.059 0 01-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0011.343.376.483.483 0 01.535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 01.39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 01-.169.364z"></path></svg></a>
+    </nav>
   </aside>
 
   <main class="game-area" id="gameArea">
-    <div class="event-log" id="eventLog"></div>
-    <div id="gameContent" style="flex:1;display:flex;flex-direction:column;min-height:0;">
-      <div class="waiting-message" id="waitingMessage">
-        <div class="icon">🎯</div>
-        <p>참여자를 입력하고 게임을 시작하세요!</p>
+    <canvas id="cosmicCanvas" aria-hidden="true"></canvas>
+    <section class="stage-shell" aria-label="빙고 번호 추첨기">
+      <div class="stage-info">
+        <div class="stage-kicker">BINGO NOVA · LIVE DRAW</div>
+        <h2 class="stage-title">COSMIC BALL MACHINE</h2>
+        <div class="stage-proof" id="stageProof">RANDOM · READY</div>
       </div>
-    </div>
-    <div class="copyright">© 2025 Euiyun Edwin Kim</div>
+
+      <div class="machine-zone">
+        <div class="machine" aria-hidden="true">
+          <div class="machine-cap"></div>
+          <div class="machine-base"></div>
+          <div class="cage-glow"></div>
+          <div class="cage-ring"></div>
+          <div class="cage-latitude"></div>
+          <div class="current-ball" id="currentBall">?</div>
+        </div>
+        <div class="draw-message" id="drawMessage" aria-live="assertive">참가 카드가 입장을 기다립니다</div>
+      </div>
+
+      <div class="stage-stats">
+        <div class="stat-chip"><strong id="callCount">0</strong><span>CALLS</span></div>
+        <div class="stat-chip"><strong id="winnerProgress">0/1</strong><span>WINNERS</span></div>
+        <div class="speed-banner" id="speedBanner">⚡ NOVA SPEED UP</div>
+      </div>
+      <div class="history-strip" id="historyStrip" aria-label="최근 호출 번호">
+        <span class="history-empty">호출된 번호가 여기에 표시됩니다</span>
+      </div>
+    </section>
+
+    <section class="boards-panel" aria-labelledby="boardsTitle">
+      <div class="boards-head">
+        <div class="boards-title" id="boardsTitle">🎫 참가 카드</div>
+        <div class="boards-summary" id="boardsSummary">FREE CENTER · 5×5</div>
+      </div>
+      <div class="boards-container" id="boardsContainer"></div>
+    </section>
+    <div class="copyright">© 2026 Euiyun Edwin Kim · PLAYPICK</div>
   </main>
 
-  <div class="game-over-overlay" id="gameOverOverlay">
-    <div class="game-over-content">
-      <h2 class="game-over-title">🎉 게임 종료!</h2>
-      <div class="winners-list" id="winnersList"></div>
-      <button class="btn-close-overlay" id="closeOverlayBtn">확인</button>
-    </div>
-  </div>
+  <canvas id="celebrationCanvas" aria-hidden="true"></canvas>
 
-  <div class="toast" id="toast"></div>
-
-  <!-- Help Modal -->
-  <div class="help-modal-overlay" id="helpModalOverlay">
-    <div class="help-modal">
-      <div class="help-modal-header">
-        <h2 class="help-modal-title">📖 게임 설명</h2>
-        <button class="help-close-btn" id="helpCloseBtn">✕</button>
+  <section class="result-overlay" id="resultOverlay" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <div class="result-card">
+      <div class="result-icon" aria-hidden="true">🌟</div>
+      <div class="result-eyebrow">BINGO NOVA CHAMPIONS</div>
+      <h2 id="resultTitle">최종 당첨자</h2>
+      <div class="winner-list" id="winnerList"></div>
+      <div class="result-stats">
+        <div class="result-stat"><strong id="resultCalls">0</strong><span>CALLED</span></div>
+        <div class="result-stat"><strong id="resultTime">0.000s</strong><span>SIM TIME</span></div>
+        <div class="result-stat"><strong id="resultLines">0</strong><span>LINES</span></div>
       </div>
-      
-      <div class="help-section">
-        <div class="help-section-title">🎯 게임 개요</div>
-        <p>빙고 추첨은 참여자들이 각자 랜덤한 5×5 빙고판을 받고, 호출되는 번호에 따라 먼저 지정된 줄수의 빙고를 완성하는 사람이 우승하는 게임입니다.</p>
-      </div>
-
-      <div class="help-section">
-        <div class="help-section-title">🎮 게임 방법</div>
-        <ul>
-          <li>참여자 명단을 <span class="help-highlight">콤마(,)</span>로 구분하여 입력합니다.</li>
-          <li>우승자 수와 빙고 줄수를 설정합니다.</li>
-          <li><span class="help-highlight">🎮 시작</span> 버튼을 누르면 게임이 시작됩니다.</li>
-          <li>설정한 최대 숫자 범위 내에서 숫자가 자동으로 호출됩니다.</li>
-          <li>호출된 숫자가 빙고판에 있으면 자동으로 체크됩니다.</li>
-        </ul>
-      </div>
-
-      <div class="help-section">
-        <div class="help-section-title">🏆 승리 조건</div>
-        <p>가로, 세로, 대각선 중 설정한 줄수만큼 먼저 완성하면 <span class="help-highlight">빙고!</span></p>
-        <p>설정한 우승자 수에 도달하면 게임이 종료됩니다.</p>
-      </div>
-
-      <div class="help-section">
-        <div class="help-section-title">⚙️ 설정 옵션</div>
-        <ul>
-          <li><span class="help-highlight">우승자 수</span>: 몇 명이 빙고를 완성하면 게임을 종료할지 설정 (1~5명)</li>
-          <li><span class="help-highlight">최대 숫자</span>: 빙고판에 사용할 숫자 범위 (25, 50, 75, 100)</li>
-          <li><span class="help-highlight">빙고 줄수</span>: 승리에 필요한 완성 줄수 설정 (1~4줄)</li>
-        </ul>
-      </div>
-
-      <div class="help-section">
-        <div class="help-section-title">💡 팁</div>
-        <p>실시간 랭킹에서 각 참여자의 현재 줄수와 체크된 칸수를 확인할 수 있습니다. 게임 종료 후 결과 복사 버튼으로 결과를 공유해보세요!</p>
+      <div class="result-actions">
+        <button class="secondary-btn" id="resultCloseBtn" type="button">카드 보기</button>
+        <button class="secondary-btn accent" id="resultCopyBtn" type="button">결과 복사</button>
       </div>
     </div>
-  </div>
+  </section>
+
+  <dialog id="helpDialog" aria-labelledby="helpTitle">
+    <div class="help-content">
+      <div class="help-head">
+        <h2 id="helpTitle">빙고 노바 방법</h2>
+        <button class="icon-btn" id="helpCloseBtn" type="button" aria-label="도움말 닫기">✕</button>
+      </div>
+      <ol>
+        <li>참가자, 번호 범위와 필요한 빙고 줄을 설정합니다.</li>
+        <li>각 카드는 서로 다른 24개 번호와 무료 중앙 별을 받습니다.</li>
+        <li>볼 머신이 번호를 호출하면 모든 카드가 자동으로 체크됩니다.</li>
+        <li>동시에 빙고가 나오면 매 게임 새롭게 정한 타이브레이커가 순위를 정합니다.</li>
+      </ol>
+      <div class="help-note">게임을 다시 시작할 때마다 카드와 번호 호출 순서가 새롭게 무작위로 정해집니다.</div>
+    </div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // Copyright (c) 2025 Euiyun Kim (geniuskey@gmail.com)
+    (() => {
+      'use strict';
+      const GAME_VERSION = '1.1.0';
+      const MAX_PARTICIPANTS = 24;
+      const MAX_NAME_LENGTH = 32;
+      const STORAGE_PREFIX = 'playpick-bingo-';
+      const QA_MODE = new URLSearchParams(location.search).has('qa');
+      const TIME_SCALE = QA_MODE ? .012 : 1;
+      const CELL_COLORS = ['#42dcff','#5578ff','#a65cff','#ff53b7','#ff9c43','#54f6a7'];
+      const BALL_COLORS = ['#5578ff','#ff53b7','#ff9c43','#a65cff','#42dcff','#54f6a7'];
+      const AVATARS = ['🟣','🔵','🟠','🟢','🟡','🔴','🪐','⭐','🌙','☄️','🚀','🌌'];
+      const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    class SoundManager {
-      constructor() {
-        this.ctx = null;
-        this.enabled = true;
-        this.setupToggleButton();
-      }
-      setupToggleButton() {
-        const btn = document.getElementById('soundToggle');
-        if (btn) {
-          btn.onclick = () => {
-            this.enabled = !this.enabled;
-            btn.textContent = this.enabled ? '🔊' : '🔇';
-            if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
-              this.ctx.resume();
-            }
-          };
-        }
-      }
-      init() {
-        if (this.ctx) return;
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      playStart() {
-        if (!this.enabled) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
-        osc.connect(gain); gain.connect(this.ctx.destination);
-        osc.start(); osc.stop(this.ctx.currentTime + 0.1);
-      }
-      playTick() {
-        if (!this.enabled) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(600, this.ctx.currentTime);
-        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
-        osc.connect(gain); gain.connect(this.ctx.destination);
-        osc.start(); osc.stop(this.ctx.currentTime + 0.05);
-      }
-      playHit() {
-        if (!this.enabled) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
-        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
-        osc.connect(gain); gain.connect(this.ctx.destination);
-        osc.start(); osc.stop(this.ctx.currentTime + 0.05);
-      }
-      playBingo() {
-        if (!this.enabled) return;
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1600, this.ctx.currentTime + 0.2);
-        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
-        osc.connect(gain); gain.connect(this.ctx.destination);
-        osc.start(); osc.stop(this.ctx.currentTime + 0.2);
-      }
-      playWin() {
-        if (!this.enabled) return;
-        this.init();
-        const notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, i) => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + i * 0.1);
-          gain.gain.setValueAtTime(0, this.ctx.currentTime + i * 0.1);
-          gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + i * 0.1 + 0.05);
-          gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + i * 0.1 + 0.4);
-          osc.connect(gain); gain.connect(this.ctx.destination);
-          osc.start(this.ctx.currentTime + i * 0.1);
-          osc.stop(this.ctx.currentTime + i * 0.1 + 0.4);
-        });
-      }
-    }
-
-    class BingoGame {
-      constructor() {
-        this.participants = [];
-        this.boards = {};
-        this.calledNumbers = [];
-        this.availableNumbers = [];
-        this.winners = [];
-        this.isRunning = false;
-        this.requiredLines = 3;
-        this.maxWinners = 3;
-        this.maxNumber = 50;
-        this.callInterval = null;
-        this.lastCalledNumber = null;
-        this.previousRankings = {};
-        this.dynamicSort = true;
-        this.initialOrder = [];
-        this.sound = new SoundManager();
-
-        this.initElements();
-        this.bindEvents();
-        this.loadSettings();
-      }
-
-      initElements() {
-        this.participantsInput = document.getElementById('participantsInput');
-        this.winnerCountSelect = document.getElementById('winnerCount');
-        this.maxNumberSelect = document.getElementById('maxNumber');
-        this.bingoLinesSelect = document.getElementById('bingoLines');
-        this.dynamicSortToggle = document.getElementById('dynamicSortToggle');
-        this.startBtn = document.getElementById('startBtn');
-        this.resetBtn = document.getElementById('resetBtn');
-        this.rankingsList = document.getElementById('rankingsList');
-        this.gameArea = document.getElementById('gameArea');
-        this.gameContent = document.getElementById('gameContent');
-        this.waitingMessage = document.getElementById('waitingMessage');
-        this.gameOverOverlay = document.getElementById('gameOverOverlay');
-        this.winnersList = document.getElementById('winnersList');
-        this.closeOverlayBtn = document.getElementById('closeOverlayBtn');
-        this.copyResultBtn = document.getElementById('copyResultBtn');
-        this.toast = document.getElementById('toast');
-        this.helpBtn = document.getElementById('helpBtn');
-        this.helpModalOverlay = document.getElementById('helpModalOverlay');
-        this.helpCloseBtn = document.getElementById('helpCloseBtn');
-      }
-
-      bindEvents() {
-        this.startBtn.addEventListener('click', () => {
-            this.startGame();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-        this.resetBtn.addEventListener('click', () => this.resetGame());
-        this.closeOverlayBtn.addEventListener('click', () => this.hideOverlay());
-        this.copyResultBtn.addEventListener('click', () => this.copyResult());
-        this.helpBtn.addEventListener('click', () => this.showHelp());
-        this.helpCloseBtn.addEventListener('click', () => this.hideHelp());
-        this.helpModalOverlay.addEventListener('click', (e) => {
-          if (e.target === this.helpModalOverlay) this.hideHelp();
-        });
-        
-        this.winnerCountSelect.addEventListener('change', () => this.saveSettings());
-        this.maxNumberSelect.addEventListener('change', () => this.saveSettings());
-        this.bingoLinesSelect.addEventListener('change', () => this.saveSettings());
-        this.dynamicSortToggle.addEventListener('change', () => {
-          this.dynamicSort = this.dynamicSortToggle.checked;
-          this.saveSettings();
-          if (this.isRunning) {
-            this.renderGame();
+      const byId = id => document.getElementById(id);
+      const els = {
+        participants:byId('participants'), participantCount:byId('participantCount'),
+        winnerCount:byId('winnerCount'), maxNumber:byId('maxNumber'), requiredLines:byId('requiredLines'),
+        dynamicSort:byId('dynamicSort'), startBtn:byId('startBtn'), resetBtn:byId('resetBtn'),
+        soundBtn:byId('soundBtn'), helpBtn:byId('helpBtn'), copyResultBtn:byId('copyResultBtn'),
+        rankingList:byId('rankingList'), liveState:byId('liveState'), gameArea:byId('gameArea'),
+        cosmicCanvas:byId('cosmicCanvas'), currentBall:byId('currentBall'), drawMessage:byId('drawMessage'),
+        stageProof:byId('stageProof'), callCount:byId('callCount'), winnerProgress:byId('winnerProgress'),
+        speedBanner:byId('speedBanner'), historyStrip:byId('historyStrip'),
+        boardsContainer:byId('boardsContainer'), boardsSummary:byId('boardsSummary'),
+        celebrationCanvas:byId('celebrationCanvas'), resultOverlay:byId('resultOverlay'),
+        winnerList:byId('winnerList'), resultCalls:byId('resultCalls'), resultTime:byId('resultTime'),
+        resultLines:byId('resultLines'),
+        resultCloseBtn:byId('resultCloseBtn'), resultCopyBtn:byId('resultCopyBtn'),
+        helpDialog:byId('helpDialog'), helpCloseBtn:byId('helpCloseBtn'), toast:byId('toast')
+      };
+      const state = {
+        participants:[], boards:[], winners:[], called:[], sequence:[], audit:[],
+        running:false, phase:'READY', rng:Math.random,
+        maxNumber:50, requiredLines:3, maxWinners:1, simulatedMs:0,
+        token:0, pending:new Map(), inputTimer:0, toastTimer:0,
+        animationFrame:0, celebrationFrame:0, lastTimestamp:0, drawPulse:0,
+        staticCanvas:document.createElement('canvas'), orbitBalls:[], lastResult:''
+      };
+      const storage = {
+        get(key,fallback='') { try { return localStorage.getItem(STORAGE_PREFIX + key) ?? fallback; } catch { return fallback; } },
+        set(key,value) { try { localStorage.setItem(STORAGE_PREFIX + key,String(value)); } catch {} }
+      };
+      const sound = {
+        enabled:storage.get('sound','true') !== 'false', context:null,
+        init() {
+          if (!this.enabled) return;
+          if (!this.context) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) this.context = new AudioContext();
           }
+          if (this.context?.state === 'suspended') this.context.resume();
+        },
+        tone(frequency,duration=.08,type='sine',volume=.04,delay=0) {
+          if (!this.enabled) return;
+          this.init();
+          if (!this.context) return;
+          const at = this.context.currentTime + delay;
+          const oscillator = this.context.createOscillator();
+          const gain = this.context.createGain();
+          oscillator.type = type;
+          oscillator.frequency.setValueAtTime(frequency,at);
+          gain.gain.setValueAtTime(volume,at);
+          gain.gain.exponentialRampToValueAtTime(.0001,at + duration);
+          oscillator.connect(gain).connect(this.context.destination);
+          oscillator.start(at);
+          oscillator.stop(at + duration);
+        },
+        start() { [330,495,660].forEach((note,index) => this.tone(note,.16,'triangle',.045,index * .07)); },
+        mix() { this.tone(170,.12,'sawtooth',.018); },
+        call() { this.tone(720,.13,'triangle',.05); this.tone(980,.1,'sine',.035,.05); },
+        hit() { this.tone(1180,.06,'sine',.025); },
+        bingo() { [523,659,784].forEach((note,index) => this.tone(note,.26,'triangle',.05,index * .09)); },
+        win() { [523,659,784,1047].forEach((note,index) => this.tone(note,.34,'triangle',.052,index * .12)); }
+      };
+
+      function setSoundUi() {
+        els.soundBtn.textContent = sound.enabled ? '🔊' : '🔇';
+        els.soundBtn.setAttribute('aria-label',sound.enabled ? '소리 끄기' : '소리 켜기');
+      }
+      function parseParticipants(value=els.participants.value) {
+        const names = [];
+        for (const rawToken of value.split(/[,\n]/)) {
+          if (names.length >= MAX_PARTICIPANTS) break;
+          const token = rawToken.trim();
+          if (!token) continue;
+          const match = token.match(/^(.*?)(?:\*(\d+))?$/);
+          const rawName = (match?.[1] || '').trim();
+          if (!rawName) continue;
+          const name = rawName.slice(0,MAX_NAME_LENGTH);
+          const requested = match?.[2] ? Number.parseInt(match[2],10) : 1;
+          const count = Math.max(1,Math.min(Number.isFinite(requested) ? requested : 1,MAX_PARTICIPANTS - names.length));
+          for (let index=0; index<count && names.length<MAX_PARTICIPANTS; index+=1) names.push(name);
+        }
+        const totals = new Map();
+        names.forEach(name => totals.set(name,(totals.get(name) || 0) + 1));
+        const seen = new Map();
+        return names.map((name,id) => {
+          const ordinal = (seen.get(name) || 0) + 1;
+          seen.set(name,ordinal);
+          return { id,name,label:totals.get(name) > 1 ? `${name} ${ordinal}` : name };
         });
       }
-
-      loadSettings() {
-        const settings = JSON.parse(localStorage.getItem('bingoSettings') || '{}');
-        if (settings.winnerCount) this.winnerCountSelect.value = settings.winnerCount;
-        if (settings.maxNumber) this.maxNumberSelect.value = settings.maxNumber;
-        if (settings.bingoLines) this.bingoLinesSelect.value = settings.bingoLines;
-        if (settings.dynamicSort !== undefined) {
-          this.dynamicSort = settings.dynamicSort;
-          this.dynamicSortToggle.checked = settings.dynamicSort;
+      function setControlsLocked(locked) {
+        [
+          els.participants,els.winnerCount,
+          els.maxNumber,els.requiredLines,els.startBtn
+        ].forEach(control => { control.disabled = locked; });
+      }
+      function setPhase(phase) { state.phase = phase; els.liveState.textContent = phase; }
+      function formatTime(ms) { return `${(ms / 1000).toFixed(3)}s`; }
+      function saveSettings() {
+        storage.set('participants',els.participants.value);
+        storage.set('winner-count',els.winnerCount.value);
+        storage.set('max-number',els.maxNumber.value);
+        storage.set('required-lines',els.requiredLines.value);
+        storage.set('dynamic-sort',els.dynamicSort.checked);
+      }
+      function restoreSettings() {
+        const participants = storage.get('participants');
+        let winnerCount = storage.get('winner-count');
+        let maxNumber = storage.get('max-number');
+        let requiredLines = storage.get('required-lines');
+        let dynamicSort = storage.get('dynamic-sort');
+        if (!winnerCount && !maxNumber && !requiredLines) {
+          try {
+            const legacy = JSON.parse(localStorage.getItem('bingoSettings') || '{}');
+            winnerCount = legacy.winnerCount || '';
+            maxNumber = legacy.maxNumber || '';
+            requiredLines = legacy.bingoLines || '';
+            if (legacy.dynamicSort !== undefined) dynamicSort = String(legacy.dynamicSort);
+          } catch { /* ignore malformed legacy settings */ }
         }
+        if (participants) els.participants.value = participants;
+        if (winnerCount) els.winnerCount.value = winnerCount;
+        if (maxNumber) els.maxNumber.value = maxNumber;
+        if (requiredLines) els.requiredLines.value = requiredLines;
+        if (dynamicSort) els.dynamicSort.checked = dynamicSort !== 'false';
       }
-
-      saveSettings() {
-        const settings = {
-          winnerCount: this.winnerCountSelect.value,
-          maxNumber: this.maxNumberSelect.value,
-          bingoLines: this.bingoLinesSelect.value,
-          dynamicSort: this.dynamicSortToggle.checked
-        };
-        localStorage.setItem('bingoSettings', JSON.stringify(settings));
+      function shuffle(items,rng=state.rng) {
+        const copy = [...items];
+        for (let index=copy.length - 1; index>0; index-=1) {
+          const target = Math.floor(rng() * (index + 1));
+          [copy[index],copy[target]] = [copy[target],copy[index]];
+        }
+        return copy;
       }
-
-      parseParticipants() {
-        const text = this.participantsInput.value.trim();
-        if (!text) return [];
-        const names = text.split(/[,\n]/).map(n => n.trim()).filter(n => n);
-        const result = [];
-        for (const name of names) {
-          const match = name.match(/^(.+)\*(\d+)$/);
-          if (match) {
-            const baseName = match[1].trim();
-            const count = parseInt(match[2]);
-            for (let i = 0; i < count; i++) {
-              result.push(baseName);
+      function cancelRun() {
+        state.token += 1;
+        state.pending.forEach((resolve,timeout) => { clearTimeout(timeout); resolve(false); });
+        state.pending.clear();
+      }
+      function pause(duration,token) {
+        state.simulatedMs += duration;
+        return new Promise(resolve => {
+          const timeout = setTimeout(() => {
+            state.pending.delete(timeout);
+            resolve(token === state.token);
+          },Math.max(1,Math.round(duration * TIME_SCALE)));
+          state.pending.set(timeout,resolve);
+        });
+      }
+      function callDelay() {
+        return Math.max(280,820 - state.called.length * 14 - state.winners.length * 55);
+      }
+      function updateWinnerOptions(participantCount) {
+        const maximum = Math.max(1,Math.min(5,participantCount - 1 || 1));
+        [...els.winnerCount.options].forEach(option => { option.disabled = Number(option.value) > maximum; });
+        if (Number(els.winnerCount.value) > maximum) els.winnerCount.value = String(maximum);
+      }
+      function renderLobby() {
+        if (state.running) return;
+        const participants = parseParticipants();
+        updateWinnerOptions(participants.length);
+        els.participantCount.textContent = `${participants.length} / ${MAX_PARTICIPANTS}`;
+        els.boardsContainer.replaceChildren();
+        const fragment = document.createDocumentFragment();
+        participants.forEach(player => {
+          const card = document.createElement('article');
+          card.className = 'lobby-card';
+          const avatar = document.createElement('div');
+          avatar.className = 'lobby-avatar';
+          avatar.style.setProperty('--avatar-color',CELL_COLORS[player.id % CELL_COLORS.length]);
+          avatar.textContent = AVATARS[player.id % AVATARS.length];
+          const name = document.createElement('div');
+          name.className = 'lobby-name';
+          name.textContent = player.label;
+          name.title = player.label;
+          const status = document.createElement('div');
+          status.className = 'lobby-state';
+          status.textContent = 'CARD STANDBY';
+          card.append(avatar,name,status);
+          fragment.appendChild(card);
+        });
+        els.boardsContainer.appendChild(fragment);
+        els.boardsSummary.textContent = participants.length
+          ? `${participants.length} CARDS · FREE CENTER` : 'FREE CENTER · 5×5';
+        renderPreviewRanking(participants);
+        els.winnerProgress.textContent = `0/${els.winnerCount.value}`;
+        setPhase(participants.length >= 2 ? 'READY' : 'NEED 2+');
+      }
+      function renderPreviewRanking(participants) {
+        els.rankingList.replaceChildren();
+        const fragment = document.createDocumentFragment();
+        participants.forEach((player,index) => {
+          const item = document.createElement('div');
+          item.className = 'rank-item';
+          const position = document.createElement('span');
+          position.className = 'rank-position';
+          position.textContent = index + 1;
+          const name = document.createElement('span');
+          name.className = 'rank-name';
+          name.textContent = player.label;
+          const progress = document.createElement('span');
+          progress.className = 'rank-progress';
+          progress.textContent = '0L · 1/25';
+          item.append(position,name,progress);
+          fragment.appendChild(item);
+        });
+        els.rankingList.appendChild(fragment);
+      }
+      function buildBoards() {
+        const pool = Array.from({ length:state.maxNumber },(_,index) => index + 1);
+        state.boards = state.participants.map(player => {
+          const picked = shuffle(pool).slice(0,24);
+          const grid = [];
+          let cursor = 0;
+          for (let row=0; row<5; row+=1) {
+            const line = [];
+            for (let col=0; col<5; col+=1) {
+              line.push(row === 2 && col === 2 ? null : picked[cursor++]);
             }
+            grid.push(line);
+          }
+          const positions = new Map();
+          grid.forEach((row,rowIndex) => row.forEach((number,colIndex) => {
+            if (number != null) positions.set(number,{ row:rowIndex,col:colIndex,index:rowIndex * 5 + colIndex });
+          }));
+          const checked = Array.from({ length:5 },(_,row) =>
+            Array.from({ length:5 },(_,col) => row === 2 && col === 2));
+          return {
+            id:player.id,name:player.name,label:player.label,grid,positions,checked,
+            checkedCount:1,lines:0,lineCells:new Set(),tieBreaker:state.rng(),
+            winnerRank:0,cardEl:null,statusEl:null,cellEls:[]
+          };
+        });
+        state.sequence = shuffle(pool);
+      }
+      function createBoardCard(board) {
+        const card = document.createElement('article');
+        card.className = 'bingo-board';
+        card.dataset.playerId = board.id;
+        const header = document.createElement('div');
+        header.className = 'board-header';
+        const name = document.createElement('div');
+        name.className = 'player-name';
+        name.textContent = board.label;
+        name.title = board.label;
+        const status = document.createElement('div');
+        status.className = 'player-status';
+        status.textContent = `0/${state.requiredLines} LINES`;
+        header.append(name,status);
+        const grid = document.createElement('div');
+        grid.className = 'board-grid';
+        board.grid.forEach((row,rowIndex) => row.forEach((number,colIndex) => {
+          const cell = document.createElement('div');
+          cell.className = 'board-cell';
+          cell.style.setProperty('--cell-color',CELL_COLORS[(board.id + rowIndex + colIndex) % CELL_COLORS.length]);
+          if (number == null) {
+            cell.textContent = '★';
+            cell.classList.add('checked','free');
+            cell.setAttribute('aria-label','무료 중앙 칸');
           } else {
-            result.push(name);
+            cell.textContent = number;
+            cell.setAttribute('aria-label',`번호 ${number}`);
           }
-        }
-        return result;
-      }
-
-      generateBingoBoard() {
-        const numbers = [];
-        for (let i = 1; i <= this.maxNumber; i++) numbers.push(i);
-
-        // Shuffle and pick 25
-        for (let i = numbers.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
-        }
-
-        const board = [];
-        for (let i = 0; i < 5; i++) {
-          board.push(numbers.slice(i * 5, (i + 1) * 5));
-        }
-        return board;
-      }
-
-      calculateBoardSize(participantCount) {
-        const container = this.gameArea;
-        const containerWidth = container.clientWidth - 40;
-        const containerHeight = container.clientHeight - 180;
-        
-        let cols, rows;
-        if (participantCount <= 2) { cols = 2; rows = 1; }
-        else if (participantCount <= 4) { cols = 2; rows = 2; }
-        else if (participantCount <= 6) { cols = 3; rows = 2; }
-        else if (participantCount <= 9) { cols = 3; rows = 3; }
-        else if (participantCount <= 12) { cols = 4; rows = 3; }
-        else if (participantCount <= 16) { cols = 4; rows = 4; }
-        else { cols = 5; rows = Math.ceil(participantCount / 5); }
-
-        const maxBoardWidth = (containerWidth - (cols - 1) * 15) / cols;
-        const maxBoardHeight = (containerHeight - (rows - 1) * 15) / rows;
-        
-        // Board padding + header = ~60px, cell gap = 12px for 5x5
-        const maxCellWidth = (maxBoardWidth - 20 - 12) / 5;
-        const maxCellHeight = (maxBoardHeight - 60 - 12) / 5;
-        
-        let cellSize = Math.min(maxCellWidth, maxCellHeight, 50);
-        cellSize = Math.max(cellSize, 24);
-        
-        return Math.floor(cellSize);
-      }
-
-      startGame() {
-        this.participants = this.parseParticipants();
-        
-        if (this.participants.length < 2) {
-          this.showToast('최소 2명의 참여자가 필요합니다!');
-          return;
-        }
-
-        this.maxWinners = parseInt(this.winnerCountSelect.value);
-        this.maxNumber = parseInt(this.maxNumberSelect.value);
-        this.requiredLines = parseInt(this.bingoLinesSelect.value);
-        this.dynamicSort = this.dynamicSortToggle.checked;
-
-        this.isRunning = true;
-        this.winners = [];
-        this.calledNumbers = [];
-        this.boards = {};
-        this.previousRankings = {};
-        this.initialOrder = [...this.participants];
-        document.getElementById('eventLog').innerHTML = '';
-
-        this.sound.init();
-        this.sound.playStart();
-
-        // Generate available numbers
-        this.availableNumbers = [];
-        for (let i = 1; i <= this.maxNumber; i++) this.availableNumbers.push(i);
-        this.shuffleArray(this.availableNumbers);
-
-        // Generate boards for each participant
-        this.participants.forEach(name => {
-          this.boards[name] = {
-            grid: this.generateBingoBoard(),
-            checked: Array(5).fill(null).map(() => Array(5).fill(false)),
-            lines: 0,
-            checkedCount: 0
-          };
-        });
-
-        this.startBtn.disabled = true;
-        this.renderGame();
-        this.updateRankings();
-        
-        // Start calling numbers
-        this.callInterval = setInterval(() => this.callNumber(), 1500);
-      }
-
-      shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-      }
-
-      callNumber() {
-        if (!this.isRunning || this.availableNumbers.length === 0) {
-          this.endGame();
-          return;
-        }
-
-        const number = this.availableNumbers.pop();
-        this.calledNumbers.push(number);
-        this.lastCalledNumber = number;
-        this.sound.playTick();
-
-        let hitOccurred = false;
-        let bingoOccurred = false;
-
-        // Check boards
-        this.participants.forEach(name => {
-          if (this.winners.includes(name)) return;
-          
-          const board = this.boards[name];
-          for (let i = 0; i < 5; i++) {
-            for (let j = 0; j < 5; j++) {
-              if (board.grid[i][j] === number && !board.checked[i][j]) {
-                board.checked[i][j] = true;
-                board.checkedCount++;
-                hitOccurred = true;
-              }
-            }
-          }
-          
-          // Calculate lines
-          const newLines = this.countLines(board.checked);
-          if (newLines > board.lines) {
-            const isBingo = newLines >= this.requiredLines;
-            
-            // Add to event log
-            const log = document.getElementById('eventLog');
-            const logItem = document.createElement('div');
-            logItem.className = 'event-log-item' + (isBingo ? ' bingo-complete' : '');
-            const msg = isBingo ? "BINGO! 🎯" : `${newLines}줄 완성! ✨`;
-            logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${name}</span>: ${msg}`;
-            log.insertBefore(logItem, log.firstChild);
-            
-            // Limit to 5 logs
-            while (log.children.length > 5) {
-              log.removeChild(log.lastChild);
-            }
-
-            board.lines = newLines;
-            if (board.lines >= this.requiredLines) {
-              bingoOccurred = true;
-            }
-          }
-          
-          // Check for bingo
-          if (board.lines >= this.requiredLines && !this.winners.includes(name)) {
-            this.winners.push(name);
-            this.createConfetti();
-            
-            if (this.winners.length >= this.maxWinners) {
-              setTimeout(() => this.endGame(), 500);
-            }
-          }
-        });
-
-        if (bingoOccurred) this.sound.playBingo();
-        else if (hitOccurred) this.sound.playHit();
-
-        this.renderGame();
-        this.updateRankings();
-      }
-
-      countLines(checked) {
-        let lines = 0;
-        
-        // Rows
-        for (let i = 0; i < 5; i++) {
-          if (checked[i].every(cell => cell)) lines++;
-        }
-        
-        // Columns
-        for (let j = 0; j < 5; j++) {
-          let complete = true;
-          for (let i = 0; i < 5; i++) {
-            if (!checked[i][j]) { complete = false; break; }
-          }
-          if (complete) lines++;
-        }
-        
-        // Diagonals
-        let diag1 = true, diag2 = true;
-        for (let i = 0; i < 5; i++) {
-          if (!checked[i][i]) diag1 = false;
-          if (!checked[i][4 - i]) diag2 = false;
-        }
-        if (diag1) lines++;
-        if (diag2) lines++;
-        
-        return lines;
-      }
-
-      getBingoCells(checked) {
-        const bingoCells = Array(5).fill(null).map(() => Array(5).fill(false));
-        
-        // Rows
-        for (let i = 0; i < 5; i++) {
-          if (checked[i].every(cell => cell)) {
-            for (let j = 0; j < 5; j++) bingoCells[i][j] = true;
-          }
-        }
-        
-        // Columns
-        for (let j = 0; j < 5; j++) {
-          let complete = true;
-          for (let i = 0; i < 5; i++) {
-            if (!checked[i][j]) { complete = false; break; }
-          }
-          if (complete) {
-            for (let i = 0; i < 5; i++) bingoCells[i][j] = true;
-          }
-        }
-        
-        // Diagonal 1
-        let diag1 = true;
-        for (let i = 0; i < 5; i++) if (!checked[i][i]) diag1 = false;
-        if (diag1) {
-          for (let i = 0; i < 5; i++) bingoCells[i][i] = true;
-        }
-        
-        // Diagonal 2
-        let diag2 = true;
-        for (let i = 0; i < 5; i++) if (!checked[i][4 - i]) diag2 = false;
-        if (diag2) {
-          for (let i = 0; i < 5; i++) bingoCells[i][4 - i] = true;
-        }
-        
-        return bingoCells;
-      }
-
-      renderGame() {
-        const cellSize = this.calculateBoardSize(this.participants.length);
-        
-        // dynamicSort가 켜져있으면 랭킹순, 아니면 초기 순서 유지
-        const displayOrder = this.dynamicSort 
-          ? this.getSortedRankings() 
-          : this.initialOrder.map(name => ({
-              name,
-              lines: this.boards[name]?.lines || 0,
-              checkedCount: this.boards[name]?.checkedCount || 0,
-              isWinner: this.winners.includes(name),
-              winnerRank: this.winners.indexOf(name) + 1
-            }));
-        
-        // FLIP Animation: First - 기존 위치 저장
-        const boardsContainer = this.gameContent.querySelector('.boards-container');
-        const oldPositions = {};
-        
-        if (boardsContainer && this.dynamicSort) {
-          const existingBoards = boardsContainer.querySelectorAll('.bingo-board');
-          existingBoards.forEach(board => {
-            const name = board.dataset.name;
-            const rect = board.getBoundingClientRect();
-            oldPositions[name] = { x: rect.left, y: rect.top };
-          });
-        }
-
-        // Render new HTML
-        let html = `
-          <div class="number-display">
-            <div class="current-number" id="currentNumber">
-              ${this.calledNumbers.length > 0 ? this.calledNumbers[this.calledNumbers.length - 1] : '?'}
-            </div>
-            <div class="called-numbers">
-              ${this.calledNumbers.slice(-15).map(n => `<div class="called-number">${n}</div>`).join('')}
-            </div>
-          </div>
-          <div class="boards-container">
-        `;
-
-        displayOrder.forEach((p, index) => {
-          const name = p.name;
-          const board = this.boards[name];
-          const isWinner = this.winners.includes(name);
-          const winnerRank = this.winners.indexOf(name) + 1;
-          
-          let statusText = '';
-          let statusClass = '';
-          
-          if (isWinner) {
-            statusText = `🏆 ${winnerRank}등 빙고!`;
-            statusClass = 'bingo';
-          } else if (board.lines > 0) {
-            if (board.lines >= this.requiredLines) {
-              statusText = '빙고!';
-              statusClass = 'bingo';
-            } else {
-              statusText = `${board.lines}줄!`;
-              statusClass = `lines-${Math.min(board.lines, 3)}`;
-            }
-          }
-
-          html += `
-            <div class="bingo-board ${isWinner ? 'winner' : ''}" data-name="${name}" style="--cell-size: ${cellSize}px">
-              <div class="board-header">
-                <div class="player-name">${name}</div>
-                <div class="player-status ${statusClass}">${statusText}</div>
-              </div>
-              <div class="board-grid">
-          `;
-
-          const bingoCells = this.getBingoCells(board.checked);
-
-          for (let i = 0; i < 5; i++) {
-            for (let j = 0; j < 5; j++) {
-              const num = board.grid[i][j];
-              const isChecked = board.checked[i][j];
-              const isBingoLine = bingoCells[i][j];
-              const isNewCheck = isChecked && num === this.lastCalledNumber;
-              html += `
-                <div class="board-cell ${isChecked ? 'checked' : ''} ${isBingoLine ? 'bingo-line' : ''} ${isNewCheck ? 'new-check' : ''}">
-                  ${num}
-                </div>
-              `;
-            }
-          }
-
-          html += '</div></div>';
-        });
-
-        html += '</div>';
-        this.gameContent.innerHTML = html;
-
-        // FLIP Animation: Last, Invert, Play (only when dynamicSort is on)
-        if (this.dynamicSort && Object.keys(oldPositions).length > 0) {
-          const newBoardsContainer = this.gameContent.querySelector('.boards-container');
-          const newBoards = newBoardsContainer.querySelectorAll('.bingo-board');
-          
-          newBoards.forEach(board => {
-            const name = board.dataset.name;
-            const oldPos = oldPositions[name];
-            
-            if (oldPos) {
-              const newRect = board.getBoundingClientRect();
-              const deltaX = oldPos.x - newRect.left;
-              const deltaY = oldPos.y - newRect.top;
-              
-              // Only animate if position actually changed
-              if (Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) {
-                // Invert: 새 위치에서 이전 위치로 이동
-                board.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-                board.style.transition = 'none';
-                
-                // Play: 원래 위치로 애니메이션
-                requestAnimationFrame(() => {
-                  requestAnimationFrame(() => {
-                    board.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-                    board.style.transform = 'translate(0, 0)';
-                  });
-                });
-              }
-            }
-          });
-        }
-        
-        // Update previous rankings for next comparison
-        if (this.dynamicSort) {
-          const rankings = this.getSortedRankings();
-          rankings.forEach((p, index) => {
-            this.previousRankings[p.name] = index;
-          });
-        }
-      }
-
-      getSortedRankings() {
-        const rankings = this.participants.map(name => ({
-          name,
-          lines: this.boards[name].lines,
-          checkedCount: this.boards[name].checkedCount,
-          isWinner: this.winners.includes(name),
-          winnerRank: this.winners.indexOf(name) + 1
+          board.cellEls.push(cell);
+          grid.appendChild(cell);
         }));
-
-        // Sort: winners first by rank, then by lines, then by checked count
-        rankings.sort((a, b) => {
-          if (a.isWinner && !b.isWinner) return -1;
-          if (!a.isWinner && b.isWinner) return 1;
-          if (a.isWinner && b.isWinner) return a.winnerRank - b.winnerRank;
+        card.append(header,grid);
+        board.cardEl = card;
+        board.statusEl = status;
+        return card;
+      }
+      function renderBoards() {
+        els.boardsContainer.replaceChildren();
+        const fragment = document.createDocumentFragment();
+        state.boards.forEach(board => fragment.appendChild(createBoardCard(board)));
+        els.boardsContainer.appendChild(fragment);
+        els.boardsSummary.textContent = `${state.boards.length} CARDS · ${state.requiredLines} LINES TO WIN`;
+        updateRankings(false);
+      }
+      function evaluateLines(checked) {
+        const keys = [];
+        const cells = new Set();
+        for (let row=0; row<5; row+=1) {
+          if (checked[row].every(Boolean)) {
+            keys.push(`R${row}`);
+            for (let col=0; col<5; col+=1) cells.add(row * 5 + col);
+          }
+        }
+        for (let col=0; col<5; col+=1) {
+          let complete = true;
+          for (let row=0; row<5; row+=1) if (!checked[row][col]) complete = false;
+          if (complete) {
+            keys.push(`C${col}`);
+            for (let row=0; row<5; row+=1) cells.add(row * 5 + col);
+          }
+        }
+        let diagonalA = true;
+        let diagonalB = true;
+        for (let index=0; index<5; index+=1) {
+          if (!checked[index][index]) diagonalA = false;
+          if (!checked[index][4 - index]) diagonalB = false;
+        }
+        if (diagonalA) {
+          keys.push('DA');
+          for (let index=0; index<5; index+=1) cells.add(index * 5 + index);
+        }
+        if (diagonalB) {
+          keys.push('DB');
+          for (let index=0; index<5; index+=1) cells.add(index * 5 + 4 - index);
+        }
+        return { count:keys.length,cells };
+      }
+      function updateBoardVisual(board,hitIndex=null) {
+        board.cellEls.forEach((cell,index) => {
+          const row = Math.floor(index / 5);
+          const col = index % 5;
+          cell.classList.toggle('checked',board.checked[row][col]);
+          cell.classList.toggle('line',board.lineCells.has(index));
+          cell.classList.toggle('winner-cell',board.winnerRank > 0 && board.lineCells.has(index));
+          cell.classList.remove('hit');
+        });
+        if (hitIndex != null) {
+          const cell = board.cellEls[hitIndex];
+          void cell.offsetWidth;
+          cell.classList.add('hit');
+        }
+        board.cardEl.classList.toggle('winner',board.winnerRank > 0);
+        board.statusEl.classList.toggle('winner',board.winnerRank > 0);
+        board.statusEl.textContent = board.winnerRank
+          ? `🏆 #${board.winnerRank} BINGO`
+          : `${board.lines}/${state.requiredLines} LINES`;
+      }
+      function sortedBoards() {
+        return [...state.boards].sort((a,b) => {
+          if (a.winnerRank && b.winnerRank) return a.winnerRank - b.winnerRank;
+          if (a.winnerRank) return -1;
+          if (b.winnerRank) return 1;
           if (b.lines !== a.lines) return b.lines - a.lines;
-          return b.checkedCount - a.checkedCount;
+          if (b.checkedCount !== a.checkedCount) return b.checkedCount - a.checkedCount;
+          if (a.tieBreaker !== b.tieBreaker) return a.tieBreaker - b.tieBreaker;
+          return a.id - b.id;
         });
-
-        return rankings;
       }
-
-      updateRankings() {
-        const rankings = this.getSortedRankings();
-
-        let html = '';
-        rankings.forEach((p, index) => {
-          const position = p.isWinner ? p.winnerRank : index + 1;
-          let posClass = 'normal';
-          if (position === 1) posClass = 'gold';
-          else if (position === 2) posClass = 'silver';
-          else if (position === 3) posClass = 'bronze';
-
-          const lineText = p.lines >= this.requiredLines ? '빙고!' : `${p.lines}줄`;
-          
-          html += `
-            <div class="rank-item ${p.isWinner ? 'winner bingo' : ''}">
-              <div class="rank-position ${posClass}">${position}</div>
-              <div class="rank-info">
-                <div class="rank-name">${p.name}</div>
-                <div class="rank-status">${p.checkedCount}칸 체크</div>
-              </div>
-              <div class="rank-lines ${p.lines >= this.requiredLines ? 'bingo-complete' : ''}">${lineText}</div>
-            </div>
-          `;
+      function reorderBoards(rankings) {
+        const animate = els.dynamicSort.checked && !reducedMotion && rankings.length <= 16;
+        const oldRects = new Map();
+        if (animate) rankings.forEach(board => oldRects.set(board.id,board.cardEl.getBoundingClientRect()));
+        rankings.forEach((board,index) => { board.cardEl.style.order = els.dynamicSort.checked ? index : board.id; });
+        if (!animate) return;
+        requestAnimationFrame(() => {
+          rankings.forEach(board => {
+            const oldRect = oldRects.get(board.id);
+            const newRect = board.cardEl.getBoundingClientRect();
+            const x = oldRect.left - newRect.left;
+            const y = oldRect.top - newRect.top;
+            if (Math.abs(x) > 1 || Math.abs(y) > 1) {
+              board.cardEl.animate(
+                [{ transform:`translate(${x}px,${y}px)` },{ transform:'translate(0,0)' }],
+                { duration:380,easing:'cubic-bezier(.2,.75,.2,1)' }
+              );
+            }
+          });
         });
-
-        this.rankingsList.innerHTML = html;
       }
-
-      endGame() {
-        this.isRunning = false;
-        if (this.callInterval) {
-          clearInterval(this.callInterval);
-          this.callInterval = null;
-        }
-        
-        this.sound.playWin();
-        this.startBtn.disabled = false;
-        this.showOverlay();
-      }
-
-      showOverlay() {
-        const medals = ['🥇', '🥈', '🥉', '🏅', '🏅'];
-        let html = '';
-        
-        this.winners.forEach((name, index) => {
-          html += `
-            <div class="winner-item">
-              <span class="winner-medal">${medals[index] || '🏅'}</span>
-              <span>${index + 1}등: ${name}</span>
-            </div>
-          `;
+      function updateRankings(animate=true) {
+        const rankings = sortedBoards();
+        els.rankingList.replaceChildren();
+        const fragment = document.createDocumentFragment();
+        rankings.forEach((board,index) => {
+          const item = document.createElement('div');
+          item.className = `rank-item${board.winnerRank ? ' winner' : ''}`;
+          const position = document.createElement('span');
+          position.className = 'rank-position';
+          position.textContent = board.winnerRank ? `🏆` : index + 1;
+          const name = document.createElement('span');
+          name.className = 'rank-name';
+          name.textContent = board.label;
+          const progress = document.createElement('span');
+          progress.className = 'rank-progress';
+          progress.textContent = `${board.lines}L · ${board.checkedCount}/25`;
+          item.append(position,name,progress);
+          fragment.appendChild(item);
         });
-
-        if (this.winners.length === 0) {
-          html = '<div class="winner-item">우승자가 없습니다!</div>';
-        }
-
-        this.winnersList.innerHTML = html;
-        this.gameOverOverlay.classList.add('show');
+        els.rankingList.appendChild(fragment);
+        if (animate) reorderBoards(rankings);
       }
-
-      hideOverlay() {
-        this.gameOverOverlay.classList.remove('show');
-      }
-
-      resetGame() {
-        this.isRunning = false;
-        if (this.callInterval) {
-          clearInterval(this.callInterval);
-          this.callInterval = null;
-        }
-        
-        this.winners = [];
-        this.calledNumbers = [];
-        this.boards = {};
-        this.previousRankings = {};
-        this.startBtn.disabled = false;
-        document.getElementById('eventLog').innerHTML = '';
-        
-        this.gameContent.innerHTML = `
-          <div class="waiting-message">
-            <div class="icon">🎯</div>
-            <p>참여자를 입력하고 게임을 시작하세요!</p>
-          </div>
-        `;
-
-        this.rankingsList.innerHTML = `
-          <div class="waiting-message" style="padding: 20px;">
-            <p style="font-size: 0.9rem; color: var(--text-secondary);">게임 시작을 기다리는 중...</p>
-          </div>
-        `;
-
-        this.hideOverlay();
-      }
-
-      copyResult() {
-        if (this.winners.length === 0) {
-          this.showToast('복사할 결과가 없습니다!');
+      function renderHistory() {
+        els.historyStrip.replaceChildren();
+        if (!state.called.length) {
+          const empty = document.createElement('span');
+          empty.className = 'history-empty';
+          empty.textContent = '호출된 번호가 여기에 표시됩니다';
+          els.historyStrip.appendChild(empty);
           return;
         }
-
-        let result = '🎯 빙고 추첨 결과\n';
-        result += `설정: ${this.requiredLines}줄 빙고\n`;
-        result += '─'.repeat(20) + '\n';
-        
-        const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
-        this.winners.forEach((name, index) => {
-          result += `${medals[index]} ${index + 1}등: ${name}\n`;
+        const fragment = document.createDocumentFragment();
+        state.called.slice(-18).forEach((number,index,array) => {
+          const ball = document.createElement('span');
+          ball.className = 'history-ball';
+          ball.style.setProperty('--ball-color',BALL_COLORS[(state.called.length - array.length + index) % BALL_COLORS.length]);
+          ball.textContent = number;
+          fragment.appendChild(ball);
         });
-        
-        result += '─'.repeat(20) + '\n';
-        result += `호출된 번호: ${this.calledNumbers.length}개`;
-
-        navigator.clipboard.writeText(result).then(() => {
-          this.showToast('결과가 복사되었습니다! 📋');
-        }).catch(() => {
-          this.showToast('복사에 실패했습니다.');
+        els.historyStrip.appendChild(fragment);
+        els.historyStrip.scrollLeft = els.historyStrip.scrollWidth;
+      }
+      function shakeStage() {
+        els.gameArea.classList.remove('shake');
+        void els.gameArea.offsetWidth;
+        els.gameArea.classList.add('shake');
+      }
+      function popBall(number) {
+        els.currentBall.classList.remove('drawing','pop');
+        els.currentBall.textContent = number;
+        void els.currentBall.offsetWidth;
+        els.currentBall.classList.add('pop');
+        state.drawPulse = 1;
+        shakeStage();
+      }
+      function resolveCall(number) {
+        const hits = [];
+        const qualifiers = [];
+        state.boards.forEach(board => {
+          if (board.winnerRank) return;
+          const position = board.positions.get(number);
+          if (!position || board.checked[position.row][position.col]) return;
+          board.checked[position.row][position.col] = true;
+          board.checkedCount += 1;
+          const previousLines = board.lines;
+          const lineState = evaluateLines(board.checked);
+          board.lines = lineState.count;
+          board.lineCells = lineState.cells;
+          hits.push(board);
+          updateBoardVisual(board,position.index);
+          if (previousLines < state.requiredLines && board.lines >= state.requiredLines) qualifiers.push(board);
         });
+        const openSlots = state.maxWinners - state.winners.length;
+        const orderedQualifiers = [...qualifiers].sort((a,b) => {
+          if (b.lines !== a.lines) return b.lines - a.lines;
+          if (b.checkedCount !== a.checkedCount) return b.checkedCount - a.checkedCount;
+          if (a.tieBreaker !== b.tieBreaker) return a.tieBreaker - b.tieBreaker;
+          return a.id - b.id;
+        });
+        const newWinners = orderedQualifiers.slice(0,openSlots);
+        newWinners.forEach(board => {
+          board.winnerRank = state.winners.length + 1;
+          state.winners.push(board);
+          updateBoardVisual(board);
+        });
+        if (hits.length) sound.hit();
+        if (newWinners.length) sound.bingo();
+        return { hits,qualifiers:orderedQualifiers,newWinners };
       }
+      async function runDraw(token) {
+        for (const number of state.sequence) {
+          if (token !== state.token || !state.running) return;
+          setPhase(state.called.length >= 10 ? 'NOVA' : 'DRAW');
+          els.speedBanner.classList.toggle('show',state.called.length >= 10);
+          els.currentBall.textContent = '?';
+          els.currentBall.classList.remove('pop');
+          els.currentBall.classList.add('drawing');
+          els.drawMessage.textContent = '볼 머신 혼합 중…';
+          sound.mix();
+          state.drawPulse = .8;
+          if (!await pause(230,token)) return;
 
-      showToast(message) {
-        this.toast.textContent = message;
-        this.toast.classList.add('show');
-        setTimeout(() => this.toast.classList.remove('show'), 2500);
-      }
-
-      showHelp() {
-        this.helpModalOverlay.classList.add('show');
-      }
-
-      hideHelp() {
-        this.helpModalOverlay.classList.remove('show');
-      }
-
-      createConfetti() {
-        const colors = ['#ffd93d', '#ff6b6b', '#00f5d4', '#9b5de5', '#ffffff'];
-        for (let i = 0; i < 50; i++) {
-          setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + 'vw';
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-            document.body.appendChild(confetti);
-            
-            setTimeout(() => confetti.remove(), 4000);
-          }, i * 30);
+          state.called.push(number);
+          popBall(number);
+          sound.call();
+          const result = resolveCall(number);
+          els.callCount.textContent = state.called.length;
+          els.winnerProgress.textContent = `${state.winners.length}/${state.maxWinners}`;
+          els.drawMessage.textContent = result.newWinners.length
+            ? `🌟 ${result.newWinners.map(board => board.label).join(', ')} BINGO!`
+            : result.hits.length ? `${number}번 · ${result.hits.length}개 카드 적중` : `${number}번 · 적중 없음`;
+          renderHistory();
+          updateRankings();
+          state.audit.push({
+            call:state.called.length,number,timeMs:state.simulatedMs,
+            hits:result.hits.map(board => board.id),
+            qualifiers:result.qualifiers.map(board => board.id),
+            winners:result.newWinners.map(board => board.id)
+          });
+          if (state.winners.length >= state.maxWinners) {
+            setPhase('CHAMPION');
+            els.drawMessage.textContent = '우승자가 결정되었습니다';
+            els.stageProof.textContent = `RANDOM RUN · ${formatTime(state.simulatedMs)}`;
+            state.lastResult = buildResultText();
+            sound.win();
+            if (!await pause(1000,token) || token !== state.token) return;
+            finishGame();
+            return;
+          }
+          if (!await pause(callDelay(),token)) return;
         }
+        if (token === state.token) finishGame();
       }
-    }
+      function buildResultText() {
+        return [
+          '🌟 PLAYPICK 빙고 노바 결과',
+          ...state.winners.map((board,index) => `${index + 1}. ${board.label}`),'',
+          `조건: ${state.requiredLines}줄 · 1–${state.maxNumber}`,
+          `호출 수: ${state.called.length}`,
+          `시뮬레이션 시간: ${formatTime(state.simulatedMs)}`,
+          `호출 기록: ${state.called.join(', ')}`,
+          `버전: ${GAME_VERSION}`
+        ].join('\\n');
+      }
+      function renderResult() {
+        els.winnerList.replaceChildren();
+        const medals = ['🥇','🥈','🥉','🏅','🏅'];
+        const fragment = document.createDocumentFragment();
+        state.winners.forEach((board,index) => {
+          const row = document.createElement('div');
+          row.className = 'winner-row';
+          const medal = document.createElement('span');
+          medal.textContent = medals[index] || '🏅';
+          const name = document.createElement('span');
+          name.textContent = board.label;
+          const detail = document.createElement('span');
+          detail.textContent = `${board.lines}L · #${state.audit.find(item => item.winners.includes(board.id))?.call || state.called.length}`;
+          row.append(medal,name,detail);
+          fragment.appendChild(row);
+        });
+        els.winnerList.appendChild(fragment);
+        els.resultCalls.textContent = state.called.length;
+        els.resultTime.textContent = formatTime(state.simulatedMs);
+        els.resultLines.textContent = state.requiredLines;
+      }
+      function finishGame() {
+        state.running = false;
+        setControlsLocked(false);
+        setPhase('COMPLETE');
+        els.startBtn.textContent = '🚀 다시 추첨';
+        state.lastResult ||= buildResultText();
+        renderResult();
+        startCelebration();
+        els.resultOverlay.classList.add('show');
+        els.resultCloseBtn.focus({ preventScroll:true });
+      }
+      async function startGame() {
+        if (state.running) return;
+        clearTimeout(state.inputTimer);
+        const participants = parseParticipants();
+        if (participants.length < 2) {
+          showToast('참가자를 2명 이상 입력해주세요.');
+          els.participants.focus();
+          return;
+        }
+        state.maxWinners = Number(els.winnerCount.value);
+        if (state.maxWinners >= participants.length) {
+          showToast('당첨자 수는 참가자 수보다 적어야 합니다.');
+          return;
+        }
+        sound.init();
+        cancelRun();
+        const token = state.token;
+        state.running = true;
+        state.participants = participants;
+        state.maxNumber = Number(els.maxNumber.value);
+        state.requiredLines = Number(els.requiredLines.value);
+        state.winners = [];
+        state.called = [];
+        state.sequence = [];
+        state.audit = [];
+        state.simulatedMs = 0;
+        state.rng = Math.random;
+        state.lastResult = '';
+        saveSettings();
+        setControlsLocked(true);
+        stopCelebration();
+        els.resultOverlay.classList.remove('show');
+        els.startBtn.textContent = '추첨 진행 중…';
+        els.currentBall.textContent = '•';
+        els.callCount.textContent = '0';
+        els.winnerProgress.textContent = `0/${state.maxWinners}`;
+        els.speedBanner.classList.remove('show');
+        els.drawMessage.textContent = '새로운 무작위 카드를 만드는 중…';
+        els.stageProof.textContent = 'RANDOMIZING';
+        setPhase('RANDOMIZING');
 
-    // Initialize game
-    document.addEventListener('DOMContentLoaded', () => {
-      new BingoGame();
-    });
+        buildBoards();
+        initOrbitBalls();
+        renderBoards();
+        renderHistory();
+        els.stageProof.textContent = 'RANDOM RUN';
+        els.drawMessage.textContent = `${participants.length}개 카드 · ${state.requiredLines}줄 승부`;
+        setPhase('LOCKED');
+        sound.start();
+        if (!await pause(650,token)) return;
+        await runDraw(token);
+      }
+      function resetGame() {
+        cancelRun();
+        state.running = false;
+        state.participants = [];
+        state.boards = [];
+        state.winners = [];
+        state.called = [];
+        state.sequence = [];
+        state.audit = [];
+        state.simulatedMs = 0;
+        state.lastResult = '';
+        setControlsLocked(false);
+        stopCelebration();
+        els.resultOverlay.classList.remove('show');
+        els.currentBall.classList.remove('drawing','pop');
+        els.currentBall.textContent = '?';
+        els.callCount.textContent = '0';
+        els.speedBanner.classList.remove('show');
+        els.stageProof.textContent = 'RANDOM · READY';
+        els.drawMessage.textContent = '참가 카드가 입장을 기다립니다';
+        els.startBtn.textContent = '🚀 추첨 시작';
+        renderHistory();
+        renderLobby();
+      }
+      async function copyResult() {
+        if (!state.lastResult) {
+          showToast('완료된 추첨 결과가 없습니다.');
+          return;
+        }
+        try { await navigator.clipboard.writeText(state.lastResult); }
+        catch {
+          const textarea = document.createElement('textarea');
+          textarea.value = state.lastResult;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          textarea.remove();
+        }
+        showToast('결과·호출 기록·검증 해시를 복사했습니다.');
+      }
+      function showToast(message) {
+        clearTimeout(state.toastTimer);
+        els.toast.textContent = message;
+        els.toast.classList.add('show');
+        state.toastTimer = setTimeout(() => els.toast.classList.remove('show'),2200);
+      }
+
+      function initOrbitBalls() {
+        const rng = Math.random;
+        state.orbitBalls = Array.from({ length:14 },(_,index) => ({
+          angle:rng() * Math.PI * 2,
+          radiusX:.2 + rng() * .29,
+          radiusY:.05 + rng() * .1,
+          size:8 + rng() * 10,
+          speed:(.18 + rng() * .35) * (rng() > .5 ? 1 : -1),
+          y:.16 + rng() * .14,
+          color:BALL_COLORS[index % BALL_COLORS.length],
+          number:1 + Math.floor(rng() * Math.max(25,state.maxNumber || 50))
+        }));
+        rebuildStaticCanvas();
+      }
+      function resizeCosmicCanvas() {
+        const canvas = els.cosmicCanvas;
+        const rect = els.gameArea.getBoundingClientRect();
+        const dpr = Math.min(devicePixelRatio || 1,2);
+        canvas.width = Math.max(1,Math.round(rect.width * dpr));
+        canvas.height = Math.max(1,Math.round(rect.height * dpr));
+        canvas.style.width = `${rect.width}px`;
+        canvas.style.height = `${rect.height}px`;
+        state.staticCanvas.width = canvas.width;
+        state.staticCanvas.height = canvas.height;
+        rebuildStaticCanvas();
+      }
+      function rebuildStaticCanvas() {
+        const cache = state.staticCanvas;
+        if (!cache.width || !cache.height) return;
+        const dpr = Math.min(devicePixelRatio || 1,2);
+        const width = cache.width / dpr;
+        const height = cache.height / dpr;
+        const context = cache.getContext('2d');
+        context.setTransform(1,0,0,1,0,0);
+        context.clearRect(0,0,cache.width,cache.height);
+        context.setTransform(dpr,0,0,dpr,0,0);
+        const rng = Math.random;
+        const gradient = context.createRadialGradient(width * .5,height * .2,0,width * .5,height * .2,width * .55);
+        gradient.addColorStop(0,'rgba(150,78,255,.15)');
+        gradient.addColorStop(.45,'rgba(31,32,91,.07)');
+        gradient.addColorStop(1,'rgba(2,2,15,0)');
+        context.fillStyle = gradient;
+        context.fillRect(0,0,width,height);
+        const stars = Math.min(230,Math.max(80,Math.floor(width * height / 5600)));
+        for (let index=0; index<stars; index+=1) {
+          const x = rng() * width;
+          const y = rng() * height;
+          const radius = .4 + rng() * 1.25;
+          context.globalAlpha = .25 + rng() * .65;
+          context.fillStyle = index % 7 === 0 ? '#ffd45a' : index % 5 === 0 ? '#42dcff' : '#ffffff';
+          context.beginPath();
+          context.arc(x,y,radius,0,Math.PI * 2);
+          context.fill();
+        }
+        context.globalAlpha = 1;
+      }
+      function drawOrbitBalls(context,width,height) {
+        const centerX = width * .5;
+        state.orbitBalls.forEach(ball => {
+          const x = centerX + Math.cos(ball.angle) * width * ball.radiusX;
+          const y = height * ball.y + Math.sin(ball.angle) * height * ball.radiusY;
+          context.save();
+          context.globalAlpha = .42 + (Math.sin(ball.angle) + 1) * .17;
+          context.shadowColor = ball.color;
+          context.shadowBlur = 16;
+          context.fillStyle = ball.color;
+          context.beginPath();
+          context.arc(x,y,ball.size,0,Math.PI * 2);
+          context.fill();
+          context.shadowBlur = 0;
+          context.fillStyle = 'rgba(255,255,255,.72)';
+          context.beginPath();
+          context.arc(x - ball.size * .28,y - ball.size * .28,ball.size * .2,0,Math.PI * 2);
+          context.fill();
+          context.fillStyle = '#fff';
+          context.font = `800 ${Math.max(7,ball.size * .62)}px ui-monospace`;
+          context.textAlign = 'center';
+          context.textBaseline = 'middle';
+          context.fillText(ball.number,x,y + 1);
+          context.restore();
+        });
+      }
+      function animationLoop(timestamp) {
+        if (!state.lastTimestamp) state.lastTimestamp = timestamp;
+        const dt = Math.min((timestamp - state.lastTimestamp) / 1000,.05);
+        state.lastTimestamp = timestamp;
+        const canvas = els.cosmicCanvas;
+        const dpr = Math.min(devicePixelRatio || 1,2);
+        const width = canvas.width / dpr;
+        const height = canvas.height / dpr;
+        const context = canvas.getContext('2d');
+        context.setTransform(1,0,0,1,0,0);
+        context.clearRect(0,0,canvas.width,canvas.height);
+        context.drawImage(state.staticCanvas,0,0);
+        context.setTransform(dpr,0,0,dpr,0,0);
+        const motion = reducedMotion ? 0 : state.running ? 1.35 + Math.min(1.6,state.called.length * .035) + state.drawPulse * 2.2 : .22;
+        state.orbitBalls.forEach(ball => { ball.angle += ball.speed * motion * dt; });
+        state.drawPulse = Math.max(0,state.drawPulse - dt * 2.8);
+        drawOrbitBalls(context,width,height);
+        state.animationFrame = requestAnimationFrame(animationLoop);
+      }
+      function startCosmicAnimation() {
+        cancelAnimationFrame(state.animationFrame);
+        state.lastTimestamp = 0;
+        resizeCosmicCanvas();
+        initOrbitBalls();
+        state.animationFrame = requestAnimationFrame(animationLoop);
+      }
+
+      function resizeCelebrationCanvas() {
+        const canvas = els.celebrationCanvas;
+        const dpr = Math.min(devicePixelRatio || 1,2);
+        canvas.width = Math.round(innerWidth * dpr);
+        canvas.height = Math.round(innerHeight * dpr);
+        canvas.style.width = `${innerWidth}px`;
+        canvas.style.height = `${innerHeight}px`;
+        canvas.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+      }
+      function startCelebration() {
+        stopCelebration();
+        const canvas = els.celebrationCanvas;
+        const context = canvas.getContext('2d');
+        const rng = Math.random;
+        resizeCelebrationCanvas();
+        canvas.style.display = 'block';
+        const particles = Array.from({ length:130 },(_,index) => ({
+          x:innerWidth * (.18 + rng() * .64),y:innerHeight * (.32 + rng() * .1),
+          vx:(rng() - .5) * (290 + rng() * 330),vy:-200 - rng() * 420,
+          gravity:440 + rng() * 180,rotation:rng() * Math.PI,vr:(rng() - .5) * 10,
+          size:4 + rng() * 8,color:BALL_COLORS[index % BALL_COLORS.length],life:3 + rng() * 2
+        }));
+        let last = performance.now();
+        let elapsed = 0;
+        const frame = now => {
+          const dt = Math.min((now - last) / 1000,.05);
+          last = now;
+          elapsed += dt;
+          context.clearRect(0,0,innerWidth,innerHeight);
+          particles.forEach(particle => {
+            particle.life -= dt;
+            if (particle.life <= 0) return;
+            particle.vy += particle.gravity * dt;
+            particle.x += particle.vx * dt;
+            particle.y += particle.vy * dt;
+            particle.rotation += particle.vr * dt;
+            context.save();
+            context.globalAlpha = Math.min(1,particle.life);
+            context.translate(particle.x,particle.y);
+            context.rotate(particle.rotation);
+            context.fillStyle = particle.color;
+            if (particle.size > 8) {
+              context.beginPath();
+              context.arc(0,0,particle.size,0,Math.PI * 2);
+              context.fill();
+            } else {
+              context.fillRect(-particle.size,-particle.size * .4,particle.size * 2,particle.size * .8);
+            }
+            context.restore();
+          });
+          if (elapsed < 5.6) state.celebrationFrame = requestAnimationFrame(frame);
+          else stopCelebration();
+        };
+        state.celebrationFrame = requestAnimationFrame(frame);
+      }
+      function stopCelebration() {
+        if (state.celebrationFrame) cancelAnimationFrame(state.celebrationFrame);
+        state.celebrationFrame = 0;
+        const context = els.celebrationCanvas.getContext('2d');
+        context.clearRect(0,0,els.celebrationCanvas.width,els.celebrationCanvas.height);
+        els.celebrationCanvas.style.display = 'none';
+      }
+
+      els.participants.addEventListener('input',() => {
+        storage.set('participants',els.participants.value);
+        clearTimeout(state.inputTimer);
+        state.inputTimer = setTimeout(renderLobby,170);
+      });
+      [els.winnerCount,els.maxNumber,els.requiredLines].forEach(control => {
+        control.addEventListener('change',() => { saveSettings(); renderLobby(); });
+      });
+      els.dynamicSort.addEventListener('change',() => {
+        storage.set('dynamic-sort',els.dynamicSort.checked);
+        if (state.boards.length) reorderBoards(sortedBoards());
+      });
+      els.startBtn.addEventListener('click',startGame);
+      els.resetBtn.addEventListener('click',resetGame);
+      els.soundBtn.addEventListener('click',() => {
+        sound.enabled = !sound.enabled;
+        storage.set('sound',sound.enabled);
+        setSoundUi();
+        if (sound.enabled) { sound.init(); sound.tone(640,.1); }
+      });
+      els.helpBtn.addEventListener('click',() => els.helpDialog.showModal());
+      els.helpCloseBtn.addEventListener('click',() => els.helpDialog.close());
+      els.helpDialog.addEventListener('click',event => { if (event.target === els.helpDialog) els.helpDialog.close(); });
+      els.resultCloseBtn.addEventListener('click',() => {
+        els.resultOverlay.classList.remove('show');
+        stopCelebration();
+      });
+      els.copyResultBtn.addEventListener('click',copyResult);
+      els.resultCopyBtn.addEventListener('click',copyResult);
+      let resizeTimer = 0;
+      addEventListener('resize',() => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          resizeCosmicCanvas();
+          if (els.celebrationCanvas.style.display === 'block') resizeCelebrationCanvas();
+        },100);
+      },{ passive:true });
+      document.addEventListener('visibilitychange',() => {
+        if (!document.hidden) state.lastTimestamp = 0;
+      });
+
+      if (QA_MODE) {
+        window.__BINGO_QA__ = {
+          start:startGame,
+          reset:resetGame,
+          snapshot:() => ({
+            running:state.running,phase:state.phase,
+            winners:state.winners.map(board => ({ id:board.id,label:board.label,rank:board.winnerRank })),
+            called:[...state.called],simulatedMs:state.simulatedMs,audit:structuredClone(state.audit),
+            boards:state.boards.map(board => ({
+              id:board.id,label:board.label,grid:board.grid.flat(),checkedCount:board.checkedCount,
+              lines:board.lines,winnerRank:board.winnerRank
+            })),
+            pendingTimers:state.pending.size,resultOpen:els.resultOverlay.classList.contains('show'),
+            overflowX:document.documentElement.scrollWidth - document.documentElement.clientWidth
+          })
+        };
+      }
+      restoreSettings();
+      setSoundUi();
+      renderHistory();
+      renderLobby();
+      startCosmicAnimation();
+    })();
   </script>
 </body>
 </html>
