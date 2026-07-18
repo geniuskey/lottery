@@ -29,7 +29,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
@@ -107,8 +107,8 @@
 
         /* Sidebar */
         .sidebar {
-            width: 280px;
-            min-width: 280px;
+            width: 336px;
+            min-width: 336px;
             background: linear-gradient(180deg, rgba(8, 13, 31, 0.98), rgba(28, 10, 39, 0.98));
             border-right: 1px solid var(--glass-border);
             display: flex;
@@ -208,7 +208,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s, visibility 0.2s;
         }
 
         .help-btn:hover, .sound-btn:hover {
@@ -305,7 +305,7 @@
             font-size: 0.9rem;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s, visibility 0.2s;
         }
 
         .btn-primary {
@@ -398,7 +398,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.2s, visibility 0.2s;
             text-decoration: none;
         }
 
@@ -520,7 +520,7 @@
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.3s, visibility 0.3s;
         }
 
         .modal.show { opacity: 1; visibility: visible; }
@@ -576,7 +576,7 @@
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.5s;
+            transition: color 0.5s, background-color 0.5s, border-color 0.5s, box-shadow 0.5s, opacity 0.5s, transform 0.5s, visibility 0.5s;
         }
 
         .winner-overlay.show { opacity: 1; visibility: visible; }
@@ -635,7 +635,7 @@
         ::-webkit-scrollbar-thumb {
             background: rgba(145, 126, 255, 0.3);
             border-radius: 10px;
-            transition: all 0.3s;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.3s, visibility 0.3s;
         }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent-green); }
 
@@ -656,7 +656,7 @@
 
         @media (max-width: 768px) {
             body { overflow-y: auto; height: auto; }
-            .container { flex-direction: column-reverse; height: auto; padding: 0; gap: 0; }
+            .container { flex-direction: column; height: auto; padding: 0; gap: 0; }
             .sidebar {
                 width: 100%;
                 min-width: unset;
@@ -2099,7 +2099,12 @@ document.addEventListener('DOMContentLoaded', () => {
         game.setParticipants(participants);
         try {
             const started = await game.start();
-            if (started) window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (started && window.innerWidth <= 768) requestAnimationFrame(() => {
+                document.querySelector('.game-area')?.scrollIntoView({
+                    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                    block: 'start'
+                });
+            });
         } catch (error) {
             console.error(error); game.stop(); showToast('게임을 시작하지 못했습니다.');
         }
