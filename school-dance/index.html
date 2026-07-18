@@ -1572,20 +1572,55 @@
     .bulletin-board span { padding: 3px 10px; border-radius: 2px; background: #fff8dd; color: #b64f43; font-size: .63rem; font-weight: 900; box-shadow: 1px 2px 3px rgba(0,0,0,.12); }
     .bulletin-board b { font-size: clamp(.58rem, 1vw, .78rem); line-height: 1.45; }
 
-    .students-area { top: 34%; left: 5%; right: 5%; height: 43%; gap: clamp(14px, 3vh, 28px); align-content: start; }
+    /* Keep the classroom depth readable: board, teacher, then students. */
+    .students-area {
+      top: 56%;
+      bottom: 3%;
+      left: 5%;
+      right: 5%;
+      height: auto;
+      gap: clamp(10px, 2vh, 18px);
+      align-content: start;
+    }
     .student { width: 86px; height: 116px; filter: drop-shadow(0 10px 9px rgba(0,0,0,.25)); }
-    .students-area[data-density="medium"] { gap: 8px 12px; }
-    .students-area[data-density="medium"] .student { width: 75px; height: 98px; transform: scale(.82); transform-origin: top center; }
-    .students-area[data-density="high"] { top: 31%; gap: 3px 7px; }
-    .students-area[data-density="high"] .student { width: 68px; height: 84px; transform: scale(.68); transform-origin: top center; }
+    .students-area[data-density="medium"] { top: 53%; gap: clamp(4px, 1vh, 9px) 12px; }
+    .students-area[data-density="medium"] .student { width: 75px; height: clamp(72px, 9vh, 88px); transform: scale(.82); transform-origin: top center; }
+    .students-area[data-density="high"] { top: 51%; gap: clamp(2px, .55vh, 5px) 7px; }
+    .students-area[data-density="high"] .student { width: 68px; height: clamp(54px, 7vh, 64px); transform: scale(.68); transform-origin: top center; }
     .student-name { background: rgba(22,65,56,.88); border: 1px solid rgba(255,255,255,.18); border-radius: 6px; }
     .desk-top { background: linear-gradient(#e8b86f,#bd7547); border-color: #9f5a35; box-shadow: 0 3px 8px rgba(0,0,0,.35); }
     .desk-leg { background: #76402f; }
-    .bottom-stage { height: 18%; background: transparent; border-top: 0; z-index: 500; }
+    .bottom-stage { top: 32%; bottom: auto; height: 150px; background: transparent; border-top: 0; z-index: 500; }
     .bottom-stage::before { content: ''; position: absolute; left: 50%; bottom: 0; width: min(34%, 340px); height: 14px; transform: translateX(-50%); border: 3px solid #7e4d2c; border-bottom: 0; border-radius: 5px 5px 0 0; background: #b87b43; box-shadow: 0 -4px 10px rgba(82,48,25,.18); }
-    .teacher-container { top: -82px; filter: drop-shadow(0 15px 12px rgba(0,0,0,.4)); }
+    .teacher-container { top: 0; left: 52%; filter: drop-shadow(0 15px 12px rgba(0,0,0,.4)); }
     .t-body, .t-arm, .t-forearm { background: linear-gradient(145deg,#3d5d69,#243e4b); }
-    .speech-bubble { bottom: 23%; background: rgba(255,253,244,.97); border: 2px solid rgba(59,111,94,.22); box-shadow: 0 15px 45px rgba(73,51,31,.28); }
+    .speech-bubble {
+      top: 32%;
+      bottom: auto;
+      left: calc(52% + 70px);
+      width: clamp(250px, 27vw, 360px);
+      min-width: 0;
+      max-width: calc(48% - 80px);
+      transform: none;
+      padding: 12px 18px;
+      background: rgba(255,253,244,.97);
+      border: 2px solid rgba(59,111,94,.22);
+      box-shadow: 0 15px 45px rgba(73,51,31,.28);
+      font-size: clamp(.9rem, 1.4vw, 1.25rem);
+      line-height: 1.45;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+    .speech-bubble::after {
+      top: 18px;
+      bottom: auto;
+      left: -15px;
+      transform: none;
+      border-top: 12px solid transparent;
+      border-right: 15px solid rgba(255,253,244,.97);
+      border-bottom: 12px solid transparent;
+      border-left: 0;
+    }
     .round-counter { top: 16px; background: rgba(20,70,59,.88); border-color: rgba(255,236,172,.4); }
     .phase-banner {
       position: absolute; left: 50%; top: 58px; transform: translateX(-50%) translateY(-10px); z-index: 1200;
@@ -1624,11 +1659,25 @@
       .chalkboard { left: 50%; top: 6%; width: 88%; height: 21%; min-height: 115px; border-width: 8px; }
       .ceiling-light { left: 50%; width: 145px; }
       .wall-clock { right: 3%; top: 29%; width: 38px; border-width: 4px; }
-      .students-area { top: 32%; left: 2%; right: 2%; height: 46%; gap: 12px 5px; }
+      .students-area { top: 55%; bottom: 2%; left: 2%; right: 2%; height: auto; gap: 10px 5px; }
+      .students-area[data-density="medium"] { top: 52%; }
+      .students-area[data-density="high"] { top: 50%; }
       .student { width: 70px; height: 105px; transform: scale(.84); transform-origin: top center; }
       .student.dancing { --x-off: 23px; --y-off: -14px; }
-      .teacher-container { top: -63px; }
-      .speech-bubble { bottom: 22%; width: min(88%, 380px); padding: 12px 15px; }
+      .bottom-stage { top: 31%; height: 105px; }
+      .bottom-stage::before { left: 50%; }
+      .teacher-container { top: 0; left: 50%; }
+      .speech-bubble {
+        top: 28.5%;
+        bottom: auto;
+        left: calc(50% + 43px);
+        width: calc(50% - 54px);
+        max-width: none;
+        padding: 9px 10px;
+        font-size: .78rem;
+        line-height: 1.35;
+      }
+      .speech-bubble::after { top: 20px; }
       .phase-banner { top: 52px; width: max-content; max-width: 92%; text-align: center; }
       .certificate { width: 92%; padding: 26px 20px; border-width: 8px; max-height: 88vh; overflow-y: auto; }
       .cert-title { font-size: 2rem; letter-spacing: 9px; margin-bottom: 20px; }
