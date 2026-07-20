@@ -9,9 +9,9 @@
   "features": ["정밀 포인터 판정", "다중 당첨", "매회 랜덤 회전", "회전 기록"],
   "tags": ["룰렛", "추첨", "행운", "이벤트", "랜덤"],
   "color": "purple",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "created": "2025-12-23",
-  "updated": "2026-07-17",
+  "updated": "2026-07-20",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -19,8 +19,8 @@
   },
   "requirements": {
     "minParticipants": 2,
-    "maxParticipants": 24,
-    "recommendedParticipants": "4-16"
+    "maxParticipants": 400,
+    "recommendedParticipants": "4-60"
   },
   "settings": {
     "winnerCount": true,
@@ -646,8 +646,8 @@
 
     <label class="field">
       <span class="field-label">참가자 <small>이름*인원 지원</small></span>
-      <textarea id="participants" maxlength="1600" spellcheck="false" aria-describedby="participantHint">영수, 영호, 영식, 영철, 광수, 상철</textarea>
-      <span class="input-meta" id="participantHint"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 24</strong></span>
+      <textarea id="participants" maxlength="8000" spellcheck="false" aria-describedby="participantHint">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+      <span class="input-meta" id="participantHint"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 400</strong></span>
     </label>
 
     <section class="settings-card" aria-label="세부 설정">
@@ -754,8 +754,9 @@
   <script>
     (() => {
       'use strict';
-      const GAME_VERSION = '1.1.0';
-      const MAX_PARTICIPANTS = 24;
+      const GAME_VERSION = '1.2.0';
+      const MAX_PARTICIPANTS = 400;
+      const LABEL_LIMIT = 60;
       const MAX_NAME_LENGTH = 32;
       const STORAGE_PREFIX = 'playpick-roulette-';
       const QA_MODE = new URLSearchParams(location.search).has('qa');
@@ -991,6 +992,8 @@
           return;
         }
         const slice = TAU / players.length;
+        const showLabels = players.length <= LABEL_LIMIT;
+        const showDividers = players.length <= 120;
         players.forEach((player,index) => {
           const start = -Math.PI / 2 + index * slice;
           const end = start + slice;
@@ -1006,9 +1009,12 @@
           context.closePath();
           context.fillStyle = gradient;
           context.fill();
-          context.strokeStyle = 'rgba(255,226,139,.82)';
-          context.lineWidth = Math.max(1.4,size * .004);
-          context.stroke();
+          if (showDividers) {
+            context.strokeStyle = 'rgba(255,226,139,.82)';
+            context.lineWidth = Math.max(1.4,size * .004);
+            context.stroke();
+          }
+          if (!showLabels) return;
 
           const middle = start + slice / 2;
           context.save();
@@ -1076,6 +1082,10 @@
         state.simulatedMs += duration;
         const realDuration = Math.max(1,duration * REAL_MOTION_SCALE);
         let lastIndex = pointerIndex(startRotation,contestantCount);
+        // With many slices the pointer crosses hundreds of segments per second;
+        // throttle the tick feedback so it stays a ratchet, not a machine gun.
+        const minTickGap = contestantCount > 40 ? 45 : 0;
+        let lastTickAt = -Infinity;
         return new Promise(resolve => {
           const started = performance.now();
           state.animationResolve = resolve;
@@ -1093,7 +1103,10 @@
             const index = pointerIndex(rotation,contestantCount);
             if (index !== lastIndex) {
               lastIndex = index;
-              tickPointer();
+              if (timestamp - lastTickAt >= minTickGap) {
+                lastTickAt = timestamp;
+                tickPointer();
+              }
             }
             if (progress < 1) {
               state.animationFrame = requestAnimationFrame(frame);
