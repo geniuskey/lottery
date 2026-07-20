@@ -6,10 +6,10 @@
   "emoji": "🎡",
   "category": "classic",
   "description": "황금 포인터와 네온 휠로 여러 당첨자를 무작위로 선정하는 룰렛",
-  "features": ["정밀 포인터 판정", "다중 당첨", "매회 랜덤 회전", "회전 기록"],
+  "features": ["정밀 포인터 판정", "최대 999명 조각 이름 표시", "고밀도 성능 최적화", "다중 당첨", "매회 랜덤 회전", "회전 기록"],
   "tags": ["룰렛", "추첨", "행운", "이벤트", "랜덤"],
   "color": "purple",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "created": "2025-12-23",
   "updated": "2026-07-20",
   "author": {
@@ -19,8 +19,8 @@
   },
   "requirements": {
     "minParticipants": 2,
-    "maxParticipants": 400,
-    "recommendedParticipants": "4-60"
+    "maxParticipants": 999,
+    "recommendedParticipants": "4-300"
   },
   "settings": {
     "winnerCount": true,
@@ -312,7 +312,7 @@
     .hud-stat span { color: var(--muted); font-size: .57rem; letter-spacing: .08em; }
     .wheel-stage {
       position: absolute;
-      inset: 92px 18px 76px;
+      inset: 72px 4px 30px;
       display: grid;
       place-items: center;
       z-index: 3;
@@ -322,7 +322,9 @@
       width: var(--wheel-size,650px);
       height: var(--wheel-size,650px);
       filter: drop-shadow(0 28px 40px rgba(0,0,0,.5));
+      contain: layout style;
     }
+    .wheel-machine.spinning { filter: none; }
     .wheel-glow {
       position: absolute;
       inset: -6%;
@@ -354,6 +356,8 @@
       border-radius: 50%;
       transform: rotate(0rad);
       will-change: transform;
+      backface-visibility: hidden;
+      contain: strict;
     }
     .studs { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
     .stud {
@@ -398,8 +402,6 @@
       background: radial-gradient(circle at 35% 28%,#fff3af,#f2a937 54%,#a5581d);
       transform: translateX(-50%);
     }
-    .wheel-pointer.tick { animation: pointer-tick .12s cubic-bezier(.2,.9,.3,1); }
-    @keyframes pointer-tick { 50% { transform: translateX(-50%) rotate(8deg) translateY(4px); } }
     .wheel-hub {
       position: absolute;
       left: 50%;
@@ -414,6 +416,47 @@
       box-shadow: 0 0 0 5px #492078,0 10px 25px rgba(0,0,0,.48),0 0 25px rgba(255,212,90,.42);
       transform: translate(-50%,-50%);
     }
+    .wheel-focus {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 9;
+      width: min(62%,360px);
+      min-height: 74px;
+      display: grid;
+      place-content: center;
+      gap: 3px;
+      padding: 10px 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,231,151,.72);
+      border-radius: 18px;
+      color: #fff;
+      background: linear-gradient(145deg,rgba(36,25,78,.94),rgba(8,7,31,.94));
+      box-shadow: 0 10px 28px rgba(0,0,0,.48),0 0 24px rgba(255,212,90,.17),inset 0 1px rgba(255,255,255,.14);
+      text-align: center;
+      transform: translate(-50%,-50%);
+      pointer-events: none;
+      backdrop-filter: blur(10px);
+    }
+    .wheel-focus-label { color: var(--cyan); font: 950 .58rem ui-monospace,monospace; letter-spacing: .16em; }
+    .wheel-focus-name {
+      display: -webkit-box;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      color: #fff3bd;
+      font-size: clamp(.8rem,2vw,1.12rem);
+      line-height: 1.18;
+      text-shadow: 0 2px 8px rgba(0,0,0,.72);
+    }
+    .wheel-focus-position { color: var(--muted); font: 800 .58rem ui-monospace,monospace; }
+    .wheel-machine.high-density .wheel-focus {
+      border-color: rgba(66,220,255,.75);
+      box-shadow: 0 10px 30px rgba(0,0,0,.5),0 0 32px rgba(66,220,255,.2),inset 0 1px rgba(255,255,255,.14);
+      backdrop-filter: none;
+    }
+    .wheel-machine.high-density.spinning .wheel-glow { animation-play-state: paused; filter: blur(10px); opacity: .5; }
     .wheel-base {
       position: absolute;
       left: 50%;
@@ -465,7 +508,7 @@
       left: 50%;
       bottom: 19px;
       z-index: 10;
-      min-width: min(540px,66%);
+      width: min(620px,calc(100% - 38px));
       padding: 10px 18px;
       border: 1px solid rgba(255,255,255,.15);
       border-radius: 15px;
@@ -473,6 +516,7 @@
       background: rgba(7,6,27,.84);
       box-shadow: 0 12px 30px rgba(0,0,0,.34);
       text-align: center;
+      overflow-wrap: anywhere;
       transform: translateX(-50%);
     }
     .spin-reveal strong { color: var(--gold); font-size: 1rem; }
@@ -611,6 +655,7 @@
       .decor-b { right: 1%; }
       .decor-c { right: 1%; }
       .spin-reveal { bottom: 14px; min-width: calc(100% - 20px); padding: 9px 12px; }
+      .wheel-focus { width: 68%; min-height: 66px; padding: 8px 12px; }
       .copyright { display: none; }
     }
     @media (max-width: 390px) {
@@ -646,8 +691,8 @@
 
     <label class="field">
       <span class="field-label">참가자 <small>이름*인원 지원</small></span>
-      <textarea id="participants" maxlength="8000" spellcheck="false" aria-describedby="participantHint">영수, 영호, 영식, 영철, 광수, 상철</textarea>
-      <span class="input-meta" id="participantHint"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 400</strong></span>
+      <textarea id="participants" maxlength="40000" spellcheck="false" aria-describedby="participantHint">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+      <span class="input-meta" id="participantHint"><span>쉼표 또는 줄바꿈으로 구분 · 최대 999명</span><strong id="participantCount">6 / 999</strong></span>
     </label>
 
     <section class="settings-card" aria-label="세부 설정">
@@ -709,6 +754,11 @@
         <div class="studs" id="studs" aria-hidden="true"></div>
         <div class="wheel-pointer" id="wheelPointer" aria-hidden="true"></div>
         <div class="wheel-hub" aria-hidden="true"></div>
+        <div class="wheel-focus" id="wheelFocus">
+          <span class="wheel-focus-label">POINTER NOW</span>
+          <strong class="wheel-focus-name" id="wheelFocusName">참가자 대기</strong>
+          <span class="wheel-focus-position" id="wheelFocusPosition">0 / 0</span>
+        </div>
       </div>
     </section>
     <div class="spin-reveal" id="spinReveal">참가자를 확인한 뒤 룰렛을 돌려주세요</div>
@@ -745,6 +795,7 @@
         <li>한 번 시작하면 설정한 당첨자 수만큼 자동으로 연속 회전합니다.</li>
         <li>당첨자는 다음 회전에서 제외되어 중복 당첨되지 않습니다.</li>
         <li>각 회전은 포인터가 당첨 조각의 정중앙을 가리키도록 수학적으로 계산됩니다.</li>
+        <li>참가자가 많으면 이름을 여러 반경에 나눠 표시하는 고밀도 휠로 바뀌며, 포인터가 가리키는 전체 이름은 중앙과 하단에 크게 표시됩니다.</li>
       </ol>
       <div class="help-note">게임을 다시 시작할 때마다 당첨 순서와 정지 위치가 새롭게 무작위로 정해집니다.</div>
     </div>
@@ -754,14 +805,18 @@
   <script>
     (() => {
       'use strict';
-      const GAME_VERSION = '1.2.0';
-      const MAX_PARTICIPANTS = 400;
-      const LABEL_LIMIT = 60;
+      const GAME_VERSION = '1.3.0';
+      const MAX_PARTICIPANTS = 999;
       const MAX_NAME_LENGTH = 32;
+      const MAX_INLINE_LABELS = 48;
+      const MAX_LABEL_ROWS = 3;
+      const MIN_WHEEL_LABEL_FONT = 14;
+      const WHEEL_LABEL_FONT_WEIGHT = 850;
       const STORAGE_PREFIX = 'playpick-roulette-';
       const QA_MODE = new URLSearchParams(location.search).has('qa');
       const TIME_SCALE = QA_MODE ? .018 : 1;
-      const REAL_MOTION_SCALE = reducedMotionValue();
+      const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const REAL_MOTION_SCALE = QA_MODE ? TIME_SCALE : REDUCED_MOTION ? .16 : 1;
       const TAU = Math.PI * 2;
       const COLORS = ['#ff4f68','#42dcff','#ffd45a','#9c56ff','#4ff1a0','#ff4eb2','#4f72ff','#ff9447'];
       const byId = id => document.getElementById(id);
@@ -773,7 +828,8 @@
         gameArea:byId('gameArea'),arenaTitle:byId('arenaTitle'),arenaProof:byId('arenaProof'),
         spinNumber:byId('spinNumber'),winnerProgress:byId('winnerProgress'),
         wheelMachine:byId('wheelMachine'),wheelCanvas:byId('wheelCanvas'),studs:byId('studs'),
-        wheelPointer:byId('wheelPointer'),spinReveal:byId('spinReveal'),
+        wheelPointer:byId('wheelPointer'),wheelFocus:byId('wheelFocus'),
+        wheelFocusName:byId('wheelFocusName'),wheelFocusPosition:byId('wheelFocusPosition'),spinReveal:byId('spinReveal'),
         celebrationCanvas:byId('celebrationCanvas'),resultOverlay:byId('resultOverlay'),
         resultWinners:byId('resultWinners'),resultSpins:byId('resultSpins'),
         resultTurns:byId('resultTurns'),resultTime:byId('resultTime'),
@@ -784,12 +840,9 @@
         players:[],winners:[],audit:[],running:false,phase:'READY',
         rng:Math.random,targetWinners:1,durationMs:5000,rotation:0,
         simulatedMs:0,totalTurns:0,token:0,pending:new Map(),animationFrame:0,
-        animationResolve:null,inputTimer:0,toastTimer:0,celebrationFrame:0,lastResult:'',wheelPlayers:[]
+        animationResolve:null,inputTimer:0,toastTimer:0,celebrationFrame:0,lastResult:'',wheelPlayers:[],
+        wheelRenderKey:'',wheelPixelSize:0,pointerAnimation:null,lastPointerFeedback:0
       };
-      function reducedMotionValue() {
-        if (QA_MODE) return TIME_SCALE;
-        return matchMedia('(prefers-reduced-motion: reduce)').matches ? .16 : 1;
-      }
       const storage = {
         get(key,fallback='') { try { return localStorage.getItem(STORAGE_PREFIX + key) ?? fallback; } catch { return fallback; } },
         set(key,value) { try { localStorage.setItem(STORAGE_PREFIX + key,String(value)); } catch {} }
@@ -889,6 +942,8 @@
         state.animationFrame = 0;
         if (state.animationResolve) state.animationResolve(false);
         state.animationResolve = null;
+        state.pointerAnimation?.cancel();
+        els.wheelMachine.classList.remove('spinning');
       }
       function pause(duration,token) {
         state.simulatedMs += duration;
@@ -960,21 +1015,75 @@
         const rect = els.gameArea.getBoundingClientRect();
         const mobile = rect.width <= 760;
         return Math.floor(Math.max(250,Math.min(
-          rect.width * (mobile ? .88 : .69),
-          rect.height * (mobile ? .65 : .72),
-          720
+          rect.width * (mobile ? .99 : .86),
+          rect.height * (mobile ? .72 : .87),
+          880
         )));
       }
       function resizeWheel() {
         const size = wheelSize();
+        if (size === state.wheelPixelSize) return;
+        state.wheelPixelSize = size;
         els.wheelMachine.style.setProperty('--wheel-size',`${size}px`);
         buildStuds();
       }
+      function updateWheelFocus(players,index,updateReveal=false) {
+        const player = players[index];
+        if (!player) {
+          els.wheelFocusName.textContent = '참가자 대기';
+          els.wheelFocusPosition.textContent = '0 / 0';
+          return;
+        }
+        els.wheelFocusName.textContent = player.label;
+        els.wheelFocusPosition.textContent = `${index + 1} / ${players.length}`;
+        if (updateReveal) els.spinReveal.textContent = `포인터 후보 · ${player.label}`;
+      }
+      function drawWheelLabels(context,players,center,radius,size,slice,dpr) {
+        const rowCount = Math.min(MAX_LABEL_ROWS,players.length > 144 ? 3 : players.length > 72 ? 2 : 1);
+        const rowRadii = [radius * .93,radius * .75,radius * .57].slice(0,rowCount);
+        const rowAngle = slice * rowCount;
+        const narrowestRowWidth = Math.min(...rowRadii.map(rowRadius =>
+          2 * rowRadius * Math.tan(rowAngle / 2)
+        ));
+        const fittedFontSize = Math.min(
+          30,
+          size * .052,
+          narrowestRowWidth * .72
+        );
+        const usesMinimumFont = players.length > MAX_INLINE_LABELS;
+        const fontSize = usesMinimumFont
+          ? MIN_WHEEL_LABEL_FONT
+          : Math.max(MIN_WHEEL_LABEL_FONT,fittedFontSize);
+        context.font = `${WHEEL_LABEL_FONT_WEIGHT} ${fontSize}px Pretendard, sans-serif`;
+        context.textAlign = 'right';
+        context.textBaseline = 'middle';
+        context.fillStyle = players.length > 700 ? 'rgba(255,255,255,.76)' : '#fff';
+        context.shadowBlur = 0;
+        players.forEach((player,index) => {
+          const angle = -Math.PI / 2 + (index + .5) * slice;
+          const cosine = Math.cos(angle);
+          const sine = Math.sin(angle);
+          const row = index % rowCount;
+          const labelRadius = rowRadii[row];
+          context.setTransform(dpr * cosine,dpr * sine,-dpr * sine,dpr * cosine,center * dpr,center * dpr);
+          context.fillText(player.label,labelRadius,0);
+        });
+        context.setTransform(dpr,0,0,dpr,0,0);
+      }
       function drawWheel(players) {
         state.wheelPlayers = [...players];
+        const highDensity = players.length > MAX_INLINE_LABELS;
+        els.wheelMachine.classList.toggle('high-density',highDensity);
         const canvas = els.wheelCanvas;
         const size = wheelSize() * .91;
         const dpr = Math.min(devicePixelRatio || 1,2);
+        const labelRenderKey = `${MAX_INLINE_LABELS}:${MAX_LABEL_ROWS}:${MIN_WHEEL_LABEL_FONT}:${WHEEL_LABEL_FONT_WEIGHT}:93-75-57`;
+        const renderKey = `${size}|${dpr}|${labelRenderKey}|${players.map(player => `${player.id}:${player.label}`).join('\u0001')}`;
+        if (renderKey === state.wheelRenderKey) {
+          updateWheelFocus(players,pointerIndex(state.rotation,players.length));
+          return;
+        }
+        state.wheelRenderKey = renderKey;
         canvas.width = Math.round(size * dpr);
         canvas.height = Math.round(size * dpr);
         canvas.style.width = `${size}px`;
@@ -985,6 +1094,7 @@
         const center = size / 2;
         const radius = center - 3;
         if (!players.length) {
+          updateWheelFocus([],0);
           context.fillStyle = '#18143f';
           context.beginPath();
           context.arc(center,center,radius,0,TAU);
@@ -992,70 +1102,49 @@
           return;
         }
         const slice = TAU / players.length;
-        const showLabels = players.length <= LABEL_LIMIT;
-        const showDividers = players.length <= 120;
         players.forEach((player,index) => {
           const start = -Math.PI / 2 + index * slice;
           const end = start + slice;
-          const gradient = context.createRadialGradient(center,center,radius * .12,center,center,radius);
           const color = COLORS[player.id % COLORS.length];
-          gradient.addColorStop(0,'#fff0a4');
-          gradient.addColorStop(.12,color);
-          gradient.addColorStop(.68,color);
-          gradient.addColorStop(1,'#171033');
           context.beginPath();
           context.moveTo(center,center);
           context.arc(center,center,radius,start,end);
           context.closePath();
-          context.fillStyle = gradient;
+          if (highDensity) {
+            context.fillStyle = color;
+          } else {
+            const gradient = context.createRadialGradient(center,center,radius * .12,center,center,radius);
+            gradient.addColorStop(0,'#fff0a4');
+            gradient.addColorStop(.12,color);
+            gradient.addColorStop(.68,color);
+            gradient.addColorStop(1,'#171033');
+            context.fillStyle = gradient;
+          }
           context.fill();
-          if (showDividers) {
+          if (!highDensity) {
             context.strokeStyle = 'rgba(255,226,139,.82)';
             context.lineWidth = Math.max(1.4,size * .004);
             context.stroke();
           }
-          if (!showLabels) return;
-
-          const middle = start + slice / 2;
-          context.save();
-          context.translate(center,center);
-          context.rotate(middle);
-          const maxChars = players.length > 18 ? 6 : players.length > 12 ? 7 : 9;
-          const graphemes = Array.from(player.label);
-          const label = graphemes.length > maxChars
-            ? [...graphemes.slice(0,maxChars - 1),'…']
-            : graphemes;
-          const innerLabelRadius = radius * .31;
-          const outerLabelRadius = radius * .84;
-          const labelRadius = (innerLabelRadius + outerLabelRadius) / 2;
-          const radialSpace = outerLabelRadius - innerLabelRadius;
-          const sliceWidth = 2 * labelRadius * Math.tan(slice / 2);
-          const fontSize = Math.max(10,Math.min(
-            38,
-            size * .068,
-            sliceWidth * .72,
-            radialSpace / Math.max(1,label.length * 1.06)
-          ));
-          const lineHeight = fontSize * 1.06;
-          context.translate(labelRadius,0);
-          context.rotate(Math.PI / 2);
-          context.font = `900 ${fontSize}px Pretendard, sans-serif`;
-          context.textAlign = 'center';
-          context.textBaseline = 'middle';
-          context.fillStyle = '#fff';
-          context.shadowColor = 'rgba(0,0,0,.65)';
-          context.shadowBlur = 4;
-          label.forEach((character,characterIndex) => {
-            const offset = (characterIndex - (label.length - 1) / 2) * lineHeight;
-            context.fillText(character,0,offset);
-          });
-          context.restore();
         });
+        if (highDensity) {
+          const shade = context.createRadialGradient(center,center,radius * .1,center,center,radius);
+          shade.addColorStop(0,'rgba(255,240,164,.7)');
+          shade.addColorStop(.16,'rgba(255,255,255,.04)');
+          shade.addColorStop(.68,'rgba(0,0,0,0)');
+          shade.addColorStop(1,'rgba(11,7,36,.72)');
+          context.fillStyle = shade;
+          context.beginPath();
+          context.arc(center,center,radius,0,TAU);
+          context.fill();
+        }
+        drawWheelLabels(context,players,center,radius,size,slice,dpr);
         context.strokeStyle = '#ffd45a';
         context.lineWidth = Math.max(4,size * .013);
         context.beginPath();
         context.arc(center,center,radius - context.lineWidth / 2,0,TAU);
         context.stroke();
+        updateWheelFocus(players,pointerIndex(state.rotation,players.length));
       }
       function pointerIndex(rotation,count) {
         if (!count) return -1;
@@ -1072,26 +1161,41 @@
         return startRotation + turns * TAU + delta;
       }
       function easeOutQuint(value) { return 1 - Math.pow(1 - value,5); }
-      function tickPointer() {
-        els.wheelPointer.classList.remove('tick');
-        void els.wheelPointer.offsetWidth;
-        els.wheelPointer.classList.add('tick');
+      function tickPointer(timestamp,contestantCount) {
+        const minimumInterval = contestantCount > 700 ? 90 : contestantCount > 350 ? 70 : contestantCount > 120 ? 52 : 30;
+        if (timestamp - state.lastPointerFeedback < minimumInterval) return;
+        state.lastPointerFeedback = timestamp;
+        if (!REDUCED_MOTION && els.wheelPointer.animate) {
+          if (!state.pointerAnimation) {
+            state.pointerAnimation = els.wheelPointer.animate([
+              { transform:'translateX(-50%) rotate(0deg) translateY(0)' },
+              { transform:'translateX(-50%) rotate(8deg) translateY(4px)',offset:.5 },
+              { transform:'translateX(-50%) rotate(0deg) translateY(0)' }
+            ],{ duration:120,easing:'cubic-bezier(.2,.9,.3,1)' });
+            state.pointerAnimation.pause();
+          }
+          state.pointerAnimation.currentTime = 0;
+          state.pointerAnimation.play();
+        }
         sound.tick();
       }
       function animateWheel(startRotation,endRotation,duration,contestantCount,token) {
         state.simulatedMs += duration;
         const realDuration = Math.max(1,duration * REAL_MOTION_SCALE);
-        let lastIndex = pointerIndex(startRotation,contestantCount);
-        // With many slices the pointer crosses hundreds of segments per second;
-        // throttle the tick feedback so it stays a ratchet, not a machine gun.
-        const minTickGap = contestantCount > 40 ? 45 : 0;
-        let lastTickAt = -Infinity;
+        let lastPointerIndex = pointerIndex(startRotation,contestantCount);
+        let displayedIndex = lastPointerIndex;
+        let lastFocusAt = 0;
+        const focusInterval = contestantCount > 700 ? 66 : contestantCount > 350 ? 50 : contestantCount > 120 ? 34 : 0;
+        updateWheelFocus(state.wheelPlayers,lastPointerIndex,true);
+        state.lastPointerFeedback = 0;
+        els.wheelMachine.classList.add('spinning');
         return new Promise(resolve => {
           const started = performance.now();
           state.animationResolve = resolve;
           const frame = timestamp => {
             if (token !== state.token) {
               state.animationResolve = null;
+              els.wheelMachine.classList.remove('spinning');
               resolve(false);
               return;
             }
@@ -1101,18 +1205,22 @@
             state.rotation = rotation;
             els.wheelCanvas.style.transform = `rotate(${rotation}rad)`;
             const index = pointerIndex(rotation,contestantCount);
-            if (index !== lastIndex) {
-              lastIndex = index;
-              if (timestamp - lastTickAt >= minTickGap) {
-                lastTickAt = timestamp;
-                tickPointer();
-              }
+            if (index !== lastPointerIndex) {
+              lastPointerIndex = index;
+              tickPointer(timestamp,contestantCount);
+            }
+            if (index !== displayedIndex && (timestamp - lastFocusAt >= focusInterval || progress > .985)) {
+              displayedIndex = index;
+              lastFocusAt = timestamp;
+              updateWheelFocus(state.wheelPlayers,index,true);
             }
             if (progress < 1) {
               state.animationFrame = requestAnimationFrame(frame);
             } else {
               state.rotation = endRotation;
               els.wheelCanvas.style.transform = `rotate(${endRotation}rad)`;
+              updateWheelFocus(state.wheelPlayers,pointerIndex(endRotation,contestantCount),true);
+              els.wheelMachine.classList.remove('spinning');
               state.animationFrame = 0;
               state.animationResolve = null;
               resolve(true);
