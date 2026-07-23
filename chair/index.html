@@ -1098,19 +1098,47 @@
             const alive = participants.filter(p => !p.eliminated);
             const log = document.getElementById('koLog');
             const messages = ["의자 없음! 🪑", "탈락! 💀", "아웃! 💨"];
-            
-            alive.forEach(p => {
-                if (!p.groupJoined) {
-                    p.eliminated = true;
-                    eliminatedParticipants.push(p.name);
 
-                    // Add to top-right log
-                    const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-                    const logItem = document.createElement('div');
-                    logItem.className = 'ko-log-item';
-                    logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${p.name}</span>: ${randomMsg}`;
-                    log.insertBefore(logItem, log.firstChild);
-                }
+            // 이번 라운드 생존자 목표 수: 의자 수만큼 살아남되, 최소 최종 우승자 수는 보장한다.
+            const targetSurvivors = Math.max(chairs.length, winnerCount);
+
+            // 참여자와 가장 가까운 의자까지의 거리
+            const nearestChairDist = (p) => {
+                let min = Infinity;
+                chairs.forEach(chair => {
+                    const dx = chair.x - p.body.position.x;
+                    const dy = chair.y - p.body.position.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < min) min = dist;
+                });
+                return min;
+            };
+
+            const survivors = alive.filter(p => p.groupJoined);
+            // 앉지 못한 참여자를 의자와 가까운 순으로 정렬
+            const notSeated = alive.filter(p => !p.groupJoined)
+                .sort((a, b) => nearestChairDist(a) - nearestChairDist(b));
+
+            // 앉은 사람이 목표 생존자 수보다 적으면(제한 시간 내 아무도 의자에
+            // 도달하지 못하는 경우 등) 의자에 가장 가까운 참여자부터 생존자로
+            // 승격시켜 최소 생존 인원을 보장한다. (1등이 선정되지 않는 문제 방지)
+            while (survivors.length < targetSurvivors && notSeated.length > 0) {
+                const promoted = notSeated.shift();
+                promoted.groupJoined = true;
+                survivors.push(promoted);
+            }
+
+            // 남은(앉지 못한) 참여자 탈락 처리
+            notSeated.forEach(p => {
+                p.eliminated = true;
+                eliminatedParticipants.push(p.name);
+
+                // Add to top-right log
+                const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+                const logItem = document.createElement('div');
+                logItem.className = 'ko-log-item';
+                logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${p.name}</span>: ${randomMsg}`;
+                log.insertBefore(logItem, log.firstChild);
             });
 
             // Keep only recent logs
