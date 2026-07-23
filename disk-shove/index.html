@@ -419,9 +419,9 @@
     </div>
 
     <div class="field">
-      <div class="field-head"><label for="participants">참가자</label><span>이름*인원 지원</span></div>
+      <div class="field-head"><label for="participants">참가자</label><span>최대 60명 · 이름*인원</span></div>
       <textarea id="participants" maxlength="1800" spellcheck="false">영수, 영호, 영식, 영철, 광수, 상철</textarea>
-      <div class="field-note"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 30</strong></div>
+      <div class="field-note"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 60</strong></div>
     </div>
 
     <div class="settings">
@@ -521,7 +521,7 @@
     (() => {
       'use strict';
       const GAME_VERSION = '1.2.2';
-      const MAX_PARTICIPANTS = 30;
+      const MAX_PARTICIPANTS = 60;
       const MAX_NAME_LENGTH = 30;
       const STORAGE_PREFIX = 'playpick-disk-shove-';
       const QA_MODE = new URLSearchParams(location.search).has('qa');

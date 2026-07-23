@@ -373,6 +373,21 @@
       backdrop-filter: blur(8px);
     }
     .card-badge.is-featured { background: rgba(255, 199, 95, .92); color: #211708; border-color: transparent; }
+    .card-limit-badge {
+      position: absolute;
+      top: 13px;
+      right: 13px;
+      z-index: 2;
+      padding: 6px 9px;
+      border: 1px solid rgba(94, 231, 247, .32);
+      border-radius: 999px;
+      background: rgba(7, 22, 32, .84);
+      color: #9cf5ff;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+      backdrop-filter: blur(8px);
+    }
     .card-content { padding: 18px 18px 20px; }
     .card-title-row { display: flex; align-items: start; justify-content: space-between; gap: 14px; }
     .card-title-row h3 { margin: 0; font-size: 19px; line-height: 1.35; letter-spacing: -.02em; }
@@ -520,91 +535,91 @@
 
     <section class="game-grid" aria-label="추첨 게임 목록">
       <a class="game-card" href="./pinball/" data-category="physics survival">
-        <figure class="card-media"><img src="./assets/thumbnails/pinball.webp" width="960" height="640" alt="" fetchpriority="high"><span class="card-badge is-featured">에디터 추천</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/pinball.webp" width="960" height="640" alt="" fetchpriority="high"><span class="card-badge is-featured">에디터 추천</span><span class="card-limit-badge">최대 60명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>핀볼 서바이벌</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>범퍼와 플리퍼 사이를 튕기며 마지막까지 버티는 짜릿한 핀볼 생존전.</p></div>
       </a>
       <a class="game-card" href="./neon-race/" data-category="race">
-        <figure class="card-media"><img src="./assets/thumbnails/neon-race.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge is-featured">스피드 추천</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/neon-race.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge is-featured">스피드 추천</span><span class="card-limit-badge">최대 60명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>네온 레이스</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>사이버 도시를 가로지르는 네온 머신들의 속도전. 마지막 역전까지 놓치지 마세요.</p></div>
       </a>
       <a class="game-card" href="./marble-olympics/" data-category="race physics">
-        <figure class="card-media"><img src="./assets/thumbnails/marble-olympics.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge is-featured">인기 레이스</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/marble-olympics.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge is-featured">인기 레이스</span><span class="card-limit-badge">최대 60명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>구슬 올림픽</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>다채로운 장애물 트랙을 질주하는 구슬들의 예측 불가 물리 레이스.</p></div>
       </a>
       <a class="game-card" href="./zombie-arena/" data-category="survival">
-        <figure class="card-media"><img src="./assets/thumbnails/zombie-arena.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">서바이벌</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/zombie-arena.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">서바이벌</span><span class="card-limit-badge">최대 60명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>좀비 아레나</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>점점 좁아지는 아레나에서 좀비를 피해 최후의 생존자를 가립니다.</p></div>
       </a>
       <a class="game-card" href="./school-dance/" data-category="party survival">
-        <figure class="card-media"><img src="./assets/thumbnails/school-dance.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">파티</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/school-dance.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">파티</span><span class="card-limit-badge">최대 36명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>교실에서 춤을!</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>선생님이 뒤돌아보기 전에 멈춰야 합니다. 들키면 바로 탈락!</p></div>
       </a>
       <a class="game-card" href="./group-rps/" data-category="party classic">
-        <figure class="card-media"><img src="./assets/thumbnails/group-rps.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">단체전</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/group-rps.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">단체전</span><span class="card-limit-badge">최대 400명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>단체 가위바위보</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>많은 인원도 빠르고 직관적으로. 한 번의 선택으로 승부가 갈립니다.</p></div>
       </a>
       <a class="game-card" href="./bingo/" data-category="classic">
-        <figure class="card-media"><img src="./assets/thumbnails/bingo.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">클래식</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/bingo.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">클래식</span><span class="card-limit-badge">최대 100명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>빙고</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>익숙한 빙고를 화려한 실시간 순위 경쟁으로 새롭게 즐겨보세요.</p></div>
       </a>
       <a class="game-card" href="./bomb/" data-category="party survival">
-        <figure class="card-media"><img src="./assets/thumbnails/bomb.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">긴장감</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/bomb.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">긴장감</span><span class="card-limit-badge">최대 36명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>폭탄 돌리기</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>언제 터질지 모르는 폭탄이 손에서 손으로. 마지막 순간의 반전을 지켜보세요.</p></div>
       </a>
       <a class="game-card" href="./roulette/" data-category="classic">
-        <figure class="card-media"><img src="./assets/thumbnails/roulette.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">빠른 추첨</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/roulette.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">빠른 추첨</span><span class="card-limit-badge">최대 400명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>룰렛 추첨</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>돌리고 기다리면 끝. 모두에게 익숙한 룰렛으로 행운의 주인공을 선정하세요.</p></div>
       </a>
       <a class="game-card" href="./disk-shove/" data-category="physics survival">
-        <figure class="card-media"><img src="./assets/thumbnails/disk-shove.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">물리 배틀</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/disk-shove.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">물리 배틀</span><span class="card-limit-badge">최대 60명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>원판 밀치기</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>부스터로 상대를 아레나 밖으로 밀어내는 충돌과 반동의 생존 대결.</p></div>
       </a>
       <a class="game-card" href="./chaser-survival/" data-category="survival">
-        <figure class="card-media"><img src="./assets/thumbnails/chaser-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">추격전</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/chaser-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">추격전</span><span class="card-limit-badge">최대 60명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>술래로부터 살아남기</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>쉴 틈 없이 따라붙는 술래를 피해 마지막 생존자가 되어보세요.</p></div>
       </a>
       <a class="game-card" href="./devil-survival/" data-category="survival">
-        <figure class="card-media"><img src="./assets/thumbnails/devil-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">돌진 회피</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/devil-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">돌진 회피</span><span class="card-limit-badge">최대 60명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>악마로부터 살아남기</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>무서운 속도로 돌진하는 악마의 궤적을 읽고 끝까지 피하세요.</p></div>
       </a>
       <a class="game-card" href="./ufo-abduction/" data-category="survival">
-        <figure class="card-media"><img src="./assets/thumbnails/ufo-abduction.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">SF 서바이벌</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/ufo-abduction.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">SF 서바이벌</span><span class="card-limit-badge">최대 100명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>UFO 납치</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>하늘을 훑는 트랙터 빔을 피해 외계 행성의 마지막 생존자를 가립니다.</p></div>
       </a>
       <a class="game-card" href="./space-race/" data-category="race">
-        <figure class="card-media"><img src="./assets/thumbnails/space-race.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">우주 레이스</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/space-race.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">우주 레이스</span><span class="card-limit-badge">최대 36명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>우주 경주</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>소행성 사이를 파고드는 우주선들의 아슬아슬한 결승선 경쟁.</p></div>
       </a>
       <a class="game-card" href="./balloon-survival/" data-category="survival">
-        <figure class="card-media"><img src="./assets/thumbnails/balloon-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">가벼운 추첨</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/balloon-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">가벼운 추첨</span><span class="card-limit-badge">최대 60명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>풍선 서바이벌</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>하늘의 풍선이 하나씩 팡! 마지막까지 떠 있는 풍선이 승리합니다.</p></div>
       </a>
       <a class="game-card" href="./dart-tournament/" data-category="physics party">
-        <figure class="card-media"><img src="./assets/thumbnails/dart-tournament.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">점수 대결</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/dart-tournament.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">점수 대결</span><span class="card-limit-badge">최대 100명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>다트 토너먼트</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>과녁을 향해 날아가는 다트. 가장 높은 점수를 기록한 참가자가 우승합니다.</p></div>
       </a>
       <a class="game-card" href="./punch-survival/" data-category="survival physics">
-        <figure class="card-media"><img src="./assets/thumbnails/punch-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">난타전</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/punch-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">난타전</span><span class="card-limit-badge">최대 36명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>펀치 서바이벌</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>링 위에서 주고받는 통쾌한 펀치. 체력을 지키며 최후까지 버텨보세요.</p></div>
       </a>
       <a class="game-card" href="./chair/" data-category="party survival">
-        <figure class="card-media"><img src="./assets/thumbnails/chair.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">파티 클래식</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/chair.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">파티 클래식</span><span class="card-limit-badge">최대 60명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>의자 앉기</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>음악이 멈추는 순간 하나뿐인 의자를 차지해야 하는 추억의 생존 게임.</p></div>
       </a>
       <a class="game-card" href="./gravity-orbit/" data-category="physics survival">
-        <figure class="card-media"><img src="./assets/thumbnails/gravity-orbit.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">중력 물리</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/gravity-orbit.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">중력 물리</span><span class="card-limit-badge">최대 100명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>중력 궤도</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>끊임없이 변하는 중력장 안에서 안정적인 궤도를 찾는 우주 생존 드라마.</p></div>
       </a>
       <a class="game-card" href="./chestnut-survival/" data-category="survival physics">
-        <figure class="card-media"><img src="./assets/thumbnails/chestnut-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">회피 액션</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/chestnut-survival.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">회피 액션</span><span class="card-limit-badge">최대 60명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>밤송이 서바이벌</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>하늘에서 쏟아지는 밤송이의 낙하지점을 읽고 재빠르게 피하세요.</p></div>
       </a>
       <a class="game-card" href="./bowling/" data-category="survival physics">
-        <figure class="card-media"><img src="./assets/thumbnails/bowling.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">이색 서바이벌</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/bowling.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">이색 서바이벌</span><span class="card-limit-badge">최대 36명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>볼링 생존</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>이번에는 핀이 되어 굴러오는 볼링공을 피하는 유쾌한 역발상 생존전.</p></div>
       </a>
       <a class="game-card" href="./ladder/" data-category="classic">
-        <figure class="card-media"><img src="./assets/thumbnails/ladder.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">클래식 추첨</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/ladder.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">클래식 추첨</span><span class="card-limit-badge">최대 36명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>사다리 추첨</h3><span class="card-arrow" aria-hidden="true">↗</span></div><p>갈림길을 따라 내려가며 결과를 확인하는 가장 익숙하고 명쾌한 추첨 방식.</p></div>
       </a>
     </section>

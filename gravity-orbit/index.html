@@ -1000,8 +1000,8 @@
             </div>
 
             <div class="section">
-                <label class="section-title" for="participantsInput">참여자 명단</label>
-                <textarea id="participantsInput" name="participants" autocomplete="off" placeholder="이름을 입력하세요 (쉼표 또는 줄바꿈)&#10;예: 김철수, 이영희*3, 박민수"></textarea>
+                <label class="section-title" for="participantsInput">참여자 명단 <small style="color:rgba(255,255,255,.55)">· 최대 100명</small></label>
+                <textarea id="participantsInput" name="participants" maxlength="5000" autocomplete="off" placeholder="이름을 입력하세요 (쉼표 또는 줄바꿈)&#10;예: 김철수, 이영희*3, 박민수"></textarea>
             </div>
 
             <div class="section" style="display: none;">
@@ -1103,6 +1103,8 @@
     </div>
 
     <script>
+        const MAX_PARTICIPANTS = 100;
+
         /**
          * 0. Audio Engine
          */
@@ -1547,10 +1549,11 @@
                 const names = input.split(/[,\n]/).map(n => n.trim()).filter(n => n);
                 const result = [];
                 for (const name of names) {
+                    if (result.length >= MAX_PARTICIPANTS) break;
                     const match = name.match(/^(.+)\*(\d+)$/);
                     if (match) {
                         const baseName = match[1].trim();
-                        const count = Math.min(parseInt(match[2]), 100);
+                        const count = Math.min(parseInt(match[2]), MAX_PARTICIPANTS - result.length);
                         for (let i = 0; i < count; i++) result.push(baseName);
                     } else {
                         result.push(name);

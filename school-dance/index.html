@@ -1699,7 +1699,7 @@
     <div class="settings-group">
       <label for="participants">참여자</label>
       <textarea id="participants" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)\n예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
-      <div class="participant-hint">쉼표 또는 줄바꿈으로 구분 · MAX 30</div>
+      <div class="participant-hint">쉼표 또는 줄바꿈으로 구분 · 최대 36명</div>
     </div>
 
     <div class="settings-group">
@@ -1832,7 +1832,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const MAX_PARTICIPANTS = 30;
+    const MAX_PARTICIPANTS = 36;
     const TIMING_SCALE = new URLSearchParams(location.search).has('qa') ? 0.025 : 1;
     let activeOutcomeRandom = Math.random;
     let activeVisualRandom = Math.random;
@@ -2428,7 +2428,7 @@
       clearTimeout(inputPreviewTimer);
       const names = parseParticipants(pInput.value);
       const winnerCount = Number(wCount.value);
-      if (names.truncated) showToast('참여자는 최대 30명까지 등록됩니다.');
+      if (names.truncated) showToast('참여자는 최대 36명까지 등록됩니다.');
       if (names.length < 2 || names.length <= winnerCount) {
         alert('참여자가 생존자 수보다 많아야 합니다!');
         return;

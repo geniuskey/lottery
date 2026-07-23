@@ -695,7 +695,7 @@
                 <div class="section">
                     <label class="section-title" for="participants" data-i18n="participants">참여자 명단</label>
                     <textarea class="participants-input" id="participants" data-placeholder-i18n="participantsPlaceholder" placeholder="이름을 입력하세요 (줄바꿈 또는 쉼표)&#10;예: 철수, 영희*3, 민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
-                    <div class="hint"><span data-i18n="hint">쉼표 또는 줄바꿈으로 구분</span> · MAX 30</div>
+                    <div class="hint"><span data-i18n="hint">쉼표 또는 줄바꿈으로 구분</span> · 최대 60명</div>
                 </div>
                 <div class="section">
                     <div class="slider-group">
@@ -783,7 +783,7 @@
  * ------------------------------------------------------------
  */
 
-const MAX_PARTICIPANTS = 30;
+const MAX_PARTICIPANTS = 60;
 const FIXED_DT = 1 / 60;
 let activePhysicsRandom = Math.random;
 
@@ -921,7 +921,7 @@ const i18n = {
         title: '좀비 아레나', participants: '참여자 명단',
         participantsPlaceholder: '이름을 입력하세요\n예: 철수, 영희, 민수',
         hint: '쉼표 또는 줄바꿈으로 구분', initialZombies: '🧟 초기 좀비 수',
-        maxParticipants: '참여자는 최대 30명까지 등록할 수 있습니다.',
+        maxParticipants: '참여자는 최대 60명까지 등록할 수 있습니다.',
         survivors: '🏆 최종 생존자 수', start: '🎮 시작', infectionOrder: '🏆 감염 순서',
         rankingPlaceholder: '게임을 시작하면<br>감염 순서가 표시됩니다',
         copyResult: '결과 복사', github: 'GitHub 저장소', coffee: '개발자에게 커피 사주기 ☕',
@@ -948,7 +948,7 @@ const i18n = {
         title: 'Zombie Arena', participants: 'Participants',
         participantsPlaceholder: 'Enter names\nEx: John, Jane, Mike',
         hint: 'Separate by comma or newline', initialZombies: '🧟 Initial Zombies',
-        maxParticipants: 'You can register up to 30 participants.',
+        maxParticipants: 'You can register up to 60 participants.',
         survivors: '🏆 Final Survivors', start: '🎮 Start', infectionOrder: '🏆 Infection Order',
         rankingPlaceholder: 'Start the game to see<br>the infection order',
         copyResult: 'Copy Result', github: 'GitHub Repository', coffee: 'Buy Developer a Coffee ☕',
@@ -975,7 +975,7 @@ const i18n = {
         title: '僵尸竞技场', participants: '参与者名单',
         participantsPlaceholder: '输入姓名\n例：小明，小红，小刚',
         hint: '用逗号或换行分隔', initialZombies: '🧟 初始僵尸数',
-        maxParticipants: '最多可登记30名参与者。',
+        maxParticipants: '最多可登记60名参与者。',
         survivors: '🏆 最终幸存者数', start: '🎮 开始', infectionOrder: '🏆 感染顺序',
         rankingPlaceholder: '开始游戏后<br>将显示感染顺序',
         copyResult: '复制结果', github: 'GitHub 仓库', coffee: '请开发者喝咖啡 ☕',

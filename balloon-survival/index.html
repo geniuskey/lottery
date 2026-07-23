@@ -53,7 +53,7 @@
 <div class="shell">
   <aside class="panel" aria-label="게임 설정">
     <div class="brand-row"><div class="brand"><div class="brand-icon">🎈</div><div><small>PLAYPICK SKYFEST</small><h1>미드나잇 벌룬</h1></div></div><div class="actions"><button class="icon" id="sound" type="button" aria-label="소리 끄기">🔊</button><button class="icon" id="helpButton" type="button" aria-label="도움말">?</button></div></div>
-    <div class="field"><div class="field-head"><label for="participants">열기구 조종사</label><span>이름*인원 지원</span></div><textarea id="participants" maxlength="1400" spellcheck="false">영수, 영호, 영식, 영철, 광수, 상철</textarea><div class="field-note"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="count">6 / 20</strong></div></div>
+    <div class="field"><div class="field-head"><label for="participants">열기구 조종사</label><span>최대 60명 · 이름*인원</span></div><textarea id="participants" maxlength="3000" spellcheck="false">영수, 영호, 영식, 영철, 광수, 상철</textarea><div class="field-note"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="count">6 / 60</strong></div></div>
     <div class="settings"><div class="setting"><label for="winnerCount">🏆 생존자 수</label><select id="winnerCount"><option value="1" selected>1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option><option value="5">5명</option></select></div><div class="setting"><label for="wind">💨 밤바람</label><select id="wind"><option value="calm">잔잔함</option><option value="normal" selected>보통</option><option value="strong">강풍</option></select></div></div>
     <div class="button-row"><button class="primary" id="start" type="button">🎈 이륙</button><button class="reset" id="reset" type="button" aria-label="초기화">↺</button></div>
     <section class="ranking" aria-label="실시간 생존 현황"><div class="ranking-head"><strong>☁️ 스카이 텔레메트리</strong><span class="live-pill" id="livePill">READY 6</span></div><div class="ranking-list" id="ranking"></div></section>
@@ -79,7 +79,7 @@
 <script>
 (() => {
   'use strict';
-  const VERSION='1.1.0',MAX=20,NAME_MAX=30,PREFIX='playpick-balloon-survival-',W=1200,H=800,DT=1/60,TAU=Math.PI*2,QA=new URLSearchParams(location.search).has('qa'),RATE=QA?42:1,MAX_STEPS=QA?500:8;
+  const VERSION='1.1.0',MAX=60,NAME_MAX=30,PREFIX='playpick-balloon-survival-',W=1200,H=800,DT=1/60,TAU=Math.PI*2,QA=new URLSearchParams(location.search).has('qa'),RATE=QA?42:1,MAX_STEPS=QA?500:8;
   const WINDS={calm:{label:'잔잔함',motion:.68,interval:2.65,dart:.86},normal:{label:'보통',motion:1,interval:2.15,dart:.72},strong:{label:'강풍',motion:1.42,interval:1.72,dart:.61}};
   const COLORS=['#a86cff','#36b9ff','#ff5a69','#45d8c3','#ffbc35','#668cff','#f15bb5','#61df79','#ff8752','#59d8ff','#d36bff','#ffd056','#ff6c9c','#4f9cff','#7ee55e','#ff7861','#9a7cff','#41d8ad','#ffad54','#e75fcb'];
   const FACES=['🙂','😎','🥳','😺','🐶','🐰','🦊','🐻','🐼','🐯','🐸','🐵','🐧','🐤','🦄','🐝','🦋','🤖','👻','🌟'],MESSAGES=['밤하늘에 반짝!','구름 아래로 슝!','다트 적중!','바람과 함께 퇴장!','별빛 파편이 팡!'];
@@ -101,7 +101,7 @@
   function preview(){const parsed=parse(),n=parsed.length,grid=gridFor(n),random=rng(state.previewSeed);return parsed.map((p,i)=>({...p,...anchorFor(i,n,grid,random),color:COLORS[i%COLORS.length],face:FACES[i%FACES.length],active:true,falling:false,popTime:null,rank:null,scale:scaleFor(n)}))}
   function gridFor(n){const cols=Math.max(1,Math.ceil(Math.sqrt(Math.max(1,n)*1.48))),rows=Math.ceil(Math.max(1,n)/cols);return{cols,rows}}
   function anchorFor(i,n,grid,random){const col=i%grid.cols,row=Math.floor(i/grid.cols),cellW=900/grid.cols,cellH=450/grid.rows;return{ax:150+(col+.5)*cellW+(random()-.5)*cellW*.22,ay:165+(row+.5)*cellH+(random()-.5)*cellH*.2,phase:random()*TAU,freq:.42+random()*.18,x:0,y:0}}
-  function scaleFor(n){return n<=6?1:n<=10?.88:n<=15?.75:.65}
+  function scaleFor(n){return n<=6?1:n<=10?.88:n<=20?.7:clamp(.72-Math.sqrt(n)*.055,.3,.62)}
   function lobby(){if(state.running)return;state.preview=preview();els.count.textContent=`${state.preview.length} / ${MAX}`;els.alive.textContent=`${state.preview.length}/${state.preview.length}`;phase('READY');renderRanking(state.preview);draw()}
   function buildParticipants(parsed){const random=state.routeRng,order=shuffle([...parsed],random),grid=gridFor(parsed.length),scale=scaleFor(parsed.length);state.targetQueue=order.slice(0,parsed.length-state.winnerCount).map(p=>p.id);state.winnerIds=order.slice(parsed.length-state.winnerCount).reverse().map(p=>p.id);state.participants=parsed.map((p,i)=>({...p,...anchorFor(i,parsed.length,grid,random),color:COLORS[i%COLORS.length],face:FACES[i%FACES.length],active:true,falling:false,fallVx:0,fallVy:0,rotation:0,popTime:null,rank:null,scale}));state.attacks=state.targetQueue.map((id,index)=>({id,index,side:Math.floor(random()*4),u:.12+random()*.76,curve:(random()-.5)*250,duration:WINDS[state.wind].dart*(.88+random()*.24)}));updateActorPositions(0)}
   function actorPosition(p,time){const wind=WINDS[state.wind]?.motion||1,x=p.ax+Math.sin(time*p.freq+p.phase)*22*wind+Math.sin(time*.24+p.phase*.7)*12*wind,y=p.ay+Math.sin(time*(p.freq+.19)+p.phase*1.3)*13+Math.cos(time*.31+p.phase)*6;return{x,y}}

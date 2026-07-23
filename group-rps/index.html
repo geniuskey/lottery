@@ -367,9 +367,9 @@
       <button class="icon-btn" id="helpBtn" type="button" aria-label="게임 도움말" title="도움말">?</button>
     </div>
     <label class="field">
-      <span class="field-label">참가자 <small>이름*인원 지원</small></span>
-      <textarea id="participants" maxlength="1000" spellcheck="false" aria-describedby="participantHint">영수, 영호, 영식, 영철, 광수, 상철</textarea>
-      <span class="input-meta" id="participantHint"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 30</strong></span>
+      <span class="field-label">참가자 <small>최대 400명 · 이름*인원</small></span>
+      <textarea id="participants" maxlength="12000" spellcheck="false" aria-describedby="participantHint">영수, 영호, 영식, 영철, 광수, 상철</textarea>
+      <span class="input-meta" id="participantHint"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 400</strong></span>
     </label>
     <div class="field">
       <label class="field-label" for="winnerCount">🏆 최종 당첨자 수 <small>최대 10명</small></label>
@@ -451,7 +451,7 @@
     (() => {
       'use strict';
       const GAME_VERSION = '1.1.0';
-      const MAX_PARTICIPANTS = 30;
+      const MAX_PARTICIPANTS = 400;
       const MAX_NAME_LENGTH = 32;
       const STORAGE_PREFIX = 'playpick-group-rps-';
       const QA_MODE = new URLSearchParams(location.search).has('qa');
