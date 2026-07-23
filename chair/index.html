@@ -632,6 +632,7 @@
                 this.ctx = null;
                 this.musicInterval = null;
                 this.enabled = true;
+                this.lastSitAt = -1;
                 this.setupToggleButton();
             }
 
@@ -701,17 +702,20 @@
 
             playSit() {
                 if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                if (now - this.lastSitAt < 0.04) return;
+                this.lastSitAt = now;
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(400, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
                 osc.connect(gain);
                 gain.connect(this.ctx.destination);
                 osc.start();
-                osc.stop(this.ctx.currentTime + 0.1);
+                osc.stop(now + 0.1);
             }
 
             playWin() {
@@ -738,12 +742,55 @@
         // Canvas 설정
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const backgroundCache = document.createElement('canvas');
+        const backgroundCtx = backgroundCache.getContext('2d');
+        const chairSprite = document.createElement('canvas');
+        const noteSprites = new Map();
+
+        chairSprite.width = 80;
+        chairSprite.height = 80;
+        {
+            const spriteCtx = chairSprite.getContext('2d');
+            spriteCtx.font = '50px Arial';
+            spriteCtx.textAlign = 'center';
+            spriteCtx.textBaseline = 'middle';
+            spriteCtx.fillText('🪑', 40, 40);
+        }
+
+        function getNoteSprite(note) {
+            if (noteSprites.has(note)) return noteSprites.get(note);
+            const sprite = document.createElement('canvas');
+            sprite.width = 42;
+            sprite.height = 42;
+            const spriteCtx = sprite.getContext('2d');
+            spriteCtx.font = '20px Arial';
+            spriteCtx.fillStyle = 'rgba(168, 85, 247, 0.8)';
+            spriteCtx.textAlign = 'center';
+            spriteCtx.textBaseline = 'middle';
+            spriteCtx.fillText(note, 21, 21);
+            noteSprites.set(note, sprite);
+            return sprite;
+        }
+
+        function rebuildBackgroundCache() {
+            backgroundCache.width = canvas.width;
+            backgroundCache.height = canvas.height;
+            const gradient = backgroundCtx.createRadialGradient(
+                canvas.width / 2, canvas.height / 2, 0,
+                canvas.width / 2, canvas.height / 2, canvas.width / 2
+            );
+            gradient.addColorStop(0, '#1a1a2e');
+            gradient.addColorStop(1, '#0f0f1e');
+            backgroundCtx.fillStyle = gradient;
+            backgroundCtx.fillRect(0, 0, canvas.width, canvas.height);
+        }
 
         // 반응형 캔버스 크기
         function resizeCanvas() {
             const container = canvas.parentElement;
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
+            rebuildBackgroundCache();
         }
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
@@ -759,6 +806,14 @@
         let winnerCount = 1;
         let chairs = [];
         let stateStartTime = 0; // 상태 시작 시간
+        let animationFrameId = 0;
+        let lastFrameTime = 0;
+        let physicsAccumulator = 0;
+        let targetRefreshTick = 0;
+        let fpsWindowStart = 0;
+        let fpsFrameCount = 0;
+        const FIXED_STEP = 1000 / 60;
+        const MAX_PHYSICS_STEPS = 4;
         const soundManager = new SoundManager();
 
         // 이모지 풀
@@ -776,17 +831,9 @@
             }
 
             draw() {
-                ctx.save();
-                ctx.font = '50px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                
-                if (this.occupied) {
-                    ctx.globalAlpha = 0.5;
-                }
-                
-                ctx.fillText(this.emoji, this.x, this.y);
-                ctx.restore();
+                if (this.occupied) ctx.globalAlpha = 0.5;
+                ctx.drawImage(chairSprite, this.x - 40, this.y - 40);
+                ctx.globalAlpha = 1;
             }
         }
 
@@ -799,6 +846,11 @@
                 this.groupJoined = false;
                 this.musicNote = musicNotes[Math.floor(Math.random() * musicNotes.length)];
                 this.musicNoteOffset = Math.random() * Math.PI * 2;
+                this.targetChair = null;
+                this.sprite = document.createElement('canvas');
+                this.sprite.width = 220;
+                this.sprite.height = 104;
+                this.buildSprite();
                 
                 const radius = 20;
                 const x = Math.random() * (canvas.width - radius * 4) + radius * 2;
@@ -821,7 +873,22 @@
                 });
             }
 
-            update() {
+            buildSprite() {
+                const spriteCtx = this.sprite.getContext('2d');
+                spriteCtx.clearRect(0, 0, this.sprite.width, this.sprite.height);
+                spriteCtx.font = '40px Arial';
+                spriteCtx.textAlign = 'center';
+                spriteCtx.textBaseline = 'middle';
+                spriteCtx.fillText(this.emoji, 110, 48);
+                spriteCtx.font = 'bold 14px "Noto Sans KR"';
+                spriteCtx.fillStyle = '#fff';
+                spriteCtx.strokeStyle = '#000';
+                spriteCtx.lineWidth = 3;
+                spriteCtx.strokeText(this.name, 110, 85, 210);
+                spriteCtx.fillText(this.name, 110, 85, 210);
+            }
+
+            update(dtScale = 1) {
                 if (this.eliminated) {
                     const centerX = canvas.width / 2;
                     const centerY = canvas.height / 2;
@@ -830,8 +897,8 @@
                     const angle = Math.atan2(dy, dx);
                     
                     Body.setVelocity(this.body, {
-                        x: Math.cos(angle) * 3,
-                        y: Math.sin(angle) * 3
+                        x: Math.cos(angle) * 3 * dtScale,
+                        y: Math.sin(angle) * 3 * dtScale
                     });
                     return;
                 }
@@ -875,40 +942,22 @@
                         Body.setVelocity(this.body, { y: -Math.abs(vel.y), x: vel.x });
                     }
 
-                    this.musicNoteOffset += 0.07;
+                    this.musicNoteOffset += 0.07 * dtScale;
                     
                 } else if (gameState === 'musical_chairs') {
-                    if (!this.groupJoined) {
-                        let closestChair = null;
-                        let minDist = Infinity;
-
-                        chairs.forEach(chair => {
-                            if (chair.occupied) return;
+                    if (!this.groupJoined && this.targetChair && !this.targetChair.occupied) {
+                            const dx = this.targetChair.x - this.body.position.x;
+                            const dy = this.targetChair.y - this.body.position.y;
+                            const distSq = dx * dx + dy * dy;
                             
-                            const dx = chair.x - this.body.position.x;
-                            const dy = chair.y - this.body.position.y;
-                            const dist = Math.sqrt(dx * dx + dy * dy);
-                            
-                            if (dist < minDist) {
-                                minDist = dist;
-                                closestChair = chair;
-                            }
-                        });
-
-                        if (closestChair) {
-                            const dx = closestChair.x - this.body.position.x;
-                            const dy = closestChair.y - this.body.position.y;
-                            const dist = Math.sqrt(dx * dx + dy * dy);
-                            
-                            if (dist > 30) {
+                            if (distSq > 900) {
+                                const dist = Math.sqrt(distSq);
                                 const speed = 3;
                                 Body.setVelocity(this.body, {
                                     x: (dx / dist) * speed,
                                     y: (dy / dist) * speed
                                 });
                             }
-                            // 의자 점유는 별도 로직에서 처리
-                        }
                     } else {
                         Body.setVelocity(this.body, { x: 0, y: 0 });
                     }
@@ -925,10 +974,7 @@
                 if ((gameState === 'dancing' || gameState === 'chair_wait') && !this.eliminated) {
                     const noteX = x + Math.cos(this.musicNoteOffset) * 30;
                     const noteY = y - 40 + Math.sin(this.musicNoteOffset) * 10;
-                    ctx.font = '20px Arial';
-                    ctx.fillStyle = 'rgba(168, 85, 247, 0.8)';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(this.musicNote, noteX, noteY);
+                    ctx.drawImage(getNoteSprite(this.musicNote), noteX - 21, noteY - 21);
                 }
 
                 // 의자에 앉은 표시
@@ -940,20 +986,8 @@
                     ctx.stroke();
                 }
 
-                // 이모지
                 ctx.globalAlpha = this.eliminated ? 0.3 : 1;
-                ctx.font = '40px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(this.emoji, x, y);
-
-                // 이름
-                ctx.font = 'bold 14px "Noto Sans KR"';
-                ctx.fillStyle = '#fff';
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 3;
-                ctx.strokeText(this.name, x, y + 35);
-                ctx.fillText(this.name, x, y + 35);
+                ctx.drawImage(this.sprite, x - 110, y - 52);
 
                 ctx.restore();
             }
@@ -1088,11 +1122,57 @@
         function startMusicalChairs() {
             gameState = 'musical_chairs';
             stateStartTime = Date.now();
+            targetRefreshTick = 0;
 
             const alive = participants.filter(p => !p.eliminated);
             alive.forEach(p => {
                 p.groupJoined = false;
+                p.targetChair = null;
+                Body.setStatic(p.body, false);
             });
+            updateChairTargets();
+        }
+
+        function updateChairTargets() {
+            const availableChairs = chairs.filter(chair => !chair.occupied);
+            participants.forEach(p => {
+                if (p.eliminated || p.groupJoined) return;
+                if (p.targetChair && !p.targetChair.occupied) return;
+
+                let closestChair = null;
+                let minDistSq = Infinity;
+                for (const chair of availableChairs) {
+                    const dx = chair.x - p.body.position.x;
+                    const dy = chair.y - p.body.position.y;
+                    const distSq = dx * dx + dy * dy;
+                    if (distSq < minDistSq) {
+                        minDistSq = distSq;
+                        closestChair = chair;
+                    }
+                }
+                p.targetChair = closestChair;
+            });
+        }
+
+        function settleChairClaims() {
+            for (const p of participants) {
+                if (p.eliminated || p.groupJoined) continue;
+                const chair = p.targetChair;
+                if (!chair || chair.occupied) continue;
+
+                const dx = chair.x - p.body.position.x;
+                const dy = chair.y - p.body.position.y;
+                if (dx * dx + dy * dy > 900) continue;
+
+                chair.occupied = true;
+                chair.occupiedBy = p;
+                p.groupJoined = true;
+                p.targetChair = null;
+                soundManager.playSit();
+                Body.setVelocity(p.body, { x: 0, y: 0 });
+                Body.setPosition(p.body, { x: chair.x, y: chair.y });
+                Body.setStatic(p.body, true);
+            }
         }
 
         // 탈락 처리
@@ -1133,6 +1213,8 @@
             // 남은(앉지 못한) 참여자 탈락 처리
             notSeated.forEach(p => {
                 p.eliminated = true;
+                p.targetChair = null;
+                p.body.collisionFilter.mask = 0;
                 eliminatedParticipants.push(p.name);
 
                 // Add to top-right log
@@ -1141,6 +1223,12 @@
                 logItem.className = 'ko-log-item';
                 logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${p.name}</span>: ${randomMsg}`;
                 log.insertBefore(logItem, log.firstChild);
+            });
+
+            survivors.forEach(p => {
+                p.groupJoined = false;
+                p.targetChair = null;
+                Body.setStatic(p.body, false);
             });
 
             // Keep only recent logs
@@ -1155,6 +1243,7 @@
             
             if (remainingCount <= winnerCount) {
                 gameState = 'idle';
+                canvas.dataset.state = 'idle';
                 startBtn.disabled = false;
                 setTimeout(showWinners, 1000);
             } else {
@@ -1190,59 +1279,26 @@
             ctx.restore();
         }
 
-        // 게임 루프
-        function gameLoop() {
-            Engine.update(engine, 1000 / 60);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function simulateStep() {
+            participants.forEach(p => p.update());
+            Engine.update(engine, FIXED_STEP);
 
-            const gradient = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2);
-            gradient.addColorStop(0, '#1a1a2e');
-            gradient.addColorStop(1, '#0f0f1e');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            if (gameState === 'musical_chairs') {
+                if (targetRefreshTick % 4 === 0) updateChairTargets();
+                targetRefreshTick++;
+                settleChairClaims();
+            }
+        }
+
+        function renderGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(backgroundCache, 0, 0);
 
             if (gameState === 'chair_wait' || gameState === 'musical_chairs') {
                 chairs.forEach(chair => chair.draw());
             }
 
-            participants.forEach(p => {
-                p.update();
-                p.draw();
-            });
-
-            // 의자 게임 중 의자 배정 처리 (경쟁 조건 방지)
-            if (gameState === 'musical_chairs') {
-                // 각 의자별로 가장 가까운 참여자 찾기
-                chairs.forEach(chair => {
-                    if (chair.occupied) return;
-                    
-                    let closestParticipant = null;
-                    let minDist = 30; // 30 이내에 있어야 앉을 수 있음
-                    
-                    participants.forEach(p => {
-                        if (p.eliminated || p.groupJoined) return;
-                        
-                        const dx = chair.x - p.body.position.x;
-                        const dy = chair.y - p.body.position.y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        
-                        if (dist < minDist) {
-                            minDist = dist;
-                            closestParticipant = p;
-                        }
-                    });
-                    
-                    // 가장 가까운 사람이 의자 차지
-                    if (closestParticipant) {
-                        chair.occupied = true;
-                        chair.occupiedBy = closestParticipant;
-                        closestParticipant.groupJoined = true;
-                        soundManager.playSit();
-                        Body.setVelocity(closestParticipant.body, { x: 0, y: 0 });
-                        Body.setPosition(closestParticipant.body, { x: chair.x, y: chair.y });
-                    }
-                });
-            }
+            participants.forEach(p => p.draw());
 
             if (gameState === 'musical_chairs') {
                 ctx.save();
@@ -1256,8 +1312,9 @@
                 ctx.fillText('앉으세요!', canvas.width / 2, 80);
                 ctx.restore();
             }
+        }
 
-            // 실제 경과 시간 계산 (밀리초)
+        function updateGameState() {
             const elapsedTime = Date.now() - stateStartTime;
 
             if (gameState === 'dancing' && elapsedTime > 3000) {
@@ -1265,19 +1322,56 @@
             } else if (gameState === 'chair_wait' && elapsedTime > 200) {
                 startMusicalChairs();
             } else if (gameState === 'musical_chairs') {
-                // 모두 앉았는지 확인
-                const alive = participants.filter(p => !p.eliminated);
-                const seated = alive.filter(p => p.groupJoined).length;
-                const allSeated = seated === chairs.length;
-                
-                // 모두 앉았으면 0.5초 대기 후, 3초 경과 시 즉시 탈락 처리
+                let aliveCount = 0;
+                let seatedCount = 0;
+                participants.forEach(p => {
+                    if (p.eliminated) return;
+                    aliveCount++;
+                    if (p.groupJoined) seatedCount++;
+                });
+                const allSeated = seatedCount === Math.min(chairs.length, aliveCount);
+
                 if ((allSeated && elapsedTime > 500) || elapsedTime > 3000) {
                     eliminateChairPlayers();
                 }
             }
+        }
+
+        // 고정 시간 물리 업데이트 + 프레임당 1회 렌더링
+        function gameLoop(timestamp) {
+            if (gameState === 'idle') {
+                animationFrameId = 0;
+                return;
+            }
+
+            if (!lastFrameTime) lastFrameTime = timestamp;
+            const frameDelta = Math.min(timestamp - lastFrameTime, 100);
+            lastFrameTime = timestamp;
+            physicsAccumulator += frameDelta;
+
+            let steps = 0;
+            while (physicsAccumulator >= FIXED_STEP && steps < MAX_PHYSICS_STEPS) {
+                simulateStep();
+                physicsAccumulator -= FIXED_STEP;
+                steps++;
+            }
+            if (steps === MAX_PHYSICS_STEPS) physicsAccumulator = 0;
+
+            updateGameState();
+            renderGame();
+            fpsFrameCount++;
+            if (!fpsWindowStart) fpsWindowStart = timestamp;
+            if (timestamp - fpsWindowStart >= 1000) {
+                canvas.dataset.fps = (fpsFrameCount * 1000 / (timestamp - fpsWindowStart)).toFixed(1);
+                canvas.dataset.state = gameState;
+                fpsWindowStart = timestamp;
+                fpsFrameCount = 0;
+            }
 
             if (gameState !== 'idle') {
-                requestAnimationFrame(gameLoop);
+                animationFrameId = requestAnimationFrame(gameLoop);
+            } else {
+                animationFrameId = 0;
             }
         }
 
@@ -1332,12 +1426,25 @@
             stateStartTime = Date.now();
             startBtn.disabled = true;
             updateRanking();
-            gameLoop();
+            cancelAnimationFrame(animationFrameId);
+            lastFrameTime = 0;
+            physicsAccumulator = 0;
+            fpsWindowStart = 0;
+            fpsFrameCount = 0;
+            animationFrameId = requestAnimationFrame(gameLoop);
         });
 
         // 초기화
         resetBtn.addEventListener('click', () => {
             gameState = 'idle';
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = 0;
+            lastFrameTime = 0;
+            physicsAccumulator = 0;
+            fpsWindowStart = 0;
+            fpsFrameCount = 0;
+            delete canvas.dataset.fps;
+            delete canvas.dataset.state;
             soundManager.stopMusic();
             participants.forEach(p => p.destroy());
             participants = [];
@@ -1348,11 +1455,7 @@
             rankingList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">게임을 시작하세요!</div>';
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const gradient = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2);
-            gradient.addColorStop(0, '#1a1a2e');
-            gradient.addColorStop(1, '#0f0f1e');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(backgroundCache, 0, 0);
         });
 
         // 결과 복사

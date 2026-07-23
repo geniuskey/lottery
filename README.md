@@ -31,7 +31,6 @@
 | 🪑 [의자 앉기](./chair/) | 뮤지컬 체어 의자 뺏기 | 서바이벌 |
 | 🪐 [중력 궤도 생존](./gravity-orbit/) | 행성 중력 궤도 서바이벌 | 서바이벌 |
 | 👹 [술래로부터 살아남기](./chaser-survival/) | 술래를 피해 도망치기 | 서바이벌 |
-| 🎳 [볼링 서바이벌](./bowling/) | 핀이 되어 볼링공 피하기 | 서바이벌 |
 | 🪜 [사다리 추첨](./ladder/) | 클래식 사다리 타기 | 추첨 |
 
 ## 🚀 시작하기
@@ -81,7 +80,6 @@ lottery/
 ├── chair/
 ├── gravity-orbit/
 ├── chaser-survival/
-├── bowling/
 └── ladder/
 ```
 

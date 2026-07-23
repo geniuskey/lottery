@@ -259,6 +259,24 @@
       position: relative; z-index: 2; width: 100%; padding: 3px 4px; color: #f4f4ff; overflow: hidden;
       text-overflow: ellipsis; white-space: nowrap; text-align: center; font-size: clamp(.55rem,.9vw,.72rem); font-weight: 850;
     }
+    .players-area.crowd-mode { display: block; padding: clamp(12px,2vw,24px); overflow: hidden; }
+    .crowd-dashboard { height: 100%; display: grid; grid-template-columns: minmax(150px,.72fr) 1.8fr; gap: clamp(10px,1.8vw,22px); }
+    .crowd-total,.crowd-pod {
+      border: 1px solid rgba(255,255,255,.13); border-radius: 20px; background: rgba(12,14,50,.72);
+      box-shadow: inset 0 0 32px rgba(84,128,255,.08); text-align: center;
+    }
+    .crowd-total { display: grid; place-content: center; padding: 12px; }
+    .crowd-total span { font-size: clamp(2rem,4vw,3.4rem); }
+    .crowd-total strong { color: var(--gold); font: 950 clamp(2rem,5vw,4rem)/1 ui-monospace,monospace; text-shadow: 0 0 22px rgba(255,198,64,.35); }
+    .crowd-total small { margin-top: 7px; color: var(--muted); font: 900 .58rem ui-monospace,monospace; letter-spacing: .13em; }
+    .crowd-moves { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: clamp(7px,1vw,13px); }
+    .crowd-pod { position: relative; display: grid; place-content: center; padding: 9px; overflow: hidden; transition: .28s; }
+    .crowd-pod::after { content: ""; position: absolute; inset: auto 10% 0; height: 4px; border-radius: 99px; background: var(--pod-color); box-shadow: 0 0 18px var(--pod-color); }
+    .crowd-pod.active { border-color: color-mix(in srgb,var(--pod-color) 62%,transparent); transform: translateY(-4px); }
+    .crowd-pod span { font-size: clamp(1.7rem,4vw,3rem); }
+    .crowd-pod strong { margin-top: 3px; color: #fff; font: 950 clamp(1.3rem,3vw,2.4rem)/1 ui-monospace,monospace; }
+    .crowd-pod small { margin-top: 5px; color: var(--muted); font-size: .57rem; font-weight: 850; }
+    .rank-summary { padding: 8px 9px; border: 1px solid rgba(67,224,255,.18); border-radius: 9px; color: #9cf5ff; background: rgba(67,224,255,.07); font: 850 .62rem ui-monospace,monospace; text-align: center; }
     .arena-credit { position: absolute; right: 15px; bottom: 11px; z-index: 3; color: rgba(255,255,255,.3); font-size: .58rem; }
     .arena.shake { animation: arena-shake .35s linear; }
     @keyframes arena-shake { 0%,100%{transform:translate(0)} 20%{transform:translate(-7px,2px)} 45%{transform:translate(6px,-3px)} 70%{transform:translate(-3px,2px)} }
@@ -335,6 +353,10 @@
       .referee { top: 35%; }
       .players-area { top: 43%; bottom: 5%; border-radius: 18px; }
       .player-card { width: 100%; height: min(100%,78px); }
+      .crowd-dashboard { grid-template-columns: 1fr; grid-template-rows: .65fr 1fr; }
+      .crowd-total { grid-template-columns: auto auto; align-items: center; justify-content: center; gap: 8px 12px; }
+      .crowd-total span { grid-row: span 2; }
+      .crowd-total small { margin: 0; }
       .arena-credit { bottom: 5px; }
     }
     @media (max-width:420px) {
@@ -367,9 +389,9 @@
       <button class="icon-btn" id="helpBtn" type="button" aria-label="게임 도움말" title="도움말">?</button>
     </div>
     <label class="field">
-      <span class="field-label">참가자 <small>최대 400명 · 이름*인원</small></span>
+      <span class="field-label">참가자 <small>최대 600명 · 이름*인원</small></span>
       <textarea id="participants" maxlength="12000" spellcheck="false" aria-describedby="participantHint">영수, 영호, 영식, 영철, 광수, 상철</textarea>
-      <span class="input-meta" id="participantHint"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 400</strong></span>
+      <span class="input-meta" id="participantHint"><span>쉼표 또는 줄바꿈으로 구분</span><strong id="participantCount">6 / 600</strong></span>
     </label>
     <div class="field">
       <label class="field-label" for="winnerCount">🏆 최종 당첨자 수 <small>최대 10명</small></label>
@@ -451,12 +473,13 @@
     (() => {
       'use strict';
       const GAME_VERSION = '1.1.0';
-      const MAX_PARTICIPANTS = 400;
+      const MAX_PARTICIPANTS = 600;
+      const CROWD_THRESHOLD = 60;
       const MAX_NAME_LENGTH = 32;
       const STORAGE_PREFIX = 'playpick-group-rps-';
       const QA_MODE = new URLSearchParams(location.search).has('qa');
       const TIME_SCALE = QA_MODE ? 0.018 : 1;
-      const MOVES = [{ key:'ROCK',icon:'✊' },{ key:'PAPER',icon:'🖐️' },{ key:'SCISSORS',icon:'✌️' }];
+      const MOVES = [{ key:'ROCK',icon:'✊',label:'바위' },{ key:'PAPER',icon:'🖐️',label:'보' },{ key:'SCISSORS',icon:'✌️',label:'가위' }];
       const AVATARS = ['😀','😃','😄','😁','😆','😎','🤩','🥳','🦊','🐯','🐸','🐵'];
       const PLAYER_COLORS = ['#4588ff','#ffc640','#f058ff','#42d9ff','#4fffb0','#ff6a8d'];
       const $ = id => document.getElementById(id);
@@ -537,6 +560,7 @@
       function beats(moveA,moveB) { return (moveA - moveB + 3) % 3 === 1; }
       function losingMoveAgainst(move) { return (move + 2) % 3; }
       function columnsFor(count) { if (count<=4) return count; if (count<=8) return 4; if (count<=15) return 5; return 6; }
+      function isCrowdMode() { return state.players.length > CROWD_THRESHOLD; }
       function createPlayerCard(player) {
         const card = document.createElement('article');
         card.className = 'player-card'; card.id = `player-${player.id}`;
@@ -551,12 +575,41 @@
       }
       function renderPlayers() {
         els.playersArea.replaceChildren();
+        els.playersArea.classList.toggle('crowd-mode',isCrowdMode());
+        if (isCrowdMode()) {
+          const dashboard = document.createElement('div'); dashboard.className = 'crowd-dashboard';
+          const total = document.createElement('div'); total.className = 'crowd-total';
+          total.innerHTML = '<span>👥</span><strong id="crowdActive">0</strong><small id="crowdStatus">PLAYERS READY</small>';
+          const moves = document.createElement('div'); moves.className = 'crowd-moves';
+          MOVES.forEach((move,index) => {
+            const pod = document.createElement('div'); pod.className = 'crowd-pod'; pod.dataset.move = String(index);
+            pod.style.setProperty('--pod-color',PLAYER_COLORS[index]);
+            const icon = document.createElement('span'); icon.textContent = move.icon;
+            const count = document.createElement('strong'); count.textContent = '0';
+            const label = document.createElement('small'); label.textContent = move.label;
+            pod.append(icon,count,label); moves.appendChild(pod);
+          });
+          dashboard.append(total,moves); els.playersArea.appendChild(dashboard); syncPlayerCards(); return;
+        }
         els.playersArea.style.setProperty('--cols',columnsFor(state.players.length || 1));
         const fragment = document.createDocumentFragment();
         state.players.forEach(player => fragment.appendChild(createPlayerCard(player)));
         els.playersArea.appendChild(fragment); syncPlayerCards();
       }
       function syncPlayerCards() {
+        if (isCrowdMode()) {
+          const active = activePlayers(),counts=[0,0,0];
+          active.forEach(player => { if (player.move != null) counts[player.move] += 1; });
+          const activeEl = $('crowdActive'),statusEl = $('crowdStatus');
+          if (activeEl) activeEl.textContent = String(active.length);
+          if (statusEl) statusEl.textContent = state.running ? `${state.eliminated.length} OUT · ROUND ${state.round}` : 'PLAYERS READY';
+          els.playersArea.querySelectorAll('.crowd-pod').forEach(pod => {
+            const index = Number(pod.dataset.move),count = counts[index] || 0;
+            pod.querySelector('strong').textContent = String(count);
+            pod.classList.toggle('active',count > 0);
+          });
+          return;
+        }
         state.players.forEach(player => {
           const card = $(`player-${player.id}`);
           if (!card) return;
@@ -570,12 +623,20 @@
       }
       function renderRanking() {
         els.rankingList.replaceChildren();
-        const ordered = [
+        const fullOrder = [
           ...state.players.filter(player => player.status === 'winner'),
           ...state.players.filter(player => player.status === 'active'),
           ...state.players.filter(player => player.status === 'eliminated').reverse()
         ];
+        const ordered = isCrowdMode()
+          ? [...fullOrder.filter(player => player.status === 'winner'),...fullOrder.filter(player => player.status === 'active').slice(0,36),...fullOrder.filter(player => player.status === 'eliminated').slice(0,12)]
+          : fullOrder;
         const fragment = document.createDocumentFragment();
+        if (isCrowdMode()) {
+          const summary = document.createElement('div'); summary.className = 'rank-summary';
+          summary.textContent = `${activePlayers().length}명 생존 · ${state.eliminated.length}명 탈락 · 상위 ${ordered.length}명 표시`;
+          fragment.appendChild(summary);
+        }
         ordered.forEach((player,index) => {
           const item = document.createElement('div'); item.className = `rank-item ${player.status}`;
           const icon = document.createElement('span'); icon.className = 'rank-icon';
@@ -611,6 +672,16 @@
         else els.phaseBanner.classList.remove('show');
       }
       function showMoves(players,refereeMove=null) {
+        if (isCrowdMode()) {
+          syncPlayerCards();
+          if (refereeMove != null) {
+            els.refereeMove.textContent = MOVES[refereeMove].icon;
+            els.refereeMove.classList.add('show'); els.referee.classList.add('active');
+          } else {
+            els.refereeMove.classList.remove('show'); els.referee.classList.remove('active');
+          }
+          return;
+        }
         players.forEach(player => {
           const card = $(`player-${player.id}`);
           if (card) { card.classList.add('reveal'); card.querySelector('.move-bubble')?.classList.add('show'); }
@@ -624,6 +695,7 @@
       }
       function clearMovePresentation() {
         state.players.forEach(player => { player.move = null; });
+        if (isCrowdMode()) syncPlayerCards();
         document.querySelectorAll('.player-card').forEach(card => card.classList.remove('reveal'));
         document.querySelectorAll('.move-bubble').forEach(bubble => { bubble.classList.remove('show'); bubble.textContent = ''; });
         els.refereeMove.classList.remove('show'); els.refereeMove.textContent = ''; els.referee.classList.remove('active');
