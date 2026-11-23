@@ -993,6 +993,7 @@
     </div>
   </div>
 
+  <script src="../assets/html-text.js"></script>
   <script>
     const MAX_PARTICIPANTS = 256;
 
@@ -1098,9 +1099,7 @@
     let currentRound = 0;
     let matches = [];
     let rankings = [];
-    let isPlaying = false;
-    let gameSpeed = 'normal';
-    let roundType = 'single';
+    let tournamentId = 0;
 
     const speedDelays = {
       fast: { think: 300, reveal: 200, result: 500 },
@@ -1125,13 +1124,32 @@
     const copyResultBtn = document.getElementById('copyResultBtn');
     const toast = document.getElementById('toast');
 
-    // Event Listeners
-            startBtn.addEventListener('click', () => {
-                startTournament();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });    resetBtn.addEventListener('click', resetGame);
-    speedSelect.addEventListener('change', (e) => gameSpeed = e.target.value);
-    roundTypeSelect.addEventListener('change', (e) => roundType = e.target.value);
+    const settingsKey = 'rps-tournament-settings';
+    try {
+      const settings = JSON.parse(localStorage.getItem(settingsKey));
+      if (typeof settings?.participants === 'string') participantsInput.value = settings.participants;
+      if (Object.hasOwn(speedDelays, settings?.speed)) speedSelect.value = settings.speed;
+      if (['single', 'best3'].includes(settings?.roundType)) roundTypeSelect.value = settings.roundType;
+    } catch { /* Keep defaults when saved settings cannot be read. */ }
+
+    function saveSettings() {
+      try {
+        localStorage.setItem(settingsKey, JSON.stringify({
+          participants: participantsInput.value,
+          speed: speedSelect.value,
+          roundType: roundTypeSelect.value
+        }));
+      } catch { /* Storage may be unavailable. */ }
+    }
+
+    participantsInput.addEventListener('input', saveSettings);
+    speedSelect.addEventListener('change', saveSettings);
+    roundTypeSelect.addEventListener('change', saveSettings);
+    startBtn.addEventListener('click', () => {
+      startTournament();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    resetBtn.addEventListener('click', resetGame);
     copyResultBtn.addEventListener('click', copyResults);
     helpBtn.addEventListener('click', () => helpModal.classList.add('show'));
 
@@ -1205,34 +1223,26 @@
 
       sound.init();
       sound.playStart();
-      isPlaying = true;
+      const runId = ++tournamentId;
       startBtn.disabled = true;
-      
-      // Shuffle and add byes if needed
-      participants = shuffleArray(parsed);
-      const targetSize = getNextPowerOf2(participants.length);
-      
-      // Add byes (부전승)
-      while (participants.length < targetSize) {
-        participants.push(null);
-      }
-      
-      // Shuffle again to distribute byes
-      participants = shuffleArray(participants);
-      
-      // Initialize rankings
+      closeFinalWinner();
+
+      // Each entry keeps its own result, even when names are identical.
       rankings = parsed.map(name => ({
         name,
         status: 'playing',
         eliminatedRound: null,
         rank: null
       }));
-      
+      participants = shuffleArray(rankings);
+      const byeCount = getNextPowerOf2(participants.length) - participants.length;
+      for (let i = 0; i < byeCount; i++) participants.splice(i * 2 + 1, 0, null);
+
       currentRound = 0;
-      await runTournament();
+      await runTournament(runId);
     }
 
-    async function runTournament() {
+    async function runTournament(runId) {
       let currentPlayers = [...participants];
       
       while (currentPlayers.filter(p => p !== null).length > 1) {
@@ -1257,7 +1267,8 @@
         matchCount.textContent = `${realMatches.length}개 경기 진행 중`;
         
         renderMatches();
-        updateRankingForRound(currentPlayers.filter(p => p !== null));
+        updateRankingDisplay();
+        const eliminatedRank = currentPlayers.filter(Boolean).length - realMatches.length + 1;
         
         // Play all matches in this round
         const winners = [];
@@ -1278,19 +1289,17 @@
           }
           
           // Play the match
-          const winner = await playMatch(i);
+          const winner = await playMatch(i, runId);
+          if (runId !== tournamentId) return;
           match.winner = winner;
           winners.push(winner);
           
           // Mark loser as eliminated
           const loser = winner === match.player1 ? match.player2 : match.player1;
-          const loserRanking = rankings.find(r => r.name === loser);
-          if (loserRanking) {
-            loserRanking.status = 'eliminated';
-            loserRanking.eliminatedRound = currentRound;
-            loserRanking.rank = currentPlayers.filter(p => p !== null).length;
-          }
-          
+          loser.status = 'eliminated';
+          loser.eliminatedRound = currentRound;
+          loser.rank = eliminatedRank;
+
           updateRankingDisplay();
           renderMatches();
         }
@@ -1299,28 +1308,26 @@
         
         // Short pause between rounds
         if (currentPlayers.length > 1) {
-          await delay(speedDelays[gameSpeed].result * 2);
+          await delay(speedDelays[speedSelect.value].result * 2);
+          if (runId !== tournamentId) return;
         }
       }
       
       // Tournament complete
       const champion = currentPlayers[0];
-      const championRanking = rankings.find(r => r.name === champion);
-      if (championRanking) {
-        championRanking.status = 'winner';
-        championRanking.rank = 1;
-      }
-      
+      champion.status = 'winner';
+      champion.rank = 1;
+
+      matchCount.textContent = '경기 종료';
       updateRankingDisplay();
-      showFinalWinner(champion);
-      isPlaying = false;
+      showFinalWinner(champion.name);
       startBtn.disabled = false;
     }
 
-    async function playMatch(matchIndex) {
+    async function playMatch(matchIndex, runId) {
       const match = matches[matchIndex];
-      const delays = speedDelays[gameSpeed];
-      const winsNeeded = roundType === 'best3' ? 2 : 1;
+      const delays = speedDelays[speedSelect.value];
+      const winsNeeded = roundTypeSelect.value === 'best3' ? 2 : 1;
       
       let lastChoice1 = null;
       let lastChoice2 = null;
@@ -1330,6 +1337,7 @@
         updateMatchDisplay(matchIndex, 'thinking', null, null);
         sound.playThink();
         await delay(delays.think);
+        if (runId !== tournamentId) return;
         
         // Make choices
         const choice1 = CHOICES[Math.floor(Math.random() * 3)];
@@ -1342,16 +1350,10 @@
         updateMatchDisplay(matchIndex, 'revealed', choice1, choice2);
         sound.playReveal();
         await delay(delays.reveal);
+        if (runId !== tournamentId) return;
         
         // Determine result
         const result = determineWinner(choice1, choice2);
-        
-        if (result === 'player1' || result === 'player2') {
-          // If someone scored, play a slightly different sound or handle winner/loser
-          if (match.score1 + 1 >= winsNeeded || match.score2 + 1 >= winsNeeded) {
-            // Match is about to end
-          }
-        }
         
         if (result === 'player1') {
           match.score1++;
@@ -1367,6 +1369,7 @@
         updateMatchDisplay(matchIndex, 'scored', choice1, choice2);
         
         await delay(delays.result);
+        if (runId !== tournamentId) return;
       }
       
       // Mark loser as eliminated and play sound
@@ -1402,12 +1405,12 @@
             </div>
             <div class="match-players">
               <div class="player-box ${match.winner === match.player1 ? 'winner' : ''} ${match.winner === match.player2 ? 'loser' : ''}" data-match="${index}" data-player="1">
-                <div class="player-name">${match.player1}</div>
+                <div class="player-name">${escapeHtmlText(match.player1.name)}</div>
                 <div class="player-choice ${choiceClass1}" id="choice-${index}-1">${display1}</div>
               </div>
               <div class="vs-divider">VS</div>
               <div class="player-box ${match.winner === match.player2 ? 'winner' : ''} ${match.winner === match.player1 ? 'loser' : ''}" data-match="${index}" data-player="2">
-                <div class="player-name">${match.player2}</div>
+                <div class="player-name">${escapeHtmlText(match.player2.name)}</div>
                 <div class="player-choice ${choiceClass2}" id="choice-${index}-2">${display2}</div>
               </div>
             </div>
@@ -1420,9 +1423,6 @@
     }
 
     function updateMatchDisplay(matchIndex, state, choice1, choice2) {
-      const realMatchIndex = matches.filter((m, i) => i < matchIndex && m.player1 !== null && m.player2 !== null).length + 
-        (matches[matchIndex].player1 !== null && matches[matchIndex].player2 !== null ? 0 : 0);
-      
       // Find the actual displayed index
       let displayIndex = 0;
       for (let i = 0; i <= matchIndex; i++) {
@@ -1454,18 +1454,8 @@
       }
     }
 
-    function updateRankingForRound(currentPlayers) {
-      rankings.forEach(r => {
-        if (currentPlayers.includes(r.name) && r.status !== 'eliminated') {
-          r.status = 'playing';
-        }
-      });
-      updateRankingDisplay();
-    }
-
-    function updateRankingDisplay() {
-      // Sort: winners first, then playing, then eliminated (by round, later = higher rank)
-      const sorted = [...rankings].sort((a, b) => {
+    function getRankings() {
+      return [...rankings].sort((a, b) => {
         if (a.status === 'winner') return -1;
         if (b.status === 'winner') return 1;
         if (a.status === 'playing' && b.status !== 'playing') return -1;
@@ -1475,7 +1465,10 @@
         }
         return 0;
       });
+    }
 
+    function updateRankingDisplay() {
+      const sorted = getRankings();
       let html = '';
       sorted.forEach((player, index) => {
         const statusClass = player.status;
@@ -1485,8 +1478,8 @@
         
         html += `
           <div class="ranking-item ${statusClass}">
-            <div class="rank-number">${index + 1}</div>
-            <div class="rank-name">${player.name}</div>
+            <div class="rank-number">${player.rank ?? index + 1}</div>
+            <div class="rank-name">${escapeHtmlText(player.name)}</div>
             <div class="rank-status">${statusText}</div>
           </div>
         `;
@@ -1504,28 +1497,30 @@
 
     function closeFinalWinner() {
       finalWinner.classList.remove('show');
+      finalWinner.querySelector('.result-confetti')?.remove();
     }
 
     function createConfetti() {
       const colors = ['#e74c3c', '#3498db', '#f1c40f', '#2ecc71', '#9b59b6', '#ff6b6b'];
-      
+      const layer = document.createElement('div');
+      layer.className = 'result-confetti';
+      layer.setAttribute('aria-hidden', 'true');
       for (let i = 0; i < 100; i++) {
-        setTimeout(() => {
-          const confetti = document.createElement('div');
-          confetti.className = 'confetti';
-          confetti.style.left = Math.random() * 100 + 'vw';
-          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-          confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
-          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-          document.body.appendChild(confetti);
-          
-          setTimeout(() => confetti.remove(), 4000);
-        }, i * 30);
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+        confetti.style.animationDelay = i * 30 + 'ms';
+        confetti.style.animationFillMode = 'both';
+        layer.appendChild(confetti);
       }
+      finalWinner.appendChild(layer);
+      setTimeout(() => layer.remove(), 7000);
     }
 
     function resetGame() {
-      isPlaying = false;
+      tournamentId++;
       startBtn.disabled = false;
       currentRound = 0;
       matches = [];
@@ -1547,25 +1542,16 @@
         </div>
       `;
       
-      finalWinner.classList.remove('show');
+      closeFinalWinner();
     }
 
     function copyResults() {
-      if (rankings.length === 0) {
+      if (startBtn.disabled || rankings.length === 0) {
         showToast('아직 결과가 없습니다');
         return;
       }
 
-      const sorted = [...rankings].sort((a, b) => {
-        if (a.status === 'winner') return -1;
-        if (b.status === 'winner') return 1;
-        if (a.status === 'playing' && b.status !== 'playing') return -1;
-        if (b.status === 'playing' && a.status !== 'playing') return 1;
-        if (a.status === 'eliminated' && b.status === 'eliminated') {
-          return b.eliminatedRound - a.eliminatedRound;
-        }
-        return 0;
-      });
+      const sorted = getRankings();
 
       let text = '✌️✊🖐️ 토너먼트 결과\n';
       text += '━'.repeat(20) + '\n';
@@ -1574,7 +1560,7 @@
         let statusText = '진행 중';
         if (player.status === 'winner') statusText = '🏆 우승';
         else if (player.status === 'eliminated') statusText = `${player.rank}위`;
-        text += `${index + 1}. ${player.name} - ${statusText}\n`;
+        text += `${player.rank ?? index + 1}. ${player.name} - ${statusText}\n`;
       });
 
       navigator.clipboard.writeText(text).then(() => {

@@ -1578,6 +1578,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite">결과가 복사되었습니다!</div>
 
+  <script src="../assets/html-text.js"></script>
   <script>
     const MAX_PARTICIPANTS = 60;
 
@@ -1734,6 +1735,8 @@
       let ringBounds = { x: 0, y: 0, w: 0, h: 0 };
       let eliminationOrder = [];
       let survivors = [];
+      let winnerCount = 1;
+      let resultTimer = null;
       let punchEffects = [];
       let textEffects = [];
       let eliminatedParticipants = [];
@@ -1798,7 +1801,7 @@
         try {
           const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
           if (saved) {
-            participantsInput.value = saved.participants || participantsInput.value;
+            participantsInput.value = saved.participants ?? participantsInput.value;
             winnerCountInput.value = saved.winnerCount || 1;
             startHPSelect.value = saved.startHP || '3';
           }
@@ -1833,8 +1836,9 @@
           return false;
         }
 
-        const wc = Math.min(parseInt(winnerCountInput.value) || 1, names.length - 1);
-        winnerCountInput.value = wc;
+        winnerCount = Math.min(parseInt(winnerCountInput.value, 10) || 1, names.length - 1);
+        clearTimeout(resultTimer);
+        closeResult();
 
         soundManager.init();
         resizeCanvas();
@@ -1924,7 +1928,7 @@
         const alive = participants.filter(p => p.alive);
 
         // Check win condition
-        if (alive.length <= parseInt(winnerCountInput.value)) {
+        if (alive.length <= winnerCount) {
           endGame();
           return;
         }
@@ -2023,7 +2027,7 @@
                 const log = document.getElementById('koLog');
                 const logItem = document.createElement('div');
                 logItem.className = 'ko-log-item';
-                logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${target.name}</span>: ${randomMsg}`;
+                logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${escapeHtmlText(target.name)}</span>: ${randomMsg}`;
                 log.insertBefore(logItem, log.firstChild);
                 
                 // Keep only recent logs
@@ -2606,11 +2610,15 @@
       }
 
       // Update ranking display
-      function updateRanking() {
-        const alive = participants.filter(p => p.alive).map(p => {
+      function getSurvivors() {
+        return participants.filter(p => p.alive).map(p => {
           const d = chaser ? Math.hypot(p.x - chaser.x, p.y - chaser.y) : 0;
           return { ...p, dist: d };
         }).sort((a, b) => b.hp - a.hp || b.dist - a.dist);
+      }
+
+      function updateRanking() {
+        const alive = getSurvivors();
 
         const dead = eliminationOrder.slice().reverse();
 
@@ -2619,7 +2627,7 @@
           const hpBars = '❤️'.repeat(p.hp) + '🖤'.repeat(p.maxHp - p.hp);
           html += `<div class="rank-item">
             <span class="rank-num">${i + 1}</span>
-            <span class="rank-name">${p.emoji} ${p.name}</span>
+            <span class="rank-name">${p.emoji} ${escapeHtmlText(p.name)}</span>
             <span class="rank-status" style="font-size: 0.6rem;">${hpBars}</span>
           </div>`;
         });
@@ -2627,7 +2635,7 @@
         dead.forEach((p, i) => {
           html += `<div class="rank-item eliminated">
             <span class="rank-num">${alive.length + i + 1}</span>
-            <span class="rank-name">😢 ${p.name}</span>
+            <span class="rank-name">😢 ${escapeHtmlText(p.name)}</span>
             <span class="rank-status">K.O.</span>
           </div>`;
         });
@@ -2641,7 +2649,7 @@
         cancelAnimationFrame(animationId);
         animationId = null;
         lastTimestamp = 0;
-        survivors = participants.filter(p => p.alive);
+        survivors = getSurvivors();
         gameStatus.textContent = '🏆 게임 종료!';
         soundManager.playWin();
 
@@ -2649,13 +2657,13 @@
         survivors.forEach((p, i) => {
           html += `<div class="winner-card" style="animation-delay:${i * 0.1}s">
             <div class="emoji">${p.emoji}</div>
-            <div class="name">${p.name}</div>
+            <div class="name">${escapeHtmlText(p.name)}</div>
             <div class="rank">${i + 1}등</div>
           </div>`;
         });
         winnerList.innerHTML = html;
 
-        setTimeout(() => {
+        resultTimer = setTimeout(() => {
           winnerOverlay.classList.add('show');
           createConfetti();
         }, 500);
@@ -2665,29 +2673,38 @@
       }
 
       // Create confetti
+      function closeResult() {
+        winnerOverlay.classList.remove('show');
+        winnerOverlay.querySelector('.result-confetti')?.remove();
+      }
+
       function createConfetti() {
+        const colors = ['#ff2a2a', '#ffd700', '#00ff88', '#ff69b4', '#00bfff'];
+        const layer = document.createElement('div');
+        layer.className = 'result-confetti';
+        layer.setAttribute('aria-hidden', 'true');
         for (let i = 0; i < 50; i++) {
-          setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.style.cssText = `
-              position: fixed;
-              width: 10px;
-              height: 10px;
-              left: ${Math.random() * 100}vw;
-              top: -20px;
-              background: ${['#ff2a2a', '#ffd700', '#00ff88', '#ff69b4', '#00bfff'][Math.floor(Math.random() * 5)]};
-              z-index: 999;
-              pointer-events: none;
-              animation: confettiFall 3s linear forwards;
-            `;
-            document.body.appendChild(confetti);
-            setTimeout(() => confetti.remove(), 3000);
-          }, i * 30);
+          const confetti = document.createElement('div');
+          confetti.style.cssText = `
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            left: ${Math.random() * 100}vw;
+            top: -20px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            z-index: 999;
+            pointer-events: none;
+            animation: confettiFall 3s linear ${i * 30}ms both;
+          `;
+          layer.appendChild(confetti);
         }
+        winnerOverlay.appendChild(layer);
+        setTimeout(() => layer.remove(), 4500);
       }
 
       // Reset game
       function resetGame() {
+        clearTimeout(resultTimer);
         gameRunning = false;
         cancelAnimationFrame(animationId);
         animationId = null;
@@ -2704,13 +2721,13 @@
         gameStatus.textContent = '👊 링에 오를 준비를 하세요!';
         aliveCount.innerHTML = '생존자: <span>0</span> / 0';
         rankingList.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:20px;">참여자를 입력하고<br>게임을 시작하세요!</div>';
-        winnerOverlay.classList.remove('show');
+        closeResult();
         startBtn.disabled = false;
       }
 
       // Copy result
-      function copyResult() {
-        if (survivors.length === 0 && eliminationOrder.length === 0) {
+      async function copyResult() {
+        if (gameRunning || survivors.length === 0) {
           showToast('복사할 결과가 없습니다!');
           return;
         }
@@ -2719,14 +2736,17 @@
         survivors.forEach((p, i) => {
           result += `${i + 1}위: ${p.name}\n`;
         });
-        result += '\n💀 탈락 순서:\n';
-        eliminationOrder.forEach((p, i) => {
+        result += '\n💀 탈락자 순위:\n';
+        [...eliminationOrder].reverse().forEach((p, i) => {
           result += `${survivors.length + i + 1}위: ${p.name}\n`;
         });
 
-        navigator.clipboard.writeText(result).then(() => {
+        try {
+          await navigator.clipboard.writeText(result);
           showToast('결과가 복사되었습니다!');
-        });
+        } catch {
+          showToast('결과를 복사하지 못했습니다.');
+        }
       }
 
       // Show toast
@@ -2756,7 +2776,7 @@
       helpModal.addEventListener('click', e => {
         if (e.target === helpModal) helpModal.classList.remove('show');
       });
-      winnerOverlay.addEventListener('click', () => winnerOverlay.classList.remove('show'));
+      winnerOverlay.addEventListener('click', closeResult);
       window.addEventListener('resize', () => {
         if (!gameRunning) resizeCanvas();
       });

@@ -867,7 +867,7 @@
         storage.set('duration',els.spinDuration.value);
       }
       function restoreSettings() {
-        const participants = storage.get('participants');
+        const participants = storage.get('participants',null);
         let winnerCount = storage.get('winner-count');
         let duration = storage.get('duration');
         if (!winnerCount && !duration) {
@@ -877,7 +877,7 @@
             duration = legacy.spinDuration || '';
           } catch {}
         }
-        if (participants) els.participants.value = participants;
+        if (participants !== null) els.participants.value = participants;
         if (winnerCount) els.winnerCount.value = winnerCount;
         if (duration) els.spinDuration.value = duration;
       }

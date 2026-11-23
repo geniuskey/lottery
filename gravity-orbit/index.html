@@ -1001,7 +1001,7 @@
 
             <div class="section">
                 <label class="section-title" for="participantsInput">참여자 명단 <small style="color:rgba(255,255,255,.55)">· 최대 100명</small></label>
-                <textarea id="participantsInput" name="participants" maxlength="5000" autocomplete="off" placeholder="이름을 입력하세요 (쉼표 또는 줄바꿈)&#10;예: 김철수, 이영희*3, 박민수"></textarea>
+                <textarea id="participantsInput" name="participants" maxlength="5000" autocomplete="off" placeholder="이름을 입력하세요 (쉼표 또는 줄바꿈)&#10;예: 김철수, 이영희*3, 박민수">영수, 영호, 영식, 영철, 광수, 상철</textarea>
             </div>
 
             <div class="section" style="display: none;">
@@ -1102,8 +1102,10 @@
         </div>
     </div>
 
+    <script src="../assets/html-text.js"></script>
     <script>
         const MAX_PARTICIPANTS = 100;
+        const ORBIT_STEP = 1 / 60;
 
         /**
          * 0. Audio Engine
@@ -1437,17 +1439,20 @@
                 this.planet = { x: 0, y: 0 };
                 this.isRunning = false;
                 this.isCelebrating = false;
-                this.lastTime = 0;
+                this.lastTime = null;
+                this.accumulator = 0;
                 this.rng = null;
                 this.gameTime = 0;
+                this.resultTimer = null;
+                this.finalRankings = [];
                 this.winCondition = 'survival';
+                this.starCanvas = document.createElement('canvas');
                 this.stars = [];
                 this.mouseParticles = [];
                 this.celebParticles = [];
                 this.explosionParticles = [];
                 this.mousePos = { x: -100, y: -100 };
                 this.zoom = 1.0;
-                this.targetZoom = 1.0;
                 this.sound = new SoundManager();
 
                 window.addEventListener('resize', () => this.resize());
@@ -1465,42 +1470,71 @@
                     this.mousePos = { x: -1000, y: -1000 };
                 });
                 this.resize();
-                this.initStars();
 
                 // Start idle loop
                 requestAnimationFrame((t) => this.loop(t));
             }
 
             initStars() {
+                this.starCanvas.width = this.canvas.width;
+                this.starCanvas.height = this.canvas.height;
+                const context = this.starCanvas.getContext('2d');
+                const colors = ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#7dd3fc', '#fcd34d', '#f472b6'];
                 this.stars = [];
-                const colors = ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#7dd3fc', '#fcd34d', '#f472b6']; // Predominantly white, some colored
+
                 for (let i = 0; i < 1000; i++) {
-                    this.stars.push({
-                        x: Math.random(),
-                        y: Math.random(),
-                        size: Math.random() < 0.2 ? 1.8 : 0.8,
-                        color: colors[Math.floor(Math.random() * colors.length)],
-                        brightness: 0.4 + Math.random() * 0.6,
-                        twinkleSpeed: 0.003 + Math.random() * 0.008,
-                        phase: Math.random() * Math.PI * 2
-                    });
+                    const x = Math.random() * this.canvas.width;
+                    const y = Math.random() * this.canvas.height;
+                    const size = Math.random() < 0.2 ? 1.8 : 0.8;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const brightness = 0.4 + Math.random() * 0.6;
+                    if (i < 80) {
+                        this.stars.push({
+                            x, y, size, color, brightness,
+                            twinkleSpeed: 0.003 + Math.random() * 0.008,
+                            phase: Math.random() * Math.PI * 2
+                        });
+                    } else {
+                        context.fillStyle = color;
+                        context.globalAlpha = brightness * 0.6;
+                        context.fillRect(x, y, size, size);
+                    }
                 }
             }
 
+            getViewRadius() {
+                return Math.max(1, Math.min(this.canvas.width, this.canvas.height) / 2 - 38);
+            }
+
             resize() {
+                const previousRadius = this.getViewRadius();
                 const rect = this.canvas.parentElement.getBoundingClientRect();
                 this.canvas.width = rect.width;
                 this.canvas.height = rect.height;
 
-                // Sync celebration canvas
                 this.celebCanvas.width = window.innerWidth;
                 this.celebCanvas.height = window.innerHeight;
 
-                this.planet.x = this.canvas.width / 2;
-                this.planet.y = this.canvas.height / 2;
+                const dx = this.canvas.width / 2 - this.planet.x;
+                const dy = this.canvas.height / 2 - this.planet.y;
+                this.planet.x += dx;
+                this.planet.y += dy;
+
+                if (this.particles.length) {
+                    const translate = point => {
+                        point.x += dx;
+                        point.y += dy;
+                    };
+                    this.particles.forEach(particle => {
+                        translate(particle);
+                        particle.history.forEach(translate);
+                    });
+                    this.explosionParticles.forEach(translate);
+                    const scale = this.getViewRadius() / previousRadius;
+                    this.zoom *= scale;
+                }
                 this.initStars();
             }
-
 
             start() {
                 const input = document.getElementById('participantsInput').value;
@@ -1511,16 +1545,19 @@
                 }
 
                 // Reset for new game
+                this.closeResult();
+                this.finalRankings = [];
                 this.isRunning = true;
                 this.sound.init();
                 this.sound.playStart();
                 this.particles = [];
                 this.gameTime = 0;
-                this.zoom = 1.0;
-                this.targetZoom = 1.0;
                 document.getElementById('rankingList').innerHTML = "";
-                this.lastTime = performance.now();
+                this.lastTime = null;
+                this.accumulator = 0;
                 this.winCondition = document.getElementById('winCondition').value;
+                const requestedCount = parseInt(document.getElementById('winnerCount').value, 10) || 1;
+                this.winnerCount = Math.max(1, Math.min(requestedCount, names.length));
 
                 this.rng = new RandomSource();
 
@@ -1537,8 +1574,14 @@
                     const vy = Math.cos(angle) * speed;
 
                     const hue = this.rng.range(0, 360);
-                    return new Particle(name, x, y, vx, vy, `hsl(${hue}, 80%, 65%)`);
+                    const particle = new Particle(name, x, y, vx, vy, `hsl(${hue}, 80%, 65%)`);
+                    // Leave room for the outer part of each orbit before zooming in.
+                    particle.cameraRadius = spawnDist * 1.15;
+                    return particle;
                 });
+
+                const outerRadius = Math.max(...this.particles.map(p => p.cameraRadius));
+                this.zoom = Math.min(1, this.getViewRadius() / outerRadius);
 
                 document.getElementById('startBtn').disabled = true;
                 document.getElementById('liveStatus').style.display = "block";
@@ -1563,33 +1606,34 @@
             }
 
             loop(timestamp) {
-                if (!this.lastTime) this.lastTime = timestamp;
-                const elapsed = timestamp - this.lastTime;
+                this.lastTime ??= timestamp;
+                this.accumulator += Math.min((timestamp - this.lastTime) / 1000, 0.1);
+                this.lastTime = timestamp;
+                const steps = Math.floor((this.accumulator + 1e-9) / ORBIT_STEP);
 
-                // Cap to 60 FPS
-                if (elapsed >= 16.67) {
-                    const dt = Math.min(elapsed / 1000, 0.1);
-                    this.lastTime = timestamp;
-
-                    if (this.isRunning) {
-                        this.update(dt);
-                        this.updateUI();
-
-                        const alive = this.particles.filter(p => !p.isEliminated);
-                        const winnerCountNeeded = parseInt(document.getElementById('winnerCount').value) || 1;
-
-                        if (this.gameTime >= 40 || (this.winCondition === 'survival' && alive.length <= winnerCountNeeded && this.particles.length > winnerCountNeeded)) {
-                            setTimeout(() => this.endGame(), 1000);
+                if (steps > 0) {
+                    this.accumulator = Math.max(0, this.accumulator - steps * ORBIT_STEP);
+                    if (this.isRunning && this.resultTimer === null) {
+                        for (let step = 0; step < steps; step++) {
+                            this.update(ORBIT_STEP);
+                            const enoughSurvivors = this.winCondition === 'survival'
+                                && this.particles.length > this.winnerCount
+                                && this.particles.filter(p => !p.isEliminated).length <= this.winnerCount;
+                            if (this.gameTime >= 40 || enoughSurvivors) {
+                                this.resultTimer = setTimeout(() => {
+                                    this.resultTimer = null;
+                                    this.endGame();
+                                }, 1000);
+                                break;
+                            }
                         }
+                        if (this.winCondition === 'stability') this.calculateStability();
+                        this.updateUI();
                     }
 
+                    this.draw(steps * ORBIT_STEP);
                     if (this.isCelebrating) {
                         this.updateCelebration();
-                    }
-
-                    this.draw();
-
-                    if (this.isCelebrating) {
                         this.drawCelebration();
                     }
                 }
@@ -1599,49 +1643,30 @@
 
             update(dt) {
                 this.gameTime += dt;
-                let maxDist = 0;
-                let aliveCount = 0;
+                let outerRadius = 0;
 
                 this.particles.forEach(p => {
                     p.update(dt, this.planet);
                     if (!p.isEliminated) {
                         const dx = p.x - this.planet.x;
                         const dy = p.y - this.planet.y;
-                        maxDist = Math.max(maxDist, Math.sqrt(dx * dx + dy * dy));
-                        aliveCount++;
+                        const radius = Math.hypot(dx, dy);
+                        p.cameraRadius = Math.max(p.cameraRadius, radius);
+                        outerRadius = Math.max(outerRadius, p.cameraRadius);
+                        if (this.winCondition === 'target' && Math.abs(radius - CONFIG.TARGET_RADIUS) < CONFIG.TARGET_WIDTH / 2) {
+                            p.score += 300 * dt;
+                        }
                     }
                 });
 
-                // Dynamic Zoom Logic (Track the "Action Zone")
-                if (this.isRunning && aliveCount > 0) {
-                    const margin = 100; // Margin for name tags
-                    const viewSize = Math.min(this.canvas.width, this.canvas.height) / 2;
-                    const orbitRadius = Math.max(maxDist, CONFIG.PLANET_RADIUS + 40);
-                    const idealZoom = viewSize / (orbitRadius + margin);
-
-                    const nextTarget = Math.min(Math.max(idealZoom, 0.5), 40.0);
-                    // One-way zoom: Only allow zoom-in (increasing scale) to prevent "heartbeat" zoom out
-                    if (nextTarget > this.targetZoom) {
-                        this.targetZoom = nextTarget;
-                    }
-                } else {
-                    this.targetZoom = 1.0;
-                }
-
-                // Strictly limited zoom rate: fixed 0.1 units per second
-                const zoomSpeed = 0.1;
-                const maxDelta = zoomSpeed * dt;
-                const diff = this.targetZoom - this.zoom;
-
-                const clampedDiff = Math.max(-maxDelta, Math.min(maxDelta, diff));
-                const nextZoom = this.zoom + clampedDiff;
-
-                if (!isNaN(nextZoom) && isFinite(nextZoom)) {
-                    this.zoom = nextZoom;
+                if (outerRadius > 0) {
+                    const fitZoom = this.getViewRadius() / outerRadius;
+                    this.zoom = Math.max(this.zoom, Math.min(fitZoom, this.zoom + 0.1 * dt));
                 }
             }
 
-            draw() {
+            draw(dt) {
+                if (!this.canvas.width || !this.canvas.height) return;
                 // Reset transform to identity to prevent any accumulation from crashes
                 this.ctx.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -1664,7 +1689,7 @@
                 // Update & Draw Mouse Particles
                 this.mouseParticles = this.mouseParticles.filter(p => p.alpha > 0);
                 this.mouseParticles.forEach(p => {
-                    p.update(1 / 60);
+                    p.update(dt);
                     p.draw(this.ctx);
                 });
 
@@ -1678,7 +1703,7 @@
                 // Update & Draw Explosion Particles (Inside scaled context)
                 this.explosionParticles = this.explosionParticles.filter(p => p.alpha > 0);
                 this.explosionParticles.forEach(p => {
-                    p.update(1 / 60);
+                    p.update(dt);
                     p.draw(this.ctx);
                 });
 
@@ -1686,17 +1711,14 @@
                 this.ctx.save();
                 this.ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform for stars
 
-                // Star Field (Pre-generated for high quality randomness)
-                this.stars.forEach((star, i) => {
-                    const sx = star.x * this.canvas.width;
-                    const sy = star.y * this.canvas.height;
-                    const twinkle = 0.6 + Math.sin(Date.now() * star.twinkleSpeed + star.phase) * 0.4;
-
+                this.ctx.drawImage(this.starCanvas, 0, 0);
+                const now = Date.now();
+                this.stars.forEach(star => {
+                    const twinkle = 0.6 + Math.sin(now * star.twinkleSpeed + star.phase) * 0.4;
                     this.ctx.fillStyle = star.color;
                     this.ctx.globalAlpha = star.brightness * twinkle;
-                    this.ctx.fillRect(sx, sy, star.size, star.size);
+                    this.ctx.fillRect(star.x, star.y, star.size, star.size);
                 });
-                this.ctx.globalAlpha = 1.0;
                 this.ctx.restore(); // Restore to scaled coordinates
 
                 // Layered Nebulae for "Bling-Bling" effect
@@ -1753,21 +1775,20 @@
                 this.ctx.restore(); // Restore main scale
             }
 
-            updateUI() {
-                let sorted = [...this.particles];
+            getRankings() {
+                const ranked = [...this.particles];
                 if (this.winCondition === 'survival') {
-                    sorted.sort((a, b) => {
+                    return ranked.sort((a, b) => {
                         if (a.isEliminated !== b.isEliminated) return a.isEliminated ? 1 : -1;
-                        if (!a.isEliminated) return b.minDist - a.minDist; // Safer (further) orbits higher
+                        if (!a.isEliminated) return b.minDist - a.minDist;
                         return b.survivalTime - a.survivalTime;
                     });
-                } else if (this.winCondition === 'stability') {
-                    this.calculateStability();
-                    sorted.sort((a, b) => b.score - a.score);
-                } else if (this.winCondition === 'target') {
-                    this.calculateTargetScore();
-                    sorted.sort((a, b) => b.score - a.score);
                 }
+                return ranked.sort((a, b) => b.score - a.score);
+            }
+
+            updateUI() {
+                const sorted = this.getRankings();
 
                 // Update Global Timer
                 const timerEl = document.getElementById('gameTimer');
@@ -1783,7 +1804,7 @@
                     <div class="ranking-item">
                         <div class="rank ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</div>
                         <div class="particle-color" style="background:${p.color}; box-shadow: 0 0 5px ${p.color}"></div>
-                        <div class="name">${p.name}</div>
+                        <div class="name">${escapeHtmlText(p.name)}</div>
                         <div class="metrics"></div>
                         <div class="status ${p.isEliminated ? 'eliminated' : ''}">
                             ${p.isEliminated ? p.survivalTime.toFixed(3) + 's' : `MIN:${Math.round(p.minDist)}`}
@@ -1803,19 +1824,6 @@
                 });
             }
 
-            calculateTargetScore() {
-                this.particles.forEach(p => {
-                    if (p.isEliminated) return;
-                    const lastPt = p.orbitPoints[p.orbitPoints.length - 1];
-                    if (!lastPt) return;
-
-                    const distFromTarget = Math.abs(lastPt.d - CONFIG.TARGET_RADIUS);
-                    if (distFromTarget < CONFIG.TARGET_WIDTH / 2) {
-                        p.score += 5; // Rapid accumulation within ring
-                    }
-                });
-            }
-
             endGame() {
                 if (!this.isRunning) return;
                 this.isRunning = false;
@@ -1823,15 +1831,9 @@
                 document.getElementById('startBtn').disabled = false;
                 document.getElementById('liveStatus').style.display = "none";
 
-                let sorted = [...this.particles];
-                if (this.winCondition === 'survival') {
-                    sorted.sort((a, b) => b.survivalTime - a.survivalTime);
-                } else {
-                    sorted.sort((a, b) => b.score - a.score);
-                }
-
-                const count = parseInt(document.getElementById('winnerCount').value) || 1;
-                const top = sorted.slice(0, count);
+                document.getElementById('gameTimer').classList.remove('active');
+                this.finalRankings = this.getRankings();
+                const top = this.finalRankings.slice(0, this.winnerCount);
                 const winnerNames = top.map(w => w.name).join(', ');
 
                 // Update UI Elements
@@ -1840,7 +1842,7 @@
                 // Generate Ranking List for UI
                 const rankList = document.getElementById('finalRankingList');
                 rankList.innerHTML = "";
-                sorted.forEach((p, i) => {
+                this.finalRankings.forEach((p, i) => {
                     const rankClass = i < 3 ? `rank-${i + 1}` : "";
                     const status = p.isEliminated ? `${p.survivalTime.toFixed(2)}s` : "SURVIVED";
                     const item = document.createElement('div');
@@ -1848,7 +1850,7 @@
                     item.style.animationDelay = `${i * 0.1}s`;
                     item.innerHTML = `
                         <div class="final-pos">${i + 1}</div>
-                        <div class="final-name">${p.name}</div>
+                        <div class="final-name">${escapeHtmlText(p.name)}</div>
                         <div class="final-score">${status}</div>
                     `;
                     rankList.appendChild(item);
@@ -1909,17 +1911,21 @@
             }
 
             reset() {
+                clearTimeout(this.resultTimer);
+                this.resultTimer = null;
+                this.finalRankings = [];
                 this.isRunning = false;
-                this.isCelebrating = false;
-                this.celebParticles = [];
-                this.celebCtx.clearRect(0, 0, this.celebCanvas.width, this.celebCanvas.height);
+                this.closeResult();
                 this.particles = [];
+                this.explosionParticles = [];
                 this.gameTime = 0;
-                this.lastTime = 0;
+                this.zoom = 1;
+                this.lastTime = null;
+                this.accumulator = 0;
                 document.getElementById('startBtn').disabled = false;
                 document.getElementById('liveStatus').style.display = "none";
+                document.getElementById('gameTimer').classList.remove('active');
                 document.getElementById('rankingList').innerHTML = '<div style="text-align: center; color: #555; font-size: 13px; margin-top: 20px;">참여자를 입력하고 시작하세요</div>';
-                document.getElementById('resultOverlay').classList.remove('active');
                 document.getElementById('killFeed').innerHTML = ""; // Clear feed on reset
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             }
@@ -1952,7 +1958,7 @@
                     message = msgs[Math.floor(Math.random() * msgs.length)];
                 }
 
-                item.innerHTML = `<span style="font-weight: 800; color: #fff; margin-right: 4px;">${name}</span>${message}`;
+                item.innerHTML = `<span style="font-weight: 800; color: #fff; margin-right: 4px;">${escapeHtmlText(name)}</span>${message}`;
                 feed.insertBefore(item, feed.firstChild);
 
                 // Auto remove from DOM after animation
@@ -1998,19 +2004,21 @@
                 winCondition: document.getElementById('winCondition').value,
                 winnerCount: document.getElementById('winnerCount').value
             };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+            } catch { /* Storage may be unavailable. */ }
         }
 
         function loadSettings() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                const settings = JSON.parse(saved);
-                document.getElementById('participantsInput').value = settings.participants || "영수, 영호, 영식, 영철, 광수, 상철";
-                document.getElementById('winCondition').value = settings.winCondition || "survival";
-                document.getElementById('winnerCount').value = settings.winnerCount || "1";
-            } else {
-                document.getElementById('participantsInput').value = "영수, 영호, 영식, 영철, 광수, 상철";
-            }
+            try {
+                const settings = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                if (typeof settings?.participants === 'string') document.getElementById('participantsInput').value = settings.participants;
+                const condition = document.getElementById('winCondition');
+                if ([...condition.options].some(option => option.value === settings?.winCondition)) {
+                    condition.value = settings.winCondition;
+                }
+                if (settings?.winnerCount != null) document.getElementById('winnerCount').value = settings.winnerCount;
+            } catch { /* Keep defaults when saved settings cannot be read. */ }
         }
 
         document.getElementById('participantsInput').oninput = saveSettings;
@@ -2019,18 +2027,13 @@
         loadSettings();
 
         // Copy Results
-        document.getElementById('copyResultBtn').onclick = () => {
-            if (!game.particles.length) return;
-
-            let sorted = [...game.particles];
-            if (game.winCondition === 'survival') {
-                sorted.sort((a, b) => b.survivalTime - a.survivalTime);
-            } else {
-                sorted.sort((a, b) => b.score - a.score);
+        document.getElementById('copyResultBtn').onclick = async () => {
+            const sorted = game.finalRankings;
+            if (!sorted.length) {
+                showToast('복사할 결과가 없습니다.');
+                return;
             }
-
-            const winnerCount = parseInt(document.getElementById('winnerCount').value) || 1;
-            const winners = sorted.slice(0, winnerCount).map(p => p.name).join(', ');
+            const winners = sorted.slice(0, game.winnerCount).map(p => p.name).join(', ');
 
             let resultText = `🪐 중력 궤도 생존 추첨 결과\n`;
             resultText += `당첨자: ${winners}\n\n`;
@@ -2041,7 +2044,12 @@
                 resultText += `${i + 1}위. ${p.name} (${status})\n`;
             });
 
-            navigator.clipboard.writeText(resultText).then(() => showToast("전체 결과가 복사되었습니다! ✨"));
+            try {
+                await navigator.clipboard.writeText(resultText);
+                showToast('전체 결과가 복사되었습니다! ✨');
+            } catch {
+                showToast('결과를 복사하지 못했습니다.');
+            }
         };
 
         // Help Modal (Simple alert for brevity, or full modal if needed)

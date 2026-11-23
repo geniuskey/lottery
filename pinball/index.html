@@ -2127,7 +2127,7 @@
         const p = localStorage.getItem('pinball_participants');
         const s = localStorage.getItem('pinball_survivors');
         const sp = localStorage.getItem('pinball_speed');
-        if (p) document.getElementById('participants').value = p;
+        if (p !== null) document.getElementById('participants').value = p;
         if (s) {
           document.getElementById('survivorCount').value = s;
           document.getElementById('survivorValue').textContent = s;

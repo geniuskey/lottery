@@ -1014,7 +1014,7 @@
         storage.set('dynamic-sort',els.dynamicSort.checked);
       }
       function restoreSettings() {
-        const participants = storage.get('participants');
+        const participants = storage.get('participants',null);
         let winnerCount = storage.get('winner-count');
         let maxNumber = storage.get('max-number');
         let requiredLines = storage.get('required-lines');
@@ -1028,7 +1028,7 @@
             if (legacy.dynamicSort !== undefined) dynamicSort = String(legacy.dynamicSort);
           } catch { /* ignore malformed legacy settings */ }
         }
-        if (participants) els.participants.value = participants;
+        if (participants !== null) els.participants.value = participants;
         if (winnerCount) els.winnerCount.value = winnerCount;
         if (maxNumber) els.maxNumber.value = maxNumber;
         if (requiredLines) els.requiredLines.value = requiredLines;

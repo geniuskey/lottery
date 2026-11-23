@@ -1885,7 +1885,7 @@
             });
 
             const savedNames = loadSetting('neon-race-participants');
-            if (savedNames) participantsInput.value = savedNames;
+            if (savedNames !== null) participantsInput.value = savedNames;
             const savedLength = loadSetting('neon-race-length');
             if (savedLength) { raceLengthSlider.value = savedLength; raceLengthValue.textContent = savedLength; }
             const savedDensity = loadSetting('neon-race-density');

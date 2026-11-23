@@ -1988,9 +1988,9 @@
     }
 
     function loadSettings() {
-      const savedParticipants = readStorage('school-dance-participants', readStorage('mugunghwa_participants'));
+      const savedParticipants = readStorage('school-dance-participants', readStorage('mugunghwa_participants', null));
       const savedWinnerCount = readStorage('school-dance-winner-count', readStorage('mugunghwa_winnerCount', '1'));
-      if (savedParticipants) pInput.value = savedParticipants;
+      if (savedParticipants !== null) pInput.value = savedParticipants;
       const safeWinnerCount = Math.max(1, Math.min(10, Number.parseInt(savedWinnerCount, 10) || 1));
       wCount.value = safeWinnerCount; wVal.textContent = safeWinnerCount;
     }

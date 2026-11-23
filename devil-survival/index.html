@@ -868,6 +868,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite">결과가 복사되었습니다!</div>
 
+  <script src="../assets/html-text.js"></script>
   <script>
     const MAX_PARTICIPANTS = 60;
 
@@ -1036,6 +1037,11 @@
       let ringBounds = { x: 0, y: 0, w: 0, h: 0 };
       let eliminationOrder = [];
       let survivors = [];
+      let winnerCount = 1;
+      let resultTimer = null;
+      let lastTimestamp = null;
+      let accumulator = 0;
+      const FIXED_STEP = 1000 / 60;
       let effects = [];
       let textEffects = [];
       let eliminatedParticipants = [];
@@ -1093,7 +1099,7 @@
         try {
           const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
           if (saved) {
-            participantsInput.value = saved.participants || participantsInput.value;
+            participantsInput.value = saved.participants ?? participantsInput.value;
             winnerCountInput.value = saved.winnerCount || 1;
             startHPSelect.value = saved.startHP || '3';
           }
@@ -1126,8 +1132,9 @@
           return false;
         }
 
-        const wc = Math.min(parseInt(winnerCountInput.value) || 1, names.length - 1);
-        winnerCountInput.value = wc;
+        winnerCount = Math.min(parseInt(winnerCountInput.value, 10) || 1, names.length - 1);
+        clearTimeout(resultTimer);
+        closeResult();
 
         soundManager.init();
         resizeCanvas();
@@ -1182,24 +1189,39 @@
 
         updateAliveCount();
         updateRanking();
-        gameLoop();
+        lastTimestamp = null;
+        accumulator = 0;
+        draw();
+        animationId = requestAnimationFrame(gameLoop);
         return true;
       }
 
-      function gameLoop() {
+      function gameLoop(timestamp) {
         if (!gameRunning) return;
-        update();
-        draw();
-        animationId = requestAnimationFrame(gameLoop);
+        lastTimestamp ??= timestamp;
+        accumulator += Math.min(timestamp - lastTimestamp, 100);
+        lastTimestamp = timestamp;
+
+        let needsDraw = false;
+        while (accumulator >= FIXED_STEP && gameRunning) {
+          accumulator -= FIXED_STEP;
+          update();
+          needsDraw = true;
+        }
+        if (needsDraw) draw();
+        if (gameRunning) animationId = requestAnimationFrame(gameLoop);
       }
 
       function update() {
         const alive = participants.filter(p => p.alive);
 
-        if (alive.length <= parseInt(winnerCountInput.value)) {
+        if (alive.length <= winnerCount) {
           endGame();
           return;
         }
+
+        effects = effects.filter(effect => --effect.life > 0);
+        textEffects = textEffects.filter(effect => --effect.life > 0);
 
         // Devil Logic
         devil.stateTimer--;
@@ -1284,10 +1306,11 @@
           }
 
           // Check participant hit
-          alive.forEach(p => {
+          let remaining = alive.length;
+          for (const p of alive) {
             if (p.hitCooldown > 0) {
               p.hitCooldown--;
-              return;
+              continue;
             }
             const dist = Math.hypot(p.x - devil.x, p.y - devil.y);
             if (dist < p.radius + devil.radius) {
@@ -1318,16 +1341,20 @@
                 const log = document.getElementById('koLog');
                 const logItem = document.createElement('div');
                 logItem.className = 'ko-log-item';
-                logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${p.name}</span>: ${randomMsg}`;
+                logItem.innerHTML = `<span style="font-weight:bold;color:#fff;">${escapeHtmlText(p.name)}</span>: ${randomMsg}`;
                 log.insertBefore(logItem, log.firstChild);
                 
                 if (log.children.length > 5) log.removeChild(log.lastChild);
                 
                 updateAliveCount();
+                if (--remaining === winnerCount) {
+                  endGame();
+                  return;
+                }
                 updateRanking();
               }
             }
-          });
+          }
         } 
         else if (devil.state === 'RECOVERING') {
           devil.shake = Math.sin(devil.stateTimer * 0.5) * 2;
@@ -1591,8 +1618,7 @@
         }
 
         // Effects
-        effects = effects.filter(e => {
-          e.life--;
+        effects.forEach(e => {
           if (e.type === 'CRASH') {
             ctx.save();
             ctx.beginPath();
@@ -1602,11 +1628,9 @@
             ctx.stroke();
             ctx.restore();
           }
-          return e.life > 0;
         });
 
-        textEffects = textEffects.filter(e => {
-          e.life--;
+        textEffects.forEach(e => {
           ctx.save();
           ctx.globalAlpha = e.life / 60;
           ctx.font = `bold ${20 * e.scale}px 'Black Han Sans'`;
@@ -1614,7 +1638,6 @@
           ctx.textAlign = 'center';
           ctx.fillText(e.text, e.x, e.y - (60 - e.life) * 0.5);
           ctx.restore();
-          return e.life > 0;
         });
       }
 
@@ -1623,22 +1646,27 @@
         aliveCount.innerHTML = `생존자: <span>${alive}</span> / ${participants.length}`;
       }
 
+      function getSurvivors() {
+        return participants.filter(p => p.alive).sort((a, b) => b.hp - a.hp);
+      }
+
       function updateRanking() {
-        const alive = participants.filter(p => p.alive).sort((a, b) => b.hp - a.hp);
+        const alive = getSurvivors();
+
         const dead = eliminationOrder.slice().reverse();
 
         let html = '';
         alive.forEach((p, i) => {
           html += `<div class="rank-item">
             <span class="rank-num">${i + 1}</span>
-            <span class="rank-name">${p.emoji} ${p.name}</span>
+            <span class="rank-name">${p.emoji} ${escapeHtmlText(p.name)}</span>
             <span class="rank-status">${'❤️'.repeat(p.hp)}</span>
           </div>`;
         });
         dead.forEach((p, i) => {
           html += `<div class="rank-item eliminated">
             <span class="rank-num">${alive.length + i + 1}</span>
-            <span class="rank-name">👻 ${p.name}</span>
+            <span class="rank-name">👻 ${escapeHtmlText(p.name)}</span>
             <span class="rank-status">K.O.</span>
           </div>`;
         });
@@ -1650,7 +1678,7 @@
       function endGame() {
         gameRunning = false;
         cancelAnimationFrame(animationId);
-        survivors = participants.filter(p => p.alive);
+        survivors = getSurvivors();
         gameStatus.textContent = '🏆 게임 종료!';
         soundManager.playWin();
 
@@ -1658,28 +1686,47 @@
         survivors.forEach((p, i) => {
           html += `<div class="winner-card" style="animation-delay:${i * 0.1}s">
             <div class="emoji">${p.emoji}</div>
-            <div class="name">${p.name}</div>
+            <div class="name">${escapeHtmlText(p.name)}</div>
             <div class="rank">생존</div>
           </div>`;
         });
         winnerList.innerHTML = html;
-        setTimeout(() => { winnerOverlay.classList.add('show'); createConfetti(); }, 500);
+        resultTimer = setTimeout(() => { winnerOverlay.classList.add('show'); createConfetti(); }, 500);
         updateRanking();
         startBtn.disabled = false;
       }
 
+      function closeResult() {
+        winnerOverlay.classList.remove('show');
+        winnerOverlay.querySelector('.result-confetti')?.remove();
+      }
+
       function createConfetti() {
+        const colors = ['#ff0055', '#ff4500', '#ffcc00', '#aa00ff', '#ffffff'];
+        const layer = document.createElement('div');
+        layer.className = 'result-confetti';
+        layer.setAttribute('aria-hidden', 'true');
         for (let i = 0; i < 50; i++) {
-          setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.style.cssText = `position: fixed; width: 10px; height: 10px; left: ${Math.random() * 100}vw; top: -20px; background: ${['#ff4500', '#9400d3', '#ff00ff', '#000', '#fff'][Math.floor(Math.random() * 5)]}; z-index: 999; pointer-events: none; animation: confettiFall 3s linear forwards;`;
-            document.body.appendChild(confetti);
-            setTimeout(() => confetti.remove(), 3000);
-          }, i * 30);
+          const confetti = document.createElement('div');
+          confetti.style.cssText = `
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            left: ${Math.random() * 100}vw;
+            top: -20px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            z-index: 999;
+            pointer-events: none;
+            animation: confettiFall 3s linear ${i * 30}ms both;
+          `;
+          layer.appendChild(confetti);
         }
+        winnerOverlay.appendChild(layer);
+        setTimeout(() => layer.remove(), 4500);
       }
 
       function resetGame() {
+        clearTimeout(resultTimer);
         gameRunning = false;
         cancelAnimationFrame(animationId);
         participants = []; devil = null; eliminationOrder = []; survivors = []; effects = []; textEffects = []; eliminatedParticipants = [];
@@ -1691,20 +1738,25 @@
         rankingList.innerHTML = `<div style="text-align:center;color:var(--text-secondary);padding:20px;">
             생존자들을 입력하고<br>지옥문을 여세요!
           </div>`;
-        winnerOverlay.classList.remove('show');
+        closeResult();
         startBtn.disabled = false;
       }
 
-      function copyResult() {
-        if (survivors.length === 0 && eliminationOrder.length === 0) {
+      async function copyResult() {
+        if (gameRunning || survivors.length === 0) {
           showToast('복사할 결과가 없습니다!');
           return;
         }
         let result = '😈 악마로부터 살아남기 결과\n━━━━━━━━━━━━━━━━━━\n\n🏆 생존자:\n';
         survivors.forEach((p, i) => { result += `- ${p.name}\n`; });
-        result += '\n💀 탈락 순서:\n';
-        eliminationOrder.forEach((p, i) => { result += `${survivors.length + i + 1}위: ${p.name}\n`; });
-        navigator.clipboard.writeText(result).then(() => { showToast('결과가 복사되었습니다!'); });
+        result += '\n💀 탈락자 순위:\n';
+        [...eliminationOrder].reverse().forEach((p, i) => { result += `${survivors.length + i + 1}위: ${p.name}\n`; });
+        try {
+          await navigator.clipboard.writeText(result);
+          showToast('결과가 복사되었습니다!');
+        } catch {
+          showToast('결과를 복사하지 못했습니다.');
+        }
       }
 
       function showToast(message) {
@@ -1730,7 +1782,7 @@
       helpBtn.addEventListener('click', () => helpModal.classList.add('show'));
       closeHelp.addEventListener('click', () => helpModal.classList.remove('show'));
       helpModal.addEventListener('click', e => { if (e.target === helpModal) helpModal.classList.remove('show'); });
-      winnerOverlay.addEventListener('click', () => winnerOverlay.classList.remove('show'));
+      winnerOverlay.addEventListener('click', closeResult);
       window.addEventListener('resize', () => { if (!gameRunning) resizeCanvas(); });
 
       loadSettings();

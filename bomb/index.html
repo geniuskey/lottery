@@ -964,7 +964,7 @@
         storage.set('speed',els.bombSpeed.value);
       }
       function restoreSettings() {
-        const participants = storage.get('participants');
+        const participants = storage.get('participants',null);
         let survivorCount = storage.get('survivor-count');
         let speed = storage.get('speed');
         if (!survivorCount && !speed) {
@@ -974,7 +974,7 @@
             speed = legacy.bombSpeed || '';
           } catch {}
         }
-        if (participants) els.participants.value = participants;
+        if (participants !== null) els.participants.value = participants;
         if (survivorCount) els.survivorCount.value = survivorCount;
         if (speed) els.bombSpeed.value = speed;
       }

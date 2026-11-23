@@ -17,6 +17,7 @@
 
 | 게임 | 설명 | 카테고리 |
 |------|------|----------|
+| 🎱 [핀볼 서바이벌](./pinball/) | 범퍼와 플리퍼 사이에서 오래 버티기 | 서바이벌 |
 | 🌌 [네온 레이스](./neon-race/) | 사이버펑크 네온 레이싱 | 레이싱 |
 | 🏅 [구슬 올림픽](./marble-olympics/) | 물리 엔진 기반 구슬 레이싱 | 레이싱 |
 | 🧟 [좀비 아레나](./zombie-arena/) | 좀비 배틀로얄 서바이벌 | 서바이벌 |
@@ -31,7 +32,14 @@
 | 🪑 [의자 앉기](./chair/) | 뮤지컬 체어 의자 뺏기 | 서바이벌 |
 | 🪐 [중력 궤도 생존](./gravity-orbit/) | 행성 중력 궤도 서바이벌 | 서바이벌 |
 | 👹 [술래로부터 살아남기](./chaser-survival/) | 술래를 피해 도망치기 | 서바이벌 |
+| 😈 [악마로부터 살아남기](./devil-survival/) | 악마의 돌진 피하기 | 서바이벌 |
+| 🛸 [UFO 납치](./ufo-abduction/) | 트랙터 빔을 피해 마지막까지 버티기 | 서바이벌 |
+| 🚀 [우주 경주](./space-race/) | 소행성 사이로 달리는 우주선 경주 | 레이싱 |
+| 🎈 [풍선 서바이벌](./balloon-survival/) | 마지막까지 풍선 지키기 | 서바이벌 |
+| 🎯 [다트 토너먼트](./dart-tournament/) | 과녁 점수로 순위를 가리는 경기 | 토너먼트 |
 | 🪜 [사다리 추첨](./ladder/) | 클래식 사다리 타기 | 추첨 |
+
+[토너먼트 가위바위보](./rps-tournament/)도 직접 열어 플레이할 수 있습니다.
 
 ## 🚀 시작하기
 
@@ -66,21 +74,8 @@ lottery/
 ├── index.html              # 게임 포털 메인 페이지
 ├── README.md
 ├── LICENSE
-├── neon-race/
-├── marble-olympics/
-├── zombie-arena/
-├── school-dance/
-├── group-rps/
-├── bingo/
-├── bomb/
-├── roulette/
-├── chestnut-survival/
-├── disk-shove/
-├── punch-survival/
-├── chair/
-├── gravity-orbit/
-├── chaser-survival/
-└── ladder/
+├── assets/                 # 공유 리소스와 게임 썸네일
+└── <게임 이름>/index.html  # 게임별 페이지
 ```
 
 ## 🎯 사용 사례

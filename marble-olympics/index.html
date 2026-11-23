@@ -2598,6 +2598,7 @@
                 this.accumulator = 0;
                 this.rankingElapsed = 0;
                 this.lastResultText = '';
+                document.getElementById('copyResultBtn2').disabled = true;
                 document.getElementById('racePhase').classList.remove('show');
                 const overlay = document.getElementById('winnerOverlay');
                 overlay.classList.remove('show');
@@ -2660,6 +2661,8 @@
                 if (this.resultTimer) clearTimeout(this.resultTimer);
                 this.resultTimer = null;
                 this.stop();
+                this.lastResultText = '';
+                document.getElementById('copyResultBtn2').disabled = true;
                 this.setupWorld();
                 this.draw();
                 this.setPlaceholder('게임을 시작하면 순위가 표시됩니다');
@@ -3380,7 +3383,7 @@
                 const savedParticipants = loadSetting(STORAGE_KEY_PARTICIPANTS);
                 const savedFirstWins = loadSetting(STORAGE_KEY_FIRST_WINS);
                 const savedMap = loadSetting(STORAGE_KEY_MAP);
-                if (savedParticipants) participantsInput.value = savedParticipants;
+                if (savedParticipants !== null) participantsInput.value = savedParticipants;
                 if (savedMap && ['chaos', 'pinball', 'funnel'].includes(savedMap)) mapSelect.value = savedMap;
                 game.mapType = mapSelect.value;
                 if (savedFirstWins !== null) firstWinsToggle.checked = savedFirstWins === 'true';

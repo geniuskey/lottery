@@ -645,10 +645,10 @@
         storage.set('tempo',els.tempo.value);
       }
       function restoreSettings() {
-        const participants = storage.get('participants');
+        const participants = storage.get('participants',null);
         const winners = storage.get('winner-count');
         const tempo = storage.get('tempo');
-        if (participants) els.participants.value = participants;
+        if (participants !== null) els.participants.value = participants;
         if (winners) els.winnerCount.value = winners;
         if (tempo && TEMPOS[tempo]) els.tempo.value = tempo;
       }

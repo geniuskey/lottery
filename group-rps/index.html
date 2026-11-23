@@ -983,8 +983,8 @@
         els.celebrationCanvas.style.display = 'none';
       }
       function restoreSettings() {
-        const savedParticipants = storage.get('participants'); const savedWinnerCount = storage.get('winner-count');
-        if (savedParticipants) els.participants.value = savedParticipants;
+        const savedParticipants = storage.get('participants',null); const savedWinnerCount = storage.get('winner-count');
+        if (savedParticipants !== null) els.participants.value = savedParticipants;
         if (savedWinnerCount) els.winnerCount.value = savedWinnerCount;
       }
       els.participants.addEventListener('input',() => {
