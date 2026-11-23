@@ -69,13 +69,15 @@ npx serve
 
 ## 포털 접속 통계
 
-포털의 누적 사용자와 페이지 조회수는 첫 GA4 태그가 추가된 2026년 1월 15일부터 조회합니다. GA4의 `totalUsers`를 전체 기간으로 한 번 조회해 여러 날짜에 방문한 사용자의 중복 집계를 피합니다. 인기순은 이틀 전까지의 30일 동안 기록된 활성 사용자 수를 기준으로 합니다. 동률이면 페이지 조회수가 많은 게임이 우선입니다. 이 순서에서 활성 사용자 10명 이상인 게임 중 최대 3개에 인기 배지가 붙습니다.
+게임 목록은 기본적으로 탭마다 무작위로 배치합니다. 같은 탭에서 새로고침하거나 게임에서 돌아올 때도 카드 순서가 유지됩니다.
+
+포털의 누적 사용자와 페이지 조회수는 첫 GA4 태그가 추가된 2026년 1월 15일부터 조회합니다. GA4의 `totalUsers`를 전체 기간으로 한 번 조회해 여러 날짜에 방문한 사용자의 중복 집계를 피합니다. 방문순은 이틀 전까지의 30일 동안 기록된 활성 사용자 수를 기준으로 합니다. 동률이면 페이지 조회수가 많은 게임이 우선입니다. 방문순을 선택하면 활성 사용자 10명 이상인 게임 중 최대 3개에 ‘방문 상위’ 배지가 붙습니다.
 
 1. Google Cloud 프로젝트에서 [Google Analytics Data API](https://console.cloud.google.com/apis/library/analyticsdata.googleapis.com)를 사용 설정합니다. 서비스 계정을 만들고, 측정 ID `G-GFTNV73W8L`이 연결된 GA4 속성에서 해당 계정에 Viewer 권한을 부여합니다. [Google 공식 설정 안내](https://developers.google.com/analytics/devguides/reporting/data/v1/quickstart)
 2. 저장소의 [Actions 변수](https://github.com/geniuskey/lottery/settings/variables/actions) 또는 [Actions 시크릿](https://github.com/geniuskey/lottery/settings/secrets/actions)에 숫자 속성 ID를 `GA4_PROPERTY_ID`로 등록합니다. 서비스 계정 JSON 키는 Actions 시크릿에 `GA4_CREDENTIALS_JSON`으로 등록합니다.
 3. 워크플로가 `main`에 반영되면 [Update GA4 traffic](https://github.com/geniuskey/lottery/actions/workflows/ga4-traffic.yml)을 실행합니다. 이후 Actions가 매일 `ga4-stats` 브랜치의 집계 파일을 갱신하고 포털이 이 파일을 읽습니다.
 
-공개 파일에는 집계 기간과 사이트 및 게임별 집계 숫자가 들어갑니다. 집계 파일이 없거나 마지막 집계가 7일을 넘으면 접속 통계와 인기 배지를 숨기고 기본순으로 게임을 표시합니다. 인기순은 과거 GA4 방문 기록을 사용하며, 현재 공통 태그 적용 전에 일부 게임의 태그가 빠졌던 기간은 순위에 영향을 줄 수 있습니다.
+공개 파일에는 집계 기간과 사이트 및 게임별 집계 숫자가 들어갑니다. 집계 파일이 없거나 마지막 집계가 7일을 넘으면 접속 통계를 숨기고 게임을 무작위순으로 표시합니다. 방문 기록에는 과거 카드 배치와 일부 게임에서 GA4 태그가 빠져 있었던 기간의 영향이 남아 있습니다.
 
 ## 📁 프로젝트 구조
 
