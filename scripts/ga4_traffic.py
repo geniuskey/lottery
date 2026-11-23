@@ -1,5 +1,6 @@
 """Export public aggregate traffic for the PLAYPICK portal."""
 import argparse
+import base64
 import json
 import os
 import re
@@ -108,6 +109,26 @@ def collect(games, fetch_batch, now, tracking_since=None):
     }
 
 
+def service_account_info(secret):
+    contents = secret.strip().lstrip("\ufeff")
+    message = "GA4_CREDENTIALS_JSON must contain the downloaded Google service account JSON key."
+    try:
+        account = json.loads(contents)
+    except ValueError:
+        try:
+            decoded = base64.b64decode("".join(contents.split()), validate=True)
+            account = json.loads(decoded.decode("utf-8-sig"))
+        except ValueError:
+            raise ValueError(message) from None
+
+    if not isinstance(account, dict) or account.get("type") != "service_account":
+        raise ValueError(message)
+    if not all(isinstance(account.get(field), str) and account[field].strip()
+               for field in ("client_email", "private_key", "token_uri")):
+        raise ValueError(message)
+    return account
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
@@ -117,13 +138,15 @@ def main():
     credentials_json = os.environ.get("GA4_CREDENTIALS_JSON")
     if not re.fullmatch(r"[0-9]+", property_id) or not credentials_json:
         parser.error("Set a numeric GA4_PROPERTY_ID and the GA4_CREDENTIALS_JSON secret.")
+    try:
+        account = service_account_info(credentials_json)
+    except ValueError as error:
+        parser.error(str(error))
 
     from google.auth.transport.requests import AuthorizedSession
     from google.oauth2 import service_account
 
-    credentials = service_account.Credentials.from_service_account_info(
-        json.loads(credentials_json), scopes=[SCOPE],
-    )
+    credentials = service_account.Credentials.from_service_account_info(account, scopes=[SCOPE])
     tracking_since = None
     if args.previous and args.previous.is_file():
         previous = json.loads(args.previous.read_text(encoding="utf-8"))

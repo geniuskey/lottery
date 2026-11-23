@@ -1,8 +1,10 @@
+import base64
+import json
 import unittest
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from ga4_traffic import collect, game_slugs, report_request
+from ga4_traffic import collect, game_slugs, report_request, service_account_info
 
 def report(users, views, **metadata):
     return {
@@ -12,6 +14,19 @@ def report(users, views, **metadata):
 
 
 class TrafficTests(unittest.TestCase):
+    def test_accepts_json_key_with_bom_or_base64(self):
+        account = {"type": "service_account", "client_email": "test@example.com",
+                   "private_key": "test-placeholder", "token_uri": "https://oauth2.googleapis.com/token"}
+        contents = json.dumps(account)
+        encodings = {"json": contents, "bom": "\ufeff" + contents, "base64": base64.b64encode(contents.encode()).decode()}
+        for encoding, value in encodings.items():
+            with self.subTest(encoding=encoding):
+                self.assertEqual(service_account_info(value), account)
+
+    def test_bad_secret_message_does_not_reveal_the_input(self):
+        with self.assertRaisesRegex(ValueError, "^GA4_CREDENTIALS_JSON"):
+            service_account_info("/path/to/a/key.json")
+
     def test_uses_portal_cards_and_aggregates_each_game_in_one_report(self):
         games = game_slugs(Path(__file__).resolve().parents[1] / "index.html")
         self.assertIn("pinball", games)
