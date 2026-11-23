@@ -69,3 +69,6 @@ temp/
 # Known local scratch files
 /nul
 /temp.png
+
+# Python bytecode
+__pycache__/

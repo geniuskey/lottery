@@ -67,6 +67,16 @@ npx serve
 - **CSS3** - 애니메이션 및 반응형 디자인
 - **localStorage** - 설정 저장
 
+## 포털 접속 통계
+
+포털의 활성 사용자와 페이지 조회수는 GA4 속성 시간대의 30일 집계입니다. 데이터 처리 시간을 고려해 기간은 이틀 전까지입니다. 인기 배지는 모든 게임의 공통 측정 기간에 활성 사용자 10명 이상인 게임 중 최대 3개에 붙습니다. 활성 사용자 수가 같으면 페이지 조회수가 많은 게임을 우선합니다.
+
+1. Google Cloud 프로젝트에서 [Google Analytics Data API](https://console.cloud.google.com/apis/library/analyticsdata.googleapis.com)를 사용 설정합니다. 서비스 계정을 만들고, 측정 ID `G-GFTNV73W8L`이 연결된 GA4 속성에서 해당 계정에 Viewer 권한을 부여합니다. [Google 공식 설정 안내](https://developers.google.com/analytics/devguides/reporting/data/v1/quickstart)
+2. 저장소의 [Actions 변수](https://github.com/geniuskey/lottery/settings/variables/actions) 또는 [Actions 시크릿](https://github.com/geniuskey/lottery/settings/secrets/actions)에 숫자 속성 ID를 `GA4_PROPERTY_ID`로 등록합니다. 서비스 계정 JSON 키는 Actions 시크릿에 `GA4_CREDENTIALS_JSON`으로 등록합니다.
+3. 워크플로가 `main`에 반영되면 [Update GA4 traffic](https://github.com/geniuskey/lottery/actions/workflows/ga4-traffic.yml)을 실행합니다. 이후 Actions가 매일 `ga4-stats` 브랜치의 집계 파일을 갱신하고 포털이 이 파일을 읽습니다.
+
+공개 파일에는 집계 기간과 사이트 및 게임별 집계 숫자가 들어갑니다. 집계 파일이 없거나 마지막 집계가 7일을 넘으면 접속 통계와 인기 배지를 숨깁니다. 전체 측정이 적용된 시점부터의 인기 순위를 계산하기 위해 첫 집계의 다음 날을 공통 측정 시작일로 기록합니다. 새로 태그를 추가한 페이지의 방문은 태그 적용 이후부터 사이트 합계에 포함됩니다.
+
 ## 📁 프로젝트 구조
 
 ```

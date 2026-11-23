@@ -62,14 +62,7 @@ single page 추첨 게임들을 만듭니다. 모든 게임은 아래 플랫폼 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-GFTNV73W8L');
-    </script>
+    <script defer src="../assets/analytics.js"></script>
 
     <title>{emoji} {title}</title>
 
@@ -117,21 +110,13 @@ single page 추첨 게임들을 만듭니다. 모든 게임은 아래 플랫폼 
 | robots | 크롤링 지시 | "index, follow" 고정 |
 
 ## Google Analytics 규격
-모든 HTML 파일에 Google Analytics 태그를 포함합니다. viewport 메타 태그 바로 다음에 위치합니다.
+게임 페이지의 `<head>`에서 공용 Analytics 태그를 불러옵니다. 포털에서는 `./assets/analytics.js`를 사용합니다.
 
 ```html
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-GFTNV73W8L"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-GFTNV73W8L');
-</script>
+<script defer src="../assets/analytics.js"></script>
 ```
 
-- **Measurement ID**: `G-GFTNV73W8L`
-- **위치**: `<head>` 섹션 내, viewport 메타 태그 바로 다음
+태그는 운영 주소의 PLAYPICK 경로에서만 실행됩니다. 측정 ID는 `G-GFTNV73W8L`입니다.
 
 ## Side Bar 구성 규격
 * 최상단: 좌측 title, 우측 ? 버튼(도움말 모달)

@@ -1,0 +1,86 @@
+name: Update GA4 traffic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/ga4-traffic.yml
+      - scripts/ga4_traffic.py
+      - scripts/test_ga4_traffic.py
+      - index.html
+  schedule:
+    - cron: '37 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: playpick-ga4-traffic
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      DATA_BRANCH: ga4-stats
+    steps:
+      - name: Check GA4 settings
+        env:
+          GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID || secrets.GA4_PROPERTY_ID }}
+          GA4_CREDENTIALS_JSON: ${{ secrets.GA4_CREDENTIALS_JSON }}
+        run: |
+          if [[ ! "$GA4_PROPERTY_ID" =~ ^[0-9]+$ || -z "$GA4_CREDENTIALS_JSON" ]]; then
+            echo '::error::Set a numeric GA4_PROPERTY_ID and the GA4_CREDENTIALS_JSON secret.'
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Test the GA4 exporter
+        run: python -B -m unittest discover -s scripts -v
+      - name: Install Google Auth
+        run: python -m pip install 'google-auth[requests]==2.63.1'
+      - name: Read the previous snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing_ref=$(gh api "repos/$GITHUB_REPOSITORY/git/matching-refs/heads/$DATA_BRANCH" \
+            --jq ".[] | select(.ref == \"refs/heads/$DATA_BRANCH\") | .ref")
+          if [[ -n "$existing_ref" ]]; then
+            previous_sha=$(gh api "repos/$GITHUB_REPOSITORY/contents?ref=$DATA_BRANCH" \
+              --jq '.[] | select(.type == "file" and .name == "traffic.json") | .sha')
+            if [[ -n "$previous_sha" ]]; then
+              gh api "repos/$GITHUB_REPOSITORY/contents/traffic.json?ref=$DATA_BRANCH" \
+                -H 'Accept: application/vnd.github.raw+json' > "$RUNNER_TEMP/previous-traffic.json"
+              echo "PREVIOUS_SHA=$previous_sha" >> "$GITHUB_ENV"
+            fi
+          else
+            echo 'CREATE_DATA_BRANCH=true' >> "$GITHUB_ENV"
+          fi
+      - name: Export aggregate GA4 traffic
+        env:
+          GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID || secrets.GA4_PROPERTY_ID }}
+          GA4_CREDENTIALS_JSON: ${{ secrets.GA4_CREDENTIALS_JSON }}
+        run: |
+          python scripts/ga4_traffic.py --previous "$RUNNER_TEMP/previous-traffic.json" \
+            --output "$RUNNER_TEMP/traffic.json"
+      - name: Publish the snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "${CREATE_DATA_BRANCH:-}" == true ]]; then
+            gh api "repos/$GITHUB_REPOSITORY/git/refs" --method POST \
+              -f "ref=refs/heads/$DATA_BRANCH" -f "sha=$GITHUB_SHA" --silent
+          fi
+          fields=()
+          if [[ -n "${PREVIOUS_SHA:-}" ]]; then
+            fields=(-f "sha=$PREVIOUS_SHA")
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/contents/traffic.json" --method PUT \
+            -f "branch=$DATA_BRANCH" -f 'message=chore: refresh public GA4 traffic' \
+            -f "content=$(base64 -w 0 "$RUNNER_TEMP/traffic.json")" "${fields[@]}" --silent

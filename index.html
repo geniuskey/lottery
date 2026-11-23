@@ -23,6 +23,8 @@
   <link rel="canonical" href="https://geniuskey.github.io/lottery/">
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   <link rel="preload" as="image" href="./assets/portal-key-art.webp" type="image/webp" fetchpriority="high">
+  <script defer src="./assets/analytics.js"></script>
+  <script defer src="./assets/traffic.js"></script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -292,6 +294,25 @@
     .games-heading h2 { margin: 0; font-size: clamp(30px, 4vw, 48px); line-height: 1.1; letter-spacing: -.035em; }
     .games-heading p { max-width: 480px; margin: 12px 0 0; color: var(--muted); word-break: keep-all; }
     .game-count { flex: 0 0 auto; color: #7e88a4; font-size: 13px; font-weight: 750; }
+    .traffic-stats {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px 28px;
+      padding: 15px 18px;
+      margin-bottom: 20px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--surface);
+    }
+    .traffic-stats[hidden] { display: none; }
+    .traffic-stats h3 { margin: 0 0 2px; font-size: .9rem; }
+    .traffic-period { margin: 0; color: var(--muted); font-size: .8rem; }
+    .traffic-metrics { display: flex; flex-wrap: wrap; gap: 12px 28px; margin: 0; }
+    .traffic-metrics div { display: flex; align-items: baseline; gap: 8px; }
+    .traffic-metrics dt { color: var(--muted); font-size: .8rem; }
+    .traffic-metrics dd { margin: 0; color: var(--cyan); font-size: 1.125rem; font-weight: 850; font-variant-numeric: tabular-nums; }
 
     .filter-bar {
       display: flex;
@@ -375,6 +396,7 @@
       backdrop-filter: blur(8px);
     }
     .card-badge.is-featured { background: rgba(255, 199, 95, .92); color: #211708; border-color: transparent; }
+    .card-badge.is-popular { background: var(--gold); color: #211708; border-color: transparent; }
     .card-limit-badge {
       position: absolute;
       top: 13px;
@@ -522,6 +544,18 @@
       <button class="filter-button" type="button" data-filter="physics" aria-pressed="false">물리 게임</button>
     </div>
 
+    <section class="traffic-stats" id="trafficStats" aria-labelledby="trafficHeading" hidden>
+      <div>
+        <h3 id="trafficHeading">플레이픽 접속 통계</h3>
+        <p class="traffic-period"><span id="trafficPeriod"></span> · GA4</p>
+        <p class="traffic-period" id="trafficCoverage" hidden>일부 게임은 측정 태그 적용 이후의 방문부터 포함됩니다.</p>
+      </div>
+      <dl class="traffic-metrics">
+        <div><dt>활성 사용자</dt><dd id="trafficUsers"></dd></div>
+        <div><dt>페이지 조회</dt><dd id="trafficViews"></dd></div>
+      </dl>
+    </section>
+
     <section class="game-grid" aria-label="추첨 게임 목록">
       <a class="game-card" href="./pinball/" data-category="physics survival">
         <figure class="card-media"><img src="./assets/thumbnails/pinball.webp" width="960" height="640" alt="" fetchpriority="high"><span class="card-badge is-featured">에디터 추천</span><span class="card-limit-badge">최대 60명</span></figure>
@@ -532,7 +566,7 @@
         <div class="card-content"><div class="card-title-row"><h3>네온 레이스</h3></div><p>사이버 도시를 가로지르는 네온 머신들의 속도전. 마지막 역전까지 놓치지 마세요.</p></div>
       </a>
       <a class="game-card" href="./marble-olympics/" data-category="race physics">
-        <figure class="card-media"><img src="./assets/thumbnails/marble-olympics.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge is-featured">인기 레이스</span><span class="card-limit-badge">최대 60명</span></figure>
+        <figure class="card-media"><img src="./assets/thumbnails/marble-olympics.webp" width="960" height="640" alt="" loading="lazy"><span class="card-badge">레이스</span><span class="card-limit-badge">최대 60명</span></figure>
         <div class="card-content"><div class="card-title-row"><h3>구슬 올림픽</h3></div><p>다채로운 장애물 트랙을 질주하는 구슬들의 예측 불가 물리 레이스.</p></div>
       </a>
       <a class="game-card" href="./zombie-arena/" data-category="survival">
