@@ -1,14 +1,99 @@
 {
   "source": "ga4",
-  "generatedAt": "2026-11-23T13:54:40.995659+00:00",
+  "generatedAt": "2026-11-23T14:01:12.500634+00:00",
   "startDate": "2026-01-15",
   "endDate": "2026-11-23",
   "trackingSince": "2026-11-24",
-  "rankingStartDate": null,
+  "rankingStartDate": "2026-10-23",
   "rankingEndDate": "2026-11-21",
   "site": {
     "totalUsers": 1273,
     "pageViews": 12963
   },
-  "games": {}
+  "games": {
+    "pinball": {
+      "activeUsers": 91,
+      "pageViews": 266
+    },
+    "neon-race": {
+      "activeUsers": 115,
+      "pageViews": 360
+    },
+    "marble-olympics": {
+      "activeUsers": 92,
+      "pageViews": 228
+    },
+    "zombie-arena": {
+      "activeUsers": 83,
+      "pageViews": 208
+    },
+    "school-dance": {
+      "activeUsers": 55,
+      "pageViews": 122
+    },
+    "group-rps": {
+      "activeUsers": 0,
+      "pageViews": 0
+    },
+    "bingo": {
+      "activeUsers": 0,
+      "pageViews": 0
+    },
+    "bomb": {
+      "activeUsers": 0,
+      "pageViews": 0
+    },
+    "roulette": {
+      "activeUsers": 0,
+      "pageViews": 0
+    },
+    "disk-shove": {
+      "activeUsers": 0,
+      "pageViews": 0
+    },
+    "chaser-survival": {
+      "activeUsers": 28,
+      "pageViews": 60
+    },
+    "devil-survival": {
+      "activeUsers": 22,
+      "pageViews": 52
+    },
+    "ufo-abduction": {
+      "activeUsers": 0,
+      "pageViews": 0
+    },
+    "space-race": {
+      "activeUsers": 0,
+      "pageViews": 0
+    },
+    "balloon-survival": {
+      "activeUsers": 0,
+      "pageViews": 0
+    },
+    "dart-tournament": {
+      "activeUsers": 0,
+      "pageViews": 0
+    },
+    "punch-survival": {
+      "activeUsers": 0,
+      "pageViews": 0
+    },
+    "chair": {
+      "activeUsers": 46,
+      "pageViews": 114
+    },
+    "gravity-orbit": {
+      "activeUsers": 25,
+      "pageViews": 58
+    },
+    "chestnut-survival": {
+      "activeUsers": 0,
+      "pageViews": 0
+    },
+    "ladder": {
+      "activeUsers": 0,
+      "pageViews": 0
+    }
+  }
 }
