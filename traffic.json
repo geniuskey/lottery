@@ -1,13 +1,14 @@
 {
   "source": "ga4",
-  "generatedAt": "2026-11-23T13:46:38.158106+00:00",
-  "startDate": "2026-10-23",
-  "endDate": "2026-11-21",
+  "generatedAt": "2026-11-23T13:54:40.995659+00:00",
+  "startDate": "2026-01-15",
+  "endDate": "2026-11-23",
   "trackingSince": "2026-11-24",
   "rankingStartDate": null,
+  "rankingEndDate": "2026-11-21",
   "site": {
-    "activeUsers": 220,
-    "pageViews": 1468
+    "totalUsers": 1273,
+    "pageViews": 12963
   },
   "games": {}
 }
