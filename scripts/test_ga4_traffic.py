@@ -47,7 +47,7 @@ class TrafficTests(unittest.TestCase):
         self.assertEqual([len(batch) for batch in batches], [1, 2])
         self.assertEqual(batches[0][0]["dateRanges"], [{"startDate": "2026-01-15", "endDate": "today"}])
         self.assertEqual(batches[0][0]["metrics"], [{"name": "totalUsers"}, {"name": "screenPageViews"}])
-        self.assertEqual(batches[1][0]["dateRanges"], [{"startDate": "2026-11-18", "endDate": "2026-11-22"}])
+        self.assertEqual(batches[1][0]["dateRanges"], [{"startDate": "2026-10-24", "endDate": "2026-11-22"}])
         self.assertEqual(batches[1][0]["metrics"], [{"name": "activeUsers"}, {"name": "screenPageViews"}])
         self.assertEqual(result["startDate"], "2026-01-15")
         self.assertEqual(result["endDate"], "2026-11-24")
@@ -63,7 +63,7 @@ class TrafficTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             collect([], lambda requests: [report(12, 30, subjectToThresholding=True)], now)
 
-    def test_first_snapshot_shows_site_history_without_ranking_untracked_games(self):
+    def test_first_snapshot_ranks_historical_game_traffic(self):
         requests_seen = []
 
         def fetch(requests):
@@ -72,9 +72,10 @@ class TrafficTests(unittest.TestCase):
 
         snapshot = collect(["pinball"], fetch, datetime(2026, 11, 23, tzinfo=timezone.utc))
         self.assertEqual(snapshot["trackingSince"], "2026-11-24")
-        self.assertIsNone(snapshot["rankingStartDate"])
-        self.assertEqual(snapshot["games"], {})
-        self.assertEqual(len(requests_seen), 1)
+        self.assertEqual(snapshot["rankingStartDate"], "2026-10-23")
+        self.assertEqual(snapshot["rankingEndDate"], "2026-11-21")
+        self.assertEqual(snapshot["games"], {"pinball": {"activeUsers": 12, "pageViews": 30}})
+        self.assertEqual(len(requests_seen), 2)
 
     def test_refuses_to_publish_lossy_totals(self):
         now = datetime(2026, 11, 23, tzinfo=timezone.utc)

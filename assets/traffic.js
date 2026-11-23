@@ -9,6 +9,36 @@
 
   const validCount = value => Number.isSafeInteger(value) && value >= 0;
   const parseDay = value => typeof value === 'string' && datePattern.test(value) ? Date.parse(value) : NaN;
+  const hasGameMetrics = entry => validCount(entry?.activeUsers) && validCount(entry.pageViews);
+
+  function enableSorting(ranked, period, partialCoverage) {
+    const select = document.getElementById('gameSort');
+    if (!select) return;
+
+    const grid = cards[0].parentElement;
+    const note = document.getElementById('rankingNote');
+    const storageKey = 'playpick-home-sort';
+    note.textContent = `GA4 활성 사용자 기준 · ${period}` +
+      (partialCoverage ? ' · 일부 게임은 태그가 빠져 있었던 기간의 방문 기록이 적을 수 있습니다.' : '');
+    select.querySelector('[value="popular"]').disabled = false;
+
+    function setOrder() {
+      const byPopularity = select.value === 'popular';
+      grid.append(...(byPopularity ? ranked.map(({ card }) => card) : cards));
+      note.hidden = !byPopularity;
+    }
+
+    select.addEventListener('change', () => {
+      setOrder();
+      try { localStorage.setItem(storageKey, select.value); } catch { /* Storage may be unavailable. */ }
+    });
+    try {
+      if (localStorage.getItem(storageKey) === 'popular') {
+        select.value = 'popular';
+        setOrder();
+      }
+    } catch { /* Keep the default order. */ }
+  }
 
   async function renderTraffic() {
     try {
@@ -33,17 +63,21 @@
       const rankingSpan = (rankingEnd - rankingStart) / dayMs;
       if (!Number.isFinite(rankingSpan) || rankingSpan < 0 || rankingSpan > 29) return;
       const rankingPeriod = `${day.format(rankingStart)} ~ ${day.format(rankingEnd)}`;
-      const popular = cards.map(card => {
+      const ranked = cards.map(card => {
         const slug = card.getAttribute('href').slice(2, -1);
-        return { card, metrics: data.games?.[slug] };
-      }).filter(({ metrics }) => validCount(metrics?.activeUsers) && metrics.activeUsers >= 10 && validCount(metrics.pageViews))
-        .sort((a, b) => b.metrics.activeUsers - a.metrics.activeUsers || b.metrics.pageViews - a.metrics.pageViews)
-        .slice(0, 3);
+        const metrics = data.games?.[slug];
+        return { card, metrics: hasGameMetrics(metrics) ? metrics : null };
+      }).sort((a, b) => (b.metrics?.activeUsers ?? -1) - (a.metrics?.activeUsers ?? -1) ||
+        (b.metrics?.pageViews ?? -1) - (a.metrics?.pageViews ?? -1));
 
+      const popular = ranked.filter(({ metrics }) => metrics?.activeUsers >= 10).slice(0, 3);
       for (const { card, metrics } of popular) {
         const badge = card.querySelector('.card-badge');
         badge.title = `활성 사용자 ${number.format(metrics.activeUsers)}명 · ${rankingPeriod}`;
         badge.hidden = false;
+      }
+      if (ranked.some(({ metrics }) => metrics && (metrics.activeUsers || metrics.pageViews))) {
+        enableSorting(ranked, rankingPeriod, parseDay(data.trackingSince) > rankingStart);
       }
     } catch {
       // The catalog stays available when the aggregate snapshot cannot load.

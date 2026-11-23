@@ -86,16 +86,14 @@ def collect(games, fetch_batch, now, tracking_since=None):
     recent_start = today - timedelta(days=31)
     recent_end = today - timedelta(days=2)
     tracking_since = tracking_since or (today + timedelta(days=1))
-    ranking_start = max(recent_start, tracking_since)
     ranking = {}
 
-    if ranking_start <= recent_end:
-        for offset in range(0, len(games), 5):
-            batch = games[offset:offset + 5]
-            reports = fetch_batch([report_request(game, ranking_start.isoformat(), recent_end.isoformat()) for game in batch])
-            if len(reports) != len(batch):
-                raise ValueError("GA4 returned an incomplete game batch.")
-            ranking.update((game, totals(report)) for game, report in zip(batch, reports))
+    for offset in range(0, len(games), 5):
+        batch = games[offset:offset + 5]
+        reports = fetch_batch([report_request(game, recent_start.isoformat(), recent_end.isoformat()) for game in batch])
+        if len(reports) != len(batch):
+            raise ValueError("GA4 returned an incomplete game batch.")
+        ranking.update((game, totals(report)) for game, report in zip(batch, reports))
 
     return {
         "source": "ga4",
@@ -103,7 +101,7 @@ def collect(games, fetch_batch, now, tracking_since=None):
         "startDate": ANALYTICS_SINCE,
         "endDate": today.isoformat(),
         "trackingSince": tracking_since.isoformat(),
-        "rankingStartDate": ranking_start.isoformat() if ranking_start <= recent_end else None,
+        "rankingStartDate": recent_start.isoformat(),
         "rankingEndDate": recent_end.isoformat(),
         "site": site,
         "games": ranking,

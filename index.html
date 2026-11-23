@@ -259,6 +259,7 @@
       margin-bottom: 16px;
     }
     .games-heading h2 { margin: 0; font-size: clamp(1.6rem, 3.7vw, 2.3rem); line-height: 1.18; letter-spacing: -.04em; }
+    .catalog-tools { display: flex; align-items: center; gap: 8px; }
     .game-count {
       flex: 0 0 auto;
       padding: 4px 9px;
@@ -267,6 +268,24 @@
       color: var(--muted);
       font-size: .78rem;
       font-weight: 700;
+    }
+    .game-sort {
+      min-height: 40px;
+      padding: 0 9px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-size: .85rem;
+      font-weight: 700;
+    }
+    .ranking-note {
+      margin: -8px 0 14px;
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.5;
+      word-break: keep-all;
     }
 
     .filter-bar {
@@ -481,7 +500,13 @@
     <section class="catalog" id="games" aria-labelledby="gamesHeading">
       <div class="games-heading">
         <h2 id="gamesHeading">추첨 게임</h2>
-        <output class="game-count" id="gameCount" aria-live="polite">21개</output>
+        <div class="catalog-tools">
+          <output class="game-count" id="gameCount" aria-live="polite">21개</output>
+          <select class="game-sort" id="gameSort" aria-label="게임 정렬">
+            <option value="default">기본순</option>
+            <option value="popular" disabled>인기순</option>
+          </select>
+        </div>
       </div>
 
       <div class="filter-bar" aria-label="게임 장르 필터">
@@ -492,6 +517,8 @@
         <button class="filter-button" type="button" data-filter="classic" aria-pressed="false">클래식 추첨</button>
         <button class="filter-button" type="button" data-filter="physics" aria-pressed="false">물리 게임</button>
       </div>
+
+      <p class="ranking-note" id="rankingNote" role="status" hidden></p>
 
       <section class="game-grid" aria-label="추첨 게임 목록">
         <a class="game-card" href="./pinball/" data-category="physics survival">
