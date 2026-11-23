@@ -45,10 +45,14 @@ class TrafficTests(unittest.TestCase):
 
         result = collect(["pinball", "bingo"], fetch, datetime(2026, 11, 23, 16, tzinfo=timezone.utc), date(2026, 11, 18))
         self.assertEqual([len(batch) for batch in batches], [1, 2])
+        self.assertEqual(batches[0][0]["dateRanges"], [{"startDate": "2026-01-15", "endDate": "today"}])
+        self.assertEqual(batches[0][0]["metrics"], [{"name": "totalUsers"}, {"name": "screenPageViews"}])
         self.assertEqual(batches[1][0]["dateRanges"], [{"startDate": "2026-11-18", "endDate": "2026-11-22"}])
-        self.assertEqual(result["startDate"], "2026-10-24")
-        self.assertEqual(result["endDate"], "2026-11-22")
-        self.assertEqual(result["site"], {"activeUsers": 12, "pageViews": 30})
+        self.assertEqual(batches[1][0]["metrics"], [{"name": "activeUsers"}, {"name": "screenPageViews"}])
+        self.assertEqual(result["startDate"], "2026-01-15")
+        self.assertEqual(result["endDate"], "2026-11-24")
+        self.assertEqual(result["rankingEndDate"], "2026-11-22")
+        self.assertEqual(result["site"], {"totalUsers": 12, "pageViews": 30})
         self.assertEqual(result["games"]["pinball"], {"activeUsers": 11, "pageViews": 20})
         self.assertEqual(result["games"]["bingo"], {"activeUsers": 0, "pageViews": 0})
 

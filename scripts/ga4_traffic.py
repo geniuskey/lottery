@@ -10,7 +10,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 HOSTS = ["pages.euiyun.com", "geniuskey.github.io"]
-METRICS = ("activeUsers", "screenPageViews")
+ANALYTICS_SINCE = "2026-01-15"  # First GA4 tag in the portal repository.
 SCOPE = "https://www.googleapis.com/auth/analytics.readonly"
 
 
@@ -37,7 +37,7 @@ def game_slugs(index):
     return cards.slugs
 
 
-def report_request(game=None, start="31daysAgo", end="2daysAgo"):
+def report_request(game=None, start="31daysAgo", end="2daysAgo", user_metric="activeUsers"):
     if game:
         path = f"/lottery/{game}"
         path_filter = {"inListFilter": {"values": [path, f"{path}/", f"{path}/index.html"], "caseSensitive": True}}
@@ -46,7 +46,7 @@ def report_request(game=None, start="31daysAgo", end="2daysAgo"):
 
     return {
         "dateRanges": [{"startDate": start, "endDate": end}],
-        "metrics": [{"name": name} for name in METRICS],
+        "metrics": [{"name": user_metric}, {"name": "screenPageViews"}],
         "dimensionFilter": {
             "andGroup": {"expressions": [
                 {"filter": {"fieldName": "hostName", "inListFilter": {"values": HOSTS}}},
@@ -56,7 +56,7 @@ def report_request(game=None, start="31daysAgo", end="2daysAgo"):
     }
 
 
-def totals(report):
+def totals(report, user_metric="activeUsers"):
     metadata = report.get("metadata", {})
     if any(metadata.get(key) for key in (
         "subjectToThresholding", "dataLossFromOtherRow", "dataTruncationReasons", "samplingMetadatas",
@@ -66,33 +66,33 @@ def totals(report):
     if not rows:
         if report.get("rowCount", 0):
             raise ValueError("Missing GA4 report rows.")
-        return {"activeUsers": 0, "pageViews": 0}
+        return {user_metric: 0, "pageViews": 0}
 
-    if len(rows) != 1 or len(rows[0]["metricValues"]) != len(METRICS):
+    if len(rows) != 1 or len(rows[0]["metricValues"]) != 2:
         raise ValueError("Unexpected GA4 aggregate report shape.")
     users, views = (int(metric["value"]) for metric in rows[0]["metricValues"])
     if min(users, views) < 0:
         raise ValueError("GA4 returned a negative metric.")
-    return {"activeUsers": users, "pageViews": views}
+    return {user_metric: users, "pageViews": views}
 
 
 def collect(games, fetch_batch, now, tracking_since=None):
-    site_reports = fetch_batch([report_request()])
+    site_reports = fetch_batch([report_request(start=ANALYTICS_SINCE, end="today", user_metric="totalUsers")])
     if len(site_reports) != 1:
         raise ValueError("GA4 returned an incomplete site report.")
     site_report = site_reports[0]
-    site = totals(site_report)
+    site = totals(site_report, "totalUsers")
     today = now.astimezone(ZoneInfo(site_report["metadata"]["timeZone"])).date()
-    start = today - timedelta(days=31)
-    end = today - timedelta(days=2)
+    recent_start = today - timedelta(days=31)
+    recent_end = today - timedelta(days=2)
     tracking_since = tracking_since or (today + timedelta(days=1))
-    ranking_start = max(start, tracking_since)
+    ranking_start = max(recent_start, tracking_since)
     ranking = {}
 
-    if ranking_start <= end:
+    if ranking_start <= recent_end:
         for offset in range(0, len(games), 5):
             batch = games[offset:offset + 5]
-            reports = fetch_batch([report_request(game, ranking_start.isoformat(), end.isoformat()) for game in batch])
+            reports = fetch_batch([report_request(game, ranking_start.isoformat(), recent_end.isoformat()) for game in batch])
             if len(reports) != len(batch):
                 raise ValueError("GA4 returned an incomplete game batch.")
             ranking.update((game, totals(report)) for game, report in zip(batch, reports))
@@ -100,10 +100,11 @@ def collect(games, fetch_batch, now, tracking_since=None):
     return {
         "source": "ga4",
         "generatedAt": now.astimezone(timezone.utc).isoformat(),
-        "startDate": start.isoformat(),
-        "endDate": end.isoformat(),
+        "startDate": ANALYTICS_SINCE,
+        "endDate": today.isoformat(),
         "trackingSince": tracking_since.isoformat(),
-        "rankingStartDate": ranking_start.isoformat() if ranking_start <= end else None,
+        "rankingStartDate": ranking_start.isoformat() if ranking_start <= recent_end else None,
+        "rankingEndDate": recent_end.isoformat(),
         "site": site,
         "games": ranking,
     }

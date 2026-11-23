@@ -69,7 +69,7 @@ npx serve
 
 ## 포털 접속 통계
 
-포털의 활성 사용자와 페이지 조회수는 GA4 속성 시간대의 30일 집계입니다. 데이터 처리 시간을 고려해 기간은 이틀 전까지입니다. 인기 배지는 모든 게임의 공통 측정 기간에 활성 사용자 10명 이상인 게임 중 최대 3개에 붙습니다. 활성 사용자 수가 같으면 페이지 조회수가 많은 게임을 우선합니다.
+포털의 누적 사용자와 페이지 조회수는 첫 GA4 태그가 추가된 2026년 1월 15일부터 조회합니다. GA4의 `totalUsers`를 전체 기간으로 한 번 조회해 여러 날짜에 방문한 사용자의 중복 집계를 피합니다. 인기 배지는 이틀 전까지의 최근 30일 중 모든 게임에 공통으로 측정된 기간을 사용합니다. 활성 사용자 10명 이상인 게임 중 최대 3개에 붙고, 동률이면 페이지 조회수가 많은 게임이 우선입니다.
 
 1. Google Cloud 프로젝트에서 [Google Analytics Data API](https://console.cloud.google.com/apis/library/analyticsdata.googleapis.com)를 사용 설정합니다. 서비스 계정을 만들고, 측정 ID `G-GFTNV73W8L`이 연결된 GA4 속성에서 해당 계정에 Viewer 권한을 부여합니다. [Google 공식 설정 안내](https://developers.google.com/analytics/devguides/reporting/data/v1/quickstart)
 2. 저장소의 [Actions 변수](https://github.com/geniuskey/lottery/settings/variables/actions) 또는 [Actions 시크릿](https://github.com/geniuskey/lottery/settings/secrets/actions)에 숫자 속성 ID를 `GA4_PROPERTY_ID`로 등록합니다. 서비스 계정 JSON 키는 Actions 시크릿에 `GA4_CREDENTIALS_JSON`으로 등록합니다.
