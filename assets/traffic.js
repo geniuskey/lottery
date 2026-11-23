@@ -42,7 +42,7 @@
 
   async function renderTraffic() {
     try {
-      const response = await fetch('https://raw.githubusercontent.com/geniuskey/lottery/ga4-stats/traffic.json?v=2', { credentials: 'omit' });
+      const response = await fetch('https://raw.githubusercontent.com/geniuskey/lottery/refs/heads/ga4-stats/traffic.json', { credentials: 'omit' });
       if (!response.ok) return;
       const data = await response.json();
       if (data?.source !== 'ga4') return;
