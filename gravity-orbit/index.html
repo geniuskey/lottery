@@ -9,8 +9,8 @@
   "features": ["🌍 최후의 1인 서바이벌", "🎲 매 경기 무작위 정밀 물리"],
   "color": "purple",
   "badge": "NEW",
-  "version": "1.0.0",
-  "updated": "2025-12-26",
+  "version": "1.1.0",
+  "updated": "2026-11-24",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -1283,6 +1283,336 @@
             TARGET_WIDTH: 40
         };
 
+        /**
+         * Visual assets (cached offscreen sprites). Pure rendering — never touches game RNG/state.
+         */
+        const OrbitArt = (() => {
+            const PLANET_SPAN = 3.2;   // sprite size / body radius (room for glow)
+            const LABEL_SCALE = 2;     // label sprites are rendered at 2x for crispness
+            const DISK_WORLD = 160;    // accretion disk sprite covers this world radius
+            let seed = 1337;
+            const rand = () => {
+                seed = (seed * 1664525 + 1013904223) >>> 0;
+                return seed / 4294967296;
+            };
+            const makeCanvas = (w, h) => {
+                const c = document.createElement('canvas');
+                c.width = Math.max(1, Math.ceil(w));
+                c.height = Math.max(1, Math.ceil(h || w));
+                return c;
+            };
+            const hueOf = color => {
+                const m = /hsl\(\s*([\d.]+)/.exec(color);
+                return m ? parseFloat(m[1]) : 270;
+            };
+
+            function planetSprite(color) {
+                const hue = hueOf(color);
+                const S = 64;
+                const c = makeCanvas(S);
+                const g = c.getContext('2d');
+                const cx = S / 2;
+                const R = S / PLANET_SPAN;
+                // Atmosphere glow
+                const glow = g.createRadialGradient(cx, cx, R * 0.8, cx, cx, S / 2);
+                glow.addColorStop(0, `hsla(${hue}, 90%, 65%, 0.55)`);
+                glow.addColorStop(0.45, `hsla(${hue}, 90%, 60%, 0.16)`);
+                glow.addColorStop(1, `hsla(${hue}, 90%, 60%, 0)`);
+                g.fillStyle = glow;
+                g.fillRect(0, 0, S, S);
+                // Sphere body, lit from +x (sprite is rotated to face the hole)
+                g.save();
+                g.beginPath();
+                g.arc(cx, cx, R, 0, Math.PI * 2);
+                g.clip();
+                const body = g.createRadialGradient(cx + R * 0.45, cx - R * 0.2, R * 0.1, cx, cx, R * 1.15);
+                body.addColorStop(0, `hsl(${hue}, 85%, 86%)`);
+                body.addColorStop(0.35, `hsl(${hue}, 78%, 62%)`);
+                body.addColorStop(0.8, `hsl(${(hue + 20) % 360}, 70%, 30%)`);
+                body.addColorStop(1, `hsl(${(hue + 30) % 360}, 70%, 14%)`);
+                g.fillStyle = body;
+                g.fillRect(0, 0, S, S);
+                // Cloud bands
+                g.globalAlpha = 0.22;
+                for (let i = 0; i < 4; i++) {
+                    const y = cx - R + (i + 0.6) * (R * 2 / 4.2);
+                    g.fillStyle = i % 2 ? `hsl(${hue}, 60%, 85%)` : `hsl(${(hue + 25) % 360}, 70%, 25%)`;
+                    g.beginPath();
+                    g.ellipse(cx, y, R * 1.2, R * 0.12, 0.25, 0, Math.PI * 2);
+                    g.fill();
+                }
+                // Night side
+                g.globalAlpha = 1;
+                const night = g.createLinearGradient(cx + R, cx, cx - R, cx);
+                night.addColorStop(0, 'rgba(0,0,0,0)');
+                night.addColorStop(0.55, 'rgba(0,0,0,0.15)');
+                night.addColorStop(1, 'rgba(2,0,12,0.75)');
+                g.fillStyle = night;
+                g.fillRect(0, 0, S, S);
+                g.restore();
+                // Warm rim light from the accretion disk
+                g.lineWidth = 1.6;
+                const rim = g.createLinearGradient(cx - R, cx, cx + R, cx);
+                rim.addColorStop(0, 'rgba(255,200,140,0)');
+                rim.addColorStop(0.7, 'rgba(255,210,150,0.15)');
+                rim.addColorStop(1, 'rgba(255,230,190,0.95)');
+                g.strokeStyle = rim;
+                g.beginPath();
+                g.arc(cx, cx, R - 0.6, 0, Math.PI * 2);
+                g.stroke();
+                return c;
+            }
+
+            function labelSprite(name, color, fontSize) {
+                const k = LABEL_SCALE;
+                const font = `700 ${fontSize}px 'Noto Sans KR', sans-serif`;
+                const probe = makeCanvas(1).getContext('2d');
+                probe.font = font;
+                const tw = probe.measureText(name).width;
+                const padX = 7, dot = 5, h = fontSize + 8;
+                const w = tw + padX * 2 + dot + 5;
+                const c = makeCanvas(w * k, h * k);
+                const g = c.getContext('2d');
+                g.scale(k, k);
+                g.fillStyle = 'rgba(8, 6, 24, 0.72)';
+                g.strokeStyle = color;
+                g.globalAlpha = 1;
+                g.beginPath();
+                g.roundRect(0.5, 0.5, w - 1, h - 1, h / 2);
+                g.fill();
+                g.globalAlpha = 0.55;
+                g.lineWidth = 1;
+                g.stroke();
+                g.globalAlpha = 1;
+                g.fillStyle = color;
+                g.beginPath();
+                g.arc(padX + dot / 2, h / 2, dot / 2, 0, Math.PI * 2);
+                g.fill();
+                g.font = font;
+                g.textBaseline = 'middle';
+                g.fillStyle = '#f8f7ff';
+                g.fillText(name, padX + dot + 5, h / 2 + 0.5);
+                return c;
+            }
+
+            // Accretion disk layer (top-down), drawn rotated every frame
+            function diskSprite(variant) {
+                const S = 768;
+                const c = makeCanvas(S);
+                const g = c.getContext('2d');
+                const cx = S / 2;
+                const k = cx / DISK_WORLD;
+                const inner = (CONFIG.PLANET_RADIUS + 3) * k;
+                const outer = (variant === 0 ? 125 : 158) * k;
+                seed = variant === 0 ? 4242 : 9001;
+                if (variant === 0) {
+                    const base = g.createRadialGradient(cx, cx, inner, cx, cx, outer);
+                    base.addColorStop(0, 'rgba(255, 248, 225, 0.95)');
+                    base.addColorStop(0.08, 'rgba(255, 196, 110, 0.9)');
+                    base.addColorStop(0.3, 'rgba(255, 110, 60, 0.55)');
+                    base.addColorStop(0.62, 'rgba(190, 60, 160, 0.25)');
+                    base.addColorStop(1, 'rgba(120, 60, 240, 0)');
+                    g.fillStyle = base;
+                    g.beginPath();
+                    g.arc(cx, cx, outer, 0, Math.PI * 2);
+                    g.arc(cx, cx, inner, 0, Math.PI * 2, true);
+                    g.fill();
+                }
+                // Spiral gas strands
+                g.globalCompositeOperation = 'lighter';
+                g.lineCap = 'round';
+                const strands = variant === 0 ? 170 : 110;
+                for (let i = 0; i < strands; i++) {
+                    const t = rand();
+                    const r0 = inner + Math.pow(t, 1.4) * (outer - inner);
+                    const a0 = rand() * Math.PI * 2;
+                    const len = 0.4 + rand() * 1.6;
+                    const tight = (variant === 0 ? 0.10 : 0.16) * r0;
+                    const hot = 1 - (r0 - inner) / (outer - inner);
+                    const hue = 18 + hot * 30 - (variant === 1 ? 40 : 0);
+                    const light = 55 + hot * 35;
+                    g.strokeStyle = `hsla(${(hue + 360) % 360}, 100%, ${light}%, ${0.05 + hot * 0.22})`;
+                    g.lineWidth = (0.8 + rand() * 2.4) * (variant === 0 ? 1 : 1.6);
+                    g.beginPath();
+                    const segs = 18;
+                    for (let sgm = 0; sgm <= segs; sgm++) {
+                        const a = a0 + len * sgm / segs;
+                        const r = r0 - tight * (sgm / segs);
+                        const x = cx + Math.cos(a) * r;
+                        const y = cx + Math.sin(a) * r;
+                        if (sgm === 0) g.moveTo(x, y); else g.lineTo(x, y);
+                    }
+                    g.stroke();
+                }
+                // Bright spiral arms (log spirals) for a clear swirling motion
+                const arms = variant === 0 ? 3 : 2;
+                for (let arm = 0; arm < arms; arm++) {
+                    const phase = arm * Math.PI * 2 / arms + rand() * 0.4;
+                    for (let pass = 0; pass < 3; pass++) {
+                        g.strokeStyle = variant === 0
+                            ? `rgba(255, ${190 - pass * 40}, ${130 - pass * 30}, ${0.16 - pass * 0.04})`
+                            : `rgba(200, 120, 255, ${0.12 - pass * 0.03})`;
+                        g.lineWidth = (variant === 0 ? 5 : 9) + pass * 8;
+                        g.beginPath();
+                        const steps = 60;
+                        for (let st = 0; st <= steps; st++) {
+                            const f = st / steps;
+                            const r = outer * 0.95 * Math.exp(-f * Math.log(outer * 0.95 / (inner * 1.05)));
+                            const a = phase + f * 3.4;
+                            const x = cx + Math.cos(a) * r;
+                            const y = cx + Math.sin(a) * r;
+                            if (st === 0) g.moveTo(x, y); else g.lineTo(x, y);
+                        }
+                        g.stroke();
+                    }
+                }
+                // Dark dust lanes for texture
+                g.globalCompositeOperation = 'destination-out';
+                for (let i = 0; i < 26; i++) {
+                    const r = inner + 6 + rand() * (outer - inner - 6);
+                    const a0 = rand() * Math.PI * 2;
+                    g.strokeStyle = `rgba(0,0,0,${0.15 + rand() * 0.3})`;
+                    g.lineWidth = 1 + rand() * 3;
+                    g.beginPath();
+                    g.arc(cx, cx, r, a0, a0 + 0.3 + rand() * 1.2);
+                    g.stroke();
+                }
+                return c;
+            }
+
+            // Static core: lensing halo + photon ring + event horizon
+            function coreSprite() {
+                const S = 768;
+                const c = makeCanvas(S);
+                const g = c.getContext('2d');
+                const cx = S / 2;
+                const k = cx / DISK_WORLD;
+                const R = CONFIG.PLANET_RADIUS * k;
+                // Shadow cast inward from the horizon (disk dims near the hole)
+                const shade = g.createRadialGradient(cx, cx, R, cx, cx, R * 1.25);
+                shade.addColorStop(0, 'rgba(0,0,0,0.9)');
+                shade.addColorStop(1, 'rgba(0,0,0,0)');
+                g.fillStyle = shade;
+                g.beginPath();
+                g.arc(cx, cx, R * 1.25, 0, Math.PI * 2);
+                g.fill();
+                // Photon ring
+                g.globalCompositeOperation = 'lighter';
+                const ring = g.createRadialGradient(cx, cx, R * 0.98, cx, cx, R * 1.16);
+                ring.addColorStop(0, 'rgba(255,255,255,0)');
+                ring.addColorStop(0.25, 'rgba(255,240,215,0.95)');
+                ring.addColorStop(0.5, 'rgba(255,170,90,0.45)');
+                ring.addColorStop(1, 'rgba(255,120,60,0)');
+                g.fillStyle = ring;
+                g.beginPath();
+                g.arc(cx, cx, R * 1.16, 0, Math.PI * 2);
+                g.fill();
+                // Event horizon
+                g.globalCompositeOperation = 'source-over';
+                const hole = g.createRadialGradient(cx, cx, 0, cx, cx, R);
+                hole.addColorStop(0, '#000');
+                hole.addColorStop(0.85, '#000');
+                hole.addColorStop(1, '#05020a');
+                g.fillStyle = hole;
+                g.beginPath();
+                g.arc(cx, cx, R * 1.01, 0, Math.PI * 2);
+                g.fill();
+                return c;
+            }
+
+            function haloSprite() {
+                const S = 512;
+                const c = makeCanvas(S);
+                const g = c.getContext('2d');
+                const cx = S / 2;
+                const halo = g.createRadialGradient(cx, cx, 0, cx, cx, cx);
+                halo.addColorStop(0, 'rgba(255, 170, 90, 0.35)');
+                halo.addColorStop(0.18, 'rgba(255, 110, 80, 0.18)');
+                halo.addColorStop(0.42, 'rgba(150, 70, 230, 0.1)');
+                halo.addColorStop(1, 'rgba(60, 30, 140, 0)');
+                g.fillStyle = halo;
+                g.fillRect(0, 0, S, S);
+                return c;
+            }
+
+            function background(w, h) {
+                const far = makeCanvas(w, h);
+                const near = makeCanvas(w, h);
+                const g = far.getContext('2d');
+                seed = 777;
+                const cx = w / 2, cy = h / 2;
+                const diag = Math.hypot(w, h) / 2;
+                const base = g.createRadialGradient(cx, cy, 0, cx, cy, diag);
+                base.addColorStop(0, '#0d0a24');
+                base.addColorStop(0.5, '#060515');
+                base.addColorStop(1, '#010104');
+                g.fillStyle = base;
+                g.fillRect(0, 0, w, h);
+                // Nebula clouds
+                const hues = [268, 286, 200, 320, 250, 190];
+                const blobs = 22;
+                for (let i = 0; i < blobs; i++) {
+                    const ang = rand() * Math.PI * 2;
+                    const dist = (0.25 + rand() * 0.75) * diag;
+                    const x = cx + Math.cos(ang) * dist;
+                    const y = cy + Math.sin(ang) * dist * 0.8;
+                    const r = (0.15 + rand() * 0.3) * diag;
+                    const hue = hues[i % hues.length];
+                    const neb = g.createRadialGradient(x, y, 0, x, y, r);
+                    const a = 0.05 + rand() * 0.07;
+                    neb.addColorStop(0, `hsla(${hue}, 80%, 55%, ${a})`);
+                    neb.addColorStop(0.5, `hsla(${hue + 20}, 80%, 40%, ${a * 0.45})`);
+                    neb.addColorStop(1, `hsla(${hue}, 80%, 30%, 0)`);
+                    g.fillStyle = neb;
+                    g.fillRect(x - r, y - r, r * 2, r * 2);
+                }
+                // Dust specks inside nebula
+                for (let i = 0; i < 1400; i++) {
+                    g.fillStyle = `rgba(200, 180, 255, ${rand() * 0.05})`;
+                    g.fillRect(rand() * w, rand() * h, 2, 2);
+                }
+                // Far stars
+                const colors = ['#ffffff', '#ffffff', '#e0e7ff', '#bae6fd', '#fde68a', '#fbcfe8'];
+                const farCount = Math.round(w * h / 900);
+                for (let i = 0; i < farCount; i++) {
+                    g.globalAlpha = 0.15 + rand() * 0.5;
+                    g.fillStyle = colors[Math.floor(rand() * colors.length)];
+                    const s = rand() < 0.85 ? 0.8 : 1.3;
+                    g.fillRect(rand() * w, rand() * h, s, s);
+                }
+                g.globalAlpha = 1;
+                // Near layer: brighter stars with soft glows and a few diffraction spikes
+                const n = near.getContext('2d');
+                const nearCount = Math.round(w * h / 9000);
+                for (let i = 0; i < nearCount; i++) {
+                    const x = rand() * w, y = rand() * h;
+                    const r = 0.8 + rand() * 1.4;
+                    const col = colors[Math.floor(rand() * colors.length)];
+                    const glow = n.createRadialGradient(x, y, 0, x, y, r * 4);
+                    glow.addColorStop(0, col);
+                    glow.addColorStop(0.25, 'rgba(255,255,255,0.25)');
+                    glow.addColorStop(1, 'rgba(255,255,255,0)');
+                    n.globalAlpha = 0.5 + rand() * 0.5;
+                    n.fillStyle = glow;
+                    n.fillRect(x - r * 4, y - r * 4, r * 8, r * 8);
+                    if (rand() < 0.1) {
+                        n.strokeStyle = col;
+                        n.globalAlpha = 0.35;
+                        n.lineWidth = 0.7;
+                        const L = r * 9;
+                        n.beginPath();
+                        n.moveTo(x - L, y); n.lineTo(x + L, y);
+                        n.moveTo(x, y - L); n.lineTo(x, y + L);
+                        n.stroke();
+                    }
+                }
+                n.globalAlpha = 1;
+                return { far, near };
+            }
+
+            return { PLANET_SPAN, LABEL_SCALE, DISK_WORLD, planetSprite, labelSprite, diskSprite, coreSprite, haloSprite, background };
+        })();
+
         class Particle {
             constructor(name, x, y, vx, vy, color) {
                 this.name = name;
@@ -1367,58 +1697,86 @@
 
             draw(ctx) {
                 if (this.isEliminated) return;
+                this.drawTrail(ctx);
+                this.drawBody(ctx);
+                this.drawLabel(ctx);
+            }
 
-                // Glowing Smooth Trail (Spline-like with Quadratic Bezier)
-                if (this.history.length > 3) {
-                    ctx.save();
-                    ctx.lineWidth = 2;
-                    ctx.lineCap = 'round';
-                    ctx.lineJoin = 'round';
+            getZoom() {
+                return (typeof game !== 'undefined') ? game.zoom : 1;
+            }
 
-                    for (let i = 0; i < this.history.length - 2; i++) {
-                        const p0 = this.history[i];
-                        const p1 = this.history[i + 1];
-                        const p2 = this.history[i + 2];
-
-                        // Midpoints for smooth connection
-                        const mid1 = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
-                        const mid2 = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
-
-                        ctx.beginPath();
-                        ctx.moveTo(mid1.x, mid1.y);
-                        ctx.quadraticCurveTo(p1.x, p1.y, mid2.x, mid2.y);
-
-                        ctx.strokeStyle = this.color;
-                        ctx.globalAlpha = (i / this.history.length) * 0.4;
-                        ctx.stroke();
-                    }
-                    ctx.restore();
-                }
-
-                // Particle Head - Minimalist line-only style
-                ctx.fillStyle = "#fff";
-                ctx.textAlign = "center";
-
-                // Unscale the text so it stays constant size regardless of zoom
-                const zoom = (typeof game !== 'undefined') ? game.zoom : 1;
+            // Tapered, additive trail batched into a few strokes (cheap with 100 players)
+            drawTrail(ctx) {
+                if (this.isEliminated) return;
+                const h = this.history;
+                const n = h.length;
+                if (n <= 3) return;
+                const zoom = this.getZoom();
+                const buckets = 5;
+                const fade = (typeof game !== 'undefined' && game.particles.length > 30) ? 0.5 : 1;
+                const per = Math.ceil((n - 2) / buckets);
                 ctx.save();
-                ctx.translate(this.x, this.y - 18 / zoom);
-                ctx.scale(1 / zoom, 1 / zoom);
-
-                const fontSize = 14;
-                ctx.font = `bold ${fontSize}px 'Noto Sans KR'`;
-                const textWidth = ctx.measureText(this.name).width;
-
-                // Shadow / Box
-                ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-                ctx.beginPath();
-                ctx.roundRect(-textWidth / 2 - 4, -fontSize - 2, textWidth + 8, fontSize + 4, 4);
-                ctx.fill();
-
-                ctx.fillStyle = "#fff";
-                ctx.fillText(this.name, 0, 0);
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.strokeStyle = this.color;
+                ctx.globalCompositeOperation = 'lighter';
+                for (let b = 0; b < buckets; b++) {
+                    const s = b * per;
+                    const e = Math.min(n - 2, (b + 1) * per);
+                    if (s >= e) break;
+                    ctx.beginPath();
+                    ctx.moveTo((h[s].x + h[s + 1].x) / 2, (h[s].y + h[s + 1].y) / 2);
+                    for (let i = s; i < e; i++) {
+                        const p1 = h[i + 1];
+                        const p2 = h[i + 2];
+                        ctx.quadraticCurveTo(p1.x, p1.y, (p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+                    }
+                    const f = (b + 1) / buckets;
+                    ctx.globalAlpha = (0.06 + f * f * 0.5) * fade;
+                    ctx.lineWidth = (0.6 + f * 3.2) / zoom;
+                    ctx.stroke();
+                }
                 ctx.restore();
-                // Removed extra restore for particle dot
+            }
+
+            getScreenRadius() {
+                const zoom = this.getZoom();
+                return Math.max(6.5, Math.min(11, CONFIG.PARTICLE_RADIUS * zoom * 1.5));
+            }
+
+            // Shaded mini-planet, lit by the accretion disk (light faces the hole)
+            drawBody(ctx) {
+                if (this.isEliminated) return;
+                const zoom = this.getZoom();
+                if (!this.sprite) this.sprite = OrbitArt.planetSprite(this.color);
+                const r = this.getScreenRadius() / zoom;
+                const size = r * OrbitArt.PLANET_SPAN;
+                const planet = (typeof game !== 'undefined') ? game.planet : { x: 0, y: 0 };
+                const ang = Math.atan2(planet.y - this.y, planet.x - this.x);
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(ang);
+                ctx.drawImage(this.sprite, -size / 2, -size / 2, size, size);
+                ctx.restore();
+            }
+
+            drawLabel(ctx) {
+                if (this.isEliminated) return;
+                const zoom = this.getZoom();
+                const crowded = (typeof game !== 'undefined') && game.particles.length > 30;
+                if (!this.labelSprite || this.labelCrowded !== crowded) {
+                    this.labelSprite = OrbitArt.labelSprite(this.name, this.color, crowded ? 11 : 13);
+                    this.labelCrowded = crowded;
+                }
+                const label = this.labelSprite;
+                const w = label.width / OrbitArt.LABEL_SCALE;
+                const hgt = label.height / OrbitArt.LABEL_SCALE;
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.scale(1 / zoom, 1 / zoom);
+                ctx.drawImage(label, -w / 2, -this.getScreenRadius() - 5 - hgt, w, hgt);
+                ctx.restore();
             }
         }
 
@@ -1469,29 +1827,22 @@
             }
 
             initStars() {
-                this.starCanvas.width = this.canvas.width;
-                this.starCanvas.height = this.canvas.height;
-                const context = this.starCanvas.getContext('2d');
-                const colors = ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#7dd3fc', '#fcd34d', '#f472b6'];
+                const W = this.canvas.width, H = this.canvas.height;
+                const layers = OrbitArt.background(W, H);
+                this.starCanvas = layers.far;
+                this.nearStarCanvas = layers.near;
+                const colors = ['#fff', '#fff', '#fff', '#e0e7ff', '#7dd3fc', '#fcd34d', '#f9a8d4'];
                 this.stars = [];
-
-                for (let i = 0; i < 1000; i++) {
-                    const x = Math.random() * this.canvas.width;
-                    const y = Math.random() * this.canvas.height;
-                    const size = Math.random() < 0.2 ? 1.8 : 0.8;
-                    const color = colors[Math.floor(Math.random() * colors.length)];
-                    const brightness = 0.4 + Math.random() * 0.6;
-                    if (i < 80) {
-                        this.stars.push({
-                            x, y, size, color, brightness,
-                            twinkleSpeed: 0.003 + Math.random() * 0.008,
-                            phase: Math.random() * Math.PI * 2
-                        });
-                    } else {
-                        context.fillStyle = color;
-                        context.globalAlpha = brightness * 0.6;
-                        context.fillRect(x, y, size, size);
-                    }
+                for (let i = 0; i < 90; i++) {
+                    this.stars.push({
+                        x: Math.random() * W,
+                        y: Math.random() * H,
+                        size: Math.random() < 0.3 ? 2 : 1.3,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        brightness: 0.5 + Math.random() * 0.5,
+                        twinkleSpeed: 0.0015 + Math.random() * 0.004,
+                        phase: Math.random() * Math.PI * 2
+                    });
                 }
             }
 
@@ -1660,112 +2011,168 @@
 
             draw(dt) {
                 if (!this.canvas.width || !this.canvas.height) return;
-                // Reset transform to identity to prevent any accumulation from crashes
-                this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+                const ctx = this.ctx;
+                const W = this.canvas.width, H = this.canvas.height;
+                const now = performance.now() / 1000;
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.globalAlpha = 1;
+                ctx.globalCompositeOperation = 'source-over';
 
-                // Clear background
-                this.ctx.fillStyle = '#020205';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                // Cached deep-space backdrop (far layer is fixed, near layer drifts with zoom = parallax)
+                ctx.drawImage(this.starCanvas, 0, 0);
+                if (this.nearStarCanvas) {
+                    const p = 1 + Math.min(0.5, Math.max(0, this.zoom - 0.5) * 0.18);
+                    ctx.save();
+                    ctx.translate(W / 2, H / 2);
+                    ctx.scale(p, p);
+                    ctx.rotate(now * 0.004);
+                    ctx.drawImage(this.nearStarCanvas, -W / 2, -H / 2);
+                    ctx.restore();
+                }
+                for (let i = 0; i < this.stars.length; i++) {
+                    const star = this.stars[i];
+                    const twinkle = 0.55 + Math.sin(now * 1000 * star.twinkleSpeed + star.phase) * 0.45;
+                    ctx.fillStyle = star.color;
+                    ctx.globalAlpha = star.brightness * twinkle;
+                    ctx.fillRect(star.x, star.y, star.size, star.size);
+                }
+                ctx.globalAlpha = 1;
 
                 // Mouse Neon Glow
                 if (this.mousePos.x > 0) {
-                    const glow = this.ctx.createRadialGradient(
-                        this.mousePos.x, this.mousePos.y, 0,
-                        this.mousePos.x, this.mousePos.y, 120
-                    );
-                    glow.addColorStop(0, 'rgba(6, 182, 212, 0.18)');
+                    const glow = ctx.createRadialGradient(this.mousePos.x, this.mousePos.y, 0, this.mousePos.x, this.mousePos.y, 120);
+                    glow.addColorStop(0, 'rgba(6, 182, 212, 0.14)');
                     glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-                    this.ctx.fillStyle = glow;
-                    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                    ctx.fillStyle = glow;
+                    ctx.fillRect(this.mousePos.x - 120, this.mousePos.y - 120, 240, 240);
                 }
-
-                // Update & Draw Mouse Particles
                 this.mouseParticles = this.mouseParticles.filter(p => p.alpha > 0);
                 this.mouseParticles.forEach(p => {
                     p.update(dt);
-                    p.draw(this.ctx);
+                    p.draw(ctx);
                 });
 
-                this.ctx.save();
+                ctx.save();
+                ctx.translate(this.planet.x, this.planet.y);
+                ctx.scale(this.zoom, this.zoom);
+                ctx.translate(-this.planet.x, -this.planet.y);
 
-                // Scale from center
-                this.ctx.translate(this.planet.x, this.planet.y);
-                this.ctx.scale(this.zoom, this.zoom);
-                this.ctx.translate(-this.planet.x, -this.planet.y);
+                this.holeFlash = Math.max(0, (this.holeFlash || 0) - dt * 1.6);
+                this.drawBlackHole(ctx, now);
 
-                // Update & Draw Explosion Particles (Inside scaled context)
+                // Absorption shockwaves & infall streaks
+                this.absorbFx = (this.absorbFx || []).filter(fx => fx.t < 1);
+                this.absorbFx.forEach(fx => {
+                    fx.t += dt / 1.1;
+                    this.drawAbsorb(ctx, fx);
+                });
+
                 this.explosionParticles = this.explosionParticles.filter(p => p.alpha > 0);
                 this.explosionParticles.forEach(p => {
                     p.update(dt);
-                    p.draw(this.ctx);
+                    p.draw(ctx);
                 });
 
-                // Star Field (Stars don't zoom for parallax effect)
-                this.ctx.save();
-                this.ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform for stars
+                const alive = this.particles;
+                for (let i = 0; i < alive.length; i++) alive[i].drawTrail(ctx);
+                for (let i = 0; i < alive.length; i++) alive[i].drawBody(ctx);
+                for (let i = 0; i < alive.length; i++) alive[i].drawLabel(ctx);
+                ctx.restore();
+            }
 
-                this.ctx.drawImage(this.starCanvas, 0, 0);
-                const now = Date.now();
-                this.stars.forEach(star => {
-                    const twinkle = 0.6 + Math.sin(now * star.twinkleSpeed + star.phase) * 0.4;
-                    this.ctx.fillStyle = star.color;
-                    this.ctx.globalAlpha = star.brightness * twinkle;
-                    this.ctx.fillRect(star.x, star.y, star.size, star.size);
-                });
-                this.ctx.restore(); // Restore to scaled coordinates
+            ensureHoleArt() {
+                if (this.holeArt) return this.holeArt;
+                this.holeArt = {
+                    halo: OrbitArt.haloSprite(),
+                    diskA: OrbitArt.diskSprite(0),
+                    diskB: OrbitArt.diskSprite(1),
+                    core: OrbitArt.coreSprite()
+                };
+                return this.holeArt;
+            }
 
-                // Layered Nebulae for "Bling-Bling" effect
-                this.ctx.save();
-                this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+            drawBlackHole(ctx, now) {
+                const art = this.ensureHoleArt();
+                const { x, y } = this.planet;
+                const flash = this.holeFlash || 0;
+                const pulse = 0.85 + Math.sin(now * 1.7) * 0.08 + flash * 0.5;
+                const haloR = 330 * (1 + flash * 0.08);
+                ctx.save();
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.globalAlpha = Math.min(1, pulse);
+                ctx.drawImage(art.halo, x - haloR, y - haloR, haloR * 2, haloR * 2);
+                const D = OrbitArt.DISK_WORLD;
+                ctx.translate(x, y);
+                ctx.save();
+                ctx.rotate(now * 0.16);
+                ctx.globalAlpha = 0.65;
+                ctx.drawImage(art.diskB, -D, -D, D * 2, D * 2);
+                ctx.restore();
+                ctx.save();
+                ctx.rotate(now * 0.42);
+                ctx.globalAlpha = 0.95;
+                ctx.drawImage(art.diskA, -D, -D, D * 2, D * 2);
+                ctx.restore();
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = 1;
+                ctx.drawImage(art.core, -D, -D, D * 2, D * 2);
+                if (flash > 0) {
+                    ctx.globalCompositeOperation = 'lighter';
+                    ctx.globalAlpha = flash * 0.8;
+                    ctx.strokeStyle = this.lastAbsorbColor || '#fff';
+                    ctx.lineWidth = 3 / this.zoom;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, CONFIG.PLANET_RADIUS * 1.06, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
 
-                // Layer 1: Core Purple Glow
-                const nebula1 = this.ctx.createRadialGradient(
-                    this.planet.x - 200 * this.zoom, this.planet.y + 100 * this.zoom, 0,
-                    this.planet.x - 200 * this.zoom, this.planet.y + 100 * this.zoom, 800 * this.zoom
-                );
-                nebula1.addColorStop(0, 'rgba(124, 58, 237, 0.12)');
-                nebula1.addColorStop(1, 'rgba(0, 0, 0, 0)');
-                this.ctx.fillStyle = nebula1;
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-                // Layer 2: Subtle Cyan Accent
-                const nebula2 = this.ctx.createRadialGradient(
-                    this.planet.x + 300 * this.zoom, this.planet.y - 150 * this.zoom, 0,
-                    this.planet.x + 300 * this.zoom, this.planet.y - 150 * this.zoom, 700 * this.zoom
-                );
-                nebula2.addColorStop(0, 'rgba(6, 182, 212, 0.08)');
-                nebula2.addColorStop(1, 'rgba(0, 0, 0, 0)');
-                this.ctx.fillStyle = nebula2;
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-                // Layer 3: Warm Gold Mist
-                const nebula3 = this.ctx.createRadialGradient(
-                    this.planet.x, this.planet.y, 100 * this.zoom,
-                    this.planet.x, this.planet.y, 1000 * this.zoom
-                );
-                nebula3.addColorStop(0, 'rgba(234, 179, 8, 0.04)');
-                nebula3.addColorStop(1, 'rgba(0, 0, 0, 0)');
-                this.ctx.fillStyle = nebula3;
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-                this.ctx.restore();
-
-                // Planet
-                const grad = this.ctx.createRadialGradient(this.planet.x, this.planet.y, 10, this.planet.x, this.planet.y, CONFIG.PLANET_RADIUS);
-                grad.addColorStop(0, '#a855f7');
-                grad.addColorStop(0.5, '#6b21a8');
-                grad.addColorStop(1, '#1e1b4b');
-
-                this.ctx.shadowBlur = 40;
-                this.ctx.shadowColor = '#a855f7';
-                this.ctx.beginPath();
-                this.ctx.arc(this.planet.x, this.planet.y, CONFIG.PLANET_RADIUS, 0, Math.PI * 2);
-                this.ctx.fillStyle = grad;
-                this.ctx.fill();
-                this.ctx.shadowBlur = 0;
-
-                this.particles.forEach(p => p.draw(this.ctx));
-                this.ctx.restore(); // Restore main scale
+            drawAbsorb(ctx, fx) {
+                const t = Math.min(1, fx.t);
+                const { x: px, y: py } = this.planet;
+                const R = CONFIG.PLANET_RADIUS;
+                ctx.save();
+                ctx.globalCompositeOperation = 'lighter';
+                // Expanding shockwave ring
+                ctx.globalAlpha = (1 - t) * 0.9;
+                ctx.strokeStyle = fx.color;
+                ctx.lineWidth = (2 + (1 - t) * 5) / this.zoom;
+                ctx.beginPath();
+                ctx.arc(px, py, R + 6 + t * 120, 0, Math.PI * 2);
+                ctx.stroke();
+                // Spaghettified streak spiralling into the horizon
+                const steps = 14;
+                ctx.lineCap = 'round';
+                for (let i = 0; i < steps; i++) {
+                    const f0 = i / steps, f1 = (i + 1) / steps;
+                    const pt = f => {
+                        const ff = Math.min(1, f * (1 - t) + t);
+                        const ang = fx.angle + ff * 1.6;
+                        const rr = fx.dist * (1 - ff) + R * 1.03 * ff;
+                        return [px + Math.cos(ang) * rr, py + Math.sin(ang) * rr];
+                    };
+                    const [x0, y0] = pt(f0);
+                    const [x1, y1] = pt(f1);
+                    ctx.globalAlpha = (1 - t) * (0.2 + f0 * 0.8);
+                    ctx.lineWidth = (1 + f0 * 5 * (1 - t)) / this.zoom;
+                    ctx.beginPath();
+                    ctx.moveTo(x0, y0);
+                    ctx.lineTo(x1, y1);
+                    ctx.stroke();
+                }
+                // Hot flash at impact point
+                const ia = fx.angle + 1.6 * t;
+                const ix = px + Math.cos(ia) * R, iy = py + Math.sin(ia) * R;
+                const fr = (18 + 30 * (1 - t)) / Math.max(0.5, this.zoom);
+                const g = ctx.createRadialGradient(ix, iy, 0, ix, iy, fr);
+                g.addColorStop(0, 'rgba(255,255,255,0.9)');
+                g.addColorStop(0.3, fx.color);
+                g.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.globalAlpha = (1 - t);
+                ctx.fillStyle = g;
+                ctx.fillRect(ix - fr, iy - fr, fr * 2, fr * 2);
+                ctx.restore();
             }
 
             getRankings() {
@@ -1911,6 +2318,8 @@
                 this.closeResult();
                 this.particles = [];
                 this.explosionParticles = [];
+                this.absorbFx = [];
+                this.holeFlash = 0;
                 this.gameTime = 0;
                 this.zoom = 1;
                 this.lastTime = null;
@@ -1924,6 +2333,14 @@
             }
 
             createExplosion(x, y, color) {
+                this.absorbFx = this.absorbFx || [];
+                this.absorbFx.push({
+                    color, t: 0,
+                    angle: Math.atan2(y - this.planet.y, x - this.planet.x),
+                    dist: Math.hypot(x - this.planet.x, y - this.planet.y) + 30
+                });
+                this.holeFlash = 1;
+                this.lastAbsorbColor = color;
                 for (let i = 0; i < 20; i++) {
                     this.explosionParticles.push(new ExplosionParticle(x, y, color));
                 }

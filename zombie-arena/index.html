@@ -9,8 +9,8 @@
   "features": ["🔥 영역 축소", "👁️ 시야 시스템", "🎲 매회 랜덤 진행", "☣️ 감염 가속"],
   "color": "zombie",
   "badge": null,
-  "version": "1.3.0",
-  "updated": "2026-07-17",
+  "version": "1.4.0",
+  "updated": "2026-11-24",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -1098,40 +1098,455 @@ class ZombieSurvival {
         this.buildCanvasCaches();
     }
 
+    // ---------- Visual layer (pure rendering; never consumes physicsRandom) ----------
+    artRandom() {
+        this.artSeed = ((this.artSeed || 20251124) * 1664525 + 1013904223) >>> 0;
+        return this.artSeed / 4294967296;
+    }
+
+    makeArtCanvas(width, height = width) {
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.ceil(width));
+        canvas.height = Math.max(1, Math.ceil(height));
+        return canvas;
+    }
+
     buildCanvasCaches() {
         const width = this.canvas.width;
         const height = this.canvas.height;
+        const s = this.arenaScale || 1;
+        const rnd = () => this.artRandom();
+        this.artSeed = 20251124;
         this.backgroundCache.width = width; this.backgroundCache.height = height;
         this.floorCache.width = width; this.floorCache.height = height;
+        this.moonRadius = Math.max(18, Math.min(width, height) * 0.05);
+        this.moonX = this.moonRadius * 2.1; this.moonY = this.moonRadius * 2.1;
 
+        // ===== Outside the arena: overgrown graveyard lit by the moon =====
         const bg = this.backgroundCache.getContext('2d');
-        const sky = bg.createRadialGradient(width * 0.72, height * 0.12, 0, width * 0.5, height * 0.5, Math.max(width, height));
-        sky.addColorStop(0, '#201557'); sky.addColorStop(0.45, '#090b25'); sky.addColorStop(1, '#040510');
-        bg.fillStyle = sky; bg.fillRect(0, 0, width, height);
-        const moonRadius = Math.max(20, Math.min(width, height) * 0.045);
-        const moon = bg.createRadialGradient(width * 0.8, height * 0.1, 0, width * 0.8, height * 0.1, moonRadius * 2.4);
-        moon.addColorStop(0, 'rgba(205,225,255,.92)'); moon.addColorStop(.4, 'rgba(130,170,255,.24)'); moon.addColorStop(1, 'transparent');
-        bg.fillStyle = moon; bg.beginPath(); bg.arc(width * 0.8, height * 0.1, moonRadius * 2.4, 0, Math.PI * 2); bg.fill();
-        bg.fillStyle = 'rgba(26,14,52,.9)';
-        for (let index = 0; index < 18; index++) {
-            const x = (index / 17) * width;
-            const graveHeight = 12 + (index % 4) * 5;
-            bg.fillRect(x - 5, height - graveHeight - 6, 10, graveHeight);
-            bg.beginPath(); bg.arc(x, height - graveHeight - 6, 5, Math.PI, 0); bg.fill();
+        const ground = bg.createRadialGradient(this.moonX, this.moonY, 0, this.moonX, this.moonY, Math.hypot(width, height));
+        ground.addColorStop(0, '#1d2433'); ground.addColorStop(0.35, '#10151f'); ground.addColorStop(1, '#06080d');
+        bg.fillStyle = ground; bg.fillRect(0, 0, width, height);
+        // Dirt / moss patches
+        for (let i = 0; i < 26; i++) {
+            const x = rnd() * width, y = rnd() * height, r = (40 + rnd() * 110) * s;
+            const patch = bg.createRadialGradient(x, y, 0, x, y, r);
+            const moss = rnd() < 0.5;
+            patch.addColorStop(0, moss ? 'rgba(34,52,36,.45)' : 'rgba(46,36,30,.4)');
+            patch.addColorStop(1, 'rgba(0,0,0,0)');
+            bg.fillStyle = patch; bg.fillRect(x - r, y - r, r * 2, r * 2);
         }
+        // Dead grass tufts
+        bg.lineCap = 'round';
+        const tufts = Math.round(width * height / 260);
+        for (let i = 0; i < tufts; i++) {
+            const x = rnd() * width, y = rnd() * height;
+            const len = (2 + rnd() * 5) * s, a = -Math.PI / 2 + (rnd() - 0.5) * 1.4;
+            bg.strokeStyle = `rgba(${70 + rnd() * 40 | 0},${85 + rnd() * 40 | 0},${70 + rnd() * 20 | 0},${0.12 + rnd() * 0.2})`;
+            bg.lineWidth = 0.8 + rnd() * 0.7;
+            bg.beginPath(); bg.moveTo(x, y); bg.lineTo(x + Math.cos(a) * len, y + Math.sin(a) * len); bg.stroke();
+        }
+        // Dead trees (top-down branch silhouettes)
+        const drawBranch = (x, y, angle, length, widthPx, depth) => {
+            const ex = x + Math.cos(angle) * length, ey = y + Math.sin(angle) * length;
+            bg.lineWidth = widthPx; bg.beginPath(); bg.moveTo(x, y);
+            bg.quadraticCurveTo((x + ex) / 2 + (rnd() - 0.5) * length * 0.3, (y + ey) / 2 + (rnd() - 0.5) * length * 0.3, ex, ey);
+            bg.stroke();
+            if (depth > 0) {
+                const forks = 2 + (rnd() < 0.4 ? 1 : 0);
+                for (let f = 0; f < forks; f++) drawBranch(ex, ey, angle + (rnd() - 0.5) * 1.3, length * (0.55 + rnd() * 0.2), widthPx * 0.62, depth - 1);
+            }
+        };
+        bg.strokeStyle = 'rgba(4,5,8,.82)';
+        for (let i = 0; i < 7; i++) {
+            const corner = i % 4;
+            const x = (corner % 2 ? width - rnd() * width * 0.16 : rnd() * width * 0.16);
+            const y = (corner > 1 ? height - rnd() * height * 0.2 : rnd() * height * 0.25 + (corner === 0 ? height * 0.3 : 0));
+            const branches = 5 + (rnd() * 3 | 0);
+            bg.fillStyle = 'rgba(0,0,0,.35)';
+            bg.beginPath(); bg.ellipse(x + 6 * s, y + 6 * s, 30 * s, 26 * s, 0, 0, Math.PI * 2); bg.fill();
+            for (let b = 0; b < branches; b++) drawBranch(x, y, (b / branches) * Math.PI * 2 + rnd() * 0.5, (16 + rnd() * 14) * s, 5 * s, 3);
+        }
+        // Scattered gravestones
+        const graveSprites = [this.makeGraveSprite(s, 0), this.makeGraveSprite(s, 1), this.makeGraveSprite(s, 2)];
+        for (let i = 0; i < 46; i++) {
+            const sprite = graveSprites[i % 3];
+            const x = rnd() * width, y = rnd() * height, sc = 0.75 + rnd() * 0.5;
+            bg.save(); bg.translate(x, y); bg.rotate((rnd() - 0.5) * 0.5); bg.scale(sc, sc);
+            bg.drawImage(sprite, -sprite.width / 2, -sprite.height / 2); bg.restore();
+        }
+        // Moon with halo, craters and drifting cloud wisps
+        const mx = this.moonX, my = this.moonY, mr = this.moonRadius;
+        bg.save(); bg.globalCompositeOperation = 'lighter';
+        const halo = bg.createRadialGradient(mx, my, mr * 0.8, mx, my, mr * 7);
+        halo.addColorStop(0, 'rgba(190,210,255,.35)'); halo.addColorStop(0.25, 'rgba(120,150,230,.12)'); halo.addColorStop(1, 'rgba(60,80,160,0)');
+        bg.fillStyle = halo; bg.fillRect(mx - mr * 7, my - mr * 7, mr * 14, mr * 14);
+        bg.restore();
+        const moonBody = bg.createRadialGradient(mx - mr * 0.35, my - mr * 0.35, mr * 0.1, mx, my, mr);
+        moonBody.addColorStop(0, '#fbfaf0'); moonBody.addColorStop(0.7, '#dcdfe6'); moonBody.addColorStop(1, '#a9b2c8');
+        bg.fillStyle = moonBody; bg.beginPath(); bg.arc(mx, my, mr, 0, Math.PI * 2); bg.fill();
+        bg.save(); bg.beginPath(); bg.arc(mx, my, mr, 0, Math.PI * 2); bg.clip();
+        for (let i = 0; i < 9; i++) {
+            const a = rnd() * Math.PI * 2, d = rnd() * mr * 0.75, cr = mr * (0.08 + rnd() * 0.18);
+            const cx = mx + Math.cos(a) * d, cy = my + Math.sin(a) * d;
+            const crater = bg.createRadialGradient(cx + cr * 0.2, cy + cr * 0.2, 0, cx, cy, cr);
+            crater.addColorStop(0, 'rgba(130,136,155,.32)'); crater.addColorStop(0.8, 'rgba(150,156,175,.18)'); crater.addColorStop(1, 'rgba(255,255,255,0)');
+            bg.fillStyle = crater; bg.beginPath(); bg.arc(cx, cy, cr, 0, Math.PI * 2); bg.fill();
+        }
+        const terminator = bg.createLinearGradient(mx - mr, my - mr, mx + mr, my + mr);
+        terminator.addColorStop(0.5, 'rgba(20,24,40,0)'); terminator.addColorStop(1, 'rgba(20,24,40,.45)');
+        bg.fillStyle = terminator; bg.fillRect(mx - mr, my - mr, mr * 2, mr * 2);
+        bg.restore();
+        // Thin cloud wisps (soft, blurred streaks) drifting across the moon
+        for (let i = 0; i < 5; i++) {
+            const wx = mx + (rnd() - 0.45) * mr * 3.2, wy = my + (rnd() - 0.35) * mr * 1.8;
+            const ww = mr * (1.4 + rnd() * 1.6), wh = mr * (0.16 + rnd() * 0.12);
+            const wisp = bg.createRadialGradient(wx, wy, 0, wx, wy, ww);
+            wisp.addColorStop(0, 'rgba(12,16,30,.55)'); wisp.addColorStop(1, 'rgba(12,16,30,0)');
+            bg.save(); bg.translate(wx, wy); bg.scale(1, wh / ww); bg.translate(-wx, -wy);
+            bg.fillStyle = wisp; bg.fillRect(wx - ww, wy - ww, ww * 2, ww * 2); bg.restore();
+        }
+        // Rim glow on top of the moon
+        bg.save(); bg.globalCompositeOperation = 'lighter';
+        const rimGlow = bg.createRadialGradient(mx, my, mr * 0.9, mx, my, mr * 1.8);
+        rimGlow.addColorStop(0, 'rgba(220,230,255,.35)'); rimGlow.addColorStop(1, 'rgba(160,190,255,0)');
+        bg.fillStyle = rimGlow; bg.fillRect(mx - mr * 2, my - mr * 2, mr * 4, mr * 4);
+        bg.restore();
 
+        // ===== Arena floor: cracked city pavement crossed by an abandoned road =====
         const floor = this.floorCache.getContext('2d');
-        floor.fillStyle = '#0c1131'; floor.fillRect(0, 0, width, height);
-        const tile = Math.max(28, 42 * this.arenaScale);
+        floor.fillStyle = '#23272f'; floor.fillRect(0, 0, width, height);
+        const tile = Math.max(34, 58 * s);
         for (let row = -1; row < Math.ceil(height / tile) + 1; row++) {
             for (let column = -1; column < Math.ceil(width / tile) + 1; column++) {
-                const x = column * tile + (row % 2 ? tile * 0.5 : 0);
-                const y = row * tile;
-                floor.fillStyle = (row + column) % 3 === 0 ? 'rgba(79,69,145,.13)' : 'rgba(20,37,86,.2)';
-                floor.fillRect(x + 1, y + 1, tile - 2, tile - 2);
-                floor.strokeStyle = 'rgba(107,118,190,.09)'; floor.strokeRect(x + 1, y + 1, tile - 2, tile - 2);
+                const x = column * tile + (row % 2 ? tile * 0.5 : 0), y = row * tile;
+                const shade = 30 + rnd() * 14;
+                floor.fillStyle = `rgb(${shade | 0},${shade + 3 | 0},${shade + 9 | 0})`;
+                floor.fillRect(x + 1.5, y + 1.5, tile - 3, tile - 3);
+                const bevel = floor.createLinearGradient(x, y, x + tile, y + tile);
+                bevel.addColorStop(0, 'rgba(255,255,255,.05)'); bevel.addColorStop(1, 'rgba(0,0,0,.18)');
+                floor.fillStyle = bevel; floor.fillRect(x + 1.5, y + 1.5, tile - 3, tile - 3);
+                if (rnd() < 0.07) { // chipped slab corner
+                    const cs = tile * (0.2 + rnd() * 0.25);
+                    floor.fillStyle = 'rgba(14,16,20,.55)';
+                    floor.beginPath(); floor.moveTo(x + tile - 1.5, y + 1.5); floor.lineTo(x + tile - 1.5 - cs, y + 1.5);
+                    floor.lineTo(x + tile - 1.5 - cs * 0.3, y + 1.5 + cs * 0.4); floor.lineTo(x + tile - 1.5, y + 1.5 + cs); floor.closePath(); floor.fill();
+                }
             }
         }
+        // Asphalt road band (diagonal) with faded markings
+        floor.save();
+        floor.translate(width / 2, height / 2); floor.rotate(-0.42);
+        const roadW = Math.max(110, 170 * s), roadL = Math.hypot(width, height);
+        const asphalt = floor.createLinearGradient(0, -roadW / 2, 0, roadW / 2);
+        asphalt.addColorStop(0, '#15171c'); asphalt.addColorStop(0.5, '#1c1f25'); asphalt.addColorStop(1, '#14161a');
+        floor.fillStyle = asphalt; floor.fillRect(-roadL, -roadW / 2, roadL * 2, roadW);
+        floor.fillStyle = 'rgba(0,0,0,.4)';
+        floor.fillRect(-roadL, -roadW / 2 - 3, roadL * 2, 3); floor.fillRect(-roadL, roadW / 2, roadL * 2, 3);
+        for (let i = 0; i < 2600; i++) {
+            floor.fillStyle = `rgba(${rnd() < 0.5 ? '255,255,255' : '0,0,0'},${rnd() * 0.07})`;
+            floor.fillRect((rnd() - 0.5) * roadL * 2, (rnd() - 0.5) * roadW, 1.5, 1.5);
+        }
+        floor.fillStyle = 'rgba(214,170,60,.38)';
+        const dash = 34 * s;
+        for (let x = -roadL; x < roadL; x += dash * 2) {
+            if (rnd() < 0.18) continue; // worn away
+            floor.fillRect(x, -4 * s, dash, 2.4 * s); floor.fillRect(x, 1.6 * s, dash, 2.4 * s);
+        }
+        floor.fillStyle = 'rgba(220,220,210,.16)';
+        for (let k = -4; k <= 4; k++) floor.fillRect(roadW * 0.9 + k * 14 * s, -roadW / 2 + 8, 7 * s, roadW - 16);
+        floor.restore();
+        // Cracks with branches
+        const crack = (x, y, angle, length, depth) => {
+            floor.beginPath(); floor.moveTo(x, y);
+            let cx = x, cy = y;
+            const steps = 6 + (rnd() * 6 | 0);
+            for (let i = 0; i < steps; i++) {
+                angle += (rnd() - 0.5) * 0.9;
+                cx += Math.cos(angle) * length / steps; cy += Math.sin(angle) * length / steps;
+                floor.lineTo(cx, cy);
+                if (depth > 0 && rnd() < 0.22) {
+                    floor.stroke(); crack(cx, cy, angle + (rnd() < 0.5 ? 0.9 : -0.9), length * 0.45, depth - 1);
+                    floor.beginPath(); floor.moveTo(cx, cy);
+                }
+            }
+            floor.stroke();
+        };
+        floor.lineJoin = 'round';
+        for (let i = 0; i < 34; i++) {
+            const x = rnd() * width, y = rnd() * height, a = rnd() * Math.PI * 2, l = (50 + rnd() * 120) * s;
+            floor.strokeStyle = 'rgba(5,6,9,.75)'; floor.lineWidth = 1.2 + rnd() * 0.9;
+            this.artSeedBackup = this.artSeed;
+            crack(x, y, a, l, 2);
+            this.artSeed = this.artSeedBackup; // replay same path for highlight edge
+            floor.save(); floor.translate(0.9, 0.9);
+            floor.strokeStyle = 'rgba(255,255,255,.06)'; floor.lineWidth = 0.8;
+            crack(x, y, a, l, 2); floor.restore();
+        }
+        // Stains (oil, old blood) and rubble
+        for (let i = 0; i < 16; i++) {
+            const x = rnd() * width, y = rnd() * height, r = (12 + rnd() * 34) * s;
+            const blood = rnd() < 0.4;
+            const stain = floor.createRadialGradient(x, y, 0, x, y, r);
+            stain.addColorStop(0, blood ? 'rgba(90,10,14,.4)' : 'rgba(0,0,0,.35)');
+            stain.addColorStop(0.7, blood ? 'rgba(60,6,10,.18)' : 'rgba(0,0,0,.14)');
+            stain.addColorStop(1, 'rgba(0,0,0,0)');
+            floor.fillStyle = stain;
+            floor.save(); floor.translate(x, y); floor.scale(1, 0.6 + rnd() * 0.4); floor.translate(-x, -y);
+            floor.fillRect(x - r, y - r, r * 2, r * 2); floor.restore();
+        }
+        for (let i = 0; i < 110; i++) {
+            const x = rnd() * width, y = rnd() * height, r = (1.2 + rnd() * 3.2) * s;
+            const g = 55 + rnd() * 40 | 0;
+            floor.fillStyle = 'rgba(0,0,0,.4)';
+            floor.beginPath(); floor.arc(x + r * 0.5, y + r * 0.5, r, 0, Math.PI * 2); floor.fill();
+            floor.fillStyle = `rgb(${g},${g + 2},${g + 6})`;
+            floor.beginPath();
+            for (let k = 0; k < 5; k++) {
+                const a = k / 5 * Math.PI * 2 + rnd() * 0.6, rr = r * (0.6 + rnd() * 0.5);
+                if (k === 0) floor.moveTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); else floor.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+            }
+            floor.closePath(); floor.fill();
+        }
+        // Manhole covers
+        for (let i = 0; i < 2; i++) {
+            const x = width * (0.3 + rnd() * 0.4), y = height * (0.25 + rnd() * 0.5), r = 15 * s;
+            floor.fillStyle = 'rgba(0,0,0,.5)'; floor.beginPath(); floor.arc(x + 2, y + 2, r + 2, 0, Math.PI * 2); floor.fill();
+            const cover = floor.createRadialGradient(x - r * 0.3, y - r * 0.3, 0, x, y, r);
+            cover.addColorStop(0, '#4a4e57'); cover.addColorStop(1, '#2a2d33');
+            floor.fillStyle = cover; floor.beginPath(); floor.arc(x, y, r, 0, Math.PI * 2); floor.fill();
+            floor.strokeStyle = 'rgba(0,0,0,.45)'; floor.lineWidth = 1.2;
+            for (let k = -2; k <= 2; k++) {
+                floor.beginPath(); floor.moveTo(x - r * 0.8, y + k * r * 0.3); floor.lineTo(x + r * 0.8, y + k * r * 0.3); floor.stroke();
+            }
+        }
+        // Cold moonlight wash from the top-left
+        const moonWash = floor.createRadialGradient(this.moonX, this.moonY, 0, this.moonX, this.moonY, Math.hypot(width, height) * 0.9);
+        moonWash.addColorStop(0, 'rgba(150,175,255,.16)'); moonWash.addColorStop(0.5, 'rgba(70,90,170,.06)'); moonWash.addColorStop(1, 'rgba(0,0,20,.25)');
+        floor.fillStyle = moonWash; floor.fillRect(0, 0, width, height);
+
+        // ===== Fog layers (wrap horizontally, drift over time) =====
+        this.fogLayers = [0, 1].map(layer => {
+            const fog = this.makeArtCanvas(width, height);
+            const f = fog.getContext('2d');
+            const blobs = layer ? 16 : 22;
+            for (let i = 0; i < blobs; i++) {
+                const x = rnd() * width, y = rnd() * height, r = (layer ? 120 : 80) * s * (0.7 + rnd() * 0.9);
+                const a = (layer ? 0.08 : 0.1) + rnd() * 0.07;
+                for (const ox of [-width, 0, width]) {
+                    const g = f.createRadialGradient(x + ox, y, 0, x + ox, y, r);
+                    g.addColorStop(0, layer ? `rgba(150,200,170,${a})` : `rgba(170,185,220,${a})`);
+                    g.addColorStop(1, 'rgba(160,180,200,0)');
+                    f.fillStyle = g;
+                    f.save(); f.translate(x + ox, y); f.scale(1.7, 0.75); f.translate(-(x + ox), -y);
+                    f.fillRect(x + ox - r, y - r, r * 2, r * 2); f.restore();
+                }
+            }
+            return fog;
+        });
+
+        // ===== Sprites =====
+        const r = this.entityRadius;
+        this.ringProps = [this.makeBarrierSprite(s), graveSprites[0], this.makeSandbagSprite(s), graveSprites[1], this.makeBarrierSprite(s, true), graveSprites[2]];
+        this.ringPropCount = Math.max(14, Math.round(Math.PI * 2 * Math.max(75, Math.min(width, height) / 2 - 18) / (44 * s)));
+        this.humanTokenSprite = this.makeTokenSprite(r, '#7fe7ff', '#1a3b52');
+        this.runnerTokenSprite = this.makeTokenSprite(r, '#ffe66b', '#4a3d12');
+        this.zombieAuraSprite = this.makeAuraSprite(r * 1.5);
+        this.emojiSprites = new Map();
+        this.labelSprites = new Map();
+        this.helpSprite = null;
+    }
+
+    makeGraveSprite(s, variant) {
+        const w = 22 * s, h = 30 * s;
+        const c = this.makeArtCanvas(w + 10 * s, h + 10 * s);
+        const g = c.getContext('2d');
+        const x = 3 * s, y = 3 * s;
+        g.fillStyle = 'rgba(0,0,0,.45)';
+        g.beginPath(); g.ellipse(x + w / 2 + 4 * s, y + h + 1 * s, w * 0.55, 4 * s, 0, 0, Math.PI * 2); g.fill();
+        const stone = g.createLinearGradient(x, y, x + w, y + h);
+        stone.addColorStop(0, '#8a90a0'); stone.addColorStop(0.5, '#5d6372'); stone.addColorStop(1, '#3a3e4a');
+        g.fillStyle = stone; g.strokeStyle = 'rgba(10,12,18,.8)'; g.lineWidth = 1.2;
+        g.beginPath();
+        if (variant === 1) { // cross
+            const bw = w * 0.32;
+            g.rect(x + w / 2 - bw / 2, y, bw, h); g.rect(x + w * 0.08, y + h * 0.2, w * 0.84, bw);
+        } else if (variant === 2) { // squat slab, tilted top
+            g.moveTo(x + 1, y + h); g.lineTo(x + 1, y + h * 0.3); g.lineTo(x + w - 1, y + h * 0.18); g.lineTo(x + w - 1, y + h); g.closePath();
+        } else { // rounded headstone
+            g.moveTo(x + 1, y + h); g.lineTo(x + 1, y + w / 2); g.arc(x + w / 2, y + w / 2, w / 2 - 1, Math.PI, 0); g.lineTo(x + w - 1, y + h); g.closePath();
+        }
+        g.fill(); g.stroke();
+        g.fillStyle = 'rgba(255,255,255,.18)';
+        g.fillRect(x + 2, y + h * 0.35, 2, h * 0.55);
+        if (variant === 0) {
+            g.fillStyle = 'rgba(20,22,30,.55)';
+            g.fillRect(x + w * 0.3, y + h * 0.45, w * 0.4, 1.6 * s); g.fillRect(x + w * 0.25, y + h * 0.58, w * 0.5, 1.4 * s);
+        }
+        g.fillStyle = 'rgba(60,100,60,.55)'; // moss
+        g.beginPath(); g.ellipse(x + w * 0.3, y + h - 2, w * 0.35, 3 * s, 0, 0, Math.PI * 2); g.fill();
+        return c;
+    }
+
+    makeBarrierSprite(s, damaged = false) {
+        const w = 40 * s, h = 14 * s;
+        const c = this.makeArtCanvas(w + 8 * s, h + 10 * s);
+        const g = c.getContext('2d');
+        const x = 3 * s, y = 3 * s;
+        g.fillStyle = 'rgba(0,0,0,.5)';
+        g.beginPath(); g.roundRect(x + 3 * s, y + 4 * s, w, h, 3 * s); g.fill();
+        const body = g.createLinearGradient(0, y, 0, y + h);
+        body.addColorStop(0, '#b9bcc4'); body.addColorStop(0.5, '#8d919b'); body.addColorStop(1, '#5c606a');
+        g.fillStyle = body; g.beginPath(); g.roundRect(x, y, w, h, 3 * s); g.fill();
+        g.save(); g.beginPath(); g.roundRect(x, y, w, h, 3 * s); g.clip();
+        g.fillStyle = damaged ? '#c0392b' : '#e5b52a';
+        for (let k = -2; k < 8; k++) {
+            g.beginPath(); g.moveTo(x + k * 9 * s, y + h); g.lineTo(x + k * 9 * s + 5 * s, y + h); g.lineTo(x + k * 9 * s + 5 * s + h * 0.6, y); g.lineTo(x + k * 9 * s + h * 0.6, y); g.closePath(); g.fill();
+        }
+        g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(x, y + h * 0.62, w, h * 0.38);
+        if (damaged) { g.fillStyle = '#1a1c22'; g.beginPath(); g.moveTo(x + w * 0.7, y); g.lineTo(x + w, y); g.lineTo(x + w, y + h * 0.7); g.closePath(); g.fill(); }
+        g.restore();
+        g.strokeStyle = 'rgba(10,10,14,.8)'; g.lineWidth = 1; g.beginPath(); g.roundRect(x, y, w, h, 3 * s); g.stroke();
+        return c;
+    }
+
+    makeSandbagSprite(s) {
+        const c = this.makeArtCanvas(40 * s, 22 * s);
+        const g = c.getContext('2d');
+        const bags = [[8, 13], [20, 13], [32, 13], [14, 7], [26, 7]];
+        for (const [bx, by] of bags) {
+            const x = bx * s, y = by * s;
+            g.fillStyle = 'rgba(0,0,0,.4)'; g.beginPath(); g.ellipse(x + 2 * s, y + 3 * s, 7 * s, 4.5 * s, 0, 0, Math.PI * 2); g.fill();
+            const bag = g.createRadialGradient(x - 2 * s, y - 2 * s, 0, x, y, 7 * s);
+            bag.addColorStop(0, '#a89a76'); bag.addColorStop(1, '#5e5440');
+            g.fillStyle = bag; g.beginPath(); g.ellipse(x, y, 7 * s, 4.5 * s, 0, 0, Math.PI * 2); g.fill();
+            g.strokeStyle = 'rgba(30,24,14,.7)'; g.lineWidth = 0.8; g.stroke();
+        }
+        return c;
+    }
+
+    makeTokenSprite(r, rim, base) {
+        const R = r * 1.6, pad = r * 0.9;
+        const size = (R + pad) * 2;
+        const c = this.makeArtCanvas(size * 2);
+        const g = c.getContext('2d');
+        g.scale(2, 2);
+        const cx = size / 2;
+        // Soft drop shadow (moon is top-left)
+        const shadow = g.createRadialGradient(cx + r * 0.45, cx + r * 0.55, R * 0.3, cx + r * 0.45, cx + r * 0.55, R * 1.25);
+        shadow.addColorStop(0, 'rgba(0,0,0,.6)'); shadow.addColorStop(1, 'rgba(0,0,0,0)');
+        g.fillStyle = shadow; g.fillRect(0, 0, size, size);
+        // Glow ring
+        const glow = g.createRadialGradient(cx, cx, R * 0.85, cx, cx, R * 1.35);
+        glow.addColorStop(0, rim + '66'); glow.addColorStop(1, rim + '00');
+        g.fillStyle = glow; g.beginPath(); g.arc(cx, cx, R * 1.35, 0, Math.PI * 2); g.fill();
+        // Base disc
+        const disc = g.createRadialGradient(cx - R * 0.35, cx - R * 0.4, R * 0.1, cx, cx, R);
+        disc.addColorStop(0, '#3a4a66'); disc.addColorStop(0.7, base); disc.addColorStop(1, '#070a12');
+        g.fillStyle = disc; g.beginPath(); g.arc(cx, cx, R, 0, Math.PI * 2); g.fill();
+        g.strokeStyle = rim; g.lineWidth = Math.max(1.4, r * 0.18);
+        g.beginPath(); g.arc(cx, cx, R - g.lineWidth / 2, 0, Math.PI * 2); g.stroke();
+        g.strokeStyle = 'rgba(255,255,255,.35)'; g.lineWidth = 1;
+        g.beginPath(); g.arc(cx, cx, R - r * 0.32, Math.PI * 1.05, Math.PI * 1.6); g.stroke();
+        c.logicalSize = size;
+        return c;
+    }
+
+    makeAuraSprite(half) {
+        const R = half * 1.35;
+        const size = R * 2.4;
+        const c = this.makeArtCanvas(size);
+        const g = c.getContext('2d');
+        const cx = size / 2;
+        const shadow = g.createRadialGradient(cx + half * 0.25, cx + half * 0.55, 0, cx + half * 0.25, cx + half * 0.55, R);
+        shadow.addColorStop(0, 'rgba(0,0,0,.65)'); shadow.addColorStop(1, 'rgba(0,0,0,0)');
+        g.fillStyle = shadow;
+        g.save(); g.translate(cx, cx + half * 0.55); g.scale(1, 0.55); g.translate(-cx, -(cx + half * 0.55));
+        g.fillRect(0, 0, size, size); g.restore();
+        const toxic = g.createRadialGradient(cx, cx, half * 0.2, cx, cx, R);
+        toxic.addColorStop(0, 'rgba(120,255,90,.0)'); toxic.addColorStop(0.55, 'rgba(110,230,70,.18)'); toxic.addColorStop(1, 'rgba(80,200,60,0)');
+        g.fillStyle = toxic; g.fillRect(0, 0, size, size);
+        return c;
+    }
+
+    getEmojiSprite(emoji, size) {
+        const key = emoji + '|' + Math.round(size);
+        let sprite = this.emojiSprites.get(key);
+        if (!sprite) {
+            sprite = this.makeArtCanvas(size * 2.6);
+            const g = sprite.getContext('2d');
+            g.font = (size * 2) + 'px serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+            g.fillText(emoji, sprite.width / 2, sprite.height / 2 + size * 0.14);
+            this.emojiSprites.set(key, sprite);
+        }
+        return sprite;
+    }
+
+    getLabelSprite(name, kind) {
+        const key = kind + '|' + name;
+        let sprite = this.labelSprites.get(key);
+        if (sprite) return sprite;
+        const fontSize = Math.max(11, Math.round(this.entityRadius * 1.08));
+        const font = `700 ${fontSize}px "Noto Sans KR", sans-serif`;
+        const probe = this.ctx;
+        probe.save(); probe.font = font;
+        let text = name;
+        const maxWidth = fontSize * 7.5;
+        if (probe.measureText(text).width > maxWidth) {
+            while (text.length > 1 && probe.measureText(text + '…').width > maxWidth) text = text.slice(0, -1);
+            text += '…';
+        }
+        const textWidth = probe.measureText(text).width;
+        probe.restore();
+        const padX = 6, h = fontSize + 7, w = textWidth + padX * 2;
+        const palette = {
+            human: { bg: 'rgba(10,18,32,.82)', edge: 'rgba(127,231,255,.55)', text: '#f2fbff' },
+            zombie: { bg: 'rgba(28,8,12,.85)', edge: 'rgba(255,90,90,.6)', text: '#ff9b9b' },
+            turning: { bg: 'rgba(40,24,4,.88)', edge: 'rgba(255,190,60,.8)', text: '#ffc35a' }
+        }[kind];
+        sprite = this.makeArtCanvas(w * 2, h * 2);
+        const g = sprite.getContext('2d');
+        g.scale(2, 2);
+        g.fillStyle = palette.bg; g.beginPath(); g.roundRect(0.5, 0.5, w - 1, h - 1, h / 2); g.fill();
+        g.strokeStyle = palette.edge; g.lineWidth = 1; g.stroke();
+        g.font = font; g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillStyle = palette.text; g.fillText(text, w / 2, h / 2 + 0.5);
+        sprite.logicalW = w; sprite.logicalH = h;
+        this.labelSprites.set(key, sprite);
+        return sprite;
+    }
+
+    getHelpSprite() {
+        if (this.helpSprite) return this.helpSprite;
+        const fontSize = Math.max(11, Math.round(this.entityRadius * 1.05));
+        const font = `900 ${fontSize}px "Noto Sans KR", sans-serif`;
+        this.ctx.save(); this.ctx.font = font;
+        const tw = this.ctx.measureText('Help!!').width; this.ctx.restore();
+        const w = tw + 12, h = fontSize + 8, tail = 5;
+        const c = this.makeArtCanvas(w * 2, (h + tail) * 2);
+        const g = c.getContext('2d'); g.scale(2, 2);
+        g.fillStyle = '#ff3b3b'; g.strokeStyle = '#fff'; g.lineWidth = 1.5;
+        g.beginPath(); g.roundRect(1, 1, w - 2, h - 2, 6);
+        g.moveTo(w / 2 - 4, h - 1); g.lineTo(w / 2, h + tail - 1); g.lineTo(w / 2 + 4, h - 1);
+        g.fill(); g.stroke();
+        g.font = font; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff';
+        g.fillText('Help!!', w / 2, h / 2 + 0.5);
+        c.logicalW = w; c.logicalH = h + tail;
+        this.helpSprite = c;
+        return c;
+    }
+
+    stampInfectionSplat(x, y) {
+        // Visual decal only: leaves a dark-green/blood splatter on the cached floor
+        const floor = this.floorCache.getContext('2d');
+        const s = this.arenaScale || 1;
+        floor.save();
+        for (let i = 0; i < 9; i++) {
+            const a = this.artRandom() * Math.PI * 2, d = this.artRandom() * 14 * s, r = (2 + this.artRandom() * 6) * s;
+            floor.fillStyle = this.artRandom() < 0.5 ? 'rgba(80,120,40,.35)' : 'rgba(110,14,20,.35)';
+            floor.beginPath(); floor.arc(x + Math.cos(a) * d, y + Math.sin(a) * d, r, 0, Math.PI * 2); floor.fill();
+        }
+        floor.restore();
     }
     
     bindEvents() {
@@ -1469,6 +1884,7 @@ class ZombieSurvival {
         entity.isTransforming = true; entity.transformTimer = 60;
         entity.vx = 0; entity.vy = 0;
         this.shake = Math.max(this.shake, 8 * this.arenaScale);
+        this.stampInfectionSplat(entity.x, entity.y);
 
         if (infector) {
             this.sound.playInfect();
@@ -1660,21 +2076,27 @@ class ZombieSurvival {
     
     draw() {
         const ctx = this.ctx;
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        const W = this.canvas.width, H = this.canvas.height;
+        const now = performance.now() / 1000;
+        const cx = this.centerX, cy = this.centerY, R = this.currentRadius;
+        ctx.clearRect(0, 0, W, H);
         ctx.drawImage(this.backgroundCache, 0, 0);
 
         ctx.save();
         if (this.shake > 0) {
             ctx.translate(Math.sin(this.gameTimeSeconds * 97) * this.shake, Math.cos(this.gameTimeSeconds * 113) * this.shake * 0.65);
         }
-        ctx.beginPath(); ctx.arc(this.centerX, this.centerY, this.currentRadius, 0, Math.PI * 2);
+        // Inside the ring
+        ctx.save();
+        ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
         ctx.clip();
         ctx.drawImage(this.floorCache, 0, 0);
-        const arenaGlow = ctx.createRadialGradient(this.centerX, this.centerY, 0, this.centerX, this.centerY, this.currentRadius);
-        arenaGlow.addColorStop(0, 'rgba(72,55,154,.08)');
-        arenaGlow.addColorStop(.68, 'rgba(5,10,34,.12)');
-        arenaGlow.addColorStop(1, 'rgba(0,0,10,.72)');
-        ctx.fillStyle = arenaGlow; ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawFog(ctx, 0, now, 1);
+        const arenaGlow = ctx.createRadialGradient(cx, cy, R * 0.25, cx, cy, R);
+        arenaGlow.addColorStop(0, 'rgba(0,0,0,0)');
+        arenaGlow.addColorStop(0.72, 'rgba(4,6,14,.18)');
+        arenaGlow.addColorStop(1, this.isShrinking ? 'rgba(70,0,10,.7)' : 'rgba(2,3,10,.62)');
+        ctx.fillStyle = arenaGlow; ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
 
         for (const dead of this.deadZombies) this.drawDeadZombie(dead);
         const humans = this.entities.filter(e => !e.isZombie);
@@ -1683,34 +2105,170 @@ class ZombieSurvival {
         for (const entity of zombies) this.drawEntity(entity);
         ctx.restore();
 
+        // Outside the ring: darkened, foggy dead zone
         ctx.save();
-        ctx.shadowColor = this.isShrinking ? '#ff2f52' : '#ff345d';
-        ctx.shadowBlur = this.isShrinking ? 34 : 24;
-        ctx.beginPath(); ctx.arc(this.centerX, this.centerY, this.currentRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = this.isShrinking ? '#ff244e' : '#ff4169';
-        ctx.lineWidth = this.isShrinking ? 7 : 5; ctx.stroke();
-        ctx.shadowBlur = 0;
-        ctx.beginPath(); ctx.arc(this.centerX, this.centerY, Math.max(1, this.currentRadius - 7), 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(115,145,255,.55)'; ctx.lineWidth = 1.5; ctx.stroke();
-        
+        ctx.beginPath(); ctx.rect(-20, -20, W + 40, H + 40); ctx.arc(cx, cy, R, 0, Math.PI * 2, true);
+        ctx.fillStyle = this.isShrinking ? 'rgba(40,0,6,.42)' : 'rgba(3,4,10,.38)';
+        ctx.fill();
+        ctx.clip();
+        this.drawFog(ctx, 1, now, 1);
+        ctx.restore();
+
+        this.drawRingEdge(ctx, now);
+
         if (this.shrinkTimer > this.shrinkInterval - this.shrinkWarningTime) {
+            const blink = 0.55 + Math.sin(now * 8) * 0.25;
             ctx.beginPath(); ctx.arc(this.targetCenterX, this.targetCenterY, this.targetRadius, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(255, 138, 159, .72)'; ctx.setLineDash([7, 7]); ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]);
+            ctx.strokeStyle = `rgba(255, 120, 140, ${blink})`; ctx.setLineDash([9, 7]); ctx.lineWidth = 2.2; ctx.stroke(); ctx.setLineDash([]);
         }
+
+        this.drawEntityOverlays(ctx);
         ctx.restore();
         this.drawNotifications();
     }
-    
+
+    drawFog(ctx, layer, now, alpha) {
+        const fog = this.fogLayers && this.fogLayers[layer];
+        if (!fog) return;
+        const W = this.canvas.width;
+        const speed = layer ? 9 : 5;
+        const offset = ((now * speed * (this.arenaScale || 1)) % W + W) % W;
+        const bob = Math.sin(now * 0.3 + layer) * 6;
+        ctx.globalAlpha = alpha;
+        ctx.drawImage(fog, offset, bob);
+        ctx.drawImage(fog, offset - W, bob);
+        ctx.globalAlpha = 1;
+    }
+
+    drawRingEdge(ctx, now) {
+        const cx = this.centerX, cy = this.centerY, R = this.currentRadius;
+        const s = this.arenaScale || 1;
+        const danger = this.isShrinking;
+        ctx.save();
+        // Red warning glow (single blurred stroke)
+        ctx.shadowColor = danger ? 'rgba(255,40,60,.95)' : 'rgba(255,60,80,.55)';
+        ctx.shadowBlur = danger ? 26 : 14;
+        ctx.strokeStyle = danger ? 'rgba(255,50,70,.9)' : 'rgba(150,30,45,.75)';
+        ctx.lineWidth = 3 * s;
+        ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
+        ctx.shadowBlur = 0;
+        // Caution tape
+        ctx.lineWidth = 4.5 * s;
+        ctx.strokeStyle = '#15161a';
+        ctx.beginPath(); ctx.arc(cx, cy, R + 4 * s, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = danger ? '#ff4d5e' : '#e8b931';
+        ctx.setLineDash([9 * s, 7 * s]);
+        ctx.lineDashOffset = danger ? -now * 40 : 0;
+        ctx.stroke();
+        ctx.setLineDash([]);
+        // Barricades & gravestones along the edge
+        const props = this.ringProps;
+        if (props && props.length) {
+            const count = this.ringPropCount;
+            const sizeScale = Math.max(0.55, Math.min(1, R / (220 * s)));
+            for (let i = 0; i < count; i++) {
+                const a = (i / count) * Math.PI * 2 + 0.13;
+                const sprite = props[(i * 7 + (i >> 1)) % props.length];
+                const isGrave = sprite.height > sprite.width;
+                const dist = R + (isGrave ? 14 : 11) * s * sizeScale;
+                const px = cx + Math.cos(a) * dist, py = cy + Math.sin(a) * dist;
+                ctx.save();
+                ctx.translate(px, py);
+                ctx.rotate(isGrave ? ((i % 3) - 1) * 0.12 : a + Math.PI / 2);
+                ctx.scale(sizeScale, sizeScale);
+                ctx.drawImage(sprite, -sprite.width / 2, -sprite.height / 2);
+                ctx.restore();
+            }
+        }
+        ctx.restore();
+    }
+
+    getEntityDrawSize(entity) {
+        const base = this.entityRadius * 3;
+        if (entity.isTransforming) return base * (1 + 0.5 * (1 - entity.transformTimer / 60));
+        return entity.isZombie ? base * 1.5 : base;
+    }
+
+    drawEntityOverlays(ctx) {
+        // Greedy, stable label placement: below → above → right → left; avoid labels & bodies
+        const entities = this.entities;
+        const placed = [];
+        const bodies = entities.map(e => {
+            const half = this.getEntityDrawSize(e) * (e.isZombie ? 0.36 : 0.45);
+            return { x0: e.x - half, y0: e.y - half, x1: e.x + half, y1: e.y + half, e };
+        });
+        const overlap = (a, b) => Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)) * Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
+        const order = [...entities].sort((a, b) => a.index - b.index);
+        for (const entity of order) {
+            const kind = entity.isTransforming ? 'turning' : entity.isZombie ? 'zombie' : 'human';
+            const label = this.getLabelSprite(entity.name, kind);
+            const w = label.logicalW, h = label.logicalH;
+            const half = this.getEntityDrawSize(entity) * (entity.isZombie ? 0.4 : 0.5);
+            const slots = [
+                [entity.x - w / 2, entity.y + half + 1],
+                [entity.x - w / 2, entity.y - half - h - 1],
+                [entity.x + half + 2, entity.y - h / 2],
+                [entity.x - half - w - 2, entity.y - h / 2]
+            ];
+            const tryOrder = entity._labelSlot ? [entity._labelSlot, 0, 1, 2, 3] : [0, 1, 2, 3];
+            let best = null, bestScore = Infinity;
+            for (const slot of tryOrder) {
+                const [x0, y0] = slots[slot];
+                const rect = { x0, y0, x1: x0 + w, y1: y0 + h };
+                let score = 0;
+                for (const p of placed) score += overlap(rect, p) * 2;
+                for (const b of bodies) if (b.e !== entity) score += overlap(rect, b);
+                if (score < bestScore) { bestScore = score; best = { slot, rect }; }
+                if (score === 0) break;
+            }
+            entity._labelSlot = best.slot;
+            placed.push(best.rect);
+            const crowded = bestScore > w * h * 0.25;
+            ctx.globalAlpha = crowded ? 0.55 : 1;
+            ctx.drawImage(label, best.rect.x0, best.rect.y0, w, h);
+            ctx.globalAlpha = 1;
+
+            const size = this.getEntityDrawSize(entity);
+            if (entity.helpTimer > 0 && !entity.isZombie && !entity.isTransforming) {
+                const help = this.getHelpSprite();
+                const bounce = Math.sin(this.gameTimeSeconds * 18) * 2.5;
+                const hx = entity.x + Math.sin(this.gameTimeSeconds * 12) * 1.5 - help.logicalW / 2;
+                const hy = entity.y - size / 2 - help.logicalH - 4 + bounce - (best.slot === 1 ? h + 2 : 0);
+                ctx.drawImage(help, hx, hy, help.logicalW, help.logicalH);
+            }
+            if (entity.spottedTimer > 0) {
+                const spottedAlpha = Math.min(1, entity.spottedTimer / 30);
+                const bounce = Math.sin(entity.spottedTimer * 0.3) * 3;
+                const emoji = entity.isZombie ? '❗' : '❕';
+                const es = Math.max(18, this.entityRadius * 2.1);
+                const sprite = this.getEmojiSprite(emoji, es);
+                const dw = es * 1.3;
+                const off = entity.isZombie ? 0 : (entity.helpTimer > 0 ? this.entityRadius * 1.2 + 10 : 0);
+                ctx.globalAlpha = spottedAlpha;
+                ctx.drawImage(sprite, entity.x + off - dw / 2, entity.y - size / 2 - es * 0.95 + bounce - dw / 2 + es * 0.3, dw, dw);
+                ctx.globalAlpha = 1;
+            }
+        }
+    }
+
     drawDeadZombie(dead) {
-        const ctx = this.ctx, alpha = dead.fadeTimer / 60;
-        const zombieImgSize = this.entityRadius * 3 * 1.5; // 좀비 크기 1.5배
+        const ctx = this.ctx, alpha = Math.max(0, dead.fadeTimer / 60);
+        const zombieImgSize = this.entityRadius * 3 * 1.5;
         const imgIndex = dead.zombieImageIndex || 0;
-        ctx.save(); ctx.globalAlpha = alpha * 0.5;
+        ctx.save();
         ctx.translate(dead.x, dead.y);
-        // 쓰러진 좀비 이미지 (회전하고 반투명하게)
-        ctx.rotate(Math.PI / 2); // 옆으로 쓰러진 모습
+        ctx.globalAlpha = alpha * 0.55;
+        const pool = ctx.createRadialGradient(0, 0, 0, 0, 0, zombieImgSize * 0.55);
+        pool.addColorStop(0, 'rgba(70,110,30,.8)'); pool.addColorStop(1, 'rgba(40,70,20,0)');
+        ctx.fillStyle = pool; ctx.scale(1, 0.6);
+        ctx.beginPath(); ctx.arc(0, 0, zombieImgSize * 0.55, 0, Math.PI * 2); ctx.fill();
+        ctx.scale(1, 1 / 0.6);
+        ctx.globalAlpha = alpha * 0.6;
+        ctx.rotate(Math.PI / 2);
         if (this.zombieImagesLoaded[imgIndex]) {
-            ctx.drawImage(this.zombieImages[imgIndex], -zombieImgSize/2, -zombieImgSize/2, zombieImgSize, zombieImgSize);
+            ctx.filter = 'grayscale(0.6) brightness(0.7)';
+            ctx.drawImage(this.zombieImages[imgIndex], -zombieImgSize / 2, -zombieImgSize / 2, zombieImgSize, zombieImgSize);
+            ctx.filter = 'none';
         } else {
             ctx.font = zombieImgSize + 'px serif';
             ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -1718,39 +2276,66 @@ class ZombieSurvival {
         }
         ctx.restore();
     }
-    
+
     drawNotifications() {
-        const ctx = this.ctx, startX = this.canvas.width - 10, startY = 10;
-        ctx.textAlign = 'right'; ctx.font = 'bold 12px "Noto Sans KR"';
-        this.notifications.forEach((notif, idx) => {
-            const y = startY + idx * 25; ctx.globalAlpha = notif.opacity;
-            ctx.fillStyle = '#ff6666';
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)'; ctx.lineWidth = 3;
-            ctx.strokeText(notif.text, startX - 5, y + 12);
-            ctx.fillText(notif.text, startX - 5, y + 12);
+        const ctx = this.ctx, right = this.canvas.width - 12, startY = 10;
+        ctx.save();
+        const compact = this.canvas.width < 560;
+        ctx.font = `bold ${compact ? 10.5 : 12}px "Noto Sans KR", sans-serif`;
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        const visible = compact ? this.notifications.slice(-3) : this.notifications;
+        visible.forEach((notif, idx) => {
+            const y = startY + idx * (compact ? 23 : 26);
+            const tw = ctx.measureText(notif.text).width;
+            ctx.globalAlpha = notif.opacity;
+            ctx.fillStyle = compact ? 'rgba(14,6,10,.62)' : 'rgba(14,6,10,.78)';
+            ctx.beginPath(); ctx.roundRect(right - tw - 18, y, tw + 18, 21, 6); ctx.fill();
+            ctx.fillStyle = '#ff4d5e'; ctx.fillRect(right - tw - 18, y + 4, 3, 13);
+            ctx.fillStyle = '#ffb3b3';
+            ctx.fillText(notif.text, right - 8, y + 11);
         });
-        ctx.globalAlpha = 1; ctx.textAlign = 'left';
+        ctx.restore();
     }
-    
+
     drawEntity(entity) {
         const ctx = this.ctx, x = entity.x, y = entity.y, r = this.entityRadius;
-        const baseImgSize = r * 3; // 기본 이미지/이모지 크기
-        const zombieScale = 1.5; // 좀비 크기 배율
+        const baseImgSize = r * 3;
+        const zombieScale = 1.5;
         ctx.save(); ctx.translate(x, y);
 
         if (entity.isTransforming) {
             const progress = 1 - (entity.transformTimer / 60);
-            // 크기가 1에서 1.5로 점점 커지는 효과 + 펄스 효과
+            // Infection burst: toxic shockwave + splatter droplets
+            const burst = Math.min(1, progress * 1.6);
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.globalAlpha = (1 - burst) * 0.85;
+            ctx.strokeStyle = '#8dff5a'; ctx.lineWidth = 2 + (1 - burst) * 4;
+            ctx.beginPath(); ctx.arc(0, 0, r * (1.4 + burst * 3.6), 0, Math.PI * 2); ctx.stroke();
+            const flash = ctx.createRadialGradient(0, 0, 0, 0, 0, r * 3.2);
+            flash.addColorStop(0, 'rgba(190,255,120,.55)'); flash.addColorStop(0.4, 'rgba(120,220,60,.25)'); flash.addColorStop(1, 'rgba(60,140,30,0)');
+            ctx.fillStyle = flash; ctx.fillRect(-r * 3.2, -r * 3.2, r * 6.4, r * 6.4);
+            ctx.globalCompositeOperation = 'source-over';
+            for (let i = 0; i < 10; i++) {
+                const a = i * 2.39996 + entity.index * 0.7;
+                const d = r * (1 + burst * (2.2 + (i % 3) * 0.6));
+                ctx.fillStyle = i % 2 ? '#7ed957' : '#b3122a';
+                ctx.beginPath(); ctx.arc(Math.cos(a) * d, Math.sin(a) * d, r * 0.22 * (1 - burst) + 0.5, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.restore();
+
             const sizeScale = 1 + (zombieScale - 1) * progress;
             const pulseScale = sizeScale + Math.sin(progress * Math.PI * 6) * 0.2;
             ctx.scale(pulseScale, pulseScale);
             const shake = (1 - progress) * 3;
             ctx.translate(Math.random() * shake - shake/2, Math.random() * shake - shake/2);
-            // 변환 중에는 이모지가 점점 좀비로 변하는 효과
             ctx.globalAlpha = 1 - progress;
-            ctx.font = baseImgSize + 'px serif';
-            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(entity.emoji || '😵', 0, 0);
+            const tokenSprite = this.humanTokenSprite;
+            const ts = tokenSprite.logicalSize;
+            ctx.drawImage(tokenSprite, -ts / 2, -ts / 2, ts, ts);
+            const emojiSprite = this.getEmojiSprite(entity.emoji || '😵', baseImgSize);
+            const ew = baseImgSize * 1.3;
+            ctx.drawImage(emojiSprite, -ew / 2, -ew / 2, ew, ew);
             ctx.globalAlpha = progress;
             const transformImgIndex = entity.zombieImageIndex || 0;
             if (this.zombieImagesLoaded[transformImgIndex]) {
@@ -1758,86 +2343,55 @@ class ZombieSurvival {
             }
             ctx.globalAlpha = 1;
             ctx.strokeStyle = 'rgba(255,' + Math.floor(255 - progress * 255) + ',0,' + (0.8 - progress * 0.5) + ')';
-            ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, r + 8 + progress * 5, 0, Math.PI * 2 * progress); ctx.stroke();
+            ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, r + 8 + progress * 5, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * progress); ctx.stroke();
             ctx.restore();
-            const currentImgSize = baseImgSize * sizeScale;
-            ctx.font = 'bold ' + Math.max(12, r * 1.2) + 'px "Noto Sans KR"';
-            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)'; ctx.lineWidth = 3;
-            ctx.strokeText(entity.name, x, y + currentImgSize/2 + 5);
-            ctx.fillStyle = '#ffaa00'; ctx.fillText(entity.name, x, y + currentImgSize/2 + 5);
             return;
         }
 
         if (entity.isZombie) {
-            const zombieImgSize = baseImgSize * zombieScale; // 좀비는 1.5배 크기
+            const zombieImgSize = baseImgSize * zombieScale;
+            const aura = this.zombieAuraSprite;
+            ctx.drawImage(aura, -aura.width / 2, -aura.height / 2);
             if (entity.eatingTimer > 0) {
-                ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
-                ctx.beginPath(); ctx.arc(0, 0, zombieImgSize/2 + 5, 0, Math.PI * 2); ctx.fill();
+                const bite = ctx.createRadialGradient(0, 0, 0, 0, 0, zombieImgSize / 2 + 6);
+                bite.addColorStop(0, 'rgba(255,30,40,.45)'); bite.addColorStop(1, 'rgba(255,0,0,0)');
+                ctx.fillStyle = bite;
+                ctx.beginPath(); ctx.arc(0, 0, zombieImgSize/2 + 6, 0, Math.PI * 2); ctx.fill();
             }
             if (!entity.hasTarget && entity.eatingTimer <= 0) {
                 ctx.rotate(entity.angle);
                 const fovRad = (this.zombieFovAngle / 2) * (Math.PI / 180);
-                ctx.fillStyle = 'rgba(255, 65, 105, 0.035)';
-                ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, this.zombieDetectRange * .72, -fovRad, fovRad); ctx.closePath(); ctx.fill();
+                const reach = this.zombieDetectRange * .72;
+                const cone = ctx.createRadialGradient(0, 0, r, 0, 0, reach);
+                cone.addColorStop(0, 'rgba(255, 70, 100, 0.1)'); cone.addColorStop(1, 'rgba(255, 70, 100, 0)');
+                ctx.fillStyle = cone;
+                ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, reach, -fovRad, fovRad); ctx.closePath(); ctx.fill();
                 ctx.rotate(-entity.angle);
+            } else if (entity.hasTarget) {
+                ctx.strokeStyle = 'rgba(255,60,70,.55)'; ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.arc(0, 0, zombieImgSize * 0.42, 0, Math.PI * 2); ctx.stroke();
             }
-            // 좀비 이미지 그리기 (1.5배 크기, 해당 이미지 인덱스 사용)
             const imgIndex = entity.zombieImageIndex || 0;
             if (this.zombieImagesLoaded[imgIndex]) {
                 ctx.drawImage(this.zombieImages[imgIndex], -zombieImgSize/2, -zombieImgSize/2, zombieImgSize, zombieImgSize);
             } else {
-                // 이미지 로딩 전 폴백
                 ctx.font = zombieImgSize + 'px serif';
                 ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                 ctx.fillText('🧟', 0, 0);
             }
         } else {
-            // 얼굴 이모지 그리기 (선명하게)
-            ctx.globalAlpha = 1;
-            ctx.fillStyle = '#ffffff';
-            ctx.font = baseImgSize + 'px serif';
-            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(entity.emoji || '😀', 0, 0);
-            // 달리는 중 표시
+            const token = entity.isRunning ? this.runnerTokenSprite : this.humanTokenSprite;
+            const ts = token.logicalSize;
+            ctx.drawImage(token, -ts / 2, -ts / 2, ts, ts);
+            const emojiSprite = this.getEmojiSprite(entity.emoji || '😀', baseImgSize);
+            const ew = baseImgSize * 1.3;
+            ctx.drawImage(emojiSprite, -ew / 2, -ew / 2, ew, ew);
             if (entity.isRunning) {
-                ctx.strokeStyle = '#ffff00'; ctx.lineWidth = 2;
-                ctx.beginPath(); ctx.arc(0, 0, baseImgSize/2 + 3, 0, Math.PI * 2 * (entity.runTimer / this.runDuration)); ctx.stroke();
+                ctx.strokeStyle = '#ffe66b'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+                ctx.beginPath(); ctx.arc(0, 0, r * 1.6 + 3, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (entity.runTimer / this.runDuration)); ctx.stroke();
             }
         }
         ctx.restore();
-
-        // 현재 엔티티의 실제 크기 계산
-        const currentSize = entity.isZombie ? baseImgSize * zombieScale : baseImgSize;
-
-        if (entity.helpTimer > 0 && !entity.isZombie) {
-            const helpBounce = Math.sin(this.gameTimeSeconds * 18) * 3;
-            const helpY = y - currentSize/2 - 10 + helpBounce, helpX = x + Math.sin(this.gameTimeSeconds * 12) * 2;
-            ctx.font = 'bold 14px "Noto Sans KR"'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-            ctx.shadowColor = 'rgba(255, 0, 0, 0.3)'; ctx.shadowBlur = 3;
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)'; ctx.lineWidth = 3; ctx.strokeText('Help!!', helpX, helpY);
-            ctx.fillStyle = '#ff4444'; ctx.fillText('Help!!', helpX, helpY);
-            ctx.shadowBlur = 0;
-        }
-
-        // 발견 이모지 표시 (❗ 좀비가 사람 발견, ❕ 사람이 좀비 발견)
-        if (entity.spottedTimer > 0) {
-            const spottedAlpha = Math.min(1, entity.spottedTimer / 30); // 페이드 아웃
-            const bounce = Math.sin(entity.spottedTimer * 0.3) * 3;
-            ctx.globalAlpha = spottedAlpha;
-            ctx.font = '24px serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'bottom';
-            const emoji = entity.isZombie ? '❗' : '❕';
-            ctx.fillText(emoji, x, y - currentSize/2 - 5 + bounce);
-            ctx.globalAlpha = 1;
-        }
-
-        ctx.font = 'bold ' + Math.max(12, r * 1.2) + 'px "Noto Sans KR"';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-        const shortName = entity.name.length > 6 ? entity.name.slice(0, 5) + '..' : entity.name;
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)'; ctx.lineWidth = 3; ctx.strokeText(shortName, x, y + currentSize/2 + 5);
-        ctx.fillStyle = entity.isZombie ? '#ff6666' : '#fff'; ctx.fillText(shortName, x, y + currentSize/2 + 5);
     }
     
     endGame(winners, reason = 'complete') {

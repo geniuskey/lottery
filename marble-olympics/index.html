@@ -9,8 +9,8 @@
   "features": ["🎱 물리 시뮬레이션", "🗺️ 3가지 맵"],
   "color": "marble",
   "badge": "NEW",
-  "version": "2.1.0",
-  "updated": "2026-07-17",
+  "version": "2.2.0",
+  "updated": "2026-11-24",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -2411,51 +2411,508 @@
                 }
             }
 
+            // ===== Rendering: themes & cached layers (render-only, no physics impact) =====
+            getTheme() {
+                const themes = {
+                    chaos: {
+                        top: '#0b0726', mid: '#0a0a22', bottom: '#1a0b33',
+                        nebula: [['rgba(124,58,237,.30)', 0.22, 0.28, 0.75], ['rgba(14,165,233,.20)', 0.85, 0.62, 0.65], ['rgba(236,72,153,.16)', 0.15, 0.88, 0.6]],
+                        grid: 'rgba(148,163,255,.07)', gridMajor: 'rgba(168,140,255,.12)', gridType: 'hex',
+                        star: '#dbeafe', accent: '#a78bfa', accent2: '#22d3ee',
+                        metalHi: '#ffffff', metal: '#c7d2fe', metalLo: '#3b3f7a',
+                        rail: ['#2e2a5e', '#8b85d6', '#1a1840'], wall: ['#d9d6ff', '#7c74d9', '#2b2566'], wallGlow: 'rgba(167,139,250,.35)',
+                        tri: ['#fde68a', '#fb923c', '#9a3412'], triGlow: 'rgba(251,146,60,.45)'
+                    },
+                    pinball: {
+                        top: '#1a0619', mid: '#12051a', bottom: '#2a0a1e',
+                        nebula: [['rgba(244,63,94,.24)', 0.5, 0.2, 0.8], ['rgba(250,204,21,.12)', 0.1, 0.7, 0.55], ['rgba(217,70,239,.20)', 0.9, 0.85, 0.6]],
+                        grid: 'rgba(255,120,200,.06)', gridMajor: 'rgba(255,170,90,.11)', gridType: 'square',
+                        star: '#ffe4f1', accent: '#fb7185', accent2: '#fbbf24',
+                        metalHi: '#fffbea', metal: '#fcd34d', metalLo: '#7c4a03',
+                        rail: ['#3a1230', '#e879a9', '#1f0718'], wall: ['#ffe4ef', '#ec4899', '#5b0b34'], wallGlow: 'rgba(251,113,133,.38)',
+                        tri: ['#fef3c7', '#f59e0b', '#78350f'], triGlow: 'rgba(245,158,11,.45)'
+                    },
+                    funnel: {
+                        top: '#041a1f', mid: '#06141c', bottom: '#0b1f2a',
+                        nebula: [['rgba(20,184,166,.24)', 0.5, 0.15, 0.8], ['rgba(59,130,246,.16)', 0.1, 0.65, 0.6], ['rgba(45,212,191,.14)', 0.9, 0.9, 0.55]],
+                        grid: 'rgba(94,234,212,.06)', gridMajor: 'rgba(94,234,212,.12)', gridType: 'square',
+                        star: '#ccfbf1', accent: '#2dd4bf', accent2: '#38bdf8',
+                        metalHi: '#ffffff', metal: '#a5f3fc', metalLo: '#155e75',
+                        rail: ['#0f3a40', '#5eead4', '#06202a'], wall: ['#e0fbff', '#3fb8c9', '#0c3c48'], wallGlow: 'rgba(45,212,191,.32)',
+                        tri: ['#fde68a', '#f97316', '#7c2d12'], triGlow: 'rgba(249,115,22,.42)'
+                    }
+                };
+                return themes[this.mapType] || themes.chaos;
+            }
+
+            seededRandom(seed) {
+                let a = seed >>> 0;
+                return () => {
+                    a = (a + 0x6D2B79F5) >>> 0;
+                    let t = a;
+                    t = Math.imul(t ^ (t >>> 15), t | 1);
+                    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+                    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+                };
+            }
+
             buildBackgroundCache() {
                 const width = this.canvas.width;
                 const height = this.canvas.height;
+                const theme = this.getTheme();
+                this.bgKey = `${this.mapType}|${width}|${height}`;
+                this.spriteCache = new Map();
+
+                // 1) Static base layer: gradient + nebula clouds + side rails
                 this.backgroundCache.width = width;
                 this.backgroundCache.height = height;
                 const ctx = this.backgroundCache.getContext('2d');
                 const gradient = ctx.createLinearGradient(0, 0, 0, height);
-                gradient.addColorStop(0, '#07112d');
-                gradient.addColorStop(0.45, '#080a1b');
-                gradient.addColorStop(1, '#160c2d');
+                gradient.addColorStop(0, theme.top);
+                gradient.addColorStop(0.5, theme.mid);
+                gradient.addColorStop(1, theme.bottom);
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, width, height);
+                const big = Math.max(width, height);
+                for (const [color, fx, fy, fr] of theme.nebula) {
+                    const g = ctx.createRadialGradient(width * fx, height * fy, 0, width * fx, height * fy, big * fr);
+                    g.addColorStop(0, color);
+                    g.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = g;
+                    ctx.fillRect(0, 0, width, height);
+                }
 
-                const glow = ctx.createRadialGradient(width * 0.5, height * 0.35, 0, width * 0.5, height * 0.35, width * 0.7);
-                glow.addColorStop(0, 'rgba(55,105,255,.13)');
-                glow.addColorStop(0.55, 'rgba(168,85,247,.05)');
-                glow.addColorStop(1, 'transparent');
-                ctx.fillStyle = glow;
-                ctx.fillRect(0, 0, width, height);
-
-                const crowdColors = ['#ff9f43', '#48dbfb', '#ff6b9d', '#ffd93d', '#a855f7'];
-                for (let row = 0; row < 4; row++) {
-                    for (let column = 0; column < Math.ceil(width / 24); column++) {
-                        const x = 9 + column * 24 + (row % 2) * 11;
-                        const y = 72 + row * 18;
-                        ctx.fillStyle = crowdColors[(row * 3 + column) % crowdColors.length];
-                        ctx.globalAlpha = 0.16 + (row % 2) * 0.05;
-                        ctx.beginPath();
-                        ctx.arc(x, y, 2.2, 0, Math.PI * 2);
-                        ctx.fill();
+                // 2) Parallax tile (seamless vertically), scrolled with the camera
+                const s = width / 600;
+                const cell = Math.max(24, Math.round(40 * s));
+                const hexR = Math.max(10, Math.round(cell * 0.6));
+                const period = theme.gridType === 'hex' ? hexR * 3 : cell * 3;
+                const tileH = Math.ceil(height / period) * period;
+                if (!this.parallaxCache) this.parallaxCache = document.createElement('canvas');
+                this.parallaxCache.width = width;
+                this.parallaxCache.height = tileH;
+                const p = this.parallaxCache.getContext('2d');
+                p.clearRect(0, 0, width, tileH);
+                p.lineWidth = 1;
+                if (theme.gridType === 'hex') {
+                    const r = hexR;
+                    const hx = r * Math.sqrt(3);
+                    p.strokeStyle = theme.grid;
+                    p.beginPath();
+                    for (let row = -1; row * (r * 1.5) < tileH + r * 2; row++) {
+                        const cy = row * r * 1.5;
+                        if (cy > tileH + r) break;
+                        for (let cx = (row % 2 ? hx / 2 : 0); cx < width + hx; cx += hx) {
+                            for (let k = 0; k < 6; k++) {
+                                const a = Math.PI / 6 + k * Math.PI / 3;
+                                const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+                                if (k === 0) p.moveTo(x, y); else p.lineTo(x, y);
+                            }
+                            p.closePath();
+                        }
+                    }
+                    p.stroke();
+                } else {
+                    p.strokeStyle = theme.grid;
+                    p.beginPath();
+                    for (let x = (width % cell) / 2; x <= width; x += cell) { p.moveTo(x + 0.5, 0); p.lineTo(x + 0.5, tileH); }
+                    for (let y = 0; y < tileH; y += cell) { p.moveTo(0, y + 0.5); p.lineTo(width, y + 0.5); }
+                    p.stroke();
+                    p.strokeStyle = theme.gridMajor;
+                    p.beginPath();
+                    for (let y = 0; y < tileH; y += cell * 3) { p.moveTo(0, y + 0.5); p.lineTo(width, y + 0.5); }
+                    p.stroke();
+                    // grid crossing dots
+                    p.fillStyle = theme.gridMajor;
+                    for (let y = 0; y < tileH; y += cell * 3) {
+                        for (let x = (width % cell) / 2; x <= width; x += cell) {
+                            p.fillRect(x - 1, y - 1, 2.5, 2.5);
+                        }
                     }
                 }
-                ctx.globalAlpha = 1;
-                ctx.strokeStyle = 'rgba(255,215,0,.14)';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(8, 8, width - 16, height - 16);
-                ctx.strokeStyle = 'rgba(0,212,255,.07)';
-                ctx.setLineDash([12, 18]);
-                for (let x = width / 4; x < width; x += width / 4) {
-                    ctx.beginPath();
-                    ctx.moveTo(x, 0);
-                    ctx.lineTo(x, height);
-                    ctx.stroke();
+                // twinkly dust/stars (seeded, wraps across the seam)
+                const rand = this.seededRandom(width * 31 + tileH * 7 + this.mapType.length * 101);
+                const starCount = Math.round(width * tileH / 5200);
+                for (let i = 0; i < starCount; i++) {
+                    const x = rand() * width;
+                    const y = rand() * tileH;
+                    const rr = 0.4 + rand() * rand() * 1.8;
+                    const alpha = 0.15 + rand() * 0.55;
+                    for (const oy of [0, -tileH, tileH]) {
+                        const yy = y + oy;
+                        if (yy < -6 || yy > tileH + 6) continue;
+                        p.globalAlpha = alpha;
+                        p.fillStyle = theme.star;
+                        p.beginPath();
+                        p.arc(x, yy, rr, 0, Math.PI * 2);
+                        p.fill();
+                        if (rr > 1.4) {
+                            p.globalAlpha = alpha * 0.25;
+                            p.beginPath();
+                            p.arc(x, yy, rr * 3, 0, Math.PI * 2);
+                            p.fill();
+                        }
+                    }
                 }
-                ctx.setLineDash([]);
+                p.globalAlpha = 1;
+                this.parallaxTileH = tileH;
+
+                // 3) Foreground frame: side rails + vignette (drawn over the scene)
+                if (!this.overlayCache) this.overlayCache = document.createElement('canvas');
+                this.overlayCache.width = width;
+                this.overlayCache.height = height;
+                const o = this.overlayCache.getContext('2d');
+                o.clearRect(0, 0, width, height);
+                const vig = o.createRadialGradient(width / 2, height * 0.45, Math.min(width, height) * 0.35, width / 2, height * 0.45, Math.hypot(width, height) * 0.62);
+                vig.addColorStop(0, 'rgba(0,0,0,0)');
+                vig.addColorStop(1, 'rgba(0,0,0,0.42)');
+                o.fillStyle = vig;
+                o.fillRect(0, 0, width, height);
+                const topFade = o.createLinearGradient(0, 0, 0, 56 * Math.max(0.75, s));
+                topFade.addColorStop(0, 'rgba(0,0,0,0.35)');
+                topFade.addColorStop(1, 'rgba(0,0,0,0)');
+                o.fillStyle = topFade;
+                o.fillRect(0, 0, width, 56 * Math.max(0.75, s));
+                // rails along the physical side walls (x = margin)
+                const railW = Math.max(4, 5 * s);
+                for (const side of [0, 1]) {
+                    const x0 = side ? width - railW : 0;
+                    const rg = o.createLinearGradient(x0, 0, x0 + railW, 0);
+                    const [dark, hi, deep] = theme.rail;
+                    if (side) { rg.addColorStop(0, hi); rg.addColorStop(0.35, dark); rg.addColorStop(1, deep); }
+                    else { rg.addColorStop(0, deep); rg.addColorStop(0.65, dark); rg.addColorStop(1, hi); }
+                    o.fillStyle = rg;
+                    o.fillRect(x0, 0, railW, height);
+                    const glow = o.createLinearGradient(side ? x0 - 14 * s : x0 + railW, 0, side ? x0 : x0 + railW + 14 * s, 0);
+                    glow.addColorStop(side ? 1 : 0, theme.wallGlow);
+                    glow.addColorStop(side ? 0 : 1, 'rgba(0,0,0,0)');
+                    o.fillStyle = glow;
+                    o.globalAlpha = 0.5;
+                    o.fillRect(side ? x0 - 14 * s : x0 + railW, 0, 14 * s, height);
+                    o.globalAlpha = 1;
+                }
+            }
+
+            makeSprite(key, w, h, paint) {
+                let c = this.spriteCache.get(key);
+                if (c) return c;
+                c = document.createElement('canvas');
+                c.width = Math.max(1, Math.ceil(w));
+                c.height = Math.max(1, Math.ceil(h));
+                paint(c.getContext('2d'), c.width, c.height);
+                this.spriteCache.set(key, c);
+                return c;
+            }
+
+            hexToRgb(color) {
+                const num = parseInt(color.replace('#', ''), 16);
+                return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+            }
+
+            mixColor(color, target, t) {
+                const [r, g, b] = this.hexToRgb(color);
+                const [r2, g2, b2] = this.hexToRgb(target);
+                const m = (a, c) => Math.round(a + (c - a) * t);
+                return `rgb(${m(r, r2)},${m(g, g2)},${m(b, b2)})`;
+            }
+
+            rgba(color, a) {
+                const [r, g, b] = this.hexToRgb(color);
+                return `rgba(${r},${g},${b},${a})`;
+            }
+
+            // --- sprites ---
+            getGlowSprite(color, radius) {
+                const R = Math.ceil(radius);
+                return this.makeSprite(`glow|${color}|${R}`, R * 2, R * 2, (c, w) => {
+                    const g = c.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2);
+                    g.addColorStop(0, this.rgba(color, 0.55));
+                    g.addColorStop(0.4, this.rgba(color, 0.18));
+                    g.addColorStop(1, this.rgba(color, 0));
+                    c.fillStyle = g;
+                    c.fillRect(0, 0, w, w);
+                });
+            }
+
+            getMarbleSprites(color, radius) {
+                const r = Math.max(2, radius);
+                const key = `marble|${color}|${r.toFixed(2)}`;
+                let set = this.spriteCache.get(key);
+                if (set) return set;
+                const pad = 2;
+                const size = Math.ceil(r * 2 + pad * 2);
+                const cx = size / 2;
+                const mk = paint => {
+                    const c = document.createElement('canvas');
+                    c.width = size; c.height = size;
+                    paint(c.getContext('2d'));
+                    return c;
+                };
+                const body = mk(c => {
+                    const g = c.createRadialGradient(cx - r * 0.35, cx - r * 0.4, r * 0.05, cx, cx, r);
+                    g.addColorStop(0, this.mixColor(color, '#ffffff', 0.55));
+                    g.addColorStop(0.35, color);
+                    g.addColorStop(0.82, this.mixColor(color, '#000000', 0.38));
+                    g.addColorStop(1, this.mixColor(color, '#000000', 0.62));
+                    c.fillStyle = g;
+                    c.beginPath(); c.arc(cx, cx, r, 0, Math.PI * 2); c.fill();
+                    // refracted light pooling on the lower-right (glass caustic)
+                    const cg = c.createRadialGradient(cx + r * 0.32, cx + r * 0.42, 0, cx + r * 0.32, cx + r * 0.42, r * 0.62);
+                    cg.addColorStop(0, this.rgba(this.hexToHex(this.mixColor(color, '#ffffff', 0.5)), 0.7));
+                    cg.addColorStop(1, this.rgba(color, 0));
+                    c.fillStyle = cg;
+                    c.beginPath(); c.arc(cx, cx, r, 0, Math.PI * 2); c.fill();
+                    // dark rim
+                    c.lineWidth = Math.max(0.8, r * 0.09);
+                    c.strokeStyle = 'rgba(0,0,0,.45)';
+                    c.beginPath(); c.arc(cx, cx, r - c.lineWidth / 2, 0, Math.PI * 2); c.stroke();
+                });
+                const swirl = mk(c => {
+                    c.save();
+                    c.beginPath(); c.arc(cx, cx, r * 0.9, 0, Math.PI * 2); c.clip();
+                    c.lineCap = 'round';
+                    c.strokeStyle = 'rgba(255,255,255,.55)';
+                    c.lineWidth = Math.max(1.2, r * 0.22);
+                    c.beginPath(); c.arc(cx - r * 0.45, cx + r * 0.05, r * 0.85, -1.1, 1.15); c.stroke();
+                    c.strokeStyle = this.rgba(this.hexToHex(this.mixColor(color, '#000000', 0.55)), 0.55);
+                    c.lineWidth = Math.max(1, r * 0.16);
+                    c.beginPath(); c.arc(cx + r * 0.42, cx - r * 0.05, r * 0.75, 1.95, 4.4); c.stroke();
+                    c.strokeStyle = 'rgba(255,255,255,.22)';
+                    c.lineWidth = Math.max(0.8, r * 0.1);
+                    c.beginPath(); c.arc(cx + r * 0.38, cx - r * 0.02, r * 0.55, 2.1, 4.2); c.stroke();
+                    c.restore();
+                });
+                const shine = mk(c => {
+                    // soft specular bloom
+                    const g = c.createRadialGradient(cx - r * 0.38, cx - r * 0.42, 0, cx - r * 0.38, cx - r * 0.42, r * 0.6);
+                    g.addColorStop(0, 'rgba(255,255,255,.95)');
+                    g.addColorStop(0.35, 'rgba(255,255,255,.45)');
+                    g.addColorStop(1, 'rgba(255,255,255,0)');
+                    c.fillStyle = g;
+                    c.beginPath(); c.arc(cx, cx, r, 0, Math.PI * 2); c.fill();
+                    // crisp hotspot
+                    c.fillStyle = 'rgba(255,255,255,.95)';
+                    c.beginPath();
+                    c.ellipse(cx - r * 0.4, cx - r * 0.45, r * 0.2, r * 0.12, -0.7, 0, Math.PI * 2);
+                    c.fill();
+                    // fresnel rim light
+                    c.lineWidth = Math.max(0.8, r * 0.1);
+                    c.strokeStyle = 'rgba(255,255,255,.55)';
+                    c.beginPath(); c.arc(cx, cx, r * 0.9, Math.PI * 1.05, Math.PI * 1.6); c.stroke();
+                    c.strokeStyle = 'rgba(255,255,255,.25)';
+                    c.beginPath(); c.arc(cx, cx, r * 0.88, Math.PI * 0.15, Math.PI * 0.55); c.stroke();
+                });
+                const shadow = mk(c => {
+                    const g = c.createRadialGradient(cx, cx, 0, cx, cx, r);
+                    g.addColorStop(0, 'rgba(0,0,0,.5)');
+                    g.addColorStop(1, 'rgba(0,0,0,0)');
+                    c.fillStyle = g;
+                    c.fillRect(0, 0, size, size);
+                });
+                set = { body, swirl, shine, shadow, size, half: size / 2 };
+                this.spriteCache.set(key, set);
+                return set;
+            }
+
+            hexToHex(rgbStr) {
+                // convert "rgb(r,g,b)" to "#rrggbb"
+                const m = rgbStr.match(/\d+/g);
+                return '#' + m.slice(0, 3).map(v => (+v).toString(16).padStart(2, '0')).join('');
+            }
+
+            getPegSprite(radius) {
+                const theme = this.getTheme();
+                const r = Math.max(1.5, radius);
+                const R = Math.ceil(r * 3.2);
+                return this.makeSprite(`peg|${r.toFixed(2)}`, R * 2, R * 2, c => {
+                    const cx = R;
+                    const halo = c.createRadialGradient(cx, cx, r * 0.6, cx, cx, R);
+                    halo.addColorStop(0, this.rgba(theme.accent2, 0.35));
+                    halo.addColorStop(1, this.rgba(theme.accent2, 0));
+                    c.fillStyle = halo;
+                    c.fillRect(0, 0, R * 2, R * 2);
+                    // drop shadow
+                    c.fillStyle = 'rgba(0,0,0,.45)';
+                    c.beginPath(); c.arc(cx + r * 0.25, cx + r * 0.35, r * 1.02, 0, Math.PI * 2); c.fill();
+                    // metallic body
+                    const g = c.createRadialGradient(cx - r * 0.4, cx - r * 0.45, r * 0.05, cx, cx, r);
+                    g.addColorStop(0, theme.metalHi);
+                    g.addColorStop(0.45, theme.metal);
+                    g.addColorStop(1, theme.metalLo);
+                    c.fillStyle = g;
+                    c.beginPath(); c.arc(cx, cx, r, 0, Math.PI * 2); c.fill();
+                    // neon ring
+                    c.lineWidth = Math.max(0.8, r * 0.22);
+                    c.strokeStyle = this.rgba(theme.accent2, 0.85);
+                    c.beginPath(); c.arc(cx, cx, r * 0.96, 0, Math.PI * 2); c.stroke();
+                    // highlight
+                    c.fillStyle = 'rgba(255,255,255,.9)';
+                    c.beginPath(); c.arc(cx - r * 0.35, cx - r * 0.38, r * 0.26, 0, Math.PI * 2); c.fill();
+                });
+            }
+
+            getBumperSprite(color, radius) {
+                const r = Math.max(4, radius);
+                const R = Math.ceil(r * 1.75);
+                return this.makeSprite(`bumper|${color}|${r.toFixed(2)}`, R * 2, R * 2, c => {
+                    const cx = R;
+                    const halo = c.createRadialGradient(cx, cx, r * 0.8, cx, cx, R);
+                    halo.addColorStop(0, this.rgba(color, 0.45));
+                    halo.addColorStop(1, this.rgba(color, 0));
+                    c.fillStyle = halo;
+                    c.fillRect(0, 0, R * 2, R * 2);
+                    // shadow
+                    c.fillStyle = 'rgba(0,0,0,.5)';
+                    c.beginPath(); c.arc(cx + r * 0.08, cx + r * 0.14, r * 1.02, 0, Math.PI * 2); c.fill();
+                    // outer metal skirt
+                    const skirt = c.createLinearGradient(cx, cx - r, cx, cx + r);
+                    skirt.addColorStop(0, '#f8fafc');
+                    skirt.addColorStop(0.5, '#94a3b8');
+                    skirt.addColorStop(1, '#1e293b');
+                    c.fillStyle = skirt;
+                    c.beginPath(); c.arc(cx, cx, r, 0, Math.PI * 2); c.fill();
+                    // neon ring
+                    c.lineWidth = r * 0.12;
+                    c.strokeStyle = this.mixColor(color, '#ffffff', 0.35);
+                    c.beginPath(); c.arc(cx, cx, r * 0.86, 0, Math.PI * 2); c.stroke();
+                    // colored dome
+                    const dome = c.createRadialGradient(cx - r * 0.28, cx - r * 0.32, r * 0.05, cx, cx, r * 0.78);
+                    dome.addColorStop(0, this.mixColor(color, '#ffffff', 0.6));
+                    dome.addColorStop(0.45, color);
+                    dome.addColorStop(1, this.mixColor(color, '#000000', 0.5));
+                    c.fillStyle = dome;
+                    c.beginPath(); c.arc(cx, cx, r * 0.76, 0, Math.PI * 2); c.fill();
+                    // star emblem
+                    c.fillStyle = 'rgba(255,255,255,.85)';
+                    c.beginPath();
+                    for (let i = 0; i < 10; i++) {
+                        const a = -Math.PI / 2 + i * Math.PI / 5;
+                        const rr = (i % 2 ? 0.16 : 0.36) * r;
+                        const x = cx + Math.cos(a) * rr, y = cx + Math.sin(a) * rr;
+                        if (i === 0) c.moveTo(x, y); else c.lineTo(x, y);
+                    }
+                    c.closePath();
+                    c.fill();
+                    // glossy top
+                    const gl = c.createLinearGradient(cx, cx - r * 0.76, cx, cx);
+                    gl.addColorStop(0, 'rgba(255,255,255,.55)');
+                    gl.addColorStop(1, 'rgba(255,255,255,0)');
+                    c.fillStyle = gl;
+                    c.beginPath(); c.ellipse(cx, cx - r * 0.36, r * 0.55, r * 0.34, 0, 0, Math.PI * 2); c.fill();
+                });
+            }
+
+            getSpinnerSprites(length, thick, color) {
+                const L = Math.max(4, length);
+                const t = Math.max(3, thick);
+                const pad = Math.ceil(t * 1.6);
+                const w = Math.ceil(L + pad * 2), h = Math.ceil(t + pad * 2);
+                const bar = this.makeSprite(`spin|${L.toFixed(1)}|${t.toFixed(1)}|${color}`, w, h, c => {
+                    const x0 = pad, y0 = pad;
+                    c.shadowColor = this.rgba(color, 0.8);
+                    c.shadowBlur = t * 1.2;
+                    const g = c.createLinearGradient(0, y0, 0, y0 + t);
+                    g.addColorStop(0, this.mixColor(color, '#ffffff', 0.7));
+                    g.addColorStop(0.35, color);
+                    g.addColorStop(1, this.mixColor(color, '#000000', 0.55));
+                    c.fillStyle = g;
+                    c.beginPath(); c.roundRect(x0, y0, L, t, t / 2); c.fill();
+                    c.shadowBlur = 0;
+                    c.strokeStyle = 'rgba(0,0,0,.4)';
+                    c.lineWidth = 1;
+                    c.beginPath(); c.roundRect(x0 + 0.5, y0 + 0.5, L - 1, t - 1, t / 2); c.stroke();
+                    c.fillStyle = 'rgba(255,255,255,.6)';
+                    c.beginPath(); c.roundRect(x0 + t * 0.5, y0 + t * 0.16, L - t, Math.max(1, t * 0.2), t * 0.1); c.fill();
+                    // end caps
+                    for (const ex of [x0 + t / 2, x0 + L - t / 2]) {
+                        c.fillStyle = this.mixColor(color, '#000000', 0.35);
+                        c.beginPath(); c.arc(ex, y0 + t / 2, t * 0.28, 0, Math.PI * 2); c.fill();
+                    }
+                });
+                const hr = t * 0.95;
+                const H = Math.ceil(hr * 2 + 4);
+                const hub = this.makeSprite(`hub|${hr.toFixed(1)}`, H, H, c => {
+                    const cx = H / 2;
+                    const g = c.createRadialGradient(cx - hr * 0.3, cx - hr * 0.35, 0, cx, cx, hr);
+                    g.addColorStop(0, '#ffffff');
+                    g.addColorStop(0.5, '#cbd5e1');
+                    g.addColorStop(1, '#334155');
+                    c.fillStyle = g;
+                    c.beginPath(); c.arc(cx, cx, hr, 0, Math.PI * 2); c.fill();
+                    c.strokeStyle = 'rgba(15,23,42,.8)';
+                    c.lineWidth = Math.max(1, hr * 0.18);
+                    c.beginPath(); c.moveTo(cx - hr * 0.45, cx); c.lineTo(cx + hr * 0.45, cx);
+                    c.moveTo(cx, cx - hr * 0.45); c.lineTo(cx, cx + hr * 0.45); c.stroke();
+                });
+                return { bar, hub, w, h, H };
+            }
+
+            getPortalGlow(color, radius) {
+                const R = Math.ceil(radius * 1.7);
+                return this.makeSprite(`portal|${color}|${R}`, R * 2, R * 2, c => {
+                    const cx = R;
+                    const g = c.createRadialGradient(cx, cx, radius * 0.2, cx, cx, R);
+                    g.addColorStop(0, 'rgba(0,0,0,.9)');
+                    g.addColorStop(0.45, this.rgba(color, 0.55));
+                    g.addColorStop(0.62, this.rgba(color, 0.25));
+                    g.addColorStop(1, this.rgba(color, 0));
+                    c.fillStyle = g;
+                    c.fillRect(0, 0, R * 2, R * 2);
+                    const core = c.createRadialGradient(cx, cx, 0, cx, cx, radius * 0.95);
+                    core.addColorStop(0, '#05030f');
+                    core.addColorStop(0.7, this.rgba(this.hexToHex(this.mixColor(color, '#000000', 0.7)), 1));
+                    core.addColorStop(1, this.rgba(color, 0.9));
+                    c.fillStyle = core;
+                    c.beginPath(); c.arc(cx, cx, radius * 0.95, 0, Math.PI * 2); c.fill();
+                });
+            }
+
+            getTriangleSprite(obs) {
+                const theme = this.getTheme();
+                const verts = obs.getVertices();
+                const pad = Math.ceil(obs.size * 0.6);
+                const ext = Math.ceil(obs.size + pad);
+                const key = `tri|${obs.size.toFixed(2)}|${obs.angle.toFixed(3)}|${this.mapType}`;
+                const sprite = this.makeSprite(key, ext * 2, ext * 2, c => {
+                    const pts = verts.map(v => ({ x: v.x - obs.x + ext, y: v.y - obs.y + ext }));
+                    const path = () => { c.beginPath(); c.moveTo(pts[0].x, pts[0].y); c.lineTo(pts[1].x, pts[1].y); c.lineTo(pts[2].x, pts[2].y); c.closePath(); };
+                    c.lineJoin = 'round';
+                    c.shadowColor = theme.triGlow;
+                    c.shadowBlur = obs.size * 0.5;
+                    const g = c.createLinearGradient(ext - obs.size, ext - obs.size, ext + obs.size, ext + obs.size);
+                    g.addColorStop(0, theme.tri[0]);
+                    g.addColorStop(0.45, theme.tri[1]);
+                    g.addColorStop(1, theme.tri[2]);
+                    c.fillStyle = g;
+                    path(); c.fill();
+                    c.shadowBlur = 0;
+                    // bevel: inner lighter facet
+                    const inset = 0.55;
+                    c.fillStyle = 'rgba(255,255,255,.18)';
+                    c.beginPath();
+                    pts.forEach((pt, i) => {
+                        const x = ext + (pt.x - ext) * inset, y = ext + (pt.y - ext) * inset;
+                        if (i === 0) c.moveTo(x, y); else c.lineTo(x, y);
+                    });
+                    c.closePath(); c.fill();
+                    c.lineWidth = Math.max(1, obs.size * 0.09);
+                    c.strokeStyle = 'rgba(255,255,255,.7)';
+                    path(); c.stroke();
+                });
+                return { sprite, ext };
+            }
+
+            getFinishSprite(width, scale) {
+                const cell = Math.max(5, Math.round(9 * scale));
+                const rows = 2;
+                return this.makeSprite(`finish|${Math.round(width)}|${cell}`, width, cell * rows, c => {
+                    for (let row = 0; row < rows; row++) {
+                        for (let col = 0; col * cell < width; col++) {
+                            c.fillStyle = (row + col) % 2 ? 'rgba(15,15,25,.85)' : 'rgba(255,255,255,.9)';
+                            c.fillRect(col * cell, row * cell, cell, cell);
+                        }
+                    }
+                });
             }
 
             setPlaceholder(message) {
@@ -2980,12 +3437,30 @@
                 const w = this.canvas.width;
                 const h = this.canvas.height;
 
+                if (this.bgKey !== `${this.mapType}|${w}|${h}`) this.buildBackgroundCache();
                 ctx.drawImage(this.backgroundCache, 0, 0, w, h);
 
-                if (!this.world) return;
+                if (!this.world) {
+                    ctx.drawImage(this.overlayCache, 0, 0, w, h);
+                    return;
+                }
 
-                // 카메라 오프셋 적용
+                // per-world render state (peg pop effects)
+                if (this.artWorld !== this.world) {
+                    this.artWorld = this.world;
+                    this.pegPops = [];
+                    this.prevPegs = this.world.obstacles.filter(o => o.type === 'peg');
+                }
                 const camY = this.world.cameraY || 0;
+
+                // Parallax layer scrolls slower than the track for depth
+                const tileH = this.parallaxTileH;
+                if (tileH) {
+                    const off = ((camY * this.renderScale * 0.45) % tileH + tileH) % tileH;
+                    ctx.drawImage(this.parallaxCache, 0, -off);
+                    if (tileH - off < h) ctx.drawImage(this.parallaxCache, 0, tileH - off);
+                }
+
                 ctx.save();
                 if (this.world.shake > 0.1) {
                     ctx.translate((Math.random() - 0.5) * this.world.shake, (Math.random() - 0.5) * this.world.shake);
@@ -2993,47 +3468,154 @@
                 ctx.scale(this.renderScale, this.renderScale);
                 ctx.translate(0, -camY);
 
-                // Draw finish line (월드 좌표) - 스케일 적용
                 const scale = this.world.scale;
-                const finishLineY = this.world.finishLine;
+                const time = this.world.time;
                 const viewBottom = camY + this.world.viewHeight;
-                if (finishLineY < viewBottom + 120 * scale) {
-                    const gradient = ctx.createLinearGradient(0, finishLineY, 0, finishLineY + 100 * scale);
-                    gradient.addColorStop(0, 'rgba(255, 215, 0, 0.25)');
-                    gradient.addColorStop(1, 'rgba(255, 215, 0, 0.08)');
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(0, finishLineY, this.world.width, 100 * scale);
 
-                    ctx.strokeStyle = '#ffd700';
-                    ctx.lineWidth = 2 * scale;
-                    ctx.setLineDash([8 * scale, 8 * scale]);
-                    ctx.beginPath();
-                    ctx.moveTo(0, finishLineY);
-                    ctx.lineTo(this.world.width, finishLineY);
-                    ctx.stroke();
-                    ctx.setLineDash([]);
+                // Finish line
+                const finishLineY = this.world.finishLine;
+                if (finishLineY < viewBottom + 120 * scale) this.drawFinishLine(finishLineY, scale, time);
 
-                    ctx.font = `bold ${Math.round(12 * scale)}px "Noto Sans KR"`;
-                    ctx.fillStyle = '#ffd700';
-                    ctx.textAlign = 'right';
-                    ctx.fillText('🏆 GOAL', this.world.width - 15 * scale, finishLineY - 8 * scale);
+                // Detect pegs removed this frame (render-only pop effect)
+                let pegCount = 0;
+                for (const obs of this.world.obstacles) if (obs.type === 'peg') pegCount++;
+                if (pegCount < this.prevPegs.length) {
+                    const alive = new Set();
+                    for (const obs of this.world.obstacles) if (obs.type === 'peg') alive.add(obs);
+                    for (const peg of this.prevPegs) {
+                        if (!alive.has(peg)) this.pegPops.push({ x: peg.x, y: peg.y, r: peg.radius, t: time, seed: (peg.x * 13 + peg.y * 7) | 0 });
+                    }
+                    this.prevPegs = [...alive];
+                } else if (pegCount > this.prevPegs.length) {
+                    this.prevPegs = this.world.obstacles.filter(o => o.type === 'peg');
                 }
 
-                // Draw obstacles
+                // Obstacles: walls first (under), then everything else
                 for (const obs of this.world.obstacles) {
-                    if (!this.isObstacleVisible(obs, camY, viewBottom)) continue;
+                    if (obs.type !== 'wall' || !this.isObstacleVisible(obs, camY, viewBottom)) continue;
+                    this.drawObstacle(obs);
+                }
+                for (const obs of this.world.obstacles) {
+                    if (obs.type === 'wall' || !this.isObstacleVisible(obs, camY, viewBottom)) continue;
                     this.drawObstacle(obs);
                 }
 
-                // Draw balls
-                for (const ball of this.world.balls) {
-                    this.drawBall(ball);
-                }
+                this.drawPegPops(time);
+
+                // Balls: trails + shadows first, then bodies, then labels (fewer state changes)
+                const balls = this.world.balls;
+                for (const ball of balls) this.drawBallTrail(ball, camY, viewBottom);
+                for (const ball of balls) this.drawBall(ball, camY, viewBottom);
+                this.drawBallLabels(balls, camY, viewBottom);
 
                 ctx.restore();
-                
+
+                ctx.drawImage(this.overlayCache, 0, 0, w, h);
+
                 // UI 오버레이 (카메라 영향 안 받음)
                 this.drawTimer();
+            }
+
+            drawFinishLine(y, scale, time) {
+                const ctx = this.ctx;
+                const W = this.world.width;
+                // golden glow pool beyond the line
+                const gradient = ctx.createLinearGradient(0, y - 40 * scale, 0, y + 110 * scale);
+                gradient.addColorStop(0, 'rgba(255, 215, 0, 0)');
+                gradient.addColorStop(0.27, 'rgba(255, 200, 60, 0.28)');
+                gradient.addColorStop(1, 'rgba(255, 170, 0, 0.04)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, y - 40 * scale, W, 150 * scale);
+                // light beams
+                ctx.save();
+                ctx.globalCompositeOperation = 'lighter';
+                for (let i = 0; i < 6; i++) {
+                    const bx = ((i + 0.5) / 6) * W + Math.sin(time * 0.8 + i * 1.7) * 18 * scale;
+                    const bg = ctx.createLinearGradient(0, y, 0, y - 120 * scale);
+                    bg.addColorStop(0, 'rgba(255,220,120,.10)');
+                    bg.addColorStop(1, 'rgba(255,220,120,0)');
+                    ctx.fillStyle = bg;
+                    ctx.beginPath();
+                    ctx.moveTo(bx - 14 * scale, y);
+                    ctx.lineTo(bx + 14 * scale, y);
+                    ctx.lineTo(bx + 34 * scale, y - 120 * scale);
+                    ctx.lineTo(bx - 34 * scale, y - 120 * scale);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                ctx.restore();
+                // checkered band
+                const band = this.getFinishSprite(W, scale);
+                ctx.globalAlpha = 0.85;
+                ctx.drawImage(band, 0, y);
+                ctx.globalAlpha = 1;
+                // glowing gold line
+                ctx.save();
+                ctx.shadowColor = 'rgba(255, 210, 60, .9)';
+                ctx.shadowBlur = 12 * scale;
+                ctx.fillStyle = '#ffd84d';
+                ctx.fillRect(0, y - 1.5 * scale, W, 3 * scale);
+                ctx.restore();
+                // GOAL plaque
+                const fs = Math.round(12 * scale);
+                ctx.font = `900 ${fs}px "Noto Sans KR", sans-serif`;
+                const label = '🏆 GOAL';
+                const tw = ctx.measureText(label).width;
+                const px = W - tw - 30 * scale, ph = 20 * scale, py = y + band.height + 6 * scale;
+                const pg = ctx.createLinearGradient(0, py, 0, py + ph);
+                pg.addColorStop(0, '#fff3b0');
+                pg.addColorStop(0.5, '#f5b916');
+                pg.addColorStop(1, '#a86b00');
+                ctx.fillStyle = pg;
+                ctx.beginPath();
+                ctx.roundRect(px, py, tw + 18 * scale, ph, ph / 2);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,.7)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.fillStyle = '#3b2400';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(label, px + 9 * scale, py + ph / 2 + 0.5);
+            }
+
+            drawPegPops(time) {
+                if (!this.pegPops.length) return;
+                const ctx = this.ctx;
+                const theme = this.getTheme();
+                const life = 0.42;
+                this.pegPops = this.pegPops.filter(pop => time - pop.t < life && time >= pop.t);
+                ctx.save();
+                ctx.globalCompositeOperation = 'lighter';
+                ctx.lineCap = 'round';
+                for (const pop of this.pegPops) {
+                    const k = (time - pop.t) / life;
+                    const a = 1 - k;
+                    ctx.globalAlpha = a;
+                    // flash core
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(pop.x, pop.y, pop.r * (1.2 - k * 0.8), 0, Math.PI * 2);
+                    ctx.fill();
+                    // expanding ring
+                    ctx.strokeStyle = theme.accent2;
+                    ctx.lineWidth = Math.max(1, pop.r * 0.5 * a);
+                    ctx.beginPath();
+                    ctx.arc(pop.x, pop.y, pop.r * (1 + k * 3), 0, Math.PI * 2);
+                    ctx.stroke();
+                    // sparks
+                    ctx.strokeStyle = theme.accent;
+                    ctx.lineWidth = Math.max(1, pop.r * 0.35);
+                    ctx.beginPath();
+                    for (let i = 0; i < 6; i++) {
+                        const ang = (pop.seed % 7) * 0.4 + i * Math.PI / 3;
+                        const d0 = pop.r * (1.2 + k * 2.5), d1 = d0 + pop.r * 1.4 * a;
+                        ctx.moveTo(pop.x + Math.cos(ang) * d0, pop.y + Math.sin(ang) * d0);
+                        ctx.lineTo(pop.x + Math.cos(ang) * d1, pop.y + Math.sin(ang) * d1);
+                    }
+                    ctx.stroke();
+                }
+                ctx.restore();
             }
 
             isObstacleVisible(obs, viewTop, viewBottom) {
@@ -3053,7 +3635,7 @@
                 const margin = 80 * this.world.scale;
                 return maxY >= viewTop - margin && minY <= viewBottom + margin;
             }
-            
+
             drawTimer() {
                 if (!this.world || (!this.isRunning && !this.resultTimer)) return;
 
@@ -3072,31 +3654,52 @@
                     ? `${minutes}:${seconds.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`
                     : `${seconds}.${ms.toString().padStart(2, '0')}s`;
 
-                // 배경 박스 - 스케일 적용
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+                const warn = elapsed >= 50;
+                const bx = w / 2 - 62 * s, by = 8 * s, bw = 124 * s, bh = 30 * s;
+                ctx.save();
+                // glass pill
+                ctx.shadowColor = warn ? 'rgba(255,90,90,.55)' : 'rgba(0,0,0,.5)';
+                ctx.shadowBlur = 14 * s;
+                ctx.shadowOffsetY = 3 * s;
+                const bgGrad = ctx.createLinearGradient(0, by, 0, by + bh);
+                bgGrad.addColorStop(0, warn ? 'rgba(80,14,24,.82)' : 'rgba(30,34,64,.82)');
+                bgGrad.addColorStop(1, warn ? 'rgba(40,6,12,.86)' : 'rgba(8,10,26,.86)');
+                ctx.fillStyle = bgGrad;
                 ctx.beginPath();
-                ctx.roundRect(w / 2 - 60 * s, 8 * s, 120 * s, 28 * s, 8 * s);
+                ctx.roundRect(bx, by, bw, bh, bh / 2);
                 ctx.fill();
-
-                // 테두리
-                ctx.strokeStyle = elapsed >= 50 ? 'rgba(255, 107, 107, 0.5)' : 'rgba(255, 255, 255, 0.2)';
-                ctx.lineWidth = 1 * s;
+                ctx.restore();
+                // top sheen
+                const sheen = ctx.createLinearGradient(0, by, 0, by + bh * 0.5);
+                sheen.addColorStop(0, 'rgba(255,255,255,.16)');
+                sheen.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = sheen;
                 ctx.beginPath();
-                ctx.roundRect(w / 2 - 60 * s, 8 * s, 120 * s, 28 * s, 8 * s);
+                ctx.roundRect(bx + 2 * s, by + 1.5 * s, bw - 4 * s, bh * 0.5, [bh / 2, bh / 2, 4 * s, 4 * s]);
+                ctx.fill();
+                // border
+                const border = ctx.createLinearGradient(bx, 0, bx + bw, 0);
+                const theme = this.getTheme();
+                border.addColorStop(0, warn ? 'rgba(255,107,107,.8)' : this.rgba(theme.accent, 0.7));
+                border.addColorStop(1, warn ? 'rgba(255,170,90,.8)' : this.rgba(theme.accent2, 0.7));
+                ctx.strokeStyle = border;
+                ctx.lineWidth = 1.2 * s;
+                ctx.beginPath();
+                ctx.roundRect(bx + 0.5, by + 0.5, bw - 1, bh - 1, bh / 2);
                 ctx.stroke();
 
                 // 시간 텍스트
-                ctx.font = `bold ${Math.round(16 * s)}px monospace`;
-                ctx.fillStyle = elapsed >= 50 ? '#ff6b6b' : '#fff';
+                ctx.font = `bold ${Math.round(16 * s)}px ui-monospace, SFMono-Regular, Menlo, monospace`;
+                ctx.fillStyle = warn ? '#ff8a8a' : '#ffffff';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(`⏱ ${timeStr}`, w / 2, 22 * s);
+                ctx.fillText(`⏱ ${timeStr}`, w / 2, by + bh / 2 + 0.5);
 
                 // 50초 이후 경고
                 if (elapsed >= 50 && elapsed < 60) {
                     ctx.font = `bold ${Math.round(10 * s)}px "Noto Sans KR"`;
                     ctx.fillStyle = '#ff6b6b';
-                    ctx.fillText(`${Math.ceil(60 - elapsed)}초 남음`, w / 2, 46 * s);
+                    ctx.fillText(`${Math.ceil(60 - elapsed)}초 남음`, w / 2, 48 * s);
                 }
             }
 
@@ -3104,199 +3707,282 @@
                 const ctx = this.ctx;
                 const time = this.world ? this.world.time : 0;
                 const s = this.world ? this.world.scale : 1;  // 스케일
+                const theme = this.getTheme();
 
                 if (obs.type === 'peg') {
-                    ctx.fillStyle = obs.color;
-                    ctx.beginPath();
-                    ctx.arc(obs.x, obs.y, obs.radius, 0, Math.PI * 2);
-                    ctx.fill();
+                    const sp = this.getPegSprite(obs.radius);
+                    ctx.drawImage(sp, obs.x - sp.width / 2, obs.y - sp.height / 2);
                 } else if (obs.type === 'bumper') {
-                    const scale = 1 + Math.max(0, 0.3 - (time - obs.hitTime)) * 0.5;
-                    const glow = ctx.createRadialGradient(obs.x, obs.y, 0, obs.x, obs.y, obs.radius * scale * 1.5);
-                    glow.addColorStop(0, obs.color);
-                    glow.addColorStop(0.6, obs.color + '80');
-                    glow.addColorStop(1, 'transparent');
-                    ctx.fillStyle = glow;
-                    ctx.beginPath();
-                    ctx.arc(obs.x, obs.y, obs.radius * scale * 1.5, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.fillStyle = obs.color;
-                    ctx.beginPath();
-                    ctx.arc(obs.x, obs.y, obs.radius * scale, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.fillStyle = '#fff';
-                    ctx.beginPath();
-                    ctx.arc(obs.x - obs.radius * 0.3, obs.y - obs.radius * 0.3, obs.radius * 0.25, 0, Math.PI * 2);
-                    ctx.fill();
-                } else if (obs.type === 'spinner') {
-                    const ep = obs.getEndpoints();
-                    ctx.strokeStyle = obs.color;
-                    ctx.lineWidth = 8 * s;
-                    ctx.lineCap = 'round';
-                    ctx.beginPath();
-                    ctx.moveTo(ep.x1, ep.y1);
-                    ctx.lineTo(ep.x2, ep.y2);
-                    ctx.stroke();
-
-                    // Center pivot
-                    ctx.fillStyle = '#fff';
-                    ctx.beginPath();
-                    ctx.arc(obs.x, obs.y, 6 * s, 0, Math.PI * 2);
-                    ctx.fill();
-                } else if (obs.type === 'portal') {
-                    // Draw both portal ends
-                    for (const [px, py] of [[obs.x1, obs.y1], [obs.x2, obs.y2]]) {
-                        const pulse = 1 + Math.sin(time * 4) * 0.1;
-                        const glow = ctx.createRadialGradient(px, py, 0, px, py, obs.radius * pulse * 1.5);
-                        glow.addColorStop(0, obs.color);
-                        glow.addColorStop(0.5, obs.color + '60');
-                        glow.addColorStop(1, 'transparent');
-                        ctx.fillStyle = glow;
+                    const since = time - obs.hitTime;
+                    const hit = obs.hitTime > 0 && since >= 0 && since < 0.3 ? 1 - since / 0.3 : 0;
+                    const scale = 1 + Math.max(0, 0.3 - since) * 0.5;
+                    const sp = this.getBumperSprite(obs.color, obs.radius);
+                    const dw = sp.width * scale;
+                    ctx.drawImage(sp, obs.x - dw / 2, obs.y - dw / 2, dw, dw);
+                    if (hit > 0) {
+                        ctx.save();
+                        ctx.globalCompositeOperation = 'lighter';
+                        ctx.globalAlpha = hit;
+                        const glow = this.getGlowSprite(obs.color, obs.radius * 2.2);
+                        ctx.drawImage(glow, obs.x - glow.width / 2, obs.y - glow.height / 2);
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.lineWidth = 3 * s * hit;
                         ctx.beginPath();
-                        ctx.arc(px, py, obs.radius * pulse * 1.5, 0, Math.PI * 2);
-                        ctx.fill();
-
+                        ctx.arc(obs.x, obs.y, obs.radius * (1.05 + (1 - hit) * 0.8), 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                } else if (obs.type === 'spinner') {
+                    const thick = 8 * s;
+                    // faint sweep track
+                    ctx.strokeStyle = this.rgba(obs.color, 0.10);
+                    ctx.lineWidth = 2 * s;
+                    ctx.beginPath();
+                    ctx.arc(obs.x, obs.y, obs.length / 2, 0, Math.PI * 2);
+                    ctx.stroke();
+                    // motion-blur ghost
+                    const sp = this.getSpinnerSprites(obs.length, thick, obs.color);
+                    ctx.save();
+                    ctx.translate(obs.x, obs.y);
+                    ctx.rotate(obs.angle - Math.sign(obs.speed) * 0.22);
+                    ctx.globalAlpha = 0.22;
+                    ctx.drawImage(sp.bar, -sp.w / 2, -sp.h / 2);
+                    ctx.restore();
+                    ctx.save();
+                    ctx.translate(obs.x, obs.y);
+                    ctx.rotate(obs.angle);
+                    ctx.drawImage(sp.bar, -sp.w / 2, -sp.h / 2);
+                    ctx.rotate(-obs.angle);
+                    ctx.drawImage(sp.hub, -sp.H / 2, -sp.H / 2);
+                    ctx.restore();
+                } else if (obs.type === 'portal') {
+                    const pulse = 1 + Math.sin(time * 4) * 0.1;
+                    const glow = this.getPortalGlow(obs.color, obs.radius);
+                    for (const [px, py, dir] of [[obs.x1, obs.y1, 1], [obs.x2, obs.y2, -1]]) {
+                        const gw = glow.width * pulse;
+                        ctx.drawImage(glow, px - gw / 2, py - gw / 2, gw, gw);
+                        const rr = obs.radius * pulse;
+                        // segmented outer ring
+                        ctx.save();
+                        ctx.translate(px, py);
+                        ctx.shadowColor = obs.color;
+                        ctx.shadowBlur = 10 * s;
                         ctx.strokeStyle = obs.color;
                         ctx.lineWidth = 3 * s;
+                        ctx.lineCap = 'round';
+                        ctx.rotate(time * 1.6 * dir);
                         ctx.beginPath();
-                        ctx.arc(px, py, obs.radius * pulse, 0, Math.PI * 2);
+                        for (let i = 0; i < 4; i++) {
+                            const a0 = i * Math.PI / 2;
+                            ctx.moveTo(Math.cos(a0) * rr, Math.sin(a0) * rr);
+                            ctx.arc(0, 0, rr, a0, a0 + Math.PI / 2 - 0.35);
+                        }
                         ctx.stroke();
-
-                        // Inner swirl
-                        ctx.strokeStyle = '#fff';
+                        ctx.shadowBlur = 0;
+                        ctx.rotate(-time * 3.4 * dir);
+                        ctx.strokeStyle = 'rgba(255,255,255,.55)';
+                        ctx.lineWidth = 1.5 * s;
+                        ctx.beginPath();
+                        for (let i = 0; i < 3; i++) {
+                            const a0 = i * Math.PI * 2 / 3;
+                            ctx.moveTo(Math.cos(a0) * rr * 0.78, Math.sin(a0) * rr * 0.78);
+                            ctx.arc(0, 0, rr * 0.78, a0, a0 + 1.2);
+                        }
+                        ctx.stroke();
+                        // inner swirl
+                        ctx.rotate(time * 1.8 * dir + time * 3);
+                        ctx.strokeStyle = this.mixColor(obs.color, '#ffffff', 0.6);
                         ctx.lineWidth = 2 * s;
                         ctx.beginPath();
-                        for (let a = 0; a < Math.PI * 2; a += 0.1) {
+                        for (let a = 0; a < Math.PI * 2; a += 0.15) {
                             const r = obs.radius * 0.6 * (1 - a / (Math.PI * 2));
-                            const x = px + Math.cos(a + time * 3) * r;
-                            const y = py + Math.sin(a + time * 3) * r;
+                            const x = Math.cos(a) * r;
+                            const y = Math.sin(a) * r;
                             if (a === 0) ctx.moveTo(x, y);
                             else ctx.lineTo(x, y);
                         }
                         ctx.stroke();
+                        ctx.restore();
                     }
                 } else if (obs.type === 'booster') {
-                    const scale = 1 + Math.max(0, 0.2 - (time - obs.hitTime)) * 0.4;
-                    
-                    ctx.fillStyle = obs.color;
-                    ctx.beginPath();
-                    ctx.arc(obs.x, obs.y, obs.radius * scale, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    // Arrow
+                    const since = time - obs.hitTime;
+                    const hit = obs.hitTime > 0 && since >= 0 && since < 0.25 ? 1 - since / 0.25 : 0;
+                    const scale = 1 + Math.max(0, 0.2 - since) * 0.4;
+                    const r = obs.radius * scale;
+                    const glow = this.getGlowSprite(obs.color, r * 1.9);
+                    ctx.globalAlpha = 0.6 + hit * 0.4;
+                    ctx.drawImage(glow, obs.x - glow.width / 2, obs.y - glow.height / 2);
+                    ctx.globalAlpha = 1;
                     ctx.save();
                     ctx.translate(obs.x, obs.y);
+                    // pad base
+                    const base = ctx.createRadialGradient(-r * 0.3, -r * 0.35, 0, 0, 0, r);
+                    base.addColorStop(0, this.mixColor(obs.color, '#ffffff', 0.25));
+                    base.addColorStop(0.6, this.mixColor(obs.color, '#000000', 0.35));
+                    base.addColorStop(1, this.mixColor(obs.color, '#000000', 0.7));
+                    ctx.fillStyle = base;
+                    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+                    ctx.strokeStyle = hit ? '#ffffff' : this.mixColor(obs.color, '#ffffff', 0.45);
+                    ctx.lineWidth = Math.max(1.5, r * 0.12);
+                    ctx.beginPath(); ctx.arc(0, 0, r * 0.94, 0, Math.PI * 2); ctx.stroke();
+                    // animated chevrons
                     ctx.rotate(obs.angle);
-                    ctx.fillStyle = '#fff';
-                    ctx.beginPath();
-                    ctx.moveTo(obs.radius * 0.6, 0);
-                    ctx.lineTo(-obs.radius * 0.3, -obs.radius * 0.4);
-                    ctx.lineTo(-obs.radius * 0.3, obs.radius * 0.4);
-                    ctx.closePath();
-                    ctx.fill();
+                    ctx.beginPath(); ctx.arc(0, 0, r * 0.82, 0, Math.PI * 2); ctx.clip();
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    ctx.lineWidth = Math.max(1.5, r * 0.16);
+                    const phase = (time * 1.6) % 1;
+                    for (let i = 0; i < 3; i++) {
+                        const k = (i + phase) / 3;
+                        const cx = -r * 0.7 + k * r * 1.4;
+                        ctx.strokeStyle = `rgba(255,255,255,${(Math.sin(k * Math.PI) * 0.9 + 0.1).toFixed(3)})`;
+                        ctx.beginPath();
+                        ctx.moveTo(cx - r * 0.22, -r * 0.36);
+                        ctx.lineTo(cx + r * 0.12, 0);
+                        ctx.lineTo(cx - r * 0.22, r * 0.36);
+                        ctx.stroke();
+                    }
                     ctx.restore();
                 } else if (obs.type === 'wall') {
-                    ctx.strokeStyle = obs.color;
-                    ctx.lineWidth = obs.thickness;
+                    const t = obs.thickness;
                     ctx.lineCap = 'round';
+                    // soft drop shadow
+                    ctx.strokeStyle = 'rgba(0,0,0,.45)';
+                    ctx.lineWidth = t + 3 * s;
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x1 + 2 * s, obs.y1 + 4 * s);
+                    ctx.lineTo(obs.x2 + 2 * s, obs.y2 + 4 * s);
+                    ctx.stroke();
+                    // neon halo
+                    ctx.strokeStyle = theme.wallGlow;
+                    ctx.lineWidth = t + 7 * s;
+                    ctx.globalAlpha = 0.55;
                     ctx.beginPath();
                     ctx.moveTo(obs.x1, obs.y1);
                     ctx.lineTo(obs.x2, obs.y2);
                     ctx.stroke();
-                } else if (obs.type === 'triangle') {
-                    const verts = obs.getVertices();
-                    ctx.fillStyle = obs.color;
+                    ctx.globalAlpha = 1;
+                    // beveled body: gradient across the thickness
+                    const dx = obs.x2 - obs.x1, dy = obs.y2 - obs.y1;
+                    const len = Math.hypot(dx, dy) || 1;
+                    let nx = -dy / len, ny = dx / len;
+                    if (ny > 0) { nx = -nx; ny = -ny; }  // normal pointing "up" (lit side)
+                    const mx = (obs.x1 + obs.x2) / 2, my = (obs.y1 + obs.y2) / 2;
+                    const g = ctx.createLinearGradient(mx + nx * t / 2, my + ny * t / 2, mx - nx * t / 2, my - ny * t / 2);
+                    g.addColorStop(0, theme.wall[0]);
+                    g.addColorStop(0.45, theme.wall[1]);
+                    g.addColorStop(1, theme.wall[2]);
+                    ctx.strokeStyle = g;
+                    ctx.lineWidth = t;
                     ctx.beginPath();
-                    ctx.moveTo(verts[0].x, verts[0].y);
-                    for (let i = 1; i < verts.length; i++) {
-                        ctx.lineTo(verts[i].x, verts[i].y);
+                    ctx.moveTo(obs.x1, obs.y1);
+                    ctx.lineTo(obs.x2, obs.y2);
+                    ctx.stroke();
+                    // specular edge
+                    ctx.strokeStyle = 'rgba(255,255,255,.55)';
+                    ctx.lineWidth = Math.max(1, t * 0.18);
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x1 + nx * t * 0.24, obs.y1 + ny * t * 0.24);
+                    ctx.lineTo(obs.x2 + nx * t * 0.24, obs.y2 + ny * t * 0.24);
+                    ctx.stroke();
+                    // rivets
+                    const rivets = Math.max(1, Math.floor(len / (60 * s)));
+                    ctx.fillStyle = 'rgba(0,0,0,.35)';
+                    ctx.beginPath();
+                    for (let i = 1; i <= rivets; i++) {
+                        const k = i / (rivets + 1);
+                        const rx = obs.x1 + dx * k, ry = obs.y1 + dy * k;
+                        ctx.moveTo(rx + t * 0.16, ry);
+                        ctx.arc(rx, ry, t * 0.16, 0, Math.PI * 2);
                     }
-                    ctx.closePath();
                     ctx.fill();
+                } else if (obs.type === 'triangle') {
+                    const { sprite, ext } = this.getTriangleSprite(obs);
+                    ctx.drawImage(sprite, obs.x - ext, obs.y - ext);
                 }
             }
 
-            drawBall(ball) {
+            drawBallTrail(ball, viewTop, viewBottom) {
+                const trail = ball.trail;
+                if (ball.finished || trail.length < 3) return;
+                if (ball.pos.y < viewTop - 200 || ball.pos.y > viewBottom + 200) return;
                 const ctx = this.ctx;
-
-                // Trail
-                if (ball.trail.length > 1) {
-                    ctx.strokeStyle = ball.color + '40';
-                    ctx.lineWidth = ball.radius * 0.8;
-                    ctx.lineCap = 'round';
-                    ctx.lineJoin = 'round';
+                const r = ball.radius;
+                const maxJump = r * 6;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                const n = trail.length;
+                const chunks = 4;
+                for (let c = 0; c < chunks; c++) {
+                    const i0 = Math.floor((n - 1) * c / chunks);
+                    const i1 = Math.floor((n - 1) * (c + 1) / chunks);
+                    if (i1 <= i0) continue;
+                    const k = (c + 1) / chunks;
+                    ctx.lineCap = c === chunks - 1 ? 'round' : 'butt';
+                    ctx.strokeStyle = this.rgba(ball.color, 0.06 + 0.22 * k);
+                    ctx.lineWidth = r * (0.35 + 0.95 * k);
                     ctx.beginPath();
-                    ctx.moveTo(ball.trail[0].x, ball.trail[0].y);
-                    for (let i = 1; i < ball.trail.length; i++) {
-                        ctx.lineTo(ball.trail[i].x, ball.trail[i].y);
+                    ctx.moveTo(trail[i0].x, trail[i0].y);
+                    for (let i = i0 + 1; i <= i1; i++) {
+                        const a = trail[i - 1], b = trail[i];
+                        if (Math.abs(b.x - a.x) + Math.abs(b.y - a.y) > maxJump) ctx.moveTo(b.x, b.y);
+                        else ctx.lineTo(b.x, b.y);
                     }
                     ctx.stroke();
                 }
+            }
 
-                // Glow
-                const glowGradient = ctx.createRadialGradient(
-                    ball.pos.x, ball.pos.y, 0,
-                    ball.pos.x, ball.pos.y, ball.radius * 2
-                );
-                glowGradient.addColorStop(0, ball.color + '60');
-                glowGradient.addColorStop(1, 'transparent');
-                ctx.fillStyle = glowGradient;
-                ctx.beginPath();
-                ctx.arc(ball.pos.x, ball.pos.y, ball.radius * 2, 0, Math.PI * 2);
-                ctx.fill();
+            drawBall(ball, viewTop = -Infinity, viewBottom = Infinity) {
+                const r = ball.radius;
+                if (ball.pos.y < viewTop - r * 3 || ball.pos.y > viewBottom + r * 3) return;
+                const ctx = this.ctx;
+                const x = ball.pos.x, y = ball.pos.y;
+                const sp = this.getMarbleSprites(ball.color, r);
+                const half = sp.half;
 
-                // Ball body
-                const ballGradient = ctx.createRadialGradient(
-                    ball.pos.x - ball.radius * 0.3, ball.pos.y - ball.radius * 0.3, 0,
-                    ball.pos.x, ball.pos.y, ball.radius
-                );
-                ballGradient.addColorStop(0, '#ffffff');
-                ballGradient.addColorStop(0.3, ball.color);
-                ballGradient.addColorStop(1, this.darkenColor(ball.color, 40));
-                
-                ctx.fillStyle = ballGradient;
-                ctx.beginPath();
-                ctx.arc(ball.pos.x, ball.pos.y, ball.radius, 0, Math.PI * 2);
-                ctx.fill();
+                // contact shadow
+                ctx.globalAlpha = 0.8;
+                ctx.drawImage(sp.shadow, x - half + r * 0.22, y - half + r * 0.4);
+                ctx.globalAlpha = 1;
 
-                // 유리 구슬 특유의 소용돌이 무늬
+                // colored glow
+                const glow = this.getGlowSprite(ball.color, r * 2.1);
+                ctx.globalAlpha = ball.finished ? 0.35 : 0.6;
+                ctx.drawImage(glow, x - glow.width / 2, y - glow.height / 2);
+                ctx.globalAlpha = 1;
+
+                // glass body + rolling inner swirl + fixed specular
+                ctx.drawImage(sp.body, x - half, y - half);
+                const roll = (x + y * 0.35) / Math.max(1, r);
                 ctx.save();
-                ctx.beginPath();
-                ctx.arc(ball.pos.x, ball.pos.y, ball.radius * 0.92, 0, Math.PI * 2);
-                ctx.clip();
-                ctx.strokeStyle = 'rgba(255,255,255,.68)';
-                ctx.lineWidth = Math.max(1.5, ball.radius * 0.2);
-                ctx.lineCap = 'round';
-                ctx.beginPath();
-                ctx.arc(ball.pos.x - ball.radius * 0.42, ball.pos.y + ball.radius * 0.08, ball.radius * 0.82, -1.18, 1.2);
-                ctx.stroke();
-                ctx.strokeStyle = 'rgba(255,255,255,.28)';
-                ctx.lineWidth = Math.max(1, ball.radius * 0.12);
-                ctx.beginPath();
-                ctx.arc(ball.pos.x + ball.radius * 0.4, ball.pos.y - ball.radius * 0.08, ball.radius * 0.72, 1.92, 4.45);
-                ctx.stroke();
+                ctx.translate(x, y);
+                ctx.rotate(roll);
+                ctx.drawImage(sp.swirl, -half, -half);
                 ctx.restore();
-                ctx.strokeStyle = 'rgba(255,255,255,.72)';
-                ctx.lineWidth = Math.max(1, ball.radius * 0.08);
-                ctx.beginPath();
-                ctx.arc(ball.pos.x, ball.pos.y, ball.radius, 0, Math.PI * 2);
-                ctx.stroke();
+                ctx.drawImage(sp.shine, x - half, y - half);
+            }
 
-                // Name - 구슬 오른쪽에 왼쪽 정렬로 표시 - 스케일 적용
-                const s = ball.scale || 1;
-                ctx.font = `bold ${Math.max(12 * s, ball.radius * 0.9)}px "Noto Sans KR"`;
-                ctx.fillStyle = '#fff';
+            drawBallLabels(balls, viewTop, viewBottom) {
+                const ctx = this.ctx;
                 ctx.textAlign = 'left';
                 ctx.textBaseline = 'middle';
-                ctx.strokeStyle = 'rgba(0, 0, 0, 0.6)';
-                ctx.lineWidth = 4 * s;
-
-                const shortName = ball.name.length > 6 ? ball.name.slice(0, 5) + '..' : ball.name;
-                const textX = ball.pos.x + ball.radius + 4 * s;  // 구슬 오른쪽으로 약간 띄움
-                ctx.strokeText(shortName, textX, ball.pos.y);  // 외곽선 먼저
-                ctx.fillText(shortName, textX, ball.pos.y);
+                ctx.lineJoin = 'round';
+                let lastFont = '';
+                for (const ball of balls) {
+                    const r = ball.radius;
+                    if (ball.pos.y < viewTop - r * 3 || ball.pos.y > viewBottom + r * 3) continue;
+                    // Name - 구슬 오른쪽에 왼쪽 정렬로 표시 - 스케일 적용
+                    const s = ball.scale || 1;
+                    const font = `bold ${Math.max(12 * s, r * 0.9)}px "Noto Sans KR"`;
+                    if (font !== lastFont) { ctx.font = font; lastFont = font; }
+                    const shortName = ball.name.length > 6 ? ball.name.slice(0, 5) + '..' : ball.name;
+                    const textX = ball.pos.x + r + 4 * s;  // 구슬 오른쪽으로 약간 띄움
+                    ctx.strokeStyle = 'rgba(5, 6, 20, 0.75)';
+                    ctx.lineWidth = 4 * s;
+                    ctx.strokeText(shortName, textX, ball.pos.y);  // 외곽선 먼저
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillText(shortName, textX, ball.pos.y);
+                }
             }
 
             darkenColor(color, percent) {

@@ -9,8 +9,8 @@
   "features": ["🎵 음악과 춤", "🪑 의자 경쟁"],
   "color": "purple",
   "badge": "NEW",
-  "version": "1.0.0",
-  "updated": "2025-01-16",
+  "version": "1.1.0",
+  "updated": "2026-11-24",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -738,17 +738,101 @@
         const ctx = canvas.getContext('2d');
         const backgroundCache = document.createElement('canvas');
         const backgroundCtx = backgroundCache.getContext('2d');
+        const alertCache = document.createElement('canvas');
         const chairSprite = document.createElement('canvas');
         const noteSprites = new Map();
+        const PARTY_COLORS = ['#a855f7', '#ec4899', '#f59e0b', '#22d3ee', '#34d399', '#f87171', '#60a5fa', '#facc15'];
+        const NOTE_COLORS = ['#f0abfc', '#67e8f9', '#fde68a', '#86efac', '#fda4af', '#c4b5fd'];
+        let sceneRedrawHook = null;
 
-        chairSprite.width = 80;
-        chairSprite.height = 80;
+        // 시각 효과 전용 결정적 난수 (게임 로직의 Math.random과 분리)
+        function visualRng(seed) {
+            let t = seed >>> 0;
+            return () => {
+                t += 0x6D2B79F5;
+                let r = Math.imul(t ^ (t >>> 15), 1 | t);
+                r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+                return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+
+        function roundRectPath(c, x, y, w, h, r) {
+            const rr = Math.min(r, w / 2, h / 2);
+            c.beginPath();
+            c.moveTo(x + rr, y);
+            c.arcTo(x + w, y, x + w, y + h, rr);
+            c.arcTo(x + w, y + h, x, y + h, rr);
+            c.arcTo(x, y + h, x, y, rr);
+            c.arcTo(x, y, x + w, y, rr);
+            c.closePath();
+        }
+
+        function makeCanvas(w, h) {
+            const c = document.createElement('canvas');
+            c.width = w;
+            c.height = h;
+            return c;
+        }
+
+        function makeGlowSprite(size, stops) {
+            const c = makeCanvas(size, size);
+            const g = c.getContext('2d');
+            const grad = g.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+            stops.forEach(([o, col]) => grad.addColorStop(o, col));
+            g.fillStyle = grad;
+            g.fillRect(0, 0, size, size);
+            return c;
+        }
+
+        // 파티 조명 스프라이트 (색상별 1회 생성)
+        const lightSprites = ['#c084fc', '#f472b6', '#22d3ee', '#fbbf24'].map(col =>
+            makeGlowSprite(256, [[0, col], [0.35, col + '88'], [1, col + '00']]));
+        const whiteSpot = makeGlowSprite(256, [[0, 'rgba(255,248,225,0.9)'], [0.5, 'rgba(255,240,210,0.35)'], [1, 'rgba(255,240,210,0)']]);
+        const shadowSprite = (() => {
+            const c = makeCanvas(64, 64);
+            const g = c.getContext('2d');
+            const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+            grad.addColorStop(0, 'rgba(0,0,0,0.55)');
+            grad.addColorStop(0.6, 'rgba(0,0,0,0.25)');
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            g.fillStyle = grad;
+            g.fillRect(0, 0, 64, 64);
+            return c;
+        })();
+
+        function makeHaloSprite(rgb) {
+            const c = makeCanvas(128, 128);
+            const g = c.getContext('2d');
+            const grad = g.createRadialGradient(64, 64, 18, 64, 64, 62);
+            grad.addColorStop(0, `rgba(${rgb},0.0)`);
+            grad.addColorStop(0.55, `rgba(${rgb},0.28)`);
+            grad.addColorStop(0.72, `rgba(${rgb},0.55)`);
+            grad.addColorStop(1, `rgba(${rgb},0)`);
+            g.fillStyle = grad;
+            g.fillRect(0, 0, 128, 128);
+            g.strokeStyle = `rgba(${rgb},0.9)`;
+            g.lineWidth = 2.5;
+            g.setLineDash([6, 5]);
+            g.beginPath();
+            g.arc(64, 64, 40, 0, Math.PI * 2);
+            g.stroke();
+            return c;
+        }
+        const haloGold = makeHaloSprite('251,191,36');
+        const haloGreen = makeHaloSprite('74,222,128');
+
+        chairSprite.width = 96;
+        chairSprite.height = 96;
         {
             const spriteCtx = chairSprite.getContext('2d');
-            spriteCtx.font = '50px Arial';
+            spriteCtx.drawImage(shadowSprite, 18, 62, 60, 22);
+            spriteCtx.font = '54px Arial';
             spriteCtx.textAlign = 'center';
             spriteCtx.textBaseline = 'middle';
-            spriteCtx.fillText('🪑', 40, 40);
+            spriteCtx.shadowColor = 'rgba(0,0,0,0.45)';
+            spriteCtx.shadowBlur = 6;
+            spriteCtx.shadowOffsetY = 3;
+            spriteCtx.fillText('🪑', 48, 46);
         }
 
         function getNoteSprite(note) {
@@ -757,8 +841,11 @@
             sprite.width = 42;
             sprite.height = 42;
             const spriteCtx = sprite.getContext('2d');
-            spriteCtx.font = '20px Arial';
-            spriteCtx.fillStyle = 'rgba(168, 85, 247, 0.8)';
+            const color = NOTE_COLORS[noteSprites.size % NOTE_COLORS.length];
+            spriteCtx.font = 'bold 22px Arial';
+            spriteCtx.fillStyle = color;
+            spriteCtx.shadowColor = color;
+            spriteCtx.shadowBlur = 8;
             spriteCtx.textAlign = 'center';
             spriteCtx.textBaseline = 'middle';
             spriteCtx.fillText(note, 21, 21);
@@ -767,16 +854,196 @@
         }
 
         function rebuildBackgroundCache() {
-            backgroundCache.width = canvas.width;
-            backgroundCache.height = canvas.height;
-            const gradient = backgroundCtx.createRadialGradient(
-                canvas.width / 2, canvas.height / 2, 0,
-                canvas.width / 2, canvas.height / 2, canvas.width / 2
-            );
-            gradient.addColorStop(0, '#1a1a2e');
-            gradient.addColorStop(1, '#0f0f1e');
-            backgroundCtx.fillStyle = gradient;
-            backgroundCtx.fillRect(0, 0, canvas.width, canvas.height);
+            const W = canvas.width;
+            const H = canvas.height;
+            backgroundCache.width = W;
+            backgroundCache.height = H;
+            alertCache.width = W;
+            alertCache.height = H;
+            if (!W || !H) return;
+            const b = backgroundCtx;
+            const rand = visualRng(20261124);
+
+            // 1) 원목 마루
+            b.fillStyle = '#2a1709';
+            b.fillRect(0, 0, W, H);
+            const plankH = Math.max(22, Math.round(Math.min(W, H) / 20));
+            for (let y = 0; y < H; y += plankH) {
+                let x = -rand() * 420;
+                while (x < W) {
+                    const len = 280 + rand() * 260;
+                    const l = 31 + rand() * 8;
+                    const hue = 25 + rand() * 7;
+                    const g = b.createLinearGradient(0, y, 0, y + plankH);
+                    g.addColorStop(0, `hsl(${hue}, 52%, ${l + 3}%)`);
+                    g.addColorStop(1, `hsl(${hue}, 55%, ${l - 3}%)`);
+                    b.fillStyle = g;
+                    b.fillRect(x + 0.5, y + 0.5, len - 1, plankH - 1);
+                    b.strokeStyle = 'rgba(40, 18, 6, 0.22)';
+                    b.lineWidth = 1;
+                    for (let k = 0; k < 4; k++) {
+                        const gy = y + 4 + rand() * (plankH - 8);
+                        b.beginPath();
+                        b.moveTo(x + 5, gy);
+                        b.bezierCurveTo(x + len * 0.3, gy + (rand() - 0.5) * 7, x + len * 0.7, gy + (rand() - 0.5) * 7, x + len - 6, gy + (rand() - 0.5) * 3);
+                        b.stroke();
+                    }
+                    if (rand() < 0.25) {
+                        b.fillStyle = 'rgba(50, 22, 8, 0.25)';
+                        b.beginPath();
+                        b.ellipse(x + len * (0.2 + rand() * 0.6), y + plankH / 2, 5, 2.5, 0, 0, Math.PI * 2);
+                        b.fill();
+                    }
+                    b.fillStyle = 'rgba(255, 225, 180, 0.08)';
+                    b.fillRect(x + 1, y + 1, len - 2, 1.5);
+                    x += len;
+                }
+            }
+
+            // 2) 파티룸 분위기 색감
+            b.fillStyle = 'rgba(40, 10, 70, 0.3)';
+            b.fillRect(0, 0, W, H);
+
+            // 3) 중앙 원형 러그
+            const cx = W / 2;
+            const cy = H * 0.54;
+            const R = Math.min(W * 0.44, H * 0.4);
+            b.save();
+            b.shadowColor = 'rgba(0, 0, 0, 0.55)';
+            b.shadowBlur = 28;
+            b.shadowOffsetY = 10;
+            b.fillStyle = '#3b0f6b';
+            b.beginPath();
+            b.arc(cx, cy, R, 0, Math.PI * 2);
+            b.fill();
+            b.restore();
+            const rug = b.createRadialGradient(cx, cy - R * 0.2, R * 0.1, cx, cy, R);
+            rug.addColorStop(0, '#8b3fd9');
+            rug.addColorStop(0.6, '#5b21b6');
+            rug.addColorStop(1, '#2e0f5c');
+            b.fillStyle = rug;
+            b.beginPath();
+            b.arc(cx, cy, R - 4, 0, Math.PI * 2);
+            b.fill();
+            b.save();
+            b.beginPath();
+            b.arc(cx, cy, R - 4, 0, Math.PI * 2);
+            b.clip();
+            for (let i = 0; i < 16; i++) {
+                const a0 = (i / 16) * Math.PI * 2;
+                const a1 = a0 + Math.PI / 16;
+                b.fillStyle = i % 2 ? 'rgba(255,255,255,0.035)' : 'rgba(236,72,153,0.07)';
+                b.beginPath();
+                b.moveTo(cx, cy);
+                b.arc(cx, cy, R, a0, a1);
+                b.closePath();
+                b.fill();
+            }
+            b.restore();
+            b.lineWidth = Math.max(4, R * 0.025);
+            b.strokeStyle = '#e8b04a';
+            b.beginPath();
+            b.arc(cx, cy, R - 4, 0, Math.PI * 2);
+            b.stroke();
+            b.lineWidth = 2;
+            b.strokeStyle = 'rgba(253, 224, 71, 0.55)';
+            b.setLineDash([10, 8]);
+            b.beginPath();
+            b.arc(cx, cy, R * 0.8, 0, Math.PI * 2);
+            b.stroke();
+            b.setLineDash([]);
+            b.strokeStyle = 'rgba(253, 224, 71, 0.35)';
+            b.beginPath();
+            b.arc(cx, cy, R * 0.34, 0, Math.PI * 2);
+            b.stroke();
+            // 러그 중앙 별 문양
+            b.fillStyle = 'rgba(253, 224, 71, 0.16)';
+            b.beginPath();
+            for (let i = 0; i < 10; i++) {
+                const rr = i % 2 ? R * 0.11 : R * 0.27;
+                const a = -Math.PI / 2 + (i / 10) * Math.PI * 2;
+                b.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr);
+            }
+            b.closePath();
+            b.fill();
+            // 술 장식
+            b.strokeStyle = 'rgba(232, 176, 74, 0.7)';
+            b.lineWidth = 1.5;
+            const fringe = Math.floor(R * 0.7);
+            for (let i = 0; i < fringe; i++) {
+                const a = (i / fringe) * Math.PI * 2;
+                b.beginPath();
+                b.moveTo(cx + Math.cos(a) * (R - 1), cy + Math.sin(a) * (R - 1));
+                b.lineTo(cx + Math.cos(a) * (R + 5), cy + Math.sin(a) * (R + 5));
+                b.stroke();
+            }
+
+            // 4) 천장 조명 + 비네팅
+            b.save();
+            b.globalCompositeOperation = 'lighter';
+            const top = b.createRadialGradient(cx, -H * 0.15, 0, cx, -H * 0.15, H * 1.05);
+            top.addColorStop(0, 'rgba(255, 236, 200, 0.16)');
+            top.addColorStop(1, 'rgba(255, 236, 200, 0)');
+            b.fillStyle = top;
+            b.fillRect(0, 0, W, H);
+            b.restore();
+            const vig = b.createRadialGradient(cx, cy, Math.min(W, H) * 0.35, cx, cy, Math.hypot(W, H) * 0.62);
+            vig.addColorStop(0, 'rgba(6, 2, 14, 0)');
+            vig.addColorStop(1, 'rgba(6, 2, 14, 0.82)');
+            b.fillStyle = vig;
+            b.fillRect(0, 0, W, H);
+
+            // 5) 상단 가랜드 (깃발 + 전구)
+            const sag = Math.min(26, H * 0.04);
+            const lineY = (x) => 6 + Math.sin((x / W) * Math.PI) * sag;
+            b.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+            b.lineWidth = 1.5;
+            b.beginPath();
+            for (let x = 0; x <= W; x += 8) b.lineTo(x, lineY(x));
+            b.stroke();
+            const flagGap = 34;
+            for (let i = 0, x = 12; x < W - 6; i++, x += flagGap) {
+                const y0 = lineY(x);
+                const x1 = x + 22;
+                const y1 = lineY(x1);
+                const col = PARTY_COLORS[i % PARTY_COLORS.length];
+                const fg = b.createLinearGradient(x, y0, x + 11, y0 + 24);
+                fg.addColorStop(0, col);
+                fg.addColorStop(1, 'rgba(20,10,30,0.9)');
+                b.fillStyle = fg;
+                b.beginPath();
+                b.moveTo(x, y0);
+                b.lineTo(x1, y1);
+                b.lineTo(x + 11, (y0 + y1) / 2 + 22);
+                b.closePath();
+                b.fill();
+                const bx = x + 28;
+                const by = lineY(bx) + 3;
+                const bulb = PARTY_COLORS[(i + 3) % PARTY_COLORS.length];
+                b.save();
+                b.globalCompositeOperation = 'lighter';
+                b.globalAlpha = 0.55;
+                b.drawImage(makeBulbGlow(bulb), bx - 12, by - 12, 24, 24);
+                b.restore();
+                b.fillStyle = '#fff8e1';
+                b.beginPath();
+                b.arc(bx, by, 2.2, 0, Math.PI * 2);
+                b.fill();
+            }
+
+            // 6) "음악 멈춤" 경고용 붉은 가장자리
+            const a = alertCache.getContext('2d');
+            const ag = a.createRadialGradient(cx, H / 2, Math.min(W, H) * 0.3, cx, H / 2, Math.hypot(W, H) * 0.6);
+            ag.addColorStop(0, 'rgba(239, 68, 68, 0)');
+            ag.addColorStop(1, 'rgba(239, 68, 68, 0.55)');
+            a.fillStyle = ag;
+            a.fillRect(0, 0, W, H);
+        }
+
+        const bulbGlowCache = new Map();
+        function makeBulbGlow(col) {
+            if (!bulbGlowCache.has(col)) bulbGlowCache.set(col, makeGlowSprite(32, [[0, col], [1, col + '00']]));
+            return bulbGlowCache.get(col);
         }
 
         // 반응형 캔버스 크기
@@ -785,6 +1052,7 @@
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
             rebuildBackgroundCache();
+            if (sceneRedrawHook) sceneRedrawHook();
         }
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
@@ -802,6 +1070,7 @@
         let stateStartTime = 0; // 상태 시작 시간
         let animationFrameId = 0;
         let winnerTimer = null;
+        let winnerScreenShown = false;
         let lastFrameTime = 0;
         let physicsAccumulator = 0;
         let targetRefreshTick = 0;
@@ -823,16 +1092,24 @@
                 this.occupied = false;
                 this.occupiedBy = null;
                 this.emoji = '🪑';
+                this.bornAt = performance.now();
             }
 
-            draw() {
-                if (this.occupied) ctx.globalAlpha = 0.5;
-                ctx.drawImage(chairSprite, this.x - 40, this.y - 40);
+            draw(now) {
+                const t = Math.min(1, (now - this.bornAt) / 280);
+                const pop = t < 1 ? 1 + 2.4 * Math.pow(t - 1, 3) + 1.4 * Math.pow(t - 1, 2) : 1;
+                const pulse = this.occupied ? 1 : 1 + Math.sin(now / 110) * 0.06;
+                const hs = 92 * pop * pulse;
+                ctx.globalAlpha = this.occupied ? 0.9 : 0.75 + Math.sin(now / 110) * 0.2;
+                ctx.drawImage(this.occupied ? haloGreen : haloGold, this.x - hs / 2, this.y - hs / 2 + 8, hs, hs);
                 ctx.globalAlpha = 1;
+                const cs = 88 * pop;
+                ctx.drawImage(chairSprite, this.x - cs / 2, this.y - cs / 2, cs, cs);
             }
         }
 
         // Participant 클래스
+        let outfitSeq = 0;
         class Participant {
             constructor(name) {
                 this.name = name;
@@ -842,9 +1119,10 @@
                 this.musicNote = musicNotes[Math.floor(Math.random() * musicNotes.length)];
                 this.musicNoteOffset = Math.random() * Math.PI * 2;
                 this.targetChair = null;
+                this.outfit = PARTY_COLORS[outfitSeq++ % PARTY_COLORS.length];
                 this.sprite = document.createElement('canvas');
-                this.sprite.width = 220;
-                this.sprite.height = 104;
+                this.sprite.width = 124;
+                this.sprite.height = 116;
                 this.buildSprite();
                 
                 const radius = 20;
@@ -869,18 +1147,74 @@
             }
 
             buildSprite() {
-                const spriteCtx = this.sprite.getContext('2d');
-                spriteCtx.clearRect(0, 0, this.sprite.width, this.sprite.height);
-                spriteCtx.font = '40px Arial';
-                spriteCtx.textAlign = 'center';
-                spriteCtx.textBaseline = 'middle';
-                spriteCtx.fillText(this.emoji, 110, 48);
-                spriteCtx.font = 'bold 14px "Noto Sans KR"';
-                spriteCtx.fillStyle = '#fff';
-                spriteCtx.strokeStyle = '#000';
-                spriteCtx.lineWidth = 3;
-                spriteCtx.strokeText(this.name, 110, 85, 210);
-                spriteCtx.fillText(this.name, 110, 85, 210);
+                const g = this.sprite.getContext('2d');
+                g.clearRect(0, 0, this.sprite.width, this.sprite.height);
+                const cx = 62;
+                const col = this.outfit;
+                // 다리 + 신발
+                g.fillStyle = '#1f1b33';
+                roundRectPath(g, cx - 9, 73, 7, 13, 3); g.fill();
+                roundRectPath(g, cx + 2, 73, 7, 13, 3); g.fill();
+                g.fillStyle = '#f1f5f9';
+                g.beginPath(); g.ellipse(cx - 6.5, 86, 5.5, 2.8, 0, 0, Math.PI * 2); g.fill();
+                g.beginPath(); g.ellipse(cx + 6.5, 86, 5.5, 2.8, 0, 0, Math.PI * 2); g.fill();
+                // 팔 (파티 포즈: 한 팔 번쩍, 한 팔 옆으로)
+                g.lineCap = 'round';
+                g.lineWidth = 6.5;
+                g.strokeStyle = col;
+                g.beginPath(); g.moveTo(cx - 10, 62); g.quadraticCurveTo(cx - 20, 58, cx - 23, 47); g.stroke();
+                g.beginPath(); g.moveTo(cx + 10, 62); g.quadraticCurveTo(cx + 19, 66, cx + 24, 72); g.stroke();
+                g.strokeStyle = 'rgba(0,0,0,0.25)';
+                g.lineWidth = 2;
+                g.beginPath(); g.moveTo(cx + 12, 65); g.quadraticCurveTo(cx + 19, 69, cx + 23, 74); g.stroke();
+                g.fillStyle = '#ffd3a6';
+                g.beginPath(); g.arc(cx - 23.5, 45.5, 3.6, 0, Math.PI * 2); g.fill();
+                g.beginPath(); g.arc(cx + 24.5, 73, 3.6, 0, Math.PI * 2); g.fill();
+                // 몸통 (그라데이션 음영)
+                roundRectPath(g, cx - 12.5, 56, 25, 22, 8);
+                g.fillStyle = col;
+                g.fill();
+                const shade = g.createLinearGradient(cx - 12, 56, cx + 12, 78);
+                shade.addColorStop(0, 'rgba(255,255,255,0.35)');
+                shade.addColorStop(0.45, 'rgba(255,255,255,0)');
+                shade.addColorStop(1, 'rgba(0,0,0,0.35)');
+                g.fillStyle = shade;
+                g.fill();
+                g.strokeStyle = 'rgba(0,0,0,0.35)';
+                g.lineWidth = 1;
+                g.stroke();
+                // 칼라 + 나비넥타이
+                g.fillStyle = '#ffffff';
+                g.beginPath(); g.moveTo(cx - 6, 57); g.lineTo(cx, 63); g.lineTo(cx + 6, 57); g.closePath(); g.fill();
+                g.fillStyle = '#facc15';
+                g.beginPath(); g.moveTo(cx, 63); g.lineTo(cx - 4.5, 60.5); g.lineTo(cx - 4.5, 65.5); g.closePath(); g.fill();
+                g.beginPath(); g.moveTo(cx, 63); g.lineTo(cx + 4.5, 60.5); g.lineTo(cx + 4.5, 65.5); g.closePath(); g.fill();
+                // 얼굴 (이모지)
+                g.save();
+                g.shadowColor = 'rgba(0,0,0,0.4)';
+                g.shadowBlur = 4;
+                g.shadowOffsetY = 2;
+                g.font = '36px Arial';
+                g.textAlign = 'center';
+                g.textBaseline = 'middle';
+                g.fillText(this.emoji, cx, 42);
+                g.restore();
+                // 이름표
+                g.font = 'bold 12px "Noto Sans KR", sans-serif';
+                g.textAlign = 'center';
+                g.textBaseline = 'middle';
+                const tw = Math.min(g.measureText(this.name).width, 104);
+                const pw = tw + 14;
+                roundRectPath(g, cx - pw / 2, 92, pw, 18, 9);
+                g.fillStyle = 'rgba(14, 8, 28, 0.82)';
+                g.fill();
+                g.strokeStyle = col;
+                g.globalAlpha = 0.8;
+                g.lineWidth = 1.2;
+                g.stroke();
+                g.globalAlpha = 1;
+                g.fillStyle = '#fff';
+                g.fillText(this.name, cx, 101.5, 104);
             }
 
             update(dtScale = 1) {
@@ -959,32 +1293,69 @@
                 }
             }
 
-            draw() {
-                ctx.save();
-                
-                const x = this.body.position.x;
-                const y = this.body.position.y;
+            // 화면 표시 위치 (물리 좌표는 그대로, 그림만 화면 안쪽으로 보정)
+            getDrawPos() {
+                let x = this.body.position.x;
+                let y = this.body.position.y;
+                if (!this.eliminated) {
+                    x = Math.max(26, Math.min(canvas.width - 26, x));
+                    y = Math.max(40, Math.min(canvas.height - 52, y));
+                }
+                return { x, y };
+            }
+
+            isOffscreen() {
+                const { x, y } = this.body.position;
+                return x < -80 || y < -80 || x > canvas.width + 80 || y > canvas.height + 80;
+            }
+
+            getPose(now) {
+                const dancing = (gameState === 'dancing' || gameState === 'chair_wait') && !this.eliminated;
+                const seated = gameState === 'musical_chairs' && this.groupJoined && !this.eliminated;
+                let bob = 0;
+                let tilt = 0;
+                if (dancing) {
+                    const ph = this.musicNoteOffset * 2.2;
+                    bob = Math.abs(Math.sin(ph)) * 5;
+                    tilt = Math.sin(ph) * 0.15;
+                } else if (!seated) {
+                    const ph = now / 70 + this.musicNoteOffset;
+                    bob = Math.abs(Math.sin(ph)) * 3;
+                    tilt = Math.sin(ph) * 0.07;
+                }
+                return { dancing, seated, bob, tilt };
+            }
+
+            drawShadow(now) {
+                if (this.eliminated && this.isOffscreen()) return;
+                const pose = this.getPose(now);
+                if (pose.seated) return;
+                const { x, y } = this.getDrawPos();
+                const s = (1 - pose.bob * 0.04) * (canvas.width < 560 ? 0.84 : 1);
+                ctx.globalAlpha = this.eliminated ? 0.25 : 0.9;
+                ctx.drawImage(shadowSprite, x - 22 * s, y + 18, 44 * s, 14 * s);
+                ctx.globalAlpha = 1;
+            }
+
+            draw(now = performance.now()) {
+                if (this.eliminated && this.isOffscreen()) return;
+                const { x, y } = this.getDrawPos();
+                const pose = this.getPose(now);
+
+                ctx.globalAlpha = this.eliminated ? 0.35 : 1;
+                const k = canvas.width < 560 ? 0.84 : 1;
+                ctx.setTransform(k, 0, 0, k, x, y - (pose.bob + (pose.seated ? 14 : 0)) * k);
+                if (pose.tilt) ctx.rotate(pose.tilt);
+                ctx.drawImage(this.sprite, -62, -62);
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.globalAlpha = 1;
 
                 // 음표 그리기 (춤추는 중일 때)
-                if ((gameState === 'dancing' || gameState === 'chair_wait') && !this.eliminated) {
+                if (pose.dancing) {
                     const noteX = x + Math.cos(this.musicNoteOffset) * 30;
-                    const noteY = y - 40 + Math.sin(this.musicNoteOffset) * 10;
+                    const noteY = y - 44 + Math.sin(this.musicNoteOffset) * 10;
                     ctx.drawImage(getNoteSprite(this.musicNote), noteX - 21, noteY - 21);
                 }
-
-                // 의자에 앉은 표시
-                if (gameState === 'musical_chairs' && this.groupJoined && !this.eliminated) {
-                    ctx.strokeStyle = 'rgba(168, 85, 247, 0.8)';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.arc(x, y, 25, 0, Math.PI * 2);
-                    ctx.stroke();
-                }
-
-                ctx.globalAlpha = this.eliminated ? 0.3 : 1;
-                ctx.drawImage(this.sprite, x - 110, y - 52);
-
-                ctx.restore();
             }
 
             destroy() {
@@ -1258,26 +1629,8 @@
             copyResultBtn.disabled = false;
             soundManager.stopMusic();
             soundManager.playWin();
-            const winners = participants.filter(p => !p.eliminated);
-            
-            ctx.save();
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.font = 'bold 48px "Noto Sans KR"';
-            ctx.fillStyle = '#a855f7';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('🏆 우승자', canvas.width / 2, canvas.height / 3);
-
-            ctx.font = 'bold 36px "Noto Sans KR"';
-            ctx.fillStyle = '#fff';
-            const startY = canvas.height / 2;
-            winners.forEach((winner, i) => {
-                ctx.fillText(`${winner.emoji} ${winner.name}`, canvas.width / 2, startY + i * 50);
-            });
-
-            ctx.restore();
+            winnerScreenShown = true;
+            drawWinnerScreen();
         }
 
         function simulateStep() {
@@ -1291,28 +1644,243 @@
             }
         }
 
+        const renderOrder = [];
+
+        function drawPartyLights(now) {
+            const W = canvas.width;
+            const H = canvas.height;
+            const t = now / 1000;
+            ctx.save();
+            if (gameState === 'dancing') {
+                ctx.globalCompositeOperation = 'lighter';
+                const r = Math.max(W, H) * 0.3;
+                for (let i = 0; i < lightSprites.length; i++) {
+                    const sx = W * (0.5 + 0.4 * Math.sin(t * 0.65 + i * 1.7));
+                    const sy = H * (0.52 + 0.36 * Math.cos(t * 0.85 + i * 2.3));
+                    ctx.globalAlpha = 0.2 + 0.06 * Math.sin(t * 6 + i);
+                    ctx.drawImage(lightSprites[i], sx - r, sy - r, r * 2, r * 2);
+                }
+            } else {
+                // 음악 멈춤: 하얀 스포트라이트 + 붉은 경고 가장자리
+                ctx.globalCompositeOperation = 'lighter';
+                const r = Math.min(W, H) * 0.55;
+                ctx.globalAlpha = 0.14;
+                ctx.drawImage(whiteSpot, W / 2 - r, H * 0.54 - r, r * 2, r * 2);
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = 0.55 + 0.35 * Math.sin(now / 90);
+                ctx.drawImage(alertCache, 0, 0);
+            }
+            ctx.restore();
+        }
+
+        function drawHud(now) {
+            const H = canvas.height;
+            let alive = 0;
+            for (const p of participants) if (!p.eliminated) alive++;
+            const playing = gameState === 'dancing';
+            const label = playing ? '음악 재생 중' : '음악 멈춤!';
+            const info = chairs.length ? `생존 ${alive}명 · 의자 ${chairs.length}개` : `생존 ${alive}명`;
+            ctx.save();
+            ctx.font = 'bold 13px "Noto Sans KR", sans-serif';
+            ctx.textBaseline = 'middle';
+            const w1 = ctx.measureText(label).width + 58;
+            ctx.font = '600 12px "Noto Sans KR", sans-serif';
+            const w2 = ctx.measureText(info).width + 22;
+            const x = 14;
+            const y = H - (canvas.width < 560 ? 66 : 46);
+            roundRectPath(ctx, x, y, w1, 30, 15);
+            ctx.fillStyle = playing ? 'rgba(76, 29, 149, 0.82)' : 'rgba(153, 27, 27, 0.88)';
+            ctx.fill();
+            ctx.strokeStyle = playing ? 'rgba(216, 180, 254, 0.55)' : 'rgba(254, 202, 202, 0.7)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            // 이퀄라이저 / 정지 아이콘
+            if (playing) {
+                ctx.fillStyle = '#f0abfc';
+                for (let i = 0; i < 4; i++) {
+                    const h = 5 + Math.abs(Math.sin(now / 130 + i * 1.3)) * 11;
+                    ctx.fillRect(x + 12 + i * 6, y + 15 + 8 - h, 4, h);
+                }
+            } else {
+                ctx.fillStyle = '#fecaca';
+                roundRectPath(ctx, x + 14, y + 8, 14, 14, 3);
+                ctx.fill();
+            }
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 13px "Noto Sans KR", sans-serif';
+            ctx.fillText(label, x + 44, y + 15.5);
+            roundRectPath(ctx, x + w1 + 8, y + 3, w2, 24, 12);
+            ctx.fillStyle = 'rgba(10, 6, 22, 0.72)';
+            ctx.fill();
+            ctx.fillStyle = '#e9d5ff';
+            ctx.font = '600 12px "Noto Sans KR", sans-serif';
+            ctx.fillText(info, x + w1 + 19, y + 15.5);
+            ctx.restore();
+        }
+
+        function drawSitBanner(now) {
+            const W = canvas.width;
+            const age = Date.now() - stateStartTime;
+            const size = Math.max(34, Math.min(76, W * 0.12));
+            const pop = age < 260 ? 1 + 0.35 * (1 - age / 260) : 1 + Math.sin(now / 120) * 0.025;
+            ctx.save();
+            ctx.translate(W / 2, 46 + size * 0.55);
+            ctx.scale(pop, pop);
+            ctx.font = `900 ${size}px "Noto Sans KR", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = size * 0.14;
+            ctx.strokeStyle = '#2e1065';
+            ctx.shadowColor = 'rgba(236, 72, 153, 0.85)';
+            ctx.shadowBlur = 22;
+            ctx.strokeText('앉으세요!', 0, 0);
+            ctx.shadowBlur = 0;
+            const g = ctx.createLinearGradient(0, -size / 2, 0, size / 2);
+            g.addColorStop(0, '#fff7cc');
+            g.addColorStop(0.5, '#fbbf24');
+            g.addColorStop(1, '#f472b6');
+            ctx.fillStyle = g;
+            ctx.fillText('앉으세요!', 0, 0);
+            ctx.restore();
+        }
+
         function renderGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const now = performance.now();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.drawImage(backgroundCache, 0, 0);
+            drawPartyLights(now);
 
             if (gameState === 'chair_wait' || gameState === 'musical_chairs') {
-                chairs.forEach(chair => chair.draw());
+                chairs.forEach(chair => chair.draw(now));
             }
 
-            participants.forEach(p => p.draw());
+            renderOrder.length = 0;
+            for (const p of participants) renderOrder.push(p);
+            renderOrder.sort((a, b) => a.body.position.y - b.body.position.y);
+            for (const p of renderOrder) p.drawShadow(now);
+            for (const p of renderOrder) p.draw(now);
 
-            if (gameState === 'musical_chairs') {
+            drawHud(now);
+            if (gameState === 'musical_chairs') drawSitBanner(now);
+        }
+
+        function drawIdleScreen() {
+            const W = canvas.width;
+            const H = canvas.height;
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.drawImage(backgroundCache, 0, 0);
+            if (!W || !H) return;
+            const cx = W / 2;
+            const cy = H * 0.54;
+            const R = Math.min(W * 0.44, H * 0.4);
+            // 러그 둘레에 의자 장식
+            const n = 8;
+            for (let i = 0; i < n; i++) {
+                const a = -Math.PI / 2 + (i / n) * Math.PI * 2;
+                const x = cx + Math.cos(a) * R * 0.8;
+                const y = cy + Math.sin(a) * R * 0.8;
+                ctx.globalAlpha = 0.6;
+                ctx.drawImage(haloGold, x - 40, y - 32, 80, 80);
+                ctx.globalAlpha = 1;
+                ctx.drawImage(chairSprite, x - 38, y - 38, 76, 76);
+            }
+            const r = Math.min(W, H) * 0.45;
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.globalAlpha = 0.18;
+            ctx.drawImage(whiteSpot, cx - r, cy - r, r * 2, r * 2);
+            ctx.restore();
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const size = Math.max(26, Math.min(46, W * 0.075));
+            ctx.font = `900 ${size}px "Noto Sans KR", sans-serif`;
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = size * 0.16;
+            ctx.strokeStyle = '#2e1065';
+            ctx.strokeText('🪑 의자 뺏기', cx, cy - size * 0.35);
+            const g = ctx.createLinearGradient(0, cy - size, 0, cy);
+            g.addColorStop(0, '#ffffff');
+            g.addColorStop(1, '#f0abfc');
+            ctx.fillStyle = g;
+            ctx.fillText('🪑 의자 뺏기', cx, cy - size * 0.35);
+            const sub = Math.max(12, Math.min(16, W * 0.032));
+            ctx.font = `700 ${sub}px "Noto Sans KR", sans-serif`;
+            ctx.fillStyle = 'rgba(255, 240, 255, 0.85)';
+            ctx.fillText('음악이 멈추면 빈 의자를 차지하세요!', cx, cy + size * 0.55);
+            ctx.restore();
+        }
+
+        function drawWinnerScreen() {
+            const W = canvas.width;
+            const H = canvas.height;
+            const winners = participants.filter(p => !p.eliminated);
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.drawImage(backgroundCache, 0, 0);
+            ctx.fillStyle = 'rgba(8, 3, 20, 0.62)';
+            ctx.fillRect(0, 0, W, H);
+            const r = Math.min(W, H) * 0.6;
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.globalAlpha = 0.3;
+            ctx.drawImage(lightSprites[0], W / 2 - r, H * 0.45 - r, r * 2, r * 2);
+            ctx.globalAlpha = 0.22;
+            ctx.drawImage(whiteSpot, W / 2 - r * 0.6, H * 0.4 - r * 0.6, r * 1.2, r * 1.2);
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.globalAlpha = 1;
+            // 정적 꽃가루
+            const rand = visualRng(7 + winners.length);
+            for (let i = 0; i < 90; i++) {
                 ctx.save();
-                ctx.font = 'bold 80px "Noto Sans KR"';
-                ctx.fillStyle = '#fff';
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 5;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.strokeText('앉으세요!', canvas.width / 2, 80);
-                ctx.fillText('앉으세요!', canvas.width / 2, 80);
+                ctx.translate(rand() * W, rand() * H);
+                ctx.rotate(rand() * Math.PI);
+                ctx.fillStyle = PARTY_COLORS[i % PARTY_COLORS.length];
+                ctx.globalAlpha = 0.55 + rand() * 0.4;
+                ctx.fillRect(-4, -2, 8, 4);
                 ctx.restore();
             }
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const titleY = H * (W < 560 ? 0.4 : 0.26);
+            const titleSize = Math.max(30, Math.min(52, W * 0.09));
+            ctx.font = `900 ${titleSize}px "Noto Sans KR", sans-serif`;
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = titleSize * 0.14;
+            ctx.strokeStyle = '#2e1065';
+            ctx.shadowColor = 'rgba(250, 204, 21, 0.7)';
+            ctx.shadowBlur = 24;
+            ctx.strokeText('🏆 우승자', W / 2, titleY);
+            ctx.shadowBlur = 0;
+            const tg = ctx.createLinearGradient(0, titleY - titleSize / 2, 0, titleY + titleSize / 2);
+            tg.addColorStop(0, '#fff7cc');
+            tg.addColorStop(1, '#f59e0b');
+            ctx.fillStyle = tg;
+            ctx.fillText('🏆 우승자', W / 2, titleY);
+
+            const top = titleY + titleSize * 1.1;
+            const avail = H * 0.92 - top;
+            const lineH = Math.min(62, avail / Math.max(1, winners.length));
+            const fs = Math.max(14, Math.min(32, lineH * 0.55));
+            ctx.font = `800 ${fs}px "Noto Sans KR", sans-serif`;
+            winners.forEach((winner, i) => {
+                const text = `${winner.emoji} ${winner.name}`;
+                const y = top + lineH * (i + 0.5);
+                const w = Math.min(W - 32, ctx.measureText(text).width + fs * 1.6);
+                roundRectPath(ctx, W / 2 - w / 2, y - lineH * 0.42, w, lineH * 0.84, lineH * 0.42);
+                const cg = ctx.createLinearGradient(W / 2 - w / 2, 0, W / 2 + w / 2, 0);
+                cg.addColorStop(0, 'rgba(124, 58, 237, 0.85)');
+                cg.addColorStop(1, 'rgba(219, 39, 119, 0.85)');
+                ctx.fillStyle = cg;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(253, 224, 71, 0.75)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.fillStyle = '#fff';
+                ctx.fillText(text, W / 2, y + 1, W - 48);
+            });
+            ctx.restore();
         }
 
         function updateGameState() {
@@ -1411,6 +1979,7 @@
             }
 
             clearTimeout(winnerTimer);
+            winnerScreenShown = false;
             copyResultBtn.disabled = true;
             soundManager.init();
             if (window.innerWidth <= 768) requestAnimationFrame(() => {
@@ -1459,8 +2028,8 @@
             startBtn.disabled = false;
             rankingList.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 20px;">게임을 시작하세요!</div>';
             
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(backgroundCache, 0, 0);
+            winnerScreenShown = false;
+            drawIdleScreen();
         });
 
         // 결과 복사
@@ -1491,6 +2060,15 @@
                 alert('결과를 복사하지 못했습니다.');
             }
         });
+
+        // 리사이즈/폰트 로딩 후 대기 화면 다시 그리기
+        sceneRedrawHook = () => {
+            if (gameState !== 'idle') return;
+            if (winnerScreenShown) drawWinnerScreen();
+            else if (participants.length === 0) drawIdleScreen();
+            else renderGame();
+        };
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => sceneRedrawHook());
 
         // 초기 화면
         resetBtn.click();

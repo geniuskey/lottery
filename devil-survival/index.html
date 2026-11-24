@@ -10,8 +10,8 @@
   "features": ["🔥 돌진 액션", "😈 악마 시스템"],
   "color": "purple",
   "badge": "NEW",
-  "version": "1.0.0",
-  "updated": "2026-01-12",
+  "version": "1.1.0",
+  "updated": "2026-11-24",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -435,7 +435,7 @@
       justify-content: center;
       padding: 20px;
       position: relative;
-      background: radial-gradient(ellipse at center, #2a052a 0%, var(--bg-dark) 100%);
+      background: radial-gradient(ellipse at center, #2a0808 0%, #120304 55%, var(--bg-dark) 100%);
     }
 
     .game-status {
@@ -468,6 +468,8 @@
       border-radius: 4px;
       box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5);
     }
+
+    .boxing-ring, .corner-post { display: none !important; }
 
     .corner-post {
       position: absolute;
@@ -1040,25 +1042,439 @@
       let eliminatedParticipants = [];
       const soundManager = new SoundManager();
 
+      // ===== Visual layer (render-only; never touches game RNG/logic) =====
+      let viewW = 0, viewH = 0, viewDpr = 1;
+      let bgCanvas = null, lavaCanvas = null;
+      const spriteCache = new Map();
+      const labelCache = new Map();
+      let fxParticles = [];
+      let embers = [];
+      let devilTrail = [];
+      let screenShake = 0;
+      let lastDrawTime = 0;
+      let crackPaths = [];
+
+      function visRng(seed) {
+        let a = seed >>> 0;
+        return function() {
+          a = (a + 0x6D2B79F5) >>> 0;
+          let t = a;
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      let fxRand = visRng(20261124);
+
+      function makeCanvas(w, h) {
+        const c = document.createElement('canvas');
+        c.width = Math.max(1, Math.ceil(w * viewDpr));
+        c.height = Math.max(1, Math.ceil(h * viewDpr));
+        const g = c.getContext('2d');
+        g.setTransform(viewDpr, 0, 0, viewDpr, 0, 0);
+        return { c, g };
+      }
+
+      function rimThickness() {
+        return Math.max(6, Math.min(16, ringBounds.w * 0.026, ringBounds.x - 6));
+      }
+
+      function buildBackground() {
+        const W = viewW, H = viewH, R = ringBounds;
+        const rnd = visRng(1337);
+        const { c, g } = makeCanvas(W, H);
+        const t = rimThickness();
+
+        // Surroundings: scorched volcanic rock
+        const sg = g.createRadialGradient(W / 2, H / 2, R.w * 0.3, W / 2, H / 2, Math.max(W, H) * 0.75);
+        sg.addColorStop(0, 'rgba(60,12,10,0.9)');
+        sg.addColorStop(0.55, 'rgba(30,6,6,0.5)');
+        sg.addColorStop(1, 'rgba(10,2,2,0)');
+        g.fillStyle = sg;
+        g.fillRect(0, 0, W, H);
+        for (let i = 0; i < 140; i++) {
+          const x = rnd() * W, y = rnd() * H, r = 3 + rnd() * 18;
+          const fade = Math.max(0, 1 - Math.hypot(x - W / 2, y - H / 2) / (Math.max(W, H) * 0.6));
+          g.fillStyle = `rgba(${rnd() < 0.5 ? '0,0,0' : '60,20,18'},${(0.12 + rnd() * 0.18) * fade})`;
+          g.beginPath();
+          g.ellipse(x, y, r, r * (0.5 + rnd() * 0.5), rnd() * Math.PI, 0, Math.PI * 2);
+          g.fill();
+        }
+
+        // Lava moat glow around the arena
+        g.save();
+        g.shadowColor = 'rgba(255,80,0,0.85)';
+        g.shadowBlur = 40;
+        g.fillStyle = '#ff5a00';
+        g.fillRect(R.x - t - 4, R.y - t - 4, R.w + (t + 4) * 2, R.h + (t + 4) * 2);
+        g.restore();
+        const mg = g.createLinearGradient(R.x - t - 4, R.y - t - 4, R.x + R.w + t + 4, R.y + R.h + t + 4);
+        mg.addColorStop(0, '#ffb000');
+        mg.addColorStop(0.5, '#ff4a00');
+        mg.addColorStop(1, '#c81e00');
+        g.fillStyle = mg;
+        g.fillRect(R.x - t - 4, R.y - t - 4, R.w + (t + 4) * 2, R.h + (t + 4) * 2);
+
+        // Obsidian rim wall
+        const rg = g.createLinearGradient(0, R.y - t, 0, R.y + R.h + t);
+        rg.addColorStop(0, '#3b2a2e');
+        rg.addColorStop(0.5, '#221619');
+        rg.addColorStop(1, '#140c0e');
+        g.fillStyle = rg;
+        g.fillRect(R.x - t, R.y - t, R.w + t * 2, R.h + t * 2);
+        // rim bricks
+        g.strokeStyle = 'rgba(0,0,0,0.55)';
+        g.lineWidth = 1.2;
+        const brick = Math.max(26, R.w / 18);
+        for (let x = R.x - t; x < R.x + R.w + t; x += brick) {
+          g.beginPath();
+          g.moveTo(x, R.y - t); g.lineTo(x, R.y);
+          g.moveTo(x + brick / 2, R.y + R.h); g.lineTo(x + brick / 2, R.y + R.h + t);
+          g.stroke();
+        }
+        for (let y = R.y - t; y < R.y + R.h + t; y += brick) {
+          g.beginPath();
+          g.moveTo(R.x - t, y); g.lineTo(R.x, y);
+          g.moveTo(R.x + R.w, y + brick / 2); g.lineTo(R.x + R.w + t, y + brick / 2);
+          g.stroke();
+        }
+        g.strokeStyle = 'rgba(255,170,120,0.25)';
+        g.lineWidth = 1;
+        g.strokeRect(R.x - t + 0.5, R.y - t + 0.5, R.w + t * 2 - 1, R.h + t * 2 - 1);
+
+        // Floor tiles
+        g.save();
+        g.beginPath();
+        g.rect(R.x, R.y, R.w, R.h);
+        g.clip();
+        g.fillStyle = '#120809';
+        g.fillRect(R.x, R.y, R.w, R.h);
+        const n = Math.max(5, Math.round(R.w / 72));
+        const ts = R.w / n;
+        const gap = Math.max(2, ts * 0.04);
+        for (let iy = 0; iy < n; iy++) {
+          for (let ix = 0; ix < n; ix++) {
+            const x = R.x + ix * ts + gap / 2, y = R.y + iy * ts + gap / 2, s = ts - gap;
+            const l = 16 + rnd() * 9;
+            const tg = g.createLinearGradient(x, y, x + s, y + s);
+            tg.addColorStop(0, `hsl(${350 + rnd() * 14}, 16%, ${l + 6}%)`);
+            tg.addColorStop(1, `hsl(${348 + rnd() * 10}, 18%, ${l - 5}%)`);
+            g.fillStyle = tg;
+            g.fillRect(x, y, s, s);
+            // bevel
+            g.fillStyle = 'rgba(255,220,200,0.07)';
+            g.fillRect(x, y, s, 2);
+            g.fillRect(x, y, 2, s);
+            g.fillStyle = 'rgba(0,0,0,0.3)';
+            g.fillRect(x, y + s - 2, s, 2);
+            g.fillRect(x + s - 2, y, 2, s);
+            // speckles / wear
+            for (let k = 0; k < 6; k++) {
+              g.fillStyle = `rgba(${rnd() < 0.5 ? '0,0,0' : '255,200,180'},${0.05 + rnd() * 0.07})`;
+              g.beginPath();
+              g.arc(x + rnd() * s, y + rnd() * s, 1 + rnd() * 3, 0, Math.PI * 2);
+              g.fill();
+            }
+            if (rnd() < 0.22) { // small fracture
+              g.strokeStyle = 'rgba(0,0,0,0.45)';
+              g.lineWidth = 1;
+              g.beginPath();
+              let cx = x + rnd() * s, cy = y + rnd() * s;
+              g.moveTo(cx, cy);
+              for (let k = 0; k < 3; k++) { cx += (rnd() - 0.5) * s * 0.5; cy += (rnd() - 0.5) * s * 0.5; g.lineTo(cx, cy); }
+              g.stroke();
+            }
+          }
+        }
+
+        // Summoning circle
+        const cx = R.x + R.w / 2, cy = R.y + R.h / 2, cr = R.w * 0.3;
+        g.save();
+        g.strokeStyle = 'rgba(255,40,20,0.22)';
+        g.lineWidth = 2;
+        g.beginPath(); g.arc(cx, cy, cr, 0, Math.PI * 2); g.stroke();
+        g.beginPath(); g.arc(cx, cy, cr * 0.88, 0, Math.PI * 2); g.stroke();
+        g.beginPath();
+        for (let i = 0; i <= 5; i++) {
+          const a = -Math.PI / 2 + i * (Math.PI * 4 / 5);
+          const px = cx + Math.cos(a) * cr * 0.88, py = cy + Math.sin(a) * cr * 0.88;
+          i ? g.lineTo(px, py) : g.moveTo(px, py);
+        }
+        g.stroke();
+        g.fillStyle = 'rgba(255,60,30,0.2)';
+        g.font = `${Math.max(9, cr * 0.075)}px serif`;
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        const runes = 'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟ';
+        for (let i = 0; i < 24; i++) {
+          const a = i / 24 * Math.PI * 2;
+          g.save();
+          g.translate(cx + Math.cos(a) * cr * 0.94, cy + Math.sin(a) * cr * 0.94);
+          g.rotate(a + Math.PI / 2);
+          g.fillText(runes[i % runes.length], 0, 0);
+          g.restore();
+        }
+        g.restore();
+
+        // Lava cracks (static dim layer here, pulsing layer separately)
+        crackPaths = [];
+        const crackCount = 5 + Math.round(R.w / 220);
+        for (let i = 0; i < crackCount; i++) {
+          const pts = [];
+          // start near edges more often
+          let x, y;
+          const side = Math.floor(rnd() * 4);
+          if (side === 0) { x = R.x + rnd() * R.w; y = R.y; }
+          else if (side === 1) { x = R.x + R.w; y = R.y + rnd() * R.h; }
+          else if (side === 2) { x = R.x + rnd() * R.w; y = R.y + R.h; }
+          else { x = R.x; y = R.y + rnd() * R.h; }
+          let a = Math.atan2(cy - y, cx - x) + (rnd() - 0.5) * 1.2;
+          const segs = 3 + Math.floor(rnd() * 5);
+          const segLen = R.w * (0.025 + rnd() * 0.03);
+          pts.push([x, y]);
+          for (let k = 0; k < segs; k++) {
+            a += (rnd() - 0.5) * 1.1;
+            x += Math.cos(a) * segLen; y += Math.sin(a) * segLen;
+            pts.push([x, y]);
+          }
+          crackPaths.push({ pts, w: 1.2 + rnd() * 1.8 });
+        }
+        const strokeCracks = (gg, color, width, blur) => {
+          gg.save();
+          gg.lineJoin = 'round'; gg.lineCap = 'round';
+          gg.strokeStyle = color;
+          if (blur) { gg.shadowColor = '#ff4000'; gg.shadowBlur = blur; }
+          crackPaths.forEach(cp => {
+            gg.lineWidth = cp.w * width;
+            gg.beginPath();
+            cp.pts.forEach((p, i) => i ? gg.lineTo(p[0], p[1]) : gg.moveTo(p[0], p[1]));
+            gg.stroke();
+          });
+          gg.restore();
+        };
+        strokeCracks(g, '#1a0402', 2.2, 0);
+        strokeCracks(g, 'rgba(190,40,0,0.85)', 1.0, 10);
+        strokeCracks(g, 'rgba(255,200,90,0.7)', 0.3, 0);
+
+        // Inner vignette
+        const vg = g.createRadialGradient(cx, cy, R.w * 0.2, cx, cy, R.w * 0.75);
+        vg.addColorStop(0, 'rgba(0,0,0,0)');
+        vg.addColorStop(1, 'rgba(0,0,0,0.62)');
+        g.fillStyle = vg;
+        g.fillRect(R.x, R.y, R.w, R.h);
+        // heat from moat on inner edge
+        const edge = Math.max(14, R.w * 0.05);
+        [[R.x, R.y, R.w, edge, 0, 1], [R.x, R.y + R.h - edge, R.w, edge, 0, -1]].forEach(([x, y, w, h, , d]) => {
+          const eg = g.createLinearGradient(0, d > 0 ? y : y + h, 0, d > 0 ? y + h : y);
+          eg.addColorStop(0, 'rgba(255,80,0,0.28)'); eg.addColorStop(1, 'rgba(255,80,0,0)');
+          g.fillStyle = eg; g.fillRect(x, y, w, h);
+        });
+        [[R.x, 1], [R.x + R.w - edge, -1]].forEach(([x, d]) => {
+          const eg = g.createLinearGradient(d > 0 ? x : x + edge, 0, d > 0 ? x + edge : x, 0);
+          eg.addColorStop(0, 'rgba(255,80,0,0.28)'); eg.addColorStop(1, 'rgba(255,80,0,0)');
+          g.fillStyle = eg; g.fillRect(x, R.y, edge, R.h);
+        });
+        g.restore();
+
+        // Brazier pedestals at corners
+        const br = Math.max(11, t * 1.35);
+        [[R.x, R.y], [R.x + R.w, R.y], [R.x, R.y + R.h], [R.x + R.w, R.y + R.h]].forEach(([x, y]) => {
+          g.save();
+          g.shadowColor = 'rgba(0,0,0,0.7)'; g.shadowBlur = 10; g.shadowOffsetY = 3;
+          const pg = g.createLinearGradient(x - br, y - br, x + br, y + br);
+          pg.addColorStop(0, '#5a4448'); pg.addColorStop(1, '#1d1214');
+          g.fillStyle = pg;
+          g.beginPath();
+          for (let i = 0; i < 8; i++) {
+            const a = Math.PI / 8 + i * Math.PI / 4;
+            const px = x + Math.cos(a) * br, py = y + Math.sin(a) * br;
+            i ? g.lineTo(px, py) : g.moveTo(px, py);
+          }
+          g.closePath(); g.fill();
+          g.restore();
+          g.strokeStyle = 'rgba(255,190,150,0.3)'; g.lineWidth = 1; g.stroke();
+          // bowl with coals
+          const bg2 = g.createRadialGradient(x, y, 0, x, y, br * 0.7);
+          bg2.addColorStop(0, '#ffcf4a'); bg2.addColorStop(0.45, '#ff5a00'); bg2.addColorStop(1, '#2a0800');
+          g.fillStyle = bg2;
+          g.beginPath(); g.arc(x, y, br * 0.68, 0, Math.PI * 2); g.fill();
+          g.strokeStyle = '#120809'; g.lineWidth = 2; g.stroke();
+        });
+
+        bgCanvas = c;
+
+        // Pulsing lava layer (additive)
+        const L = makeCanvas(W, H);
+        L.g.save();
+        L.g.beginPath(); L.g.rect(R.x, R.y, R.w, R.h); L.g.clip();
+        strokeCracks(L.g, 'rgba(255,90,10,0.9)', 1.6, 18);
+        strokeCracks(L.g, 'rgba(255,230,120,0.9)', 0.5, 0);
+        L.g.restore();
+        lavaCanvas = L.c;
+      }
+
+      function getFlameSprite() {
+        if (spriteCache.has('flame')) return spriteCache.get('flame');
+        const { c, g } = makeCanvas(40, 64);
+        const fl = (col, sx, sy) => {
+          g.save();
+          g.translate(20, 58);
+          g.scale(sx, sy);
+          const fg = g.createRadialGradient(0, -14, 1, 0, -14, 30);
+          col.forEach(([o, cc]) => fg.addColorStop(o, cc));
+          g.fillStyle = fg;
+          g.beginPath();
+          g.moveTo(0, -54);
+          g.bezierCurveTo(8, -36, 18, -24, 16, -10);
+          g.bezierCurveTo(14, 0, 6, 4, 0, 4);
+          g.bezierCurveTo(-6, 4, -14, 0, -16, -10);
+          g.bezierCurveTo(-18, -24, -8, -36, 0, -54);
+          g.fill();
+          g.restore();
+        };
+        fl([[0, 'rgba(255,120,0,0.95)'], [0.7, 'rgba(220,30,0,0.85)'], [1, 'rgba(120,0,0,0)']], 1, 1);
+        fl([[0, 'rgba(255,240,150,1)'], [0.6, 'rgba(255,160,20,0.9)'], [1, 'rgba(255,80,0,0)']], 0.6, 0.68);
+        spriteCache.set('flame', c);
+        return c;
+      }
+
+      function getGlowSprite(key, rgb, size) {
+        const k = 'glow' + key;
+        if (spriteCache.has(k)) return spriteCache.get(k);
+        const { c, g } = makeCanvas(size, size);
+        const gr = g.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+        gr.addColorStop(0, `rgba(${rgb},1)`);
+        gr.addColorStop(0.35, `rgba(${rgb},0.45)`);
+        gr.addColorStop(1, `rgba(${rgb},0)`);
+        g.fillStyle = gr;
+        g.fillRect(0, 0, size, size);
+        spriteCache.set(k, c);
+        return c;
+      }
+
+      function getTokenSprite(emoji, r) {
+        const k = 'tok' + emoji + r;
+        if (spriteCache.has(k)) return spriteCache.get(k);
+        const S = (r + 6) * 2;
+        const { c, g } = makeCanvas(S, S);
+        const m = S / 2;
+        // outer ring (ember gold)
+        const ring = g.createLinearGradient(0, m - r, 0, m + r);
+        ring.addColorStop(0, '#ffd58a'); ring.addColorStop(0.5, '#e8892c'); ring.addColorStop(1, '#8a3a12');
+        g.fillStyle = ring;
+        g.beginPath(); g.arc(m, m, r + 1, 0, Math.PI * 2); g.fill();
+        // face disc
+        const disc = g.createRadialGradient(m - r * 0.3, m - r * 0.35, r * 0.1, m, m, r);
+        disc.addColorStop(0, '#fffaf0'); disc.addColorStop(0.7, '#f6e3cc'); disc.addColorStop(1, '#c9a585');
+        g.fillStyle = disc;
+        g.beginPath(); g.arc(m, m, r - 2.5, 0, Math.PI * 2); g.fill();
+        // emoji
+        g.font = `${Math.round(r * 1.32)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillStyle = '#000';
+        g.fillText(emoji, m, m + r * 0.06);
+        // gloss
+        const gl = g.createLinearGradient(0, m - r, 0, m);
+        gl.addColorStop(0, 'rgba(255,255,255,0.45)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = gl;
+        g.beginPath(); g.ellipse(m, m - r * 0.45, r * 0.62, r * 0.36, 0, 0, Math.PI * 2); g.fill();
+        spriteCache.set(k, c);
+        return c;
+      }
+
+      function getLabelSprite(name) {
+        if (labelCache.has(name)) return labelCache.get(name);
+        const font = 'bold 13px "Noto Sans KR", sans-serif';
+        ctx.save(); ctx.font = font; const w = Math.ceil(ctx.measureText(name).width) + 12; ctx.restore();
+        const { c, g } = makeCanvas(w, 22);
+        g.font = font;
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillStyle = 'rgba(14,4,6,0.72)';
+        const rr = 9;
+        g.beginPath();
+        if (g.roundRect) g.roundRect(1, 2, w - 2, 18, rr); else g.rect(1, 2, w - 2, 18);
+        g.fill();
+        g.strokeStyle = 'rgba(255,140,60,0.35)'; g.lineWidth = 1; g.stroke();
+        g.fillStyle = '#fff';
+        g.fillText(name, w / 2, 11.5);
+        const entry = { c, w, h: 22 };
+        labelCache.set(name, entry);
+        return entry;
+      }
+
+      function drawWing(g, side, flap, scale) {
+        g.save();
+        g.scale(side * scale, scale);
+        g.rotate(-flap);
+        const wg = g.createLinearGradient(0, -30, 60, 20);
+        wg.addColorStop(0, '#5a0a14'); wg.addColorStop(1, '#1a0206');
+        g.fillStyle = wg;
+        g.strokeStyle = '#0a0003';
+        g.lineWidth = 2;
+        g.beginPath();
+        g.moveTo(8, -4);
+        g.quadraticCurveTo(34, -40, 66, -34);
+        g.quadraticCurveTo(58, -20, 62, -4);
+        g.quadraticCurveTo(50, -8, 46, 6);
+        g.quadraticCurveTo(36, -2, 28, 12);
+        g.quadraticCurveTo(20, 4, 10, 10);
+        g.closePath();
+        g.fill(); g.stroke();
+        g.strokeStyle = 'rgba(255,90,60,0.45)';
+        g.lineWidth = 1.3;
+        g.beginPath();
+        g.moveTo(10, -2); g.lineTo(66, -34);
+        g.moveTo(24, -14); g.lineTo(62, -4);
+        g.moveTo(22, -10); g.lineTo(46, 6);
+        g.moveTo(18, -6); g.lineTo(28, 12);
+        g.stroke();
+        g.restore();
+      }
+
+      function initEmbers() {
+        const rnd = visRng(99);
+        embers = [];
+        for (let i = 0; i < 46; i++) {
+          embers.push({ x: rnd() * viewW, y: rnd() * viewH, v: 14 + rnd() * 30, s: 0.6 + rnd() * 1.2, ph: rnd() * 6.28, a: 0.4 + rnd() * 0.6 });
+        }
+      }
+
+      function spawnBurst(x, y, count, palette, speed, gravity, size) {
+        for (let i = 0; i < count; i++) {
+          const a = fxRand() * Math.PI * 2;
+          const v = speed * (0.35 + fxRand() * 0.85);
+          fxParticles.push({
+            x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v,
+            life: 0.45 + fxRand() * 0.5, max: 0, g: gravity,
+            s: size * (0.6 + fxRand() * 0.8), col: palette[Math.floor(fxRand() * palette.length)]
+          });
+          fxParticles[fxParticles.length - 1].max = fxParticles[fxParticles.length - 1].life;
+        }
+        if (fxParticles.length > 400) fxParticles.splice(0, fxParticles.length - 400);
+      }
+
       // Canvas resize
       function resizeCanvas() {
         const container = canvas.parentElement;
         if (!container) return;
-        
-        canvas.width = container.offsetWidth;
-        canvas.height = container.offsetHeight;
-        
+
+        viewDpr = Math.min(window.devicePixelRatio || 1, 2);
+        viewW = container.offsetWidth;
+        viewH = container.offsetHeight;
+        canvas.width = Math.round(viewW * viewDpr);
+        canvas.height = Math.round(viewH * viewDpr);
+        ctx.setTransform(viewDpr, 0, 0, viewDpr, 0, 0);
+
         const isMobile = window.innerWidth <= 768;
         const minPadX = isMobile ? 15 : 80;
         const minPadY = isMobile ? 80 : 100;
-        
-        const availableW = canvas.width - minPadX * 2;
-        const availableH = canvas.height - minPadY * 2;
-        
+
+        const availableW = viewW - minPadX * 2;
+        const availableH = viewH - minPadY * 2;
+
         const side = Math.min(availableW, availableH);
-        const padX = (canvas.width - side) / 2;
-        const padY = (canvas.height - side) / 2;
-        
+        const padX = (viewW - side) / 2;
+        const padY = (viewH - side) / 2;
+
         document.documentElement.style.setProperty('--pad-x', padX + 'px');
         document.documentElement.style.setProperty('--pad-y', padY + 'px');
         document.documentElement.style.setProperty('--ring-size', side + 'px');
@@ -1069,17 +1485,18 @@
           w: side,
           h: side
         };
-        
+
+        spriteCache.clear();
+        labelCache.clear();
+        buildBackground();
+        initEmbers();
         drawRing();
       }
-      
+
       function drawRing() {
-        ctx.strokeStyle = '#9400d3';
-        ctx.lineWidth = 6;
-        ctx.strokeRect(ringBounds.x, ringBounds.y, ringBounds.w, ringBounds.h);
+        draw();
       }
 
-      // LocalStorage
       function saveSettings() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
           participants: participantsInput.value,
@@ -1457,181 +1874,407 @@
 
       function createTextEffect(x, y, text, color, isKO = false) {
         textEffects.push({ x, y, text, color, life: 60, maxLife: 60, isKO, scale: isKO ? 1.5 : 1 });
+        // visual-only bursts
+        if (isKO) {
+          spawnBurst(x, y + 50, 34, ['#ff3b1f', '#ff9a1f', '#ffe27a', '#7a0010'], 260, 120, 4);
+          spawnBurst(x, y + 50, 14, ['#b8a6ff', '#ffffff'], 120, -60, 3);
+          screenShake = Math.max(screenShake, 7);
+        } else if (text === '-1 HP') {
+          spawnBurst(x, y + 30, 16, ['#ff6a1f', '#ffd36a', '#ffffff'], 200, 200, 3);
+          screenShake = Math.max(screenShake, 3);
+        }
       }
 
       function createCrashEffect(x, y) {
         effects.push({ x, y, type: 'CRASH', life: 30 });
+        spawnBurst(x, y, 26, ['#6b5558', '#3a2a2d', '#8a7477'], 280, 520, 4.5);
+        spawnBurst(x, y, 22, ['#ff7a1f', '#ffd36a', '#ff3b1f'], 320, 160, 3);
+        screenShake = Math.max(screenShake, 10);
+      }
+
+      function rayToWall(x, y, a) {
+        const R = ringBounds, dx = Math.cos(a), dy = Math.sin(a);
+        let t = 4000;
+        if (dx > 1e-6) t = Math.min(t, (R.x + R.w - x) / dx);
+        if (dx < -1e-6) t = Math.min(t, (R.x - x) / dx);
+        if (dy > 1e-6) t = Math.min(t, (R.y + R.h - y) / dy);
+        if (dy < -1e-6) t = Math.min(t, (R.y - y) / dy);
+        return Math.max(0, t);
       }
 
       function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawRing();
+        if (!bgCanvas) return;
+        const now = performance.now();
+        const dt = lastDrawTime ? Math.min((now - lastDrawTime) / 1000, 0.1) : 0.016;
+        lastDrawTime = now;
+        const T = now / 1000;
+        const R = ringBounds;
 
-        // Draw eliminated
-        eliminatedParticipants.forEach(ep => {
+        ctx.setTransform(viewDpr, 0, 0, viewDpr, 0, 0);
+        ctx.clearRect(0, 0, viewW, viewH);
+
+        ctx.save();
+        if (screenShake > 0.2) {
+          ctx.translate((fxRand() - 0.5) * screenShake, (fxRand() - 0.5) * screenShake);
+          screenShake *= Math.pow(0.02, dt);
+        } else screenShake = 0;
+
+        ctx.drawImage(bgCanvas, 0, 0, viewW, viewH);
+
+        // Pulsing lava
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = 0.12 + 0.22 * (0.5 + 0.5 * Math.sin(T * 2.2));
+        ctx.drawImage(lavaCanvas, 0, 0, viewW, viewH);
+        ctx.restore();
+
+        // Brazier flames
+        const flame = getFlameSprite();
+        const glow = getGlowSprite('fire', '255,110,20', 128);
+        const br = Math.max(11, rimThickness() * 1.35);
+        [[R.x, R.y], [R.x + R.w, R.y], [R.x, R.y + R.h], [R.x + R.w, R.y + R.h]].forEach(([x, y], i) => {
+          const f = 1 + 0.12 * Math.sin(T * 11 + i * 1.7) + 0.06 * Math.sin(T * 23 + i);
           ctx.save();
-          ctx.globalAlpha = 0.5;
-          ctx.font = '30px Arial';
-          ctx.textAlign = 'center';
-          ctx.fillText('👻', ep.x, ep.y);
-          ctx.font = '14px Noto Sans KR';
-          ctx.fillText(ep.name, ep.x, ep.y + 25);
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.globalAlpha = 0.5 + 0.12 * Math.sin(T * 9 + i);
+          const gs = br * 7 * f;
+          ctx.drawImage(glow, x - gs / 2, y - gs / 2, gs, gs);
+          ctx.restore();
+          const fw = br * 1.7, fh = br * 2.9 * f;
+          ctx.save();
+          ctx.translate(x, y + br * 0.35);
+          ctx.rotate(Math.sin(T * 3 + i) * 0.08);
+          ctx.drawImage(flame, -fw / 2, -fh, fw, fh);
           ctx.restore();
         });
 
-        // Draw Guide Line
-        if (devil && devil.state === 'AIMING') {
+        // Embers
+        const ember = getGlowSprite('ember', '255,150,40', 16);
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        embers.forEach(e => {
+          e.y -= e.v * dt;
+          e.x += Math.sin(T * 1.3 + e.ph) * 12 * dt;
+          if (e.y < -10) { e.y = viewH + 10; }
+          ctx.globalAlpha = e.a * (0.55 + 0.45 * Math.sin(T * 4 + e.ph));
+          const s = 7 * e.s;
+          ctx.drawImage(ember, e.x - s / 2, e.y - s / 2, s, s);
+        });
+        ctx.restore();
+
+        // Eliminated souls (ghosts drift outside the ring)
+        eliminatedParticipants.forEach((ep, i) => {
+          const bob = Math.sin(T * 2 + i) * 3;
           ctx.save();
-          const angle = devil.dashAngle;
-          const dist = 1000;
-          const step = 40;
-          const opacity = (Math.sin(Date.now() * 0.01) + 1) * 0.5;
-          const guideWidth = devil.radius + 20; // 가이드 라인 폭 (악마 반경 + 여유)
-
-          // 양쪽 가이드 라인 그리기
-          ctx.strokeStyle = `rgba(255, 0, 0, ${opacity * 0.7})`;
-          ctx.lineWidth = 3;
-          ctx.setLineDash([15, 10]); // 점선 패턴
-
-          // 왼쪽 가이드 라인
-          const perpAngle = angle + Math.PI / 2;
-          const leftStartX = devil.x + Math.cos(perpAngle) * guideWidth;
-          const leftStartY = devil.y + Math.sin(perpAngle) * guideWidth;
-          const leftEndX = leftStartX + Math.cos(angle) * dist;
-          const leftEndY = leftStartY + Math.sin(angle) * dist;
-
-          ctx.beginPath();
-          ctx.moveTo(leftStartX, leftStartY);
-          ctx.lineTo(leftEndX, leftEndY);
-          ctx.stroke();
-
-          // 오른쪽 가이드 라인
-          const rightStartX = devil.x - Math.cos(perpAngle) * guideWidth;
-          const rightStartY = devil.y - Math.sin(perpAngle) * guideWidth;
-          const rightEndX = rightStartX + Math.cos(angle) * dist;
-          const rightEndY = rightStartY + Math.sin(angle) * dist;
-
-          ctx.beginPath();
-          ctx.moveTo(rightStartX, rightStartY);
-          ctx.lineTo(rightEndX, rightEndY);
-          ctx.stroke();
-
-          ctx.setLineDash([]); // 점선 해제
-
-          // 중앙 화살표 그리기
-          ctx.font = 'bold 40px Arial';
-          ctx.fillStyle = `rgba(255, 0, 0, ${opacity})`;
+          ctx.globalAlpha = 0.55;
+          ctx.font = '26px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-
-          for (let i = 70; i < dist; i += step) {
-            const gx = devil.x + Math.cos(angle) * i;
-            const gy = devil.y + Math.sin(angle) * i;
-            ctx.save();
-            ctx.translate(gx, gy);
-            ctx.rotate(angle);
-            ctx.fillText('>', 0, 0);
-            ctx.restore();
-          }
+          ctx.fillStyle = '#000';
+          ctx.fillText('👻', ep.x, ep.y + bob);
+          ctx.globalAlpha = 0.6;
+          ctx.font = 'bold 12px "Noto Sans KR", sans-serif';
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+          ctx.strokeText(ep.name, ep.x, ep.y + 22 + bob);
+          ctx.fillStyle = '#d9ccff';
+          ctx.fillText(ep.name, ep.x, ep.y + 22 + bob);
           ctx.restore();
-        }
+        });
 
-        // Draw Participants
-        participants.forEach(p => {
-          if (!p.alive) return;
+        // Charge telegraph (danger lane)
+        if (devil && devil.state === 'AIMING') {
+          const a = devil.dashAngle;
+          const len = rayToWall(devil.x, devil.y, a) + devil.radius;
+          const charge = Math.min(1, Math.max(0, (120 - devil.stateTimer) / 120));
+          const hw = devil.radius;
+          const pulse = 0.5 + 0.5 * Math.sin(T * (8 + charge * 16));
           ctx.save();
-          ctx.translate(p.x, p.y);
-          
-          if (p.hitFlash > 0) {
+          ctx.beginPath();
+          ctx.rect(R.x, R.y, R.w, R.h);
+          ctx.clip();
+          ctx.translate(devil.x, devil.y);
+          ctx.rotate(a);
+          const lg = ctx.createLinearGradient(0, 0, len, 0);
+          lg.addColorStop(0, `rgba(255,30,10,${0.32 + charge * 0.25})`);
+          lg.addColorStop(1, `rgba(255,30,10,${0.06 + charge * 0.12})`);
+          ctx.fillStyle = lg;
+          ctx.fillRect(0, -hw, len, hw * 2);
+          // edges
+          ctx.strokeStyle = `rgba(255,${80 + pulse * 120},60,${0.55 + pulse * 0.4})`;
+          ctx.lineWidth = 2;
+          ctx.setLineDash([14, 9]);
+          ctx.lineDashOffset = -T * 60;
+          ctx.beginPath();
+          ctx.moveTo(0, -hw); ctx.lineTo(len, -hw);
+          ctx.moveTo(0, hw); ctx.lineTo(len, hw);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          // moving chevrons
+          const step = 34;
+          const off = (T * (60 + charge * 220)) % step;
+          ctx.fillStyle = `rgba(255,${120 + pulse * 100},80,${0.35 + charge * 0.5})`;
+          for (let d = devil.radius + 10 + off; d < len - 10; d += step) {
             ctx.beginPath();
-            ctx.arc(0, 0, p.radius + 5, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 69, 0, ${p.hitFlash / 15})`;
+            ctx.moveTo(d, -hw * 0.45);
+            ctx.lineTo(d + 12, 0);
+            ctx.lineTo(d, hw * 0.45);
+            ctx.lineTo(d + 5, 0);
+            ctx.closePath();
             ctx.fill();
           }
-
-          ctx.beginPath();
-          ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-          ctx.fill();
-          ctx.strokeStyle = '#9400d3';
-          ctx.lineWidth = 2;
-          ctx.stroke();
-
-          ctx.font = '30px Arial';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(p.emoji, 0, 0);
-
-          ctx.font = 'bold 16px Noto Sans KR';
-          ctx.fillStyle = '#fff';
-          ctx.shadowBlur = 4;
-          ctx.shadowColor = '#000';
-          ctx.fillText(p.name, 0, p.radius + 18);
-
-          // HP
-          const hpW = 30;
-          ctx.fillStyle = '#000';
-          ctx.fillRect(-hpW/2, -p.radius - 10, hpW, 4);
-          ctx.fillStyle = p.hp > 1 ? '#00ff88' : '#ff0000';
-          ctx.fillRect(-hpW/2, -p.radius - 10, hpW * (p.hp / p.maxHp), 4);
-          
           ctx.restore();
+
+          // reticle on target
+          const tg = devil.target;
+          if (tg && tg.alive) {
+            ctx.save();
+            ctx.translate(tg.x, tg.y);
+            ctx.rotate(T * 2);
+            ctx.strokeStyle = `rgba(255,50,30,${0.7 + pulse * 0.3})`;
+            ctx.lineWidth = 2.5;
+            const rr = tg.radius + 9 - charge * 3;
+            for (let k = 0; k < 4; k++) {
+              ctx.beginPath();
+              ctx.arc(0, 0, rr, k * Math.PI / 2 + 0.25, k * Math.PI / 2 + Math.PI / 2 - 0.25);
+              ctx.stroke();
+            }
+            ctx.restore();
+          }
+        }
+
+        // Participants
+        participants.forEach(p => {
+          if (!p.alive) return;
+          const r = p.radius;
+          // shadow
+          ctx.fillStyle = 'rgba(0,0,0,0.45)';
+          ctx.beginPath();
+          ctx.ellipse(p.x + 2, p.y + r * 0.8, r * 0.95, r * 0.38, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          if (p.hitFlash > 0) {
+            const k = p.hitFlash / 15;
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.globalAlpha = k;
+            const gs = r * 4.2;
+            ctx.drawImage(getGlowSprite('hit', '255,70,20', 96), p.x - gs / 2, p.y - gs / 2, gs, gs);
+            ctx.restore();
+          } else if (p.hp === 1 && p.maxHp > 1) {
+            ctx.strokeStyle = `rgba(255,40,40,${0.45 + 0.35 * Math.sin(T * 7 + p.x)})`;
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(p.x, p.y, r + 4, 0, Math.PI * 2); ctx.stroke();
+          }
+
+          const spr = getTokenSprite(p.emoji, r);
+          const S = (r + 6) * 2;
+          const jig = p.hitFlash > 0 ? (p.hitFlash / 15) * 3 : 0;
+          ctx.drawImage(spr, p.x - S / 2 + (jig ? (fxRand() - 0.5) * jig : 0), p.y - S / 2, S, S);
+          if (p.hitFlash > 0) {
+            ctx.save();
+            ctx.globalAlpha = (p.hitFlash / 15) * 0.55;
+            ctx.fillStyle = '#ff2a00';
+            ctx.beginPath(); ctx.arc(p.x, p.y, r - 2, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+          }
+
+          // name label
+          const lab = getLabelSprite(p.name);
+          ctx.drawImage(lab.c, p.x - lab.w / 2, p.y + r + 2, lab.w, lab.h);
+
+          // HP pips
+          const n = p.maxHp;
+          const pw = n > 3 ? 6 : 9, gap = 2;
+          const tw = n * pw + (n - 1) * gap;
+          const hx = p.x - tw / 2, hy = p.y - r - 10;
+          ctx.fillStyle = 'rgba(0,0,0,0.65)';
+          ctx.fillRect(hx - 2, hy - 2, tw + 4, 8);
+          for (let i = 0; i < n; i++) {
+            ctx.fillStyle = i < p.hp ? (p.hp > 1 ? '#3dff8f' : '#ff3a3a') : 'rgba(255,255,255,0.12)';
+            ctx.fillRect(hx + i * (pw + gap), hy, pw, 4);
+          }
         });
 
-        // Draw Devil
+        // Devil
         if (devil) {
+          const dashing = devil.state === 'DASHING';
+          if (dashing) {
+            devilTrail.push({ x: devil.x, y: devil.y });
+            if (devilTrail.length > 9) devilTrail.shift();
+          } else if (devilTrail.length) {
+            devilTrail.shift();
+          }
+          // fiery trail
+          if (devilTrail.length > 1) {
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            const fg = getGlowSprite('fire', '255,110,20', 128);
+            devilTrail.forEach((tp, i) => {
+              const k = (i + 1) / devilTrail.length;
+              const s = devil.radius * (1.4 + k * 1.6);
+              ctx.globalAlpha = k * 0.55;
+              ctx.drawImage(fg, tp.x - s, tp.y - s, s * 2, s * 2);
+            });
+            ctx.restore();
+            ctx.save();
+            ctx.font = '50px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            for (let i = 0; i < devilTrail.length - 1; i += 2) {
+              ctx.globalAlpha = (i + 1) / devilTrail.length * 0.3;
+              ctx.fillStyle = '#000';
+              ctx.fillText('😈', devilTrail[i].x, devilTrail[i].y);
+            }
+            ctx.restore();
+          }
+
           ctx.save();
           const sx = devil.shake ? (Math.random() - 0.5) * devil.shake : 0;
           const sy = devil.shake ? (Math.random() - 0.5) * devil.shake : 0;
           ctx.translate(devil.x + sx, devil.y + sy);
-          
-          // Aura
-          const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, devil.radius + 20);
-          grad.addColorStop(0, 'rgba(255, 0, 0, 0.3)');
-          grad.addColorStop(1, 'rgba(255, 0, 255, 0)');
-          ctx.fillStyle = grad;
+          const aiming = devil.state === 'AIMING';
+          const recovering = devil.state === 'RECOVERING';
+          const charge = aiming ? Math.min(1, Math.max(0, (120 - devil.stateTimer) / 120)) : 0;
+
+          // ground scorch shadow
+          ctx.fillStyle = 'rgba(0,0,0,0.55)';
           ctx.beginPath();
-          ctx.arc(0, 0, devil.radius + 20, 0, Math.PI * 2);
+          ctx.ellipse(0, devil.radius * 0.95, devil.radius * 1.1, devil.radius * 0.35, 0, 0, Math.PI * 2);
           ctx.fill();
 
-          ctx.font = '50px Arial';
+          // aura
+          ctx.save();
+          ctx.globalCompositeOperation = 'lighter';
+          const ap = 0.5 + 0.5 * Math.sin(T * (aiming ? 10 + charge * 14 : 3));
+          ctx.globalAlpha = (recovering ? 0.25 : 0.45) + ap * 0.2 + charge * 0.3;
+          const as = devil.radius * (3.4 + ap * 0.4 + charge * 0.8);
+          ctx.drawImage(getGlowSprite('aura', '255,30,60', 160), -as / 2, -as / 2, as, as);
+          ctx.restore();
+
+          // wings
+          const flapSpeed = dashing ? 26 : aiming ? 14 : recovering ? 2 : 6;
+          const flap = recovering ? -0.35 : Math.sin(T * flapSpeed) * (dashing ? 0.15 : 0.32) + (dashing ? 0.35 : 0);
+          const wsc = devil.radius / 35 * 0.95;
+          ctx.save();
+          ctx.translate(0, -devil.radius * 0.15);
+          drawWing(ctx, 1, flap, wsc);
+          drawWing(ctx, -1, flap, wsc);
+          ctx.restore();
+
+          // dark core disc
+          const cg = ctx.createRadialGradient(0, 0, devil.radius * 0.3, 0, 0, devil.radius * 1.05);
+          cg.addColorStop(0, 'rgba(90,0,40,0.0)');
+          cg.addColorStop(0.75, 'rgba(60,0,30,0.55)');
+          cg.addColorStop(1, 'rgba(255,40,80,0)');
+          ctx.fillStyle = cg;
+          ctx.beginPath(); ctx.arc(0, 0, devil.radius * 1.05, 0, Math.PI * 2); ctx.fill();
+
+          // charge ring
+          if (aiming) {
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.arc(0, 0, devil.radius + 8, 0, Math.PI * 2); ctx.stroke();
+            ctx.strokeStyle = charge > 0.66 ? '#ff2a2a' : '#ff8a1f';
+            ctx.shadowColor = ctx.strokeStyle; ctx.shadowBlur = 10;
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.arc(0, 0, devil.radius + 8, -Math.PI / 2, -Math.PI / 2 + charge * Math.PI * 2); ctx.stroke();
+            ctx.shadowBlur = 0;
+          }
+
+          ctx.font = '50px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#000';
+          ctx.shadowColor = 'rgba(255,0,60,0.9)';
+          ctx.shadowBlur = 18;
           ctx.fillText('😈', 0, 0);
+          ctx.shadowBlur = 0;
 
-          if (devil.state === 'RECOVERING') {
-            ctx.font = '20px Arial';
-            ctx.fillText('😵', 0, -devil.radius);
-          } else if (devil.state === 'AIMING') {
-            ctx.font = '24px Arial';
+          if (recovering) {
+            ctx.font = '20px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+            ctx.fillText('😵', 0, -devil.radius - 4);
+            ctx.fillStyle = '#ffe066';
+            ctx.font = 'bold 14px sans-serif';
+            for (let k = 0; k < 3; k++) {
+              const a = T * 4 + k * Math.PI * 2 / 3;
+              ctx.fillText('★', Math.cos(a) * devil.radius * 0.9, -devil.radius * 0.65 + Math.sin(a) * devil.radius * 0.25);
+            }
+          } else if (aiming) {
+            ctx.font = '24px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
             ctx.fillText('💢', 25, -25);
           }
 
           ctx.restore();
         }
 
-        // Effects
+        // Crash shockwaves
         effects.forEach(e => {
           if (e.type === 'CRASH') {
+            const k = e.life / 30;
             ctx.save();
-            ctx.beginPath();
-            ctx.arc(e.x, e.y, (30 - e.life) * 2, 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${e.life / 30})`;
-            ctx.lineWidth = 3;
-            ctx.stroke();
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.globalAlpha = k;
+            const gs = 60 + (1 - k) * 120;
+            ctx.drawImage(getGlowSprite('fire', '255,110,20', 128), e.x - gs / 2, e.y - gs / 2, gs, gs);
+            ctx.restore();
+            ctx.save();
+            ctx.strokeStyle = `rgba(255,200,120,${k})`;
+            ctx.lineWidth = 4 * k + 1;
+            ctx.beginPath(); ctx.arc(e.x, e.y, (30 - e.life) * 3, 0, Math.PI * 2); ctx.stroke();
+            ctx.strokeStyle = `rgba(255,255,255,${k * 0.6})`;
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(e.x, e.y, (30 - e.life) * 1.8, 0, Math.PI * 2); ctx.stroke();
             ctx.restore();
           }
         });
 
-        textEffects.forEach(e => {
+        // Particles
+        if (fxParticles.length) {
           ctx.save();
-          ctx.globalAlpha = e.life / 60;
-          ctx.font = `bold ${20 * e.scale}px 'Black Han Sans'`;
-          ctx.fillStyle = e.color;
+          for (let i = fxParticles.length - 1; i >= 0; i--) {
+            const q = fxParticles[i];
+            q.life -= dt;
+            if (q.life <= 0) { fxParticles.splice(i, 1); continue; }
+            q.vy += q.g * dt;
+            q.vx *= Math.pow(0.15, dt);
+            q.vy *= Math.pow(0.4, dt);
+            q.x += q.vx * dt; q.y += q.vy * dt;
+            ctx.globalAlpha = Math.min(1, q.life / q.max * 1.5);
+            ctx.fillStyle = q.col;
+            const s = q.s * (0.5 + q.life / q.max * 0.5);
+            ctx.fillRect(q.x - s / 2, q.y - s / 2, s, s);
+          }
+          ctx.restore();
+        }
+
+        // Floating text
+        textEffects.forEach(e => {
+          const age = e.maxLife - e.life;
+          const pop = age < 8 ? 0.6 + (age / 8) * 0.55 : 1.15 - Math.min(0.15, (age - 8) / 40);
+          ctx.save();
+          ctx.globalAlpha = Math.min(1, e.life / 25);
+          ctx.translate(e.x, e.y - age * 0.5);
+          ctx.scale(pop, pop);
+          ctx.font = `${Math.round(20 * e.scale)}px 'Black Han Sans', sans-serif`;
           ctx.textAlign = 'center';
-          ctx.fillText(e.text, e.x, e.y - (60 - e.life) * 0.5);
+          ctx.textBaseline = 'middle';
+          ctx.lineJoin = 'round';
+          ctx.lineWidth = 5;
+          ctx.strokeStyle = 'rgba(20,0,0,0.9)';
+          ctx.strokeText(e.text, 0, 0);
+          if (e.isKO) { ctx.shadowColor = '#ff2000'; ctx.shadowBlur = 16; }
+          ctx.fillStyle = e.isKO ? '#ffdf6a' : e.color;
+          ctx.fillText(e.text, 0, 0);
           ctx.restore();
         });
+
+        ctx.restore();
+      }
+
+      function idleRender() {
+        if (!gameRunning) draw();
+        requestAnimationFrame(idleRender);
       }
 
       function updateAliveCount() {
@@ -1780,6 +2423,7 @@
 
       loadSettings();
       resizeCanvas();
+      requestAnimationFrame(idleRender);
     })();
   </script>
 </body>

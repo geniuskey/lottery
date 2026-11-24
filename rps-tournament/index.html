@@ -8,8 +8,8 @@
   "description": "토너먼트 방식의 가위바위보 대결! 참여자들이 1:1로 대결하여 최종 우승자를 가립니다.",
   "features": ["🏆 토너먼트 대진표", "⚡ 실시간 랭킹"],
   "color": "rps",
-  "version": "1.0.0",
-  "updated": "2025-01-15",
+  "version": "1.1.0",
+  "updated": "2026-11-24",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -877,6 +877,492 @@
         font-size: 2.5rem;
       }
     }
+
+    /* ===== Arena / Stage visuals (2026-11 리디자인) ===== */
+    .main-area {
+      background:
+        radial-gradient(ellipse 70% 55% at 50% -5%, rgba(255, 71, 87, 0.16) 0%, transparent 65%),
+        radial-gradient(ellipse 90% 60% at 50% 115%, rgba(52, 152, 219, 0.16) 0%, transparent 60%),
+        linear-gradient(180deg, #100c1a 0%, #0a0911 55%, #07060c 100%);
+      isolation: isolate;
+    }
+
+    .stage-fx {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .stage-fx::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.6px);
+      background-size: 24px 24px;
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 75%);
+      mask-image: linear-gradient(to bottom, #000 0%, transparent 75%);
+    }
+
+    .stage-fx::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 85% 75% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+    }
+
+    .stage-beam {
+      position: absolute;
+      top: -8%;
+      width: 34%;
+      height: 115%;
+      clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+      transform-origin: 50% 0;
+      will-change: transform;
+      mix-blend-mode: screen;
+      opacity: 0.9;
+    }
+
+    .stage-beam.b1 {
+      left: 2%;
+      background: linear-gradient(180deg, rgba(255, 90, 110, 0.26), rgba(255, 90, 110, 0.05) 65%, transparent 85%);
+      animation: beam-sweep-l 11s ease-in-out infinite alternate;
+    }
+
+    .stage-beam.b2 {
+      right: 2%;
+      background: linear-gradient(180deg, rgba(80, 170, 255, 0.26), rgba(80, 170, 255, 0.05) 65%, transparent 85%);
+      animation: beam-sweep-r 13s ease-in-out infinite alternate;
+    }
+
+    .stage-beam.b3 {
+      left: 33%;
+      background: linear-gradient(180deg, rgba(255, 214, 102, 0.16), rgba(255, 214, 102, 0.03) 60%, transparent 80%);
+      animation: beam-sway 9s ease-in-out infinite alternate;
+    }
+
+    @keyframes beam-sweep-l { from { transform: rotate(-24deg); } to { transform: rotate(6deg); } }
+    @keyframes beam-sweep-r { from { transform: rotate(22deg); } to { transform: rotate(-8deg); } }
+    @keyframes beam-sway { from { transform: rotate(-7deg); } to { transform: rotate(7deg); } }
+
+    .stage-floor {
+      position: absolute;
+      left: -25%;
+      right: -25%;
+      bottom: -6%;
+      height: 46%;
+      background-image:
+        linear-gradient(rgba(255, 71, 87, 0.22) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(52, 152, 219, 0.22) 1px, transparent 1px);
+      background-size: 64px 44px;
+      transform: perspective(420px) rotateX(62deg);
+      transform-origin: 50% 100%;
+      -webkit-mask-image: linear-gradient(to top, #000 5%, transparent 85%);
+      mask-image: linear-gradient(to top, #000 5%, transparent 85%);
+    }
+
+    .tournament-header,
+    .tournament-arena {
+      position: relative;
+      z-index: 1;
+    }
+
+    .tournament-header {
+      flex-wrap: wrap;
+      row-gap: 10px;
+      background: linear-gradient(180deg, rgba(14, 11, 24, 0.86), rgba(14, 11, 24, 0.5));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .round-info {
+      font-size: 1.5rem;
+      letter-spacing: 0.5px;
+      background: linear-gradient(180deg, #ffffff 30%, #ffd2a1 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 14px rgba(255, 120, 90, 0.35));
+    }
+
+    .match-count {
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.85rem;
+    }
+
+    /* Bracket progress */
+    .bracket-track {
+      flex-basis: 100%;
+      order: 3;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bracket-track[hidden] { display: none; }
+
+    .bt-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow: hidden;
+    }
+
+    .bt-step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.38);
+      white-space: nowrap;
+    }
+
+    .bt-step::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      margin: 0 8px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .bt-step:last-child { flex: 0 0 auto; }
+    .bt-step:last-child::after { display: none; }
+
+    .bt-step i {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .bt-step b { font-weight: 700; overflow: hidden; text-overflow: ellipsis; }
+
+    .bt-step.done { color: rgba(255, 255, 255, 0.65); }
+    .bt-step.done i { background: #2ecc71; border-color: #7dffb2; box-shadow: 0 0 8px rgba(46, 204, 113, 0.6); }
+    .bt-step.done::after { background: linear-gradient(90deg, #2ecc71, rgba(46, 204, 113, 0.4)); }
+
+    .bt-step.current { color: #ffd666; }
+    .bt-step.current i {
+      background: #ffd666;
+      border-color: #fff3c4;
+      box-shadow: 0 0 0 4px rgba(255, 214, 102, 0.18), 0 0 14px rgba(255, 214, 102, 0.8);
+      animation: bt-pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes bt-pulse { 50% { box-shadow: 0 0 0 7px rgba(255, 214, 102, 0.08), 0 0 18px rgba(255, 214, 102, 0.9); } }
+
+    .bt-bar {
+      height: 4px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+
+    .bt-bar i {
+      display: block;
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #ff4757, #ffd666, #3498db);
+      box-shadow: 0 0 10px rgba(255, 214, 102, 0.6);
+      transition: width 0.4s ease;
+    }
+
+    /* Waiting state */
+    .waiting-state { position: relative; }
+
+    .waiting-state::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 340px;
+      height: 70px;
+      transform: translate(-50%, 30px);
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(255, 214, 102, 0.22), rgba(255, 71, 87, 0.08) 50%, transparent 72%);
+      pointer-events: none;
+    }
+
+    .waiting-emoji {
+      position: relative;
+      letter-spacing: 8px;
+      filter: drop-shadow(0 12px 22px rgba(255, 71, 87, 0.35)) drop-shadow(0 0 30px rgba(52, 152, 219, 0.25));
+    }
+
+    .waiting-text {
+      position: relative;
+      margin-top: 26px;
+      padding: 10px 22px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #c3cad6;
+      font-size: 1rem;
+    }
+
+    /* Match cards */
+    .match-card {
+      position: relative;
+      padding: 16px 18px 18px;
+      border-radius: 18px;
+      background:
+        radial-gradient(ellipse 60% 80% at 0% 50%, rgba(255, 71, 87, 0.08), transparent 70%),
+        radial-gradient(ellipse 60% 80% at 100% 50%, rgba(52, 152, 219, 0.08), transparent 70%),
+        linear-gradient(165deg, rgba(36, 31, 54, 0.95), rgba(17, 15, 28, 0.96));
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      overflow: hidden;
+    }
+
+    .match-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(255, 71, 87, 0.8), rgba(255, 214, 102, 0.6), rgba(52, 152, 219, 0.8));
+      opacity: 0.55;
+    }
+
+    .match-card.active {
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    }
+
+    .match-card.live {
+      border-color: rgba(255, 214, 102, 0.75);
+      animation: card-live 1.1s ease-in-out infinite;
+    }
+
+    .match-card.live::before { opacity: 1; height: 3px; }
+
+    @keyframes card-live {
+      0%, 100% { box-shadow: 0 0 0 1px rgba(255, 214, 102, 0.35), 0 0 26px rgba(255, 170, 60, 0.25), 0 14px 34px rgba(0, 0, 0, 0.5); }
+      50% { box-shadow: 0 0 0 1px rgba(255, 214, 102, 0.6), 0 0 42px rgba(255, 170, 60, 0.45), 0 14px 34px rgba(0, 0, 0, 0.5); }
+    }
+
+    .match-card.finished { opacity: 0.88; }
+
+    .match-header { margin-bottom: 14px; gap: 8px; }
+
+    .match-number {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #aab2c2;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .live-tag {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      margin-right: auto;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #fff;
+      background: linear-gradient(135deg, #ff4757, #ff6b81);
+      box-shadow: 0 0 12px rgba(255, 71, 87, 0.5);
+    }
+
+    .live-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fff;
+      animation: live-blink 0.9s steps(2) infinite;
+    }
+
+    @keyframes live-blink { 50% { opacity: 0.2; } }
+
+    .match-card.live .live-tag { display: inline-flex; }
+
+    .match-vs {
+      font-size: 0.95rem;
+      letter-spacing: 3px;
+      color: #fff;
+      padding: 3px 12px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .match-players { gap: 12px; }
+
+    .player-box {
+      position: relative;
+      padding: 14px 10px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.06), transparent 70%), rgba(6, 6, 12, 0.62);
+      min-width: 0;
+    }
+
+    .player-box[data-player="1"] { box-shadow: inset 3px 0 0 rgba(255, 71, 87, 0.7); }
+    .player-box[data-player="2"] { box-shadow: inset -3px 0 0 rgba(52, 152, 219, 0.7); }
+
+    .player-box.winner {
+      border-color: rgba(255, 214, 102, 0.9);
+      background: radial-gradient(circle at 50% 38%, rgba(255, 214, 102, 0.24), transparent 72%), rgba(32, 25, 8, 0.75);
+      box-shadow: 0 0 26px rgba(255, 196, 70, 0.35), inset 0 0 20px rgba(255, 214, 102, 0.14);
+    }
+
+    .player-box.loser {
+      opacity: 0.42;
+      filter: grayscale(0.85);
+    }
+
+    .player-avatar {
+      width: 34px;
+      height: 34px;
+      margin: 0 auto 8px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+      background: linear-gradient(135deg, hsl(var(--hue) 78% 60%), hsl(calc(var(--hue) + 40) 70% 38%));
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.14), 0 4px 12px rgba(0, 0, 0, 0.45);
+    }
+
+    .player-box.winner .player-avatar { box-shadow: 0 0 0 2px #ffd666, 0 0 16px rgba(255, 214, 102, 0.7); }
+
+    .player-name { font-size: 0.95rem; margin-bottom: 10px; }
+
+    .player-choice {
+      width: 66px;
+      height: 66px;
+      font-size: 2.1rem;
+      background: radial-gradient(circle at 36% 30%, #302c46, #13111d 72%);
+      border: 2px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 -4px 10px rgba(0, 0, 0, 0.45), 0 6px 16px rgba(0, 0, 0, 0.35);
+      transition: box-shadow 0.3s, border-color 0.3s, filter 0.3s;
+    }
+
+    .player-box[data-player="1"] .player-choice:is(.rock, .paper, .scissors, .thinking) { scale: -1 1; }
+
+    .player-choice.rock { border-color: rgba(231, 76, 60, 0.75); box-shadow: 0 0 24px rgba(231, 76, 60, 0.45), inset 0 0 16px rgba(231, 76, 60, 0.25); }
+    .player-choice.paper { border-color: rgba(52, 152, 219, 0.75); box-shadow: 0 0 24px rgba(52, 152, 219, 0.45), inset 0 0 16px rgba(52, 152, 219, 0.25); }
+    .player-choice.scissors { border-color: rgba(241, 196, 15, 0.75); box-shadow: 0 0 24px rgba(241, 196, 15, 0.45), inset 0 0 16px rgba(241, 196, 15, 0.25); }
+
+    .player-choice.thinking {
+      border-color: rgba(255, 255, 255, 0.22);
+      animation: rps-pump 0.34s ease-in-out infinite;
+    }
+
+    @keyframes rps-pump {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      45% { transform: translateY(-10px) rotate(-10deg); }
+    }
+
+    .player-choice.reveal { animation: rps-reveal 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+    @keyframes rps-reveal {
+      0% { transform: scale(0.35) rotate(-28deg); filter: brightness(2.4); }
+      60% { transform: scale(1.18) rotate(6deg); filter: brightness(1.3); }
+      100% { transform: scale(1) rotate(0deg); filter: none; }
+    }
+
+    .player-choice.hand-win {
+      border-color: #ffd666;
+      box-shadow: 0 0 0 4px rgba(255, 214, 102, 0.16), 0 0 30px rgba(255, 196, 70, 0.7), inset 0 0 16px rgba(255, 214, 102, 0.35);
+    }
+
+    .player-choice.hand-lose { filter: saturate(0.35) brightness(0.7); }
+
+    .player-choice.hand-draw { border-color: rgba(255, 255, 255, 0.5); }
+
+    .result-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .result-badge.win {
+      color: #2a1c00;
+      background: linear-gradient(135deg, #ffe08a, #ffb02e);
+      box-shadow: 0 0 12px rgba(255, 196, 70, 0.6);
+    }
+
+    .result-badge.out {
+      color: #ff8a80;
+      background: rgba(231, 76, 60, 0.18);
+      border: 1px solid rgba(231, 76, 60, 0.45);
+    }
+
+    .vs-divider {
+      flex-shrink: 0;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: #fff;
+      background: radial-gradient(circle at 34% 28%, #ff8a7a, #e0392b 55%, #6d1610);
+      text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08), 0 0 22px rgba(255, 71, 87, 0.5), inset 0 -3px 6px rgba(0, 0, 0, 0.35);
+    }
+
+    .match-card.live .vs-divider { animation: vs-pulse 0.7s ease-in-out infinite; }
+
+    @keyframes vs-pulse {
+      50% { transform: scale(1.12); box-shadow: 0 0 0 5px rgba(255, 214, 102, 0.18), 0 0 34px rgba(255, 120, 60, 0.75), inset 0 -3px 6px rgba(0, 0, 0, 0.35); }
+    }
+
+    /* Final winner */
+    .final-winner {
+      background:
+        radial-gradient(ellipse 45% 40% at 50% 42%, rgba(255, 200, 80, 0.2), transparent 70%),
+        radial-gradient(ellipse 120% 80% at 50% 100%, rgba(52, 152, 219, 0.12), transparent 60%),
+        rgba(4, 3, 10, 0.93);
+    }
+
+    .winner-crown { filter: drop-shadow(0 0 28px rgba(255, 214, 102, 0.7)); }
+
+    .winner-name { filter: drop-shadow(0 0 24px rgba(255, 196, 70, 0.45)); }
+
+    .close-winner-btn { box-shadow: 0 8px 26px rgba(255, 170, 0, 0.35); }
+
+    @media (max-width: 768px) {
+      .tournament-header { padding: 14px 16px; }
+      .round-info { font-size: 1.25rem; }
+      .bt-step b { display: none; }
+      .bt-step.current b { display: inline; }
+      .stage-beam { width: 60%; }
+      .stage-beam.b3 { left: 20%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .stage-beam, .match-card.live, .vs-divider, .player-choice, .bt-step i { animation: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -946,9 +1432,16 @@
   </aside>
 
   <main class="main-area">
+    <div class="stage-fx" aria-hidden="true">
+      <span class="stage-beam b1"></span>
+      <span class="stage-beam b2"></span>
+      <span class="stage-beam b3"></span>
+      <div class="stage-floor"></div>
+    </div>
     <div class="tournament-header">
       <div class="round-info" id="roundInfo">🎯 대기 중</div>
       <div class="match-count" id="matchCount">참여자를 입력하고 시작하세요</div>
+      <div class="bracket-track" id="bracketTrack" aria-hidden="true" hidden></div>
     </div>
 
     <div class="tournament-arena" id="arena">
@@ -1390,19 +1883,26 @@
         const choiceClass1 = isFinished && match.lastChoice1 ? match.lastChoice1 : '';
         const choiceClass2 = isFinished && match.lastChoice2 ? match.lastChoice2 : '';
         
+        const badge1 = match.winner === match.player1 ? '<span class="result-badge win">WIN</span>' : match.winner === match.player2 ? '<span class="result-badge out">OUT</span>' : '';
+        const badge2 = match.winner === match.player2 ? '<span class="result-badge win">WIN</span>' : match.winner === match.player1 ? '<span class="result-badge out">OUT</span>' : '';
         html += `
           <div class="match-card ${isActive ? 'active' : ''} ${isFinished ? 'finished' : ''}">
             <div class="match-header">
               <span class="match-number">경기 ${index + 1}</span>
+              <span class="live-tag">LIVE</span>
               <span class="match-vs">${match.score1} : ${match.score2}</span>
             </div>
             <div class="match-players">
               <div class="player-box ${match.winner === match.player1 ? 'winner' : ''} ${match.winner === match.player2 ? 'loser' : ''}" data-match="${index}" data-player="1">
+                ${badge1}
+                ${avatarHtml(match.player1.name)}
                 <div class="player-name">${escapeHtmlText(match.player1.name)}</div>
                 <div class="player-choice ${choiceClass1}" id="choice-${index}-1">${display1}</div>
               </div>
               <div class="vs-divider">VS</div>
               <div class="player-box ${match.winner === match.player2 ? 'winner' : ''} ${match.winner === match.player1 ? 'loser' : ''}" data-match="${index}" data-player="2">
+                ${badge2}
+                ${avatarHtml(match.player2.name)}
                 <div class="player-name">${escapeHtmlText(match.player2.name)}</div>
                 <div class="player-choice ${choiceClass2}" id="choice-${index}-2">${display2}</div>
               </div>
@@ -1413,6 +1913,51 @@
       
       html += '</div>';
       arena.innerHTML = html;
+      renderBracketTrack();
+    }
+
+    // ===== 시각 전용 헬퍼 (결과/난수와 무관) =====
+    function avatarHtml(name) {
+      let hash = 0;
+      for (const ch of name) hash = (hash * 31 + ch.codePointAt(0)) >>> 0;
+      const initial = Array.from(name.trim())[0] || '?';
+      return `<div class="player-avatar" style="--hue:${hash % 360}">${escapeHtmlText(initial)}</div>`;
+    }
+
+    function renderBracketTrack() {
+      const track = document.getElementById('bracketTrack');
+      if (!track) return;
+      const totalRounds = participants.length > 1 && currentRound > 0 ? Math.round(Math.log2(participants.length)) : 0;
+      if (!totalRounds) {
+        track.hidden = true;
+        track.innerHTML = '';
+        return;
+      }
+      const realMatches = matches.filter(m => m.player1 !== null && m.player2 !== null);
+      const doneCount = realMatches.filter(m => m.winner !== null).length;
+      const pct = realMatches.length ? Math.round(doneCount / realMatches.length * 100) : 100;
+      let html = '<div class="bt-steps">';
+      for (let r = 1; r <= totalRounds; r++) {
+        const label = getRoundName(participants.length / Math.pow(2, r - 1)).replace(/^\S+\s/, '');
+        const cls = r < currentRound ? 'done' : (r === currentRound ? 'current' : '');
+        html += `<span class="bt-step ${cls}"><i></i><b>${label}</b></span>`;
+      }
+      html += `</div><div class="bt-bar"><i style="width:${pct}%"></i></div>`;
+      track.innerHTML = html;
+      track.hidden = false;
+    }
+
+    function markLiveCard(card) {
+      if (!card) return;
+      if (!card.classList.contains('live')) {
+        arena.querySelectorAll('.match-card.live').forEach(el => el.classList.remove('live'));
+        card.classList.add('live');
+      }
+      const a = arena.getBoundingClientRect();
+      const r = card.getBoundingClientRect();
+      if (r.top < a.top + 8 || r.bottom > a.bottom - 8) {
+        arena.scrollTo({ top: arena.scrollTop + (r.top - a.top) - Math.max(0, (a.height - r.height) / 2), behavior: 'smooth' });
+      }
     }
 
     function updateMatchDisplay(matchIndex, state, choice1, choice2) {
@@ -1429,10 +1974,11 @@
       const choiceEl2 = document.getElementById(`choice-${displayIndex}-2`);
       
       if (!choiceEl1 || !choiceEl2) return;
+      markLiveCard(choiceEl1.closest('.match-card'));
       
       if (state === 'thinking') {
-        choiceEl1.textContent = '🤔';
-        choiceEl2.textContent = '🤔';
+        choiceEl1.textContent = '✊';
+        choiceEl2.textContent = '✊';
         choiceEl1.classList.add('thinking');
         choiceEl2.classList.add('thinking');
         choiceEl1.className = 'player-choice thinking';
@@ -1444,6 +1990,14 @@
         choiceEl2.classList.remove('thinking');
         choiceEl1.className = `player-choice ${choice1}`;
         choiceEl2.className = `player-choice ${choice2}`;
+        if (state === 'revealed') {
+          choiceEl1.classList.add('reveal');
+          choiceEl2.classList.add('reveal');
+        } else {
+          const outcome = determineWinner(choice1, choice2);
+          choiceEl1.classList.add(outcome === 'draw' ? 'hand-draw' : outcome === 'player1' ? 'hand-win' : 'hand-lose');
+          choiceEl2.classList.add(outcome === 'draw' ? 'hand-draw' : outcome === 'player2' ? 'hand-win' : 'hand-lose');
+        }
       }
     }
 
@@ -1536,6 +2090,7 @@
       `;
       
       closeFinalWinner();
+      renderBracketTrack();
     }
 
     function copyResults() {

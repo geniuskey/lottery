@@ -10,8 +10,8 @@
   "features": ["🏫 교실 테마", "🕺 댄스 애니메이션", "🔢 수학 문제 모드", "🎲 매회 랜덤 진행"],
   "color": "mugunghwa",
   "badge": "NEW",
-  "version": "1.8.0",
-  "updated": "2026-07-17",
+  "version": "1.9.0",
+  "updated": "2026-11-24",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -1675,6 +1675,161 @@
       .certificate { width: 92%; padding: 26px 20px; border-width: 8px; max-height: 88vh; overflow-y: auto; }
       .cert-title { font-size: 2rem; letter-spacing: 9px; margin-bottom: 20px; }
       .cert-content { font-size: .9rem; line-height: 1.6; margin-bottom: 22px; }
+    }
+
+    /* ===== v1.9 art pass: uniforms, desks, teacher, room details ===== */
+    .scene-decor::before {
+      content: ''; position: absolute; left: 0; right: 0; top: calc(54% - 9px); height: 9px;
+      background: linear-gradient(180deg, #9b6640 0%, #7a4a2b 70%, #5d3720 100%);
+      box-shadow: 0 4px 8px rgba(70, 40, 18, .28);
+    }
+    .scene-decor::after {
+      content: ''; position: absolute; left: 0; right: 0; top: 48%; height: 5px;
+      background: linear-gradient(180deg, #f3dfb3, #c9a874);
+      box-shadow: 0 2px 4px rgba(110, 80, 40, .18);
+    }
+    .chalkboard::before {
+      content: ''; position: absolute; z-index: 1; bottom: -15px; left: 9%; width: 70px; height: 9px;
+      background:
+        linear-gradient(90deg, #fffdf4 0 14px, transparent 14px 20px, #ffd2dc 20px 32px, transparent 32px 38px, #cfe9ff 38px 48px, transparent 48px) left bottom / 48px 4px no-repeat,
+        linear-gradient(180deg, #3d4a5c 0 3px, #d9c9a8 3px) right bottom / 20px 9px no-repeat;
+      border-radius: 2px;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .3));
+    }
+    .chalkboard { background:
+        repeating-linear-gradient(176deg, rgba(255,255,255,.018) 0 2px, transparent 2px 9px),
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,.06), transparent 35%),
+        radial-gradient(ellipse at 75% 80%, rgba(255,255,255,.035), transparent 40%),
+        linear-gradient(145deg, #2f7058, #174c43 65%, #1f5c4d);
+      border-color: #94603a;
+      box-shadow: 0 9px 18px rgba(83,57,31,.25), inset 0 0 35px rgba(3,35,29,.35), 0 0 0 2px #bd8954, inset 0 0 0 2px rgba(0,0,0,.15);
+    }
+
+    /* Student uniform */
+    .c-head { filter: drop-shadow(0 2px 2px rgba(40, 25, 10, .28)); }
+    .c-body {
+      z-index: 3; left: 11px; width: 28px; height: 28px; top: 29px;
+      border-radius: 11px 11px 6px 6px;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.2), transparent 24%, transparent 70%, rgba(0,0,0,.26)),
+        linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0) 50%),
+        var(--color, #3498db);
+      box-shadow: inset 0 -4px 0 rgba(0, 0, 0, .18), 0 1px 2px rgba(0, 0, 0, .2);
+    }
+    .c-body::before {
+      content: ''; position: absolute; left: 50%; top: 0; width: 13px; height: 13px; transform: translateX(-50%);
+      background: linear-gradient(180deg, #e04848, #a92b2b) 50% 2px / 3px 11px no-repeat, linear-gradient(180deg, #ffffff, #e9eef3);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+    .c-body::after {
+      content: ''; position: absolute; left: 50%; top: 15px; width: 3px; height: 3px; border-radius: 50%;
+      transform: translateX(-50%); background: #f5d06b; box-shadow: 0 5px 0 #f5d06b;
+    }
+    .c-arm, .c-forearm {
+      width: 8px; border-radius: 4px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.22), rgba(0,0,0,.18)),
+        var(--color, #3498db);
+    }
+    .c-arm { z-index: 2; top: 31px; }
+    .c-arm.l { left: 6px; }
+    .c-arm.r { right: 6px; }
+    .c-forearm::after {
+      content: ''; position: absolute; left: 50%; bottom: -5px; width: 8px; height: 8px; border-radius: 50%;
+      transform: translateX(-50%);
+      background: radial-gradient(circle at 35% 35%, #ffe3c4, #f1b886);
+      box-shadow: 0 -2px 0 #fff inset, 0 1px 1px rgba(0,0,0,.2);
+    }
+    .c-leg, .c-shin {
+      width: 9px; border-radius: 4px;
+      background: linear-gradient(90deg, #3b4775, #252e52);
+    }
+    .c-leg { z-index: 1; top: 53px; }
+    .c-shin::after {
+      content: ''; position: absolute; left: -2px; bottom: -3px; width: 13px; height: 6px;
+      border-radius: 6px 6px 2px 2px;
+      background: linear-gradient(180deg, #2b2b33 0 65%, #f2f2f2 65%);
+      box-shadow: 0 1px 1px rgba(0, 0, 0, .3);
+    }
+
+    /* Desk: wooden top with thickness, steel legs, book & pencil */
+    .desk-top {
+      height: 9px; border: 0; border-radius: 3px;
+      background: linear-gradient(180deg, #f5d59c 0%, #e2ad68 55%, #cf9351 100%);
+      box-shadow: 0 5px 0 #9c5f30, 0 6px 0 #7b4724, 0 10px 10px rgba(50, 28, 10, .35), inset 0 1px 0 rgba(255,255,255,.55);
+    }
+    .desk-top::before {
+      content: ''; position: absolute; left: 9px; top: -4px; width: 20px; height: 5px; border-radius: 1px;
+      background: linear-gradient(180deg, #fafafa 0 2px, #3f7ad8 2px);
+      box-shadow: 1px -2px 0 -1px #e85d5d;
+      transform: rotate(-3deg);
+    }
+    .desk-top::after {
+      content: ''; position: absolute; right: 11px; top: -2px; width: 17px; height: 3px; border-radius: 0 2px 2px 0;
+      background: linear-gradient(90deg, #333 0 2px, #f2c38f 2px 4px, #f6c443 4px 85%, #f08b8b 85%);
+      transform: rotate(-8deg);
+    }
+    .desk-leg {
+      width: 4px; top: 13px; height: 30px; border-radius: 2px;
+      background: linear-gradient(90deg, #c5ccd3, #7d8792);
+    }
+    .desk-leg::after {
+      content: ''; position: absolute; left: -3px; bottom: -2px; width: 10px; height: 3px; border-radius: 2px; background: #4d545c;
+    }
+    .desk-group::after {
+      content: ''; position: absolute; left: -6px; right: -6px; bottom: -7px; height: 12px; z-index: -1;
+      background: radial-gradient(ellipse at center, rgba(60, 32, 12, .35), rgba(60, 32, 12, 0) 70%);
+    }
+    .chair { filter: drop-shadow(0 3px 2px rgba(60, 30, 10, .3)); }
+
+    /* Teacher: blazer, shirt & tie, trousers, hands, chalk */
+    .t-head { position: relative; filter: drop-shadow(0 3px 3px rgba(30, 20, 10, .3)); }
+    .t-body {
+      border-radius: 18px 18px 8px 8px;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.28), transparent 28%, transparent 68%, rgba(0,0,0,.32)),
+        linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,0) 45%),
+        linear-gradient(145deg, #4f7482, #2a4552);
+      box-shadow: inset 0 -5px 0 rgba(0, 0, 0, .18);
+    }
+    .t-body::after {
+      content: ''; position: absolute; left: 50%; top: calc(100% - 2px); width: 64%; height: 19px; transform: translateX(-50%); z-index: -1;
+      background:
+        linear-gradient(#17191f, #17191f) left bottom / 46% 5px no-repeat,
+        linear-gradient(#17191f, #17191f) right bottom / 46% 5px no-repeat,
+        linear-gradient(90deg, #2e3a48 0 44%, transparent 44% 56%, #2e3a48 56% 100%);
+      border-radius: 0 0 3px 3px;
+    }
+    .teacher-front .t-body::before {
+      content: ''; position: absolute; left: 50%; top: 0; width: 36%; height: 48%; transform: translateX(-50%);
+      background: linear-gradient(180deg, #3463b8, #22468d) 50% 3px / 24% 100% no-repeat, linear-gradient(180deg, #ffffff, #e3e8ee);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+    .teacher-back .t-body::before {
+      content: ''; position: absolute; left: 50%; top: 4px; bottom: 6px; width: 2px; transform: translateX(-50%);
+      background: rgba(0, 0, 0, .18);
+    }
+    .t-arm, .t-forearm {
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.18), rgba(0,0,0,.22)),
+        linear-gradient(145deg, #4f7482, #2a4552);
+    }
+    .t-forearm::after {
+      content: ''; position: absolute; left: 50%; bottom: -7px; width: 13px; height: 13px; border-radius: 50%;
+      transform: translateX(-50%);
+      background: radial-gradient(circle at 35% 35%, #ffe3c4, #eeb27f);
+      box-shadow: inset 0 3px 0 #f4f4f4, 0 1px 2px rgba(0,0,0,.25);
+    }
+    .teacher-back .t-arm.r .t-forearm::before {
+      content: ''; position: absolute; left: 50%; bottom: -14px; width: 4px; height: 9px; border-radius: 1px;
+      transform: translateX(-50%) rotate(20deg); background: #fffdf2; box-shadow: 0 0 3px rgba(255,255,255,.7);
+    }
+    .bottom-stage::before {
+      z-index: 101; height: 26px; border: 0; border-radius: 6px 6px 0 0;
+      background:
+        linear-gradient(90deg, transparent 0 8%, rgba(0,0,0,.12) 8% 9%, transparent 9% 91%, rgba(0,0,0,.12) 91% 92%, transparent 92%) 0 8px / 100% 100% no-repeat,
+        linear-gradient(180deg, #e3ad6d 0 6px, #b97a42 6px 8px, #a5672f 8px, #7f4a24 100%);
+      box-shadow: 0 -4px 12px rgba(82, 48, 25, .22), inset 0 1px 0 rgba(255, 236, 200, .6), inset 0 -3px 6px rgba(0,0,0,.2);
     }
   </style>
 </head>

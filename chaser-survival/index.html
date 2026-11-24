@@ -10,8 +10,8 @@
   "features": ["🏃 도망 액션", "👹 술래 시스템"],
   "color": "red",
   "badge": "NEW",
-  "version": "1.0.0",
-  "updated": "2025-01-15",
+  "version": "1.1.0",
+  "updated": "2026-11-24",
   "author": {
     "name": "Euiyun Edwin Kim",
     "email": "geniuskey@gmail.com",
@@ -1455,6 +1455,8 @@
         animation-iteration-count: 1 !important;
       }
     }
+    /* Court, walls and corner pads are rendered on the canvas */
+    .boxing-ring, .corner-post, .ring-container::before { display: none !important; }
   </style>
 </head>
 <body>
@@ -1736,28 +1738,329 @@
       let lastTimestamp = 0;
       const soundManager = new SoundManager();
 
+      // ===== Visual layer (render-only; never touches game RNG/logic) =====
+      let viewW = 0, viewH = 0, viewDpr = 1;
+      let bgCanvas = null;
+      const spriteCache = new Map();
+      const labelCache = new Map();
+      let fxParticles = [];
+      let lastDrawTime = 0;
+      const EMOJI_FONT = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+
+      function visRng(seed) {
+        let a = seed >>> 0;
+        return function() {
+          a = (a + 0x6D2B79F5) >>> 0;
+          let t = a;
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      const fxRand = visRng(4242);
+
+      function makeCanvas(w, h) {
+        const c = document.createElement('canvas');
+        c.width = Math.max(1, Math.ceil(w * viewDpr));
+        c.height = Math.max(1, Math.ceil(h * viewDpr));
+        const g = c.getContext('2d');
+        g.setTransform(viewDpr, 0, 0, viewDpr, 0, 0);
+        return { c, g };
+      }
+
+      function wallThickness() {
+        return Math.max(6, Math.min(18, ringBounds.w * 0.03, ringBounds.x - 8));
+      }
+
+      function rr(g, x, y, w, h, r) {
+        g.beginPath();
+        if (g.roundRect) g.roundRect(x, y, w, h, r);
+        else g.rect(x, y, w, h);
+      }
+
+      function buildBackground() {
+        const W = viewW, H = viewH, R = ringBounds;
+        const rnd = visRng(777);
+        const { c, g } = makeCanvas(W, H);
+        const t = wallThickness();
+
+        // Ground shadow under the court
+        g.save();
+        g.shadowColor = 'rgba(0,0,0,0.75)';
+        g.shadowBlur = 40;
+        g.shadowOffsetY = 18;
+        g.fillStyle = '#0c0809';
+        rr(g, R.x - t - 6, R.y - t - 6, R.w + (t + 6) * 2, R.h + (t + 6) * 2, 12);
+        g.fill();
+        g.restore();
+
+        // Padded safety wall (alternating gym mats)
+        g.save();
+        rr(g, R.x - t - 6, R.y - t - 6, R.w + (t + 6) * 2, R.h + (t + 6) * 2, 12);
+        g.clip();
+        g.fillStyle = '#1b1416';
+        g.fillRect(R.x - t - 6, R.y - t - 6, R.w + (t + 6) * 2, R.h + (t + 6) * 2);
+        const seg = R.w / Math.max(6, Math.round(R.w / 90));
+        const matColors = [['#e2453f', '#9e1f22'], ['#2f6fd6', '#18428f']];
+        const drawMat = (x, y, w, h, horiz, idx) => {
+          const [c1, c2] = matColors[idx % 2];
+          const mg = horiz ? g.createLinearGradient(0, y, 0, y + h) : g.createLinearGradient(x, 0, x + w, 0);
+          mg.addColorStop(0, c1); mg.addColorStop(1, c2);
+          g.fillStyle = mg;
+          rr(g, x + 1, y + 1, w - 2, h - 2, 4);
+          g.fill();
+          g.fillStyle = 'rgba(255,255,255,0.18)';
+          if (horiz) g.fillRect(x + 4, y + 2, w - 8, 1.5); else g.fillRect(x + 2, y + 4, 1.5, h - 8);
+        };
+        let i = 0;
+        for (let x = R.x; x < R.x + R.w - 1; x += seg, i++) {
+          drawMat(x, R.y - t - 6, seg, t + 6, true, i);
+          drawMat(x, R.y + R.h, seg, t + 6, true, i + 1);
+        }
+        i = 0;
+        for (let y = R.y; y < R.y + R.h - 1; y += seg, i++) {
+          drawMat(R.x - t - 6, y, t + 6, seg, false, i + 1);
+          drawMat(R.x + R.w, y, t + 6, seg, false, i);
+        }
+        g.restore();
+
+        // Wooden gym floor
+        g.save();
+        g.beginPath(); g.rect(R.x, R.y, R.w, R.h); g.clip();
+        const fg = g.createLinearGradient(R.x, R.y, R.x + R.w, R.y + R.h);
+        fg.addColorStop(0, '#c98d4f'); fg.addColorStop(1, '#a8682f');
+        g.fillStyle = fg;
+        g.fillRect(R.x, R.y, R.w, R.h);
+        const plankH = Math.max(14, R.w / 32);
+        for (let y = R.y, row = 0; y < R.y + R.h; y += plankH, row++) {
+          let x = R.x - rnd() * 140;
+          while (x < R.x + R.w) {
+            const len = 90 + rnd() * 120;
+            const l = 44 + rnd() * 12;
+            g.fillStyle = `hsla(${26 + rnd() * 8}, ${48 + rnd() * 14}%, ${l}%, 0.55)`;
+            g.fillRect(x, y, len, plankH);
+            // grain
+            g.strokeStyle = `rgba(90,45,15,${0.08 + rnd() * 0.08})`;
+            g.lineWidth = 1;
+            for (let k = 0; k < 3; k++) {
+              const gy = y + 2 + rnd() * (plankH - 4);
+              g.beginPath();
+              g.moveTo(x + 2, gy);
+              g.bezierCurveTo(x + len * 0.3, gy + (rnd() - 0.5) * 3, x + len * 0.7, gy + (rnd() - 0.5) * 3, x + len - 2, gy);
+              g.stroke();
+            }
+            g.fillStyle = 'rgba(60,28,8,0.45)';
+            g.fillRect(x + len - 1, y, 1, plankH);
+            x += len;
+          }
+          g.fillStyle = 'rgba(60,28,8,0.4)';
+          g.fillRect(R.x, y + plankH - 1, R.w, 1);
+          g.fillStyle = 'rgba(255,230,190,0.08)';
+          g.fillRect(R.x, y, R.w, 1);
+        }
+
+        // Court paint
+        const cx = R.x + R.w / 2, cy = R.y + R.h / 2;
+        const inset = R.w * 0.06;
+        // colored key zones
+        g.fillStyle = 'rgba(200,40,45,0.28)';
+        g.fillRect(R.x + R.w * 0.32, R.y + inset, R.w * 0.36, R.h * 0.2);
+        g.fillRect(R.x + R.w * 0.32, R.y + R.h - inset - R.h * 0.2, R.w * 0.36, R.h * 0.2);
+        g.fillStyle = 'rgba(40,90,200,0.25)';
+        g.beginPath(); g.arc(cx, cy, R.w * 0.14, 0, Math.PI * 2); g.fill();
+
+        g.strokeStyle = 'rgba(255,250,235,0.85)';
+        g.lineWidth = Math.max(2, R.w * 0.0055);
+        g.strokeRect(R.x + inset, R.y + inset, R.w - inset * 2, R.h - inset * 2);
+        g.beginPath(); g.moveTo(R.x + inset, cy); g.lineTo(R.x + R.w - inset, cy); g.stroke();
+        g.beginPath(); g.arc(cx, cy, R.w * 0.14, 0, Math.PI * 2); g.stroke();
+        g.beginPath(); g.arc(cx, cy, R.w * 0.04, 0, Math.PI * 2); g.stroke();
+        g.strokeRect(R.x + R.w * 0.32, R.y + inset, R.w * 0.36, R.h * 0.2);
+        g.strokeRect(R.x + R.w * 0.32, R.y + R.h - inset - R.h * 0.2, R.w * 0.36, R.h * 0.2);
+        g.beginPath(); g.arc(cx, R.y + inset + R.h * 0.2, R.w * 0.18, 0, Math.PI); g.stroke();
+        g.beginPath(); g.arc(cx, R.y + R.h - inset - R.h * 0.2, R.w * 0.18, Math.PI, Math.PI * 2); g.stroke();
+        // three-point arcs
+        g.strokeStyle = 'rgba(255,214,90,0.75)';
+        g.beginPath(); g.arc(cx, R.y + inset, R.w * 0.36, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke();
+        g.beginPath(); g.arc(cx, R.y + R.h - inset, R.w * 0.36, 1.15 * Math.PI, 1.85 * Math.PI); g.stroke();
+
+        // center logo text
+        g.save();
+        g.translate(cx, cy);
+        g.fillStyle = 'rgba(255,250,235,0.5)';
+        g.font = `900 ${Math.max(11, R.w * 0.03)}px "Noto Sans KR", sans-serif`;
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillText('CHASE', 0, 0);
+        g.restore();
+
+        // varnish sheen + ceiling light pools
+        const sh = g.createLinearGradient(R.x, R.y, R.x + R.w, R.y + R.h);
+        sh.addColorStop(0, 'rgba(255,255,255,0.10)');
+        sh.addColorStop(0.45, 'rgba(255,255,255,0)');
+        sh.addColorStop(0.55, 'rgba(255,255,255,0.05)');
+        sh.addColorStop(1, 'rgba(0,0,0,0)');
+        g.fillStyle = sh;
+        g.fillRect(R.x, R.y, R.w, R.h);
+        [[0.3, 0.3], [0.7, 0.3], [0.3, 0.7], [0.7, 0.7]].forEach(([fx, fy]) => {
+          const lp = g.createRadialGradient(R.x + R.w * fx, R.y + R.h * fy, 0, R.x + R.w * fx, R.y + R.h * fy, R.w * 0.3);
+          lp.addColorStop(0, 'rgba(255,240,200,0.12)');
+          lp.addColorStop(1, 'rgba(255,240,200,0)');
+          g.fillStyle = lp;
+          g.fillRect(R.x, R.y, R.w, R.h);
+        });
+        // vignette
+        const vg = g.createRadialGradient(cx, cy, R.w * 0.25, cx, cy, R.w * 0.78);
+        vg.addColorStop(0, 'rgba(20,8,4,0)');
+        vg.addColorStop(1, 'rgba(20,8,4,0.6)');
+        g.fillStyle = vg;
+        g.fillRect(R.x, R.y, R.w, R.h);
+        // inner wall shadow
+        g.strokeStyle = 'rgba(0,0,0,0.35)';
+        g.lineWidth = 8;
+        g.strokeRect(R.x + 2, R.y + 2, R.w - 4, R.h - 4);
+        g.restore();
+
+        // Corner pads (foam posts)
+        const pr = t * 0.95 + 4;
+        [[R.x, R.y], [R.x + R.w, R.y], [R.x, R.y + R.h], [R.x + R.w, R.y + R.h]].forEach(([x, y]) => {
+          g.save();
+          g.shadowColor = 'rgba(0,0,0,0.6)'; g.shadowBlur = 8; g.shadowOffsetY = 3;
+          const pg = g.createRadialGradient(x - pr * 0.35, y - pr * 0.4, pr * 0.1, x, y, pr);
+          pg.addColorStop(0, '#fff3c4'); pg.addColorStop(0.45, '#f1b52e'); pg.addColorStop(1, '#8a5a0c');
+          g.fillStyle = pg;
+          g.beginPath(); g.arc(x, y, pr, 0, Math.PI * 2); g.fill();
+          g.restore();
+          g.strokeStyle = 'rgba(70,40,5,0.8)'; g.lineWidth = 1.5;
+          g.beginPath(); g.arc(x, y, pr, 0, Math.PI * 2); g.stroke();
+        });
+
+        bgCanvas = c;
+      }
+
+      function getTokenSprite(emoji, r, kind) {
+        const k = kind + emoji + r;
+        if (spriteCache.has(k)) return spriteCache.get(k);
+        const S = (r + 8) * 2;
+        const { c, g } = makeCanvas(S, S);
+        const m = S / 2;
+        const isChaser = kind === 'chaser';
+        // rim
+        const ring = g.createLinearGradient(0, m - r, 0, m + r);
+        if (isChaser) { ring.addColorStop(0, '#ff8a7a'); ring.addColorStop(0.5, '#e0262b'); ring.addColorStop(1, '#7a0b10'); }
+        else if (kind === 'out') { ring.addColorStop(0, '#9a9a9a'); ring.addColorStop(1, '#444'); }
+        else { ring.addColorStop(0, '#9ff3ff'); ring.addColorStop(0.5, '#25b6e6'); ring.addColorStop(1, '#0d5f8c'); }
+        g.fillStyle = ring;
+        g.beginPath(); g.arc(m, m, r + 1.5, 0, Math.PI * 2); g.fill();
+        // jersey disc
+        const disc = g.createRadialGradient(m - r * 0.3, m - r * 0.35, r * 0.1, m, m, r);
+        if (isChaser) { disc.addColorStop(0, '#ffe9e4'); disc.addColorStop(0.75, '#ffc2b5'); disc.addColorStop(1, '#d0705f'); }
+        else { disc.addColorStop(0, '#ffffff'); disc.addColorStop(0.75, '#eaf6fb'); disc.addColorStop(1, '#a9c7d6'); }
+        g.fillStyle = disc;
+        g.beginPath(); g.arc(m, m, r - 2.5, 0, Math.PI * 2); g.fill();
+        g.font = `${Math.round(r * 1.35)}px ${EMOJI_FONT}`;
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillStyle = '#000';
+        if (kind === 'out') g.globalAlpha = 0.75;
+        g.fillText(emoji, m, m + r * 0.06);
+        g.globalAlpha = 1;
+        const gl = g.createLinearGradient(0, m - r, 0, m);
+        gl.addColorStop(0, 'rgba(255,255,255,0.5)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = gl;
+        g.beginPath(); g.ellipse(m, m - r * 0.45, r * 0.6, r * 0.34, 0, 0, Math.PI * 2); g.fill();
+        if (isChaser) {
+          // "술래" headband tag
+          g.save();
+          g.translate(m, m - r * 0.98);
+          const bw = r * 1.25, bh = Math.max(11, r * 0.42);
+          const bg2 = g.createLinearGradient(0, -bh / 2, 0, bh / 2);
+          bg2.addColorStop(0, '#ff4d4d'); bg2.addColorStop(1, '#b3111a');
+          g.fillStyle = bg2;
+          rr(g, -bw / 2, -bh / 2, bw, bh, bh / 2);
+          g.fill();
+          g.strokeStyle = '#fff'; g.lineWidth = 1.5; g.stroke();
+          g.fillStyle = '#fff';
+          g.font = `900 ${Math.round(bh * 0.72)}px "Noto Sans KR", sans-serif`;
+          g.textAlign = 'center'; g.textBaseline = 'middle';
+          g.fillText('술래', 0, 0.5);
+          g.restore();
+        }
+        const entry = { c, S };
+        spriteCache.set(k, entry);
+        return entry;
+      }
+
+      function getLabelSprite(name, dim) {
+        const key = (dim ? '~' : '') + name;
+        if (labelCache.has(key)) return labelCache.get(key);
+        const font = `bold ${dim ? 11 : 13}px "Noto Sans KR", sans-serif`;
+        ctx.save(); ctx.font = font; const w = Math.ceil(ctx.measureText(name).width) + 14; ctx.restore();
+        const h = dim ? 18 : 21;
+        const { c, g } = makeCanvas(w, h);
+        g.fillStyle = dim ? 'rgba(20,16,18,0.6)' : 'rgba(12,16,26,0.78)';
+        rr(g, 1, 1, w - 2, h - 2, (h - 2) / 2);
+        g.fill();
+        g.strokeStyle = dim ? 'rgba(255,255,255,0.12)' : 'rgba(120,220,255,0.35)';
+        g.lineWidth = 1; g.stroke();
+        g.font = font;
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillStyle = dim ? '#9b9396' : '#fff';
+        g.fillText(name, w / 2, h / 2 + 0.5);
+        const entry = { c, w, h };
+        labelCache.set(key, entry);
+        return entry;
+      }
+
+      function getGlowSprite(key, rgb, size) {
+        const k = 'glow' + key;
+        if (spriteCache.has(k)) return spriteCache.get(k);
+        const { c, g } = makeCanvas(size, size);
+        const gr = g.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+        gr.addColorStop(0, `rgba(${rgb},1)`);
+        gr.addColorStop(0.35, `rgba(${rgb},0.45)`);
+        gr.addColorStop(1, `rgba(${rgb},0)`);
+        g.fillStyle = gr;
+        g.fillRect(0, 0, size, size);
+        spriteCache.set(k, c);
+        return c;
+      }
+
+      function spawnBurst(x, y, count, palette, speed, size) {
+        for (let i = 0; i < count; i++) {
+          const a = fxRand() * Math.PI * 2;
+          const v = speed * (0.35 + fxRand() * 0.85);
+          const life = 0.35 + fxRand() * 0.4;
+          fxParticles.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life, max: life,
+            s: size * (0.6 + fxRand() * 0.8), col: palette[Math.floor(fxRand() * palette.length)] });
+        }
+        if (fxParticles.length > 300) fxParticles.splice(0, fxParticles.length - 300);
+      }
+
       // Canvas resize
       function resizeCanvas() {
         const container = canvas.parentElement;
         if (!container) return;
-        
-        canvas.width = container.offsetWidth;
-        canvas.height = container.offsetHeight;
-        
+
+        viewDpr = Math.min(window.devicePixelRatio || 1, 2);
+        viewW = container.offsetWidth;
+        viewH = container.offsetHeight;
+        canvas.width = Math.round(viewW * viewDpr);
+        canvas.height = Math.round(viewH * viewDpr);
+        ctx.setTransform(viewDpr, 0, 0, viewDpr, 0, 0);
+
         const isMobile = window.innerWidth <= 768;
         const minPadX = isMobile ? 15 : 80;
         const minPadY = isMobile ? 80 : 100;
-        
-        const availableW = canvas.width - minPadX * 2;
-        const availableH = canvas.height - minPadY * 2;
-        
+
+        const availableW = viewW - minPadX * 2;
+        const availableH = viewH - minPadY * 2;
+
         // Force square ring
         const side = Math.min(availableW, availableH);
-        
+
         // Center the square
-        const padX = (canvas.width - side) / 2;
-        const padY = (canvas.height - side) / 2;
-        
+        const padX = (viewW - side) / 2;
+        const padY = (viewH - side) / 2;
+
         // Update CSS variables for pillars and floor
         document.documentElement.style.setProperty('--pad-x', padX + 'px');
         document.documentElement.style.setProperty('--pad-y', padY + 'px');
@@ -1769,16 +2072,19 @@
           w: side,
           h: side
         };
-        
+
+        spriteCache.clear();
+        labelCache.clear();
+        buildBackground();
         // Always draw ring even when game is not running
         drawRing();
       }
-      
+
       // Draw ring (can be called independently)
       function drawRing() {
-        ctx.strokeStyle = '#ff2a2a';
-        ctx.lineWidth = 6;
-        ctx.strokeRect(ringBounds.x, ringBounds.y, ringBounds.w, ringBounds.h);
+        if (!bgCanvas) return;
+        ctx.setTransform(viewDpr, 0, 0, viewDpr, 0, 0);
+        ctx.drawImage(bgCanvas, 0, 0, viewW, viewH);
       }
 
       // LocalStorage
@@ -2005,8 +2311,8 @@
                 }
                 
                 // Clamp to canvas bounds
-                exitX = Math.max(30, Math.min(canvas.width - 30, exitX));
-                exitY = Math.max(30, Math.min(canvas.height - 30, exitY));
+                exitX = Math.max(30, Math.min(viewW - 30, exitX));
+                exitY = Math.max(30, Math.min(viewH - 30, exitY));
                 
                 eliminatedParticipants.push({
                   name: target.name,
@@ -2341,34 +2647,57 @@
           life: 25,
           scale: 0.5
         });
+        spawnBurst(x, y, 14, ['#ffe14d', '#ff8a2a', '#ffffff'], 260, 3.2);
       }
 
       // Draw game
       function draw(dtScale) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const now = performance.now();
+        const dt = lastDrawTime ? Math.min((now - lastDrawTime) / 1000, 0.1) : 0.016;
+        lastDrawTime = now;
+        const T = now / 1000;
 
-        // Draw ring rope
+        ctx.setTransform(viewDpr, 0, 0, viewDpr, 0, 0);
+        ctx.clearRect(0, 0, viewW, viewH);
+
+        // Court background (cached)
         drawRing();
 
-        // Draw eliminated participants (outside ring)
+        // Eliminated participants (benched outside the court)
         eliminatedParticipants.forEach(ep => {
+          const spr = getTokenSprite('😢', 15, 'out');
           ctx.save();
-          ctx.globalAlpha = 0.7;
-          
-          // Same size as alive participants
-          ctx.font = '35px Arial';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('😢', ep.x, ep.y);
-          
-          // Name (same size as alive: 22px)
-          ctx.font = 'bold 22px Noto Sans KR';
-          ctx.fillStyle = '#aaa';
-          ctx.strokeStyle = '#000';
-          ctx.lineWidth = 4;
-          ctx.strokeText(ep.name, ep.x, ep.y + 35);
-          ctx.fillText(ep.name, ep.x, ep.y + 35);
+          ctx.globalAlpha = 0.85;
+          ctx.drawImage(spr.c, ep.x - spr.S / 2, ep.y - spr.S / 2, spr.S, spr.S);
+          const lab = getLabelSprite(ep.name, true);
+          ctx.drawImage(lab.c, ep.x - lab.w / 2, ep.y + 15, lab.w, lab.h);
           ctx.restore();
+        });
+
+        // Danger zone under chaser
+        if (chaser) {
+          const pulse = 0.5 + 0.5 * Math.sin(T * 6);
+          ctx.save();
+          ctx.globalAlpha = 0.18 + pulse * 0.1;
+          const zs = 160;
+          ctx.drawImage(getGlowSprite('danger', '255,40,40', 128), chaser.x - zs / 2, chaser.y - zs / 2, zs, zs);
+          ctx.restore();
+          ctx.save();
+          ctx.strokeStyle = `rgba(255,70,70,${0.25 + pulse * 0.2})`;
+          ctx.lineWidth = 2;
+          ctx.setLineDash([6, 8]);
+          ctx.lineDashOffset = -T * 30;
+          ctx.beginPath(); ctx.arc(chaser.x, chaser.y, 80, 0, Math.PI * 2); ctx.stroke();
+          ctx.restore();
+        }
+
+        // Shadows first (so tokens never get shadowed by neighbours)
+        ctx.fillStyle = 'rgba(40,18,5,0.35)';
+        participants.forEach(p => {
+          if (!p.alive) return;
+          ctx.beginPath();
+          ctx.ellipse(p.x + 3, p.y + p.radius * 0.75, p.radius * 0.95, p.radius * 0.4, 0, 0, Math.PI * 2);
+          ctx.fill();
         });
 
         // Draw alive participants
@@ -2377,163 +2706,203 @@
 
           drawDashTrail(p, '#00e5ff');
 
-          ctx.save();
-          ctx.translate(p.x, p.y);
-
-          // Hit flash effect
-          if (p.hitFlash > 0) {
-            ctx.beginPath();
-            ctx.arc(0, 0, p.radius + 5, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255, 0, 0, ${p.hitFlash / 15 * 0.5})`;
-            ctx.fill();
+          const hit = p.hitFlash > 0;
+          if (hit) {
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.globalAlpha = Math.min(1, p.hitFlash / 15);
+            const gs = p.radius * 4;
+            ctx.drawImage(getGlowSprite('hit', '255,60,40', 96), p.x - gs / 2, p.y - gs / 2, gs, gs);
+            ctx.restore();
           }
 
-          // Background circle (drawn separately, no overlay on emoji)
-          ctx.beginPath();
-          ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
-          ctx.fillStyle = p.hitFlash > 0 ? 'rgba(255, 100, 100, 0.4)' : 'rgba(100, 200, 255, 0.3)';
-          ctx.fill();
-          ctx.strokeStyle = p.hitFlash > 0 ? 'rgba(255, 100, 100, 0.8)' : 'rgba(100, 200, 255, 0.7)';
-          ctx.lineWidth = 2;
-          ctx.stroke();
+          const spr = getTokenSprite(p.emoji, p.radius, 'runner');
+          const jx = hit ? (fxRand() - 0.5) * 4 * (p.hitFlash / 15) : 0;
+          ctx.drawImage(spr.c, p.x - spr.S / 2 + jx, p.y - spr.S / 2, spr.S, spr.S);
+          if (hit) {
+            ctx.save();
+            ctx.globalAlpha = Math.min(1, p.hitFlash / 15) * 0.45;
+            ctx.fillStyle = '#ff2a2a';
+            ctx.beginPath(); ctx.arc(p.x + jx, p.y, p.radius - 2, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+          }
 
-          ctx.restore();
-          
-          // Draw emoji on top (separate context to avoid color blending)
-          ctx.save();
-          ctx.translate(p.x, p.y);
-          ctx.font = `${p.radius * 1.6}px Arial`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(p.emoji, 0, 2);
-
-          // Name (2x size)
-          ctx.font = 'bold 22px Noto Sans KR';
-          ctx.fillStyle = '#fff';
-          ctx.strokeStyle = '#000';
-          ctx.lineWidth = 4;
-          ctx.strokeText(p.name, 0, p.radius + 18);
-          ctx.fillText(p.name, 0, p.radius + 18);
+          // Name
+          const lab = getLabelSprite(p.name, false);
+          ctx.drawImage(lab.c, p.x - lab.w / 2, p.y + p.radius + 3, lab.w, lab.h);
 
           // HP Bar
-          const hpBarWidth = 40;
-          const hpBarHeight = 6;
-          const hpPercent = p.hp / p.maxHp;
-          
-          // HP bar background
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-          ctx.fillRect(-hpBarWidth / 2 - 1, -p.radius - 16, hpBarWidth + 2, hpBarHeight + 2);
-          
-          // HP bar fill
-          const hpColor = hpPercent > 0.5 ? '#00ff88' : hpPercent > 0.25 ? '#ffcc00' : '#ff3333';
+          const hpBarWidth = 36;
+          const hpBarHeight = 5;
+          const hpPercent = Math.max(0, p.hp / p.maxHp);
+          const bx = p.x - hpBarWidth / 2, by = p.y - p.radius - 12;
+          ctx.fillStyle = 'rgba(10,10,14,0.8)';
+          rr(ctx, bx - 2, by - 2, hpBarWidth + 4, hpBarHeight + 4, 4);
+          ctx.fill();
+          const hpColor = hpPercent > 0.5 ? '#2fe88f' : hpPercent > 0.25 ? '#ffcc00' : '#ff3b3b';
           ctx.fillStyle = hpColor;
-          ctx.fillRect(-hpBarWidth / 2, -p.radius - 15, hpBarWidth * hpPercent, hpBarHeight);
-
-          ctx.restore();
+          rr(ctx, bx, by, Math.max(2, hpBarWidth * hpPercent), hpBarHeight, 2.5);
+          ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,255,0.35)';
+          ctx.fillRect(bx + 1, by + 0.5, Math.max(0, hpBarWidth * hpPercent - 2), 1.2);
         });
 
         // Draw chaser
         if (chaser) {
-          drawDashTrail(chaser, '#ffcc00');
+          drawDashTrail(chaser, '#ff5a3a');
 
-          ctx.save();
-          ctx.translate(chaser.x, chaser.y);
-
-          // Background circle (drawn first)
+          // shadow
+          ctx.fillStyle = 'rgba(40,10,5,0.45)';
           ctx.beginPath();
-          ctx.arc(0, 0, chaser.radius, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(200, 0, 0, 0.5)';
+          ctx.ellipse(chaser.x + 3, chaser.y + chaser.radius * 0.8, chaser.radius * 1.05, chaser.radius * 0.42, 0, 0, Math.PI * 2);
           ctx.fill();
-          ctx.strokeStyle = '#ff3333';
-          ctx.lineWidth = 3;
-          ctx.stroke();
 
-          ctx.restore();
-          
-          // Draw devil emoji on top (separate to avoid color tinting)
           ctx.save();
           ctx.translate(chaser.x, chaser.y);
-          ctx.font = '42px Arial';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText('😠', 0, 2);
+
+          // aura
+          ctx.save();
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.globalAlpha = 0.45 + 0.2 * Math.sin(T * 8);
+          const as = chaser.radius * 3.2;
+          ctx.drawImage(getGlowSprite('chaser', '255,50,30', 128), -as / 2, -as / 2, as, as);
+          ctx.restore();
+
+          // facing arrow on the floor
+          const fa = chaser.facingAngle;
+          ctx.save();
+          ctx.rotate(fa);
+          ctx.fillStyle = 'rgba(255,80,60,0.55)';
+          ctx.beginPath();
+          ctx.moveTo(chaser.radius + 16, 0);
+          ctx.lineTo(chaser.radius + 6, -7);
+          ctx.lineTo(chaser.radius + 6, 7);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+
+          const cs = getTokenSprite('😠', chaser.radius, 'chaser');
+          ctx.drawImage(cs.c, -cs.S / 2, -cs.S / 2, cs.S, cs.S);
 
           // Gloves with rotation
           const baseAngle = chaser.facingAngle;
           const gloveBaseDistance = chaser.radius + 5;
           const spreadAngle = 0.4;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#000';
 
           if (chaser.isPunching) {
-            // Punching animation - arm extends far forward
             const punchProgress = chaser.punchProgress;
-            // Use easing for more dramatic punch: fast extend, slight hold, return
-            const easeProgress = punchProgress < 0.5 
-              ? 4 * punchProgress * punchProgress * punchProgress 
+            const easeProgress = punchProgress < 0.5
+              ? 4 * punchProgress * punchProgress * punchProgress
               : 1 - Math.pow(-2 * punchProgress + 2, 3) / 2;
-            
-            const maxExtend = 80; // Long arm extension
+
+            const maxExtend = 80;
             const extend = easeProgress * maxExtend;
-            
+
             const punchX = Math.cos(baseAngle) * (gloveBaseDistance + extend);
             const punchY = Math.sin(baseAngle) * (gloveBaseDistance + extend);
-            
-            // Draw arm line
-            ctx.strokeStyle = 'rgba(139, 69, 19, 0.8)';
-            ctx.lineWidth = 8;
+
+            // arm (sleeve + skin)
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#7a1014';
+            ctx.lineWidth = 11;
             ctx.beginPath();
             ctx.moveTo(Math.cos(baseAngle) * 15, Math.sin(baseAngle) * 15);
             ctx.lineTo(punchX, punchY);
             ctx.stroke();
-            
+            ctx.strokeStyle = '#f2b38a';
+            ctx.lineWidth = 7;
+            ctx.stroke();
+
+            // speed lines
+            if (easeProgress > 0.2) {
+              ctx.save();
+              ctx.rotate(baseAngle);
+              ctx.strokeStyle = `rgba(255,255,255,${0.6 * easeProgress})`;
+              ctx.lineWidth = 2;
+              for (let k = -1; k <= 1; k++) {
+                ctx.beginPath();
+                ctx.moveTo(gloveBaseDistance + extend - 30, k * 9);
+                ctx.lineTo(gloveBaseDistance + extend - 12, k * 9);
+                ctx.stroke();
+              }
+              ctx.restore();
+            }
+
             ctx.save();
             ctx.translate(punchX, punchY);
             ctx.rotate(baseAngle);
-            ctx.font = '28px Arial';
+            ctx.font = `30px ${EMOJI_FONT}`;
             ctx.fillText('🥊', 0, 0);
             ctx.restore();
           } else {
-            // Normal stance - gloves ready on sides
-            // Left glove
-            const leftX = Math.cos(baseAngle - spreadAngle) * gloveBaseDistance;
-            const leftY = Math.sin(baseAngle - spreadAngle) * gloveBaseDistance;
-            ctx.save();
-            ctx.translate(leftX, leftY);
-            ctx.rotate(baseAngle - spreadAngle);
-            ctx.font = '20px Arial';
-            ctx.fillText('🥊', 0, 0);
-            ctx.restore();
-
-            // Right glove
-            const rightX = Math.cos(baseAngle + spreadAngle) * gloveBaseDistance;
-            const rightY = Math.sin(baseAngle + spreadAngle) * gloveBaseDistance;
-            ctx.save();
-            ctx.translate(rightX, rightY);
-            ctx.rotate(baseAngle + spreadAngle);
-            ctx.font = '20px Arial';
-            ctx.fillText('🥊', 0, 0);
-            ctx.restore();
+            const bob = Math.sin(T * 9) * 2;
+            [-1, 1].forEach(sd => {
+              const a = baseAngle + sd * spreadAngle;
+              ctx.save();
+              ctx.translate(Math.cos(a) * (gloveBaseDistance + bob), Math.sin(a) * (gloveBaseDistance + bob));
+              ctx.rotate(a);
+              ctx.font = `21px ${EMOJI_FONT}`;
+              ctx.fillText('🥊', 0, 0);
+              ctx.restore();
+            });
           }
 
           ctx.restore();
         }
 
-        // Draw punch effects
+        // Draw punch effects (comic impact burst)
         punchEffects = punchEffects.filter(e => {
           e.life -= dtScale;
           if (e.life <= 0) return false;
           e.scale += 0.12 * dtScale;
+          const k = e.life / 25;
 
           ctx.save();
           ctx.translate(e.x, e.y);
-          ctx.globalAlpha = e.life / 25;
-          ctx.font = `${35 * e.scale}px Arial`;
+          ctx.globalAlpha = Math.min(1, k * 1.4);
+          const R1 = 26 * e.scale, R2 = 14 * e.scale;
+          ctx.rotate(e.x * 0.01);
+          ctx.beginPath();
+          for (let i = 0; i < 20; i++) {
+            const rad = i % 2 ? R2 : R1;
+            const a = i / 20 * Math.PI * 2;
+            i ? ctx.lineTo(Math.cos(a) * rad, Math.sin(a) * rad) : ctx.moveTo(Math.cos(a) * rad, Math.sin(a) * rad);
+          }
+          ctx.closePath();
+          ctx.fillStyle = '#ffe14d';
+          ctx.fill();
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = '#e2401c';
+          ctx.stroke();
+          ctx.globalAlpha *= 0.9;
+          ctx.font = `${Math.round(24 * e.scale)}px ${EMOJI_FONT}`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
+          ctx.fillStyle = '#000';
           ctx.fillText('💥', 0, 0);
           ctx.restore();
 
           return e.life > 0;
         });
+
+        // Particles
+        if (fxParticles.length) {
+          ctx.save();
+          for (let i = fxParticles.length - 1; i >= 0; i--) {
+            const q = fxParticles[i];
+            q.life -= dt;
+            if (q.life <= 0) { fxParticles.splice(i, 1); continue; }
+            q.vx *= Math.pow(0.08, dt); q.vy *= Math.pow(0.08, dt);
+            q.x += q.vx * dt; q.y += q.vy * dt;
+            ctx.globalAlpha = Math.min(1, q.life / q.max * 1.4);
+            ctx.fillStyle = q.col;
+            ctx.beginPath(); ctx.arc(q.x, q.y, q.s * (0.4 + 0.6 * q.life / q.max), 0, Math.PI * 2); ctx.fill();
+          }
+          ctx.restore();
+        }
 
         // Draw text effects
         textEffects = textEffects.filter(e => {
@@ -2541,30 +2910,81 @@
           if (e.life <= 0) return false;
 
           const progress = 1 - (e.life / e.maxLife);
-          const y = e.y - progress * 30;
-          
+
           if (e.isKO) {
             e.scale = Math.min(e.scale + 0.08 * dtScale, 2);
           }
-
-          const fontScale = e.fontScale || 1;
+          const fade = Math.min(1, (e.life / e.maxLife) * 2.2);
+          const pop = progress < 0.12 ? 0.6 + (progress / 0.12) * 0.5 : 1.1 - Math.min(0.1, (progress - 0.12));
 
           ctx.save();
-          ctx.translate(e.x, y);
-          ctx.globalAlpha = e.life / e.maxLife;
-          
-          ctx.font = `bold ${24 * e.scale * fontScale}px 'Black Han Sans', sans-serif`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          
-          // Text shadow
-          ctx.strokeStyle = '#000';
-          ctx.lineWidth = 4;
-          ctx.strokeText(e.text, 0, 0);
-          
-          ctx.fillStyle = e.color;
-          ctx.fillText(e.text, 0, 0);
-          
+          ctx.globalAlpha = fade;
+
+          if (e.text === 'Help!') {
+            // speech bubble anchored above the runner
+            const y = e.y + 12 - progress * 10;
+            ctx.translate(e.x + 44, y);
+            ctx.scale(pop, pop);
+            ctx.rotate(Math.sin(T * 20 + e.x) * 0.05);
+            ctx.font = '900 13px "Noto Sans KR", sans-serif';
+            const tw = ctx.measureText('Help!').width + 14;
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#0b4f6c';
+            ctx.lineWidth = 2;
+            rr(ctx, -tw / 2, -11, tw, 22, 11);
+            ctx.fill(); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(-tw / 2 + 8, 9);
+            ctx.lineTo(-tw / 2 + 2, 18);
+            ctx.lineTo(-tw / 2 + 16, 10);
+            ctx.closePath();
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(-tw / 2 + 8, 10.5); ctx.lineTo(-tw / 2 + 2, 18); ctx.lineTo(-tw / 2 + 16, 10.5);
+            ctx.stroke();
+            ctx.fillStyle = '#0a7fb0';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Help!', 0, 0.5);
+          } else if (e.text === 'DASH!' || e.text === 'CHASE!') {
+            const y = e.y - progress * 18;
+            ctx.translate(e.x, y);
+            ctx.scale(pop, pop);
+            ctx.transform(1, 0, -0.18, 1, 0, 0);
+            const fs = e.text === 'CHASE!' ? 13 : 11;
+            ctx.font = `italic 900 ${fs}px "Noto Sans KR", sans-serif`;
+            const tw = ctx.measureText(e.text).width + 14;
+            ctx.fillStyle = e.text === 'CHASE!' ? 'rgba(200,20,30,0.92)' : 'rgba(6,90,130,0.9)';
+            rr(ctx, -tw / 2, -fs * 0.8, tw, fs * 1.6, 4);
+            ctx.fill();
+            ctx.strokeStyle = e.color;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(e.text, 0, 0.5);
+          } else {
+            const y = e.y - progress * 30;
+            const fontScale = e.fontScale || 1;
+            ctx.translate(e.x, y);
+            if (!e.isKO) ctx.scale(pop, pop);
+            ctx.rotate(e.isKO ? -0.08 : -0.05);
+            ctx.font = `${Math.round(24 * e.scale * fontScale)}px 'Black Han Sans', sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = e.isKO ? '#3a0004' : '#4a1a00';
+            ctx.lineWidth = e.isKO ? 8 : 6;
+            ctx.strokeText(e.text, 0, 0);
+            if (e.isKO) { ctx.shadowColor = 'rgba(255,40,40,0.9)'; ctx.shadowBlur = 18; }
+            const tg = ctx.createLinearGradient(0, -14 * e.scale, 0, 14 * e.scale);
+            if (e.isKO) { tg.addColorStop(0, '#fff2a8'); tg.addColorStop(0.5, '#ff5a3a'); tg.addColorStop(1, '#c4001c'); }
+            else { tg.addColorStop(0, '#fff7c2'); tg.addColorStop(1, e.color); }
+            ctx.fillStyle = tg;
+            ctx.fillText(e.text, 0, 0);
+          }
+
           ctx.restore();
 
           return e.life > 0;
@@ -2580,18 +3000,32 @@
 
         ctx.save();
         ctx.globalCompositeOperation = 'lighter';
-        for (let i = 1; i <= 3; i++) {
-          ctx.globalAlpha = 0.2 / i;
+        for (let i = 1; i <= 4; i++) {
+          ctx.globalAlpha = 0.22 / i;
           ctx.beginPath();
           ctx.arc(
-            entity.x - directionX * entity.radius * i * 0.75,
-            entity.y - directionY * entity.radius * i * 0.75,
+            entity.x - directionX * entity.radius * i * 0.7,
+            entity.y - directionY * entity.radius * i * 0.7,
             entity.radius * (1 - i * 0.12),
             0,
             Math.PI * 2
           );
           ctx.fillStyle = color;
           ctx.fill();
+        }
+        // speed streaks
+        const px = -directionY, py = directionX;
+        ctx.globalAlpha = 0.5;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        for (let k = -1; k <= 1; k++) {
+          const ox = entity.x + px * k * entity.radius * 0.6 - directionX * entity.radius * 0.9;
+          const oy = entity.y + py * k * entity.radius * 0.6 - directionY * entity.radius * 0.9;
+          ctx.beginPath();
+          ctx.moveTo(ox, oy);
+          ctx.lineTo(ox - directionX * entity.radius * (1.4 - Math.abs(k) * 0.4), oy - directionY * entity.radius * (1.4 - Math.abs(k) * 0.4));
+          ctx.stroke();
         }
         ctx.restore();
       }
@@ -2710,7 +3144,9 @@
         textEffects = [];
         eliminatedParticipants = [];
         document.getElementById('koLog').innerHTML = '';
+        fxParticles = [];
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawRing();
         gameStatus.textContent = '👊 링에 오를 준비를 하세요!';
         aliveCount.innerHTML = '생존자: <span>0</span> / 0';
         rankingList.innerHTML = '<div style="text-align:center;color:var(--text-secondary);padding:20px;">참여자를 입력하고<br>게임을 시작하세요!</div>';
