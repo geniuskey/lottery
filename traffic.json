@@ -1,31 +1,31 @@
 {
   "source": "ga4",
-  "generatedAt": "2026-11-23T14:11:59.035658+00:00",
+  "generatedAt": "2026-11-25T11:40:37.405025+00:00",
   "startDate": "2026-01-15",
-  "endDate": "2026-11-23",
+  "endDate": "2026-11-25",
   "trackingSince": "2026-11-24",
-  "rankingStartDate": "2026-10-23",
-  "rankingEndDate": "2026-11-21",
+  "rankingStartDate": "2026-10-25",
+  "rankingEndDate": "2026-11-23",
   "site": {
-    "totalUsers": 1273,
-    "pageViews": 12963
+    "totalUsers": 1352,
+    "pageViews": 13525
   },
   "games": {
     "pinball": {
-      "activeUsers": 91,
-      "pageViews": 266
+      "activeUsers": 92,
+      "pageViews": 270
     },
     "neon-race": {
-      "activeUsers": 115,
-      "pageViews": 360
+      "activeUsers": 113,
+      "pageViews": 342
     },
     "marble-olympics": {
       "activeUsers": 92,
       "pageViews": 228
     },
     "zombie-arena": {
-      "activeUsers": 83,
-      "pageViews": 208
+      "activeUsers": 81,
+      "pageViews": 202
     },
     "school-dance": {
       "activeUsers": 55,
@@ -48,16 +48,16 @@
       "pageViews": 0
     },
     "disk-shove": {
-      "activeUsers": 0,
-      "pageViews": 0
+      "activeUsers": 1,
+      "pageViews": 2
     },
     "chaser-survival": {
-      "activeUsers": 28,
-      "pageViews": 60
+      "activeUsers": 26,
+      "pageViews": 56
     },
     "devil-survival": {
-      "activeUsers": 22,
-      "pageViews": 52
+      "activeUsers": 21,
+      "pageViews": 50
     },
     "ufo-abduction": {
       "activeUsers": 0,
@@ -72,20 +72,20 @@
       "pageViews": 0
     },
     "dart-tournament": {
-      "activeUsers": 0,
-      "pageViews": 0
+      "activeUsers": 1,
+      "pageViews": 2
     },
     "punch-survival": {
       "activeUsers": 0,
       "pageViews": 0
     },
     "chair": {
-      "activeUsers": 46,
-      "pageViews": 114
+      "activeUsers": 45,
+      "pageViews": 110
     },
     "gravity-orbit": {
-      "activeUsers": 25,
-      "pageViews": 58
+      "activeUsers": 27,
+      "pageViews": 62
     },
     "chestnut-survival": {
       "activeUsers": 0,
