@@ -1,99 +1,99 @@
 {
   "source": "ga4",
-  "generatedAt": "2026-11-25T11:40:37.405025+00:00",
+  "generatedAt": "2026-11-28T10:49:56.010184+00:00",
   "startDate": "2026-01-15",
-  "endDate": "2026-11-25",
+  "endDate": "2026-11-28",
   "trackingSince": "2026-11-24",
-  "rankingStartDate": "2026-10-25",
-  "rankingEndDate": "2026-11-23",
+  "rankingStartDate": "2026-10-28",
+  "rankingEndDate": "2026-11-26",
   "site": {
-    "totalUsers": 1352,
-    "pageViews": 13525
+    "totalUsers": 1383,
+    "pageViews": 13843
   },
   "games": {
     "pinball": {
-      "activeUsers": 92,
-      "pageViews": 270
+      "activeUsers": 101,
+      "pageViews": 286
     },
     "neon-race": {
-      "activeUsers": 113,
-      "pageViews": 342
+      "activeUsers": 132,
+      "pageViews": 390
     },
     "marble-olympics": {
-      "activeUsers": 92,
-      "pageViews": 228
+      "activeUsers": 102,
+      "pageViews": 254
     },
     "zombie-arena": {
-      "activeUsers": 81,
-      "pageViews": 202
+      "activeUsers": 85,
+      "pageViews": 214
     },
     "school-dance": {
-      "activeUsers": 55,
-      "pageViews": 122
+      "activeUsers": 64,
+      "pageViews": 146
     },
     "group-rps": {
-      "activeUsers": 0,
-      "pageViews": 0
+      "activeUsers": 5,
+      "pageViews": 16
     },
     "bingo": {
-      "activeUsers": 0,
-      "pageViews": 0
+      "activeUsers": 5,
+      "pageViews": 10
     },
     "bomb": {
-      "activeUsers": 0,
-      "pageViews": 0
+      "activeUsers": 7,
+      "pageViews": 22
     },
     "roulette": {
-      "activeUsers": 0,
-      "pageViews": 0
+      "activeUsers": 11,
+      "pageViews": 34
     },
     "disk-shove": {
-      "activeUsers": 1,
-      "pageViews": 2
+      "activeUsers": 11,
+      "pageViews": 26
     },
     "chaser-survival": {
-      "activeUsers": 26,
-      "pageViews": 56
+      "activeUsers": 30,
+      "pageViews": 66
     },
     "devil-survival": {
-      "activeUsers": 21,
-      "pageViews": 50
+      "activeUsers": 24,
+      "pageViews": 56
     },
     "ufo-abduction": {
-      "activeUsers": 0,
-      "pageViews": 0
+      "activeUsers": 6,
+      "pageViews": 12
     },
     "space-race": {
-      "activeUsers": 0,
-      "pageViews": 0
+      "activeUsers": 10,
+      "pageViews": 32
     },
     "balloon-survival": {
-      "activeUsers": 0,
-      "pageViews": 0
+      "activeUsers": 6,
+      "pageViews": 12
     },
     "dart-tournament": {
-      "activeUsers": 1,
-      "pageViews": 2
+      "activeUsers": 11,
+      "pageViews": 22
     },
     "punch-survival": {
-      "activeUsers": 0,
-      "pageViews": 0
+      "activeUsers": 6,
+      "pageViews": 14
     },
     "chair": {
-      "activeUsers": 45,
-      "pageViews": 110
+      "activeUsers": 54,
+      "pageViews": 132
     },
     "gravity-orbit": {
-      "activeUsers": 27,
-      "pageViews": 62
+      "activeUsers": 31,
+      "pageViews": 70
     },
     "chestnut-survival": {
-      "activeUsers": 0,
-      "pageViews": 0
+      "activeUsers": 3,
+      "pageViews": 8
     },
     "ladder": {
-      "activeUsers": 0,
-      "pageViews": 0
+      "activeUsers": 13,
+      "pageViews": 30
     }
   }
 }
